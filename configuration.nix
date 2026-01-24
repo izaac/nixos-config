@@ -144,6 +144,13 @@
     ];
   };
 
+  security.sudo = {
+    enable = true;
+    wheelNeedsPassword = false; 
+  };
+
+  programs.vim.defaultEditor = true;
+
   # Install firefox.
   programs.firefox.enable = true;
 
