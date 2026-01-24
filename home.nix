@@ -15,7 +15,9 @@
     btop      # Better system monitor for your 5070 Ti
     fastfetch # Shows system info + GPU in terminal
     eza       # Modern 'ls' replacement (very clean)
-    micro     # Simple terminal text editor
+    vscode
+    7zip
+    unzip
   ];
 
   programs.git = {
@@ -27,4 +29,15 @@
       };
     };
   };
+
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      "*" = {
+        identityFile = "~/.ssh/id_ed25519";
+      };
+    };
+  };
+
+  services.ssh-agent.enable = true;
 }
