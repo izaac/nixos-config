@@ -93,6 +93,7 @@
     nvidiaSettings = true;
     # Force the specific driver package to match the kernel
     package = config.boot.kernelPackages.nvidiaPackages.beta;
+    nvidiaPersistenced = true;
   };
 
   # 3. Kernel & Boot Loader (Add this section!)
