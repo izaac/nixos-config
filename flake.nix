@@ -11,20 +11,15 @@
       # This line is critical: it forces HM to use the same packages as your system
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # 3. CachyOS kernel
-    cachyos.url = "github:drakon64/nixos-cachyos-kernel";
   };
 
-  outputs = { self, nixpkgs, home-manager, cachyos, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     nixosConfigurations.ninja= nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
       modules = [
         # Import your existing system config
         ./configuration.nix
-
-        cachyos.nixosModules.default
 
         # Plug in Home Manager as a module
         home-manager.nixosModules.home-manager

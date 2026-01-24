@@ -21,6 +21,8 @@
   # (Crucial for a clean look).
   boot.loader.systemd-boot.configurationLimit = 5;
 
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+
   # Garbage Collection: Deletes files older than 7 days
   # so your SSD doesn't fill up with invisible "ghost" OS versions.
   nix.gc = {
@@ -32,11 +34,6 @@
   # Auto-Optimize: Squeezes data to save space every time you build.
   nix.settings.auto-optimise-store = true;
   nix.settings.download-buffer-size = "268435456";
-
-  nix.settings = {
-    substituters = [ "https://drakon64-nixos-cachyos-kernel.cachix.org" ];
-    trusted-public-keys = [ "drakon64-nixos-cachyos-kernel.cachix.org-1:J3gjZ9N6S05pyLA/P0M5y7jXpSxO/i0rshrieQJi5D0=" ];
-  };
 
   virtualisation.docker.enable = true;
 
