@@ -31,6 +31,9 @@
   
   # Auto-Optimize: Squeezes data to save space every time you build.
   nix.settings.auto-optimise-store = true;
+  nix.settings.download-buffer-size = "268435456";
+
+  virtualisation.docker.enable = true;
 
   networking.hostName = "ninja"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -135,7 +138,7 @@
   users.users.izaac = {
     isNormalUser = true;
     description = "izaac";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" ];
     packages = with pkgs; [
     #  thunderbird
     ];
