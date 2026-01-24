@@ -18,10 +18,13 @@
     micro     # Simple terminal text editor
   ];
 
-  # Basic Git config for your user
   programs.git = {
     enable = true;
-    userName = "izaac";
-    userEmail = "jorge.izaac@gmail.com"; # Change this if you like
+    settings = {
+      user = {
+        name = "izaac";
+        email = "jorge.izaac@gmail.com";
+      };
+    };
   };
 }
