@@ -3,11 +3,11 @@
 
   inputs = {
     # 1. The main NixOS source (Unstable branch for 50-series support)
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 
     # 2. Home Manager (User-level configuration)
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       # This line is critical: it forces HM to use the same packages as your system
       inputs.nixpkgs.follows = "nixpkgs";
     };
