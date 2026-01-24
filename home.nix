@@ -19,6 +19,10 @@
     _7zz
     zip
     unzip
+
+    # Gaming Tools
+    mangohud      # The FPS/GPU overlay
+    protonup-qt   # GUI to install "Proton GE" (fixes many games)
   ];
 
   programs.bash = {

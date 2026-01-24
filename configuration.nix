@@ -131,6 +131,20 @@
     wget
   ];
 
+  # ====================================================
+  # GAMING CONFIGURATION (Steam + GameMode)
+  # ====================================================
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports for local transfers
+  };
+
+  # Optimizes Linux system performance on demand
+  programs.gamemode.enable = true;
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
