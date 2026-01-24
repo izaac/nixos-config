@@ -26,6 +26,7 @@
         {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
+          home-manager.backupFileExtension = "backup";
           
           # This tells HM which user it's managing
           home-manager.users.izaac = import ./home.nix;

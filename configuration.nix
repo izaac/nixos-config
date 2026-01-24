@@ -129,6 +129,7 @@
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
+    lact
   ];
 
   # ====================================================
@@ -145,6 +146,29 @@
   # Optimizes Linux system performance on demand
   programs.gamemode.enable = true;
 
+  # ====================================================
+  # STEAM LIBRARY STORAGE (3.6TB NVMe)
+  # ====================================================
+  
+  fileSystems."/mnt/data" = {
+    device = "/dev/disk/by-uuid/e76c3d51-616c-446a-89ae-f7083290e290";
+    fsType = "ext4";
+    # "noatime" improves performance by not writing access logs on reads
+    # "nofail" ensures your PC still boots if this drive ever dies/disconnects
+    options = [ "defaults" "noatime" "nofail" ];
+  };
+
+  # Without this, the drive mounts as 'root' and Steam cannot write to it.
+  systemd.tmpfiles.rules = [
+    "d /mnt/data 0777 izaac users -"
+  ];
+
+
+  # Enable the LACT Daemon (required for fan curves/power limits)
+  systemd.packages = with pkgs; [ lact ];
+  systemd.services.lactd.wantedBy = [ "multi-user.target" ];
+
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
@@ -157,6 +181,15 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+
+  # ====================================================
+  # SSD MAINTENANCE
+  # ====================================================
+  
+  # This is better than the "discard" mount flag.
+  # It runs fstrim weekly to keep your NVMe fast without
+  # causing micro-stutters during gameplay.
+  services.fstrim.enable = true;
 
   # Edit your /etc/nixos/configuration.nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
