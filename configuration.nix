@@ -33,6 +33,11 @@
   nix.settings.auto-optimise-store = true;
   nix.settings.download-buffer-size = "268435456";
 
+  nix.settings = {
+    substituters = [ "https://drakon64-nixos-cachyos-kernel.cachix.org" ];
+    trusted-public-keys = [ "drakon64-nixos-cachyos-kernel.cachix.org-1:J3gjZ9N6S05pyLA/P0M5y7jXpSxO/i0rshrieQJi5D0=" ];
+  };
+
   virtualisation.docker.enable = true;
 
   networking.hostName = "ninja"; # Define your hostname.
@@ -112,8 +117,10 @@
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
   };
 
+  hardware.enableRedistributableFirmware = true;
+
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing.enable = false;
 
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
