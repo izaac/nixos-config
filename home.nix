@@ -10,10 +10,6 @@
   # Let Home Manager install itself
   programs.home-manager.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    distrobox
-  ];
-
   # This is where we'll add your "gadgets" and tools
   home.packages = with pkgs; [
     btop      # Better system monitor for your 5070 Ti
@@ -27,6 +23,7 @@
     # Gaming Tools
     mangohud      # The FPS/GPU overlay
     protonup-qt   # GUI to install "Proton GE" (fixes many games)
+    distrobox
   ];
 
   programs.bash = {
