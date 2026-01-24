@@ -48,6 +48,10 @@
 
   programs.ssh = {
     enable = true;
+    
+    # Silence the warning by explicitly managing defaults yourself
+    enableDefaultConfig = false; 
+
     matchBlocks = {
       "*" = {
         identityFile = "~/.ssh/id_ed25519";
