@@ -20,6 +20,21 @@
     unzip
   ];
 
+  programs.bash = {
+    enable = true;
+    historySize = 10000;
+    historyFileSize = 100000;
+    historyControl = [ "erasedups" "ignoredups" "ignorespace" ];
+  
+    # The "Pro" tweaks
+    initExtra = ''
+      # Append to history instead of overwriting
+      shopt -s histappend
+      # Save history after every command (don't wait for exit)
+      PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+    '';
+  };
+
   programs.git = {
     enable = true;
     settings = {
