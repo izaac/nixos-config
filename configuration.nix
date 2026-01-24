@@ -187,7 +187,26 @@
   };
 
   # Optimizes Linux system performance on demand
-  programs.gamemode.enable = true;
+
+  programs.gamemode = {
+    enable = true;
+    enableRenice = true; # Increases process priority for the game
+    settings = {
+      general = {
+        softrealtime = "auto";
+        renice = 10;
+      };
+      # Optional: Custom scripts (e.g., kill your compositor or browser when gaming)
+      # custom = {
+      #   start = "${pkgs.libnotify}/bin/notify-send 'GameMode started'";
+      #   end = "${pkgs.libnotify}/bin/notify-send 'GameMode ended'";
+      # };
+    };
+  };
+
+  # Bonus: MangoHud (The overlay to see FPS/Temps/CPU usage)
+  # Since you like "gadgets" and stats, you will want this.
+  programs.mangohud.enable = true;
 
   # ====================================================
   # STEAM LIBRARY STORAGE (3.6TB NVMe)
