@@ -149,7 +149,10 @@
     wheelNeedsPassword = false; 
   };
 
-  programs.vim.defaultEditor = true;
+  programs.vim = {
+    enable = true;
+    defaultEditor = true;
+  };
 
   # Install firefox.
   programs.firefox.enable = true;
