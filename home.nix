@@ -16,7 +16,7 @@
     fastfetch # Shows system info + GPU in terminal
     eza       # Modern 'ls' replacement (very clean)
     vscode
-    _7zip
+    _7zz
     zip
     unzip
   ];
