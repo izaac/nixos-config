@@ -26,6 +26,18 @@
     distrobox
   ];
 
+  programs.mangohud = {
+    enable = true;
+    
+    # Optional: Configure the look right here so you don't need a config file
+    settings = {
+      full = true;
+      cpu_temp = true;
+      gpu_temp = true;
+      ram = true;
+    };
+  };
+
   programs.bash = {
     enable = true;
     historySize = 10000;

@@ -204,10 +204,6 @@
     };
   };
 
-  # Bonus: MangoHud (The overlay to see FPS/Temps/CPU usage)
-  # Since you like "gadgets" and stats, you will want this.
-  programs.mangohud.enable = true;
-
   # ====================================================
   # STEAM LIBRARY STORAGE (3.6TB NVMe)
   # ====================================================
