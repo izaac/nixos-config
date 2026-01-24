@@ -146,7 +146,10 @@
 
   security.sudo = {
     enable = true;
-    wheelNeedsPassword = false; 
+    wheelNeedsPassword = false;
+    extraConfig = ''
+      Defaults editor=${pkgs.vim}/bin/vim
+    '';
   };
 
   programs.vim = {
