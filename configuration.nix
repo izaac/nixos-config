@@ -13,6 +13,24 @@
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # ====================================================
+  # AUTOMATIC CLEANUP (The Janitor)
+  # ====================================================
+  
+  # Only show the last 5 generations in the boot menu.
+  # (Crucial for a clean look).
+  boot.loader.systemd-boot.configurationLimit = 5;
+
+  # Garbage Collection: Deletes files older than 7 days
+  # so your SSD doesn't fill up with invisible "ghost" OS versions.
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 7d";
+  };
+  
+  # Auto-Optimize: Squeezes data to save space every time you build.
+  nix.settings.auto-optimise-store = true;
 
   networking.hostName = "ninja"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -54,6 +72,10 @@
     layout = "us";
     variant = "";
   };
+
+  services.xserver.deviceSection = ''
+    Option "Coolbits" "28"
+  '';
 
   # 1. Graphics / OpenGL
   hardware.graphics = {
@@ -168,6 +190,17 @@
   systemd.packages = with pkgs; [ lact ];
   systemd.services.lactd.wantedBy = [ "multi-user.target" ];
 
+  # Apply GPU Clock Lock on Boot (The "Undervolt" Clamp)
+  systemd.services.nvidia-lock-clocks = {
+    description = "Lock NVIDIA GPU Clocks for Undervolting";
+    after = [ "display-manager.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      # Adjust '2650' up or down depending on your silicon lottery stability
+      ExecStart = "${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2650";
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
