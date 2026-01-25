@@ -39,6 +39,9 @@
     resources         # Modern Task Manager
     fragments         # Torrenting
     cartridges
+    appimage-run
+    gearlever
+    impression
 
     # Entertainment
     jellyfin-desktop

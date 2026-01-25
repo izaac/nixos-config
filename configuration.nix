@@ -293,6 +293,8 @@
   # causing micro-stutters during gameplay.
   services.fstrim.enable = true;
 
+  services.flatpak.enable = true;
+
   # Edit your /etc/nixos/configuration.nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
