@@ -3,21 +3,21 @@
 {
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
-    neovim
-    ripgrep
-    fd
-    lazygit
-    gcc
-    gnumake
+    neovim           # The binary (managed manually via ~/.config/nvim)
+    ripgrep          # Fast grep
+    fd               # Fast find
+    lazygit          # Git TUI
+    gcc              # C Compiler (needed for Treesitter)
+    gnumake          # Make
     unzip
     wget
     curl
-    tree-sitter
-    xclip
-    wl-clipboard
+    tree-sitter      # Syntax highlighting core
+    xclip            # Clipboard support (X11)
+    wl-clipboard     # Clipboard support (Wayland)
     
     # --- LANGUAGES & TOOLCHAINS ---
-    fnm              # Node.js Manager
+    fnm              # Node.js Manager (Replaces system nodejs)
     go               # Go Lang
     python3          # Python (includes pip for venvs)
     luarocks         # Lua Package Manager
@@ -36,7 +36,7 @@
     nodePackages.bash-language-server
     shellcheck
     luajitPackages.lua-lsp
-    nil              # Nix LSP
+    nil              # Nix LSP (Best for editing .nix files)
     
     # --- GUI IDEs ---
     vscode
@@ -55,7 +55,8 @@
       };
     };
     signing = {
-      key = null;
+      # The explicit RSA 4096 Key ID you requested
+      key = "0x3183124333AB684C"; 
       signByDefault = true;
     };
   };

@@ -7,9 +7,7 @@
     zip unzip _7zz peazip
     appimage-run
     distrobox
-    
-    # The clipboard tool we were missing
-    wl-clipboard
+    wl-clipboard  # Essential for piping to clipboard
   ];
 
   programs.bash = {
@@ -35,6 +33,10 @@
     };
 
     initExtra = ''
+      # --- GPG TTY FIX ---
+      # Critical for GPG password prompts to appear in the terminal
+      export GPG_TTY=$(tty)
+
       # --- FNM (Node Manager) Init ---
       # This enables the 'fnm' command and auto-switching based on .nvmrc
       eval "$(fnm env --use-on-cd)"
