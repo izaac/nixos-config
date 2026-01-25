@@ -26,17 +26,59 @@
     zip
     unzip
     nerd-fonts.jetbrains-mono
-    distrobox
     kitty
+    distrobox
     boxbuddy
+    bottles
     gcc
     gnumake
     xorg.xhost
+
+    # Entertainment
+    jellyfin-desktop
+    jellytui
+    amberol
 
     # Gaming Tools
     mangohud      # The FPS/GPU overlay
     protonup-qt   # GUI to install "Proton GE" (fixes many games)
   ];
+
+  programs.mpv = {
+    enable = true;
+    
+    # Scripts to make it feel like a modern app
+    scripts = with pkgs.mpvScripts; [
+      mpris       # Allows Gnome media keys (Play/Pause) to control MPV
+      uosc        # A minimalist, modern UI (replaces the ugly 2005 OSD)
+      thumbfast   # Instant thumbnails on the seekbar
+    ];
+
+    config = {
+      # --- Video & Acceleration ---
+      # "auto-safe" prioritizes NVDEC (Nvidia native) or VAAPI based on what works best
+      hwdec = "auto-safe"; 
+      
+      # The modern Vulkan-based renderer. 
+      # Much better scaling and HDR handling than the old "gpu" output.
+      vo = "gpu-next";
+      
+      # Use "gpu-hq" as a base (high quality scaling algorithms)
+      profile = "gpu-hq";
+      
+      # Force Wayland context (avoids XWayland blur)
+      gpu-context = "wayland";
+
+      # --- Quality of Life ---
+      save-position-on-quit = true;
+      keep-open = "yes";              # Don't close the window when the video ends
+      
+      # Smooth motion (optional, remove if you hate the "soap opera" effect)
+      # video-sync = "display-resample";
+      # interpolation = true;
+      # tscale = "oversample";
+    };
+  };
 
   programs.mangohud = {
     enable = true;
