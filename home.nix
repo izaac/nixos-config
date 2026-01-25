@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  imports = [
+    ./kitty.nix
+    ./starship.nix
+  ];
   home.username = "izaac";
   home.homeDirectory = "/home/izaac";
 
@@ -19,11 +23,14 @@
     _7zz
     zip
     unzip
+    nerd-fonts.jetbrains-mono
+    distrobox
+    kitty
+    boxbuddy
 
     # Gaming Tools
     mangohud      # The FPS/GPU overlay
     protonup-qt   # GUI to install "Proton GE" (fixes many games)
-    distrobox
   ];
 
   programs.mangohud = {

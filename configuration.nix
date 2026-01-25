@@ -112,6 +112,7 @@
     # Force GBM as a backend for Wayland
     GBM_BACKEND = "nvidia-drm";
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    GSK_RENDERER = "gl";
   };
 
   hardware.enableRedistributableFirmware = true;
@@ -173,6 +174,16 @@
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     wget
     lact
+    ripgrep 
+    fd 
+    broot 
+    delta 
+    jq 
+    lazygit 
+    fzf 
+    yazi 
+    tldr
+    zoxide
   ];
 
   # ====================================================
