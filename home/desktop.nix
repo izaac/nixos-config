@@ -10,7 +10,15 @@
     seahorse
     amberol
     haruna
+    pika-backup
+    mission-center
+    gnome-boxes
+    virt-manager
+
+    # General Software
     firefox
+    celluloid
+    foliate
   ];
 
   # --- GNOME CONFIG ---

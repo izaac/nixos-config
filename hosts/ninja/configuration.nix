@@ -36,7 +36,7 @@
   users.users.izaac = {
     isNormalUser = true;
     description = "izaac";
-    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" ];
   };
 
   # Sudo Config (No Password)
@@ -61,7 +61,18 @@
   services.fstrim.enable = true;
   services.flatpak.enable = true;
   virtualisation.docker.enable = true;
-  
+
+  # Virtualization / KVM
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      package = pkgs.qemu_kvm;
+      runAsRoot = true;
+      swtpm.enable = true;
+    };
+  };
+  virtualisation.spiceUSBRedirection.enable = true;
+ 
   # Nix Maintenance
   nix.gc = {
     automatic = true;
