@@ -22,6 +22,7 @@
     btop      # Better system monitor for your 5070 Ti
     fastfetch # Shows system info + GPU in terminal
     eza       # Modern 'ls' replacement (very clean)
+    duf
     vscode
     _7zz
     zip

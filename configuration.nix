@@ -193,12 +193,44 @@
     stdenv.cc.cc.lib
     zlib
     fuse3
+    fuse
     icu
     nss
+    nspr
     openssl
     curl
     expat
-  ];
+    libGL
+    glibc
+    libusb1
+    fontconfig
+    freetype
+    glib
+    dbus
+    libxkbcommon
+    libglvnd
+    mesa
+    wayland
+    libdrm
+    e2fsprogs
+    libkrb5
+    at-spi2-atk
+    atk
+    gdk-pixbuf
+    gtk3
+    pipewire
+    libjack2
+  ] ++ (with pkgs.xorg; [
+    libX11
+    libXcursor
+    libXdamage
+    libXext
+    libXfixes
+    libXi
+    libXrender
+    libXtst
+    libxcb
+  ]);
 
 # ====================================================
   # FONTS
