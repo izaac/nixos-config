@@ -10,6 +10,7 @@
     seahorse
     amberol
     haruna
+    firefox
   ];
 
   # --- GNOME CONFIG ---
