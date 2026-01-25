@@ -23,7 +23,6 @@
     fastfetch # Shows system info + GPU in terminal
     eza       # Modern 'ls' replacement (very clean)
     duf
-    vscode
     _7zz
     zip
     unzip
@@ -31,7 +30,8 @@
     kitty
     distrobox
     boxbuddy
-    bottles
+    boxes
+    (bottles.override { removeWarningPopup = true; })
     gcc
     gnumake
     xorg.xhost
@@ -43,11 +43,17 @@
     appimage-run
     gearlever
     impression
+    vscode
+    telegram-desktop
+    slack
+    peazip
+    chromium
 
     # Entertainment
     jellyfin-desktop
     jellytui
     amberol
+    haruna
 
     # Gaming Tools
     mangohud      # The FPS/GPU overlay
