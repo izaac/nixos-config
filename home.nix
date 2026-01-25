@@ -48,6 +48,10 @@
     slack
     peazip
     chromium
+    google-chrome
+    seahorse
+    piper
+    openrgb
 
     # Entertainment
     jellyfin-desktop

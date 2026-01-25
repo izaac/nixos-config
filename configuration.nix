@@ -83,6 +83,23 @@
     Option "Coolbits" "28"
   '';
 
+  hardware.xpadneo.enable = true;
+
+  # Enable support for DualShock/DualSense and other gamepads
+  services.udev.packages = with pkgs; [
+    game-devices-udev-rules # The "Universal" fix for most controllers
+    logitech-udev-rules     # For Logitech mice/keyboards
+  ];
+
+  # Bluetooth support for wireless controllers
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.settings = {
+    General = {
+      Enable = "Source,Sink,Media,Socket";
+      Experimental = true; # Helps with newer Bluetooth LE controllers
+    };
+  };
+
   # 1. Graphics / OpenGL
   hardware.graphics = {
     enable = true;
@@ -144,7 +161,7 @@
   users.users.izaac = {
     isNormalUser = true;
     description = "izaac";
-    extraGroups = [ "networkmanager" "wheel" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" ];
     packages = with pkgs; [
     #  thunderbird
     ];
