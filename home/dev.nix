@@ -18,6 +18,7 @@
     
     # --- LANGUAGES & TOOLCHAINS ---
     fnm              # Node.js Manager (Replaces system nodejs)
+    rustup           # Rust Toolchain Manager (Cargo, Rustc, etc.)
     go               # Go Lang
     python3          # Python (includes pip for venvs)
     luarocks         # Lua Package Manager
