@@ -1,0 +1,87 @@
+{ pkgs, ... }:
+
+{
+  home.packages = with pkgs; [
+    lsd bat fzf fd ripgrep yazi
+    duf btop fastfetch
+    zip unzip _7zz peazip
+    appimage-run
+    distrobox
+    
+    # The clipboard tool we were missing
+    wl-clipboard
+  ];
+
+  programs.bash = {
+    enable = true;
+    enableCompletion = true;
+    
+    shellAliases = {
+      ls = "lsd";
+      cat = "bat";
+      grep = "rg";
+      top = "btop";
+      find = "fd";
+      vim = "nvim";
+      sysls = "systemctl --type=service --state=running";
+      # Cache clearing alias
+      ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
+    };
+
+    sessionVariables = {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+      BAT_THEME = "TwoDark";
+    };
+
+    initExtra = ''
+      # --- FNM (Node Manager) Init ---
+      # This enables the 'fnm' command and auto-switching based on .nvmrc
+      eval "$(fnm env --use-on-cd)"
+
+      # --- Yazi Wrapper (CD on exit) ---
+      function y() {
+        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+        yazi "$@" --cwd-file="$tmp"
+        if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+          builtin cd -- "$cwd"
+        fi
+        rm -f -- "$tmp"
+      }
+
+      # --- Recursive Cat (The "Dump" Tool) ---
+      # Usage: catr [optional-path]
+      function catr() {
+        local target="''${1:-.}"
+        fd --type f --hidden --exclude .git . "$target" --exec sh -c '
+          if file -b --mime-type "{}" | grep -q "^text/"; then
+            echo "================================================================================"
+            echo "FILE: {}"
+            echo "================================================================================"
+            cat "{}"
+            echo -e "\n"
+          else
+            echo "SKIP: {} (Binary file)"
+          fi
+        '
+      }
+    '';
+  };
+
+  programs.starship = {
+    enable = true;
+    settings = {
+      add_newline = false;
+      format = "$directory$git_branch$git_status$container$character";
+      directory.style = "bold lavender";
+      container = {
+        symbol = "📦";
+        style = "bold red";
+      };
+      character = {
+        success_symbol = "[➜](bold green)";
+        error_symbol = "[✗](bold red)";
+      };
+    };
+  };
+}
