@@ -21,7 +21,7 @@
   # (Crucial for a clean look).
   boot.loader.systemd-boot.configurationLimit = 5;
 
-  boot.kernelPackages = pkgs.linuxPackages_lts;
+  #boot.kernelPackages = pkgs.linuxPackages_lts;
 
   # Garbage Collection: Deletes files older than 7 days
   # so your SSD doesn't fill up with invisible "ghost" OS versions.
@@ -186,6 +186,26 @@
     zoxide
   ];
 
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc.lib
+    zlib
+    fuse3
+    icu
+    nss
+    openssl
+    curl
+    expat
+  ];
+
+# ====================================================
+  # FONTS
+  # ====================================================
+  
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+  ];
+
   # ====================================================
   # GAMING CONFIGURATION (Steam + GameMode)
   # ====================================================
@@ -245,7 +265,7 @@
     serviceConfig = {
       Type = "oneshot";
       # Adjust '2650' up or down depending on your silicon lottery stability
-      ExecStart = "${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2650";
+      ExecStart = "${config.boot.kernelPackages.nvidiaPackages.stable.bin}/bin/nvidia-smi -lgc 210,2650";
     };
   };
 

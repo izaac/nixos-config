@@ -29,7 +29,9 @@
     distrobox
     kitty
     boxbuddy
-    neovim
+    gcc
+    gnumake
+    xorg.xhost
 
     # Gaming Tools
     mangohud      # The FPS/GPU overlay
@@ -86,5 +88,25 @@
     };
   };
 
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+  };
+
   services.ssh-agent.enable = true;
+
+  home.file.".config/autostart/fix-gparted-wayland.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=Fix GParted Wayland
+    Comment=Allow root to access display
+    # The magic command
+    Exec=${pkgs.xorg.xhost}/bin/xhost +SI:localuser:root
+    X-GNOME-Autostart-enabled=true
+    Hidden=false
+    NoDisplay=true
+  '';
 }
+

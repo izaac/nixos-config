@@ -13,6 +13,7 @@
     fdupes       # Deduplication tool
     mktemp       # Usually builtin, but good to have coreutils
     moc          # Console music player (mocp)
+    fnm
   ];
 
   # 2. Broot needs special handling in Nix to work correctly
@@ -72,6 +73,7 @@
         fi
         rm -f -- "$tmp"
       }
+      eval "$(fnm env --use-on-cd)"
     '';
   };
 }
