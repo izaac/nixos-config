@@ -21,7 +21,7 @@
   # (Crucial for a clean look).
   boot.loader.systemd-boot.configurationLimit = 5;
 
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelPackages = pkgs.linuxPackages_lts;
 
   # Garbage Collection: Deletes files older than 7 days
   # so your SSD doesn't fill up with invisible "ghost" OS versions.
@@ -97,7 +97,7 @@
     open = true;
     nvidiaSettings = true;
     # Force the specific driver package to match the kernel
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
     nvidiaPersistenced = true;
   };
 

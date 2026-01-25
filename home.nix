@@ -4,6 +4,8 @@
   imports = [
     ./kitty.nix
     ./starship.nix
+    ./bash.nix
+    ./vimrc.nix
   ];
   home.username = "izaac";
   home.homeDirectory = "/home/izaac";
@@ -27,6 +29,7 @@
     distrobox
     kitty
     boxbuddy
+    neovim
 
     # Gaming Tools
     mangohud      # The FPS/GPU overlay
