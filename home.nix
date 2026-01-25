@@ -51,6 +51,11 @@
     # Gaming Tools
     mangohud      # The FPS/GPU overlay
     protonup-qt   # GUI to install "Proton GE" (fixes many games)
+    heroic
+    lutris
+    minigalaxy
+    wineWowPackages.stable # Adds 32-bit and 64-bit Wine support
+    winetricks
   ];
 
   programs.mpv = {
@@ -64,6 +69,8 @@
     ];
 
     config = {
+      # Start the window at 50% of your screen size
+      autofit = "50%";
       # --- Video & Acceleration ---
       # "auto-safe" prioritizes NVDEC (Nvidia native) or VAAPI based on what works best
       hwdec = "auto-safe"; 
