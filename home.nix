@@ -6,6 +6,7 @@
     ./starship.nix
     ./bash.nix
     ./vimrc.nix
+    ./gnome-extensions.nix
   ];
   home.username = "izaac";
   home.homeDirectory = "/home/izaac";
@@ -33,6 +34,11 @@
     gcc
     gnumake
     xorg.xhost
+    pika-backup       # Simple Backups
+    textsnatcher      # OCR from Screen
+    resources         # Modern Task Manager
+    fragments         # Torrenting
+    cartridges
 
     # Entertainment
     jellyfin-desktop

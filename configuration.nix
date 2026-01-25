@@ -185,6 +185,7 @@
     yazi 
     tldr
     zoxide
+    nfs-utils
   ];
 
   programs.nix-ld.enable = true;

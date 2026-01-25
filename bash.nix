@@ -59,6 +59,10 @@
       gco = "git checkout";
       ls = "lsd";
       mocp = "mocp -T darkdot_theme";
+      cat = "bat";
+      grep = "rg";
+      top = "btop";
+      find = "fd";
     };
 
     # Custom Functions (The 'y' function for Yazi)
