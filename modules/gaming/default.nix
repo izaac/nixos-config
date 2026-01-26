@@ -2,14 +2,18 @@
 
 {
   # 1. Steam Hardware Support
+  # Explicitly enables udev rules for Valve hardware
+  hardware.steam-hardware.enable = true;
+
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
+    gamescopeSession.enable = true; # Adds "Steam Deck" session support
   };
 
-  # 2. GameMode (MOVED HERE from Home Manager)
+  # 2. GameMode
   programs.gamemode = {
     enable = true;
     enableRenice = true;
@@ -20,12 +24,15 @@
     };
   };
 
-  # 3. Controller & Hardware Support
-  hardware.xpadneo.enable = true;
+  # 3. Controller & Hardware Support (The "Maximized" List)
+  hardware.xpadneo.enable = true; # Xbox Bluetooth
+  services.joycond.enable = true; # Nintendo Switch JoyCons (Merge L+R)
+  hardware.uinput.enable = true;  # Virtual Input (Critical for remapping tools)
   
   services.udev.packages = with pkgs; [
-    game-devices-udev-rules 
+    game-devices-udev-rules # The big community list
     logitech-udev-rules
+    openrgb                 # RGB Control access
   ];
 
   # 4. Bluetooth Tweaks

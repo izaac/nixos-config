@@ -8,7 +8,6 @@
     # Gnome Tools
     gnome-tweaks
     seahorse
-    amberol
     haruna
     pika-backup
     mission-center
@@ -17,6 +16,10 @@
     virt-viewer
     spice-gtk
     telegram-desktop
+
+    # Audio Tools
+    easyeffects
+    amberol
 
     # General Software
     firefox
