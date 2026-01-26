@@ -1,9 +1,8 @@
 { config, pkgs, ... }:
 
 {
-  # 1. Kernel Optimization for AMD and Guest Latency
+  # 1. Kernel Optimization for Guest Latency
   boot.kernelParams = [ "kvm.poll_control=1" ];
-  boot.kernelModules = [ "kvm-amd" ];
 
   # 2. Virtualization Daemons (Libvirt & Docker)
   virtualisation.libvirtd = {

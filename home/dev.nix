@@ -46,7 +46,6 @@
   ];
 
   # --- GIT CONFIGURATION ---
-  # REFACTOR NOTE: Moved everything to 'settings' to match new Home Manager spec
   programs.git = {
     enable = true;
     
@@ -73,7 +72,6 @@
   };
 
   # --- DELTA (Diff Tool) ---
-  # REFACTOR NOTE: Delta is now a standalone module, not inside git
   programs.delta = {
     enable = true;
     enableGitIntegration = true; # Explicitly enabled to silence deprecation warning
@@ -116,7 +114,6 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
-    # REFACTOR NOTE: Fixed syntax from 'pinentryPackage' to 'pinentry.package'
     pinentry.package = pkgs.pinentry-gnome3;
     defaultCacheTtl = 3600;
   };

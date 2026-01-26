@@ -7,7 +7,7 @@
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     
-    # --- GNOME EXTENSIONS (The Missing Piece) ---
+    # --- GNOME EXTENSIONS
     gnomeExtensions.appindicator        # The "Tray Icons" you asked for
     gnomeExtensions.dash-to-dock        # A better dock/taskbar
     gnomeExtensions.clipboard-indicator # Clipboard history
@@ -41,8 +41,7 @@
   ];
 
   # --- GNOME CONFIG ---
-  # You already had this part correct! These UUIDs tell Gnome to turn on 
-  # the packages we just added above.
+  # These UUIDs tell Gnome to turn on the packages we just added above.
   dconf.settings = {
     "org/gnome/shell" = {
       disable-user-extensions = false;
@@ -57,7 +56,6 @@
       ];
     };
 
-    # Keep your existing extension settings below...
     "org/gnome/shell/extensions/dash-to-dock" = {
       dock-position = "BOTTOM";
       dock-fixed = false;
