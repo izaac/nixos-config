@@ -1,23 +1,41 @@
 { pkgs, ... }:
 
+let
+  # --- CUSTOM PLUGIN DEFINITION ---
+  # Since tmux-menus isn't in nixpkgs, we build it right here.
+  tmux-menus = pkgs.tmuxPlugins.mkTmuxPlugin {
+    pluginName = "tmux-menus";
+    version = "unstable-2024-01-26";
+    src = pkgs.fetchFromGitHub {
+      owner = "jaclu";
+      repo = "tmux-menus";
+      rev = "main"; 
+      sha256 = "sha256-UPWsa7sFy6P3Jo3KFEvZrz4M4IVDhKI7T1LNAtWqTT4="; 
+    };
+  };
+in
 {
   programs.tmux = {
     enable = true;
     
-    # 1. Core Settings
+    # --- CORE BEHAVIOR ---
     shortcut = "a";          # Replaces C-b with C-a
     baseIndex = 1;           # Start windows at 1
     escapeTime = 0;          # Zero delay for VIM
     aggressiveResize = true; # Better resizing for multi-monitor
     keyMode = "vi";          # Standard VI keys
+    mouse = true;            # Enable mouse support (Scrolling/Clicking)
 
-    # 2. Terminal Colors
-    terminal = "screen-256color"; # Standard Setting
+    # --- TERMINAL & SHELL ---
+    terminal = "screen-256color"; 
     
-    # 3. Plugins (Replaces TPM)
+    # --- PLUGINS ---
     plugins = with pkgs.tmuxPlugins; [
       sensible
-      tmux-menus
+      
+      # Our custom-built plugin
+      tmux-menus 
+
       {
         plugin = catppuccin;
         extraConfig = '' 
@@ -29,18 +47,24 @@
       }
     ];
 
-    # 4. Manual Config & Keybinds
+    # --- KEYBINDS & MANUAL CONFIG ---
     extraConfig = ''
-      # TrueColor Override
+      # 1. TrueColor Override
       set -ga terminal-overrides ",*-256color:Tc"
 
-      # Pane Colors
+      # 2. Pane Colors (Blue/Orange)
       set-option -g display-panes-active-colour colour33
       set-option -g display-panes-colour colour166
 
-      # Activity Monitoring
+      # 3. Activity Alerts
       setw -g monitor-activity on
       set -g visual-activity on
+
+      # 4. The "Alt-Tab" Window Toggle (Critical Fix!)
+      bind-key C-a last-window
+
+      # 5. Nested Tmux (C-a a sends prefix inside)
+      bind-key a send-prefix
 
       # --- NAVIGATION (Vim Style) ---
       bind h select-pane -L
@@ -49,13 +73,9 @@
       bind l select-pane -R
 
       # --- SPLITS ---
-      # Cayeto fix: I remapped split-horizontal to '|' so it doesn't 
-      # conflict with 'h' (navigation) above.
+      # Remapped to '|' to avoid conflict with 'h' navigation
       bind | split-window -h
       bind v split-window -v
-      
-      # Allow C-a a to send prefix to nested session
-      bind-key a send-prefix
     '';
   };
 }
