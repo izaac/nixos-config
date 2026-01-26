@@ -8,6 +8,7 @@
     ./dev.nix
     ./ssh.nix
     ./tmux.nix
+    ./kitty.nix
   ];
 
   home.username = "izaac";

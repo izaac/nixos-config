@@ -53,36 +53,6 @@
     };
   };
 
-  # --- KITTY TERMINAL ---
-  programs.kitty = {
-    enable = true;
-    font.name = "JetBrainsMono Nerd Font Mono";
-    
-    settings = {
-      background_opacity = "0.85";
-      window_padding_width = 10;
-      enable_audio_bell = false;
-      
-      # Catppuccin Mocha Theme
-      foreground = "#cdd6f4";
-      background = "#1e1e2e";
-      selection_background = "#f5e0dc";
-      selection_foreground = "#1e1e2e";
-      
-      # The 16 colors (Standard)
-      color0 = "#45475a";
-      color8 = "#585b70";
-      color1 = "#f38ba8";
-      color2 = "#a6e3a1";
-      color4 = "#89b4fa";
-    };
-    
-    keybindings = {
-      "ctrl+shift+t" = "new_tab_with_cwd";
-      "ctrl+shift+n" = "new_window_with_cwd";
-    };
-  };
-
   xdg.userDirs = {
     enable = true;
     createDirectories = true; 

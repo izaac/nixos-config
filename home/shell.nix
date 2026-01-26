@@ -24,6 +24,8 @@
       sysls = "systemctl --type=service --state=running";
       # Cache clearing alias
       ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
+      # Rebuild the system and home-manager in one go
+      nrb = "sudo nixos-rebuild switch --flake .#ninja";
     };
 
     sessionVariables = {
