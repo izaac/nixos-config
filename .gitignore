@@ -1,0 +1,67 @@
+# --- Nix Build Artifacts ---
+# Symlinks created when you run 'nix build' or 'nixos-rebuild build'
+result
+result-*
+repl-result
+
+# --- Security & Secrets (CRITICAL) ---
+# Never commit environment files containing keys (like Gemini/OpenAI)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# SSH & GPG - Just in case you accidentally copy them here
+id_rsa
+id_ed25519
+secring.gpg
+
+# History files (Shell/REPL history often contains secrets)
+.bash_history
+.zsh_history
+.python_history
+.node_repl_history
+
+# --- Home Manager & NixOS Backups ---
+# You set 'backupFileExtension = "backup"' in flake.nix.
+# We don't want these cluttering the repo.
+*.backup
+*.bck
+*.old
+*.orig
+
+# --- Editor Junk ---
+# Vim/Neovim (LazyVim)
+*.swp
+*.swo
+.netrwhist
+session.vim
+
+# VS Code (User Settings)
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json # Uncomment if you WANT to share project settings
+
+# --- Language Specific Junk (Based on your dev.nix) ---
+# Node.js
+node_modules/
+npm-debug.log
+
+# Rust
+target/
+Cargo.lock # Keep this ONLY if you are building a specific Rust app here. For a config repo, it's usually noise.
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Go
+bin/
+
+# --- Direnv ---
+# The cached shell environment
+.direnv/
+# NOTE: Usually you COMMIT .envrc, but IGNORE the .env file it loads.
