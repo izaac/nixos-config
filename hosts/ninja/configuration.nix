@@ -58,6 +58,8 @@
     swtpm
     file
     libglvnd
+    tree
+    tmux
   ];
   
   # Services

@@ -7,6 +7,7 @@
     ./gaming.nix
     ./dev.nix
     ./ssh.nix
+    ./tmux.nix
   ];
 
   home.username = "izaac";
