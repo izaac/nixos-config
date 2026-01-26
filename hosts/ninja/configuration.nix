@@ -8,6 +8,7 @@
       ../../modules/core/nix-ld.nix
       ../../modules/core/codecs.nix
       ../../modules/core/virtualization.nix
+      ../../modules/core/usb-fixes.nix
       ../../modules/gaming/default.nix
       ../../modules/desktop/default.nix
     ];
