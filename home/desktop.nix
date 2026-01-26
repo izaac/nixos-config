@@ -79,4 +79,9 @@
       "ctrl+shift+n" = "new_window_with_cwd";
     };
   };
+
+  xdg.userDirs = {
+    enable = true;
+    createDirectories = true; 
+  };
 }
