@@ -54,25 +54,15 @@
     wget
     git
     lact
+    swtpm
+    file
   ];
   
   # Services
   services.openssh.enable = true;
   services.fstrim.enable = true;
   services.flatpak.enable = true;
-  virtualisation.docker.enable = true;
 
-  # Virtualization / KVM
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu = {
-      package = pkgs.qemu_kvm;
-      runAsRoot = true;
-      swtpm.enable = true;
-    };
-  };
-  virtualisation.spiceUSBRedirection.enable = true;
- 
   # Nix Maintenance
   nix.gc = {
     automatic = true;

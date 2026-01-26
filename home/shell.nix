@@ -43,27 +43,25 @@
 
       # --- Yazi Wrapper (CD on exit) ---
       function y() {
-        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+        local tmp="''$(mktemp -t "yazi-cwd.XXXXXX")"
         yazi "$@" --cwd-file="$tmp"
-        if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        if cwd="''$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
           builtin cd -- "$cwd"
         fi
         rm -f -- "$tmp"
       }
 
       # --- Recursive Cat (The "Dump" Tool) ---
-      # Usage: catr [optional-path]
+      # Optimized with ripgrep for speed
       function catr() {
         local target="''${1:-.}"
-        fd --type f --hidden --exclude .git . "$target" --exec sh -c '
+        rg --files --hidden --glob '!.git' "$target" | xargs -I {} sh -c '
           if file -b --mime-type "{}" | grep -q "^text/"; then
             echo "================================================================================"
             echo "FILE: {}"
             echo "================================================================================"
             cat "{}"
             echo -e "\n"
-          else
-            echo "SKIP: {} (Binary file)"
           fi
         '
       }

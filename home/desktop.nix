@@ -14,6 +14,8 @@
     mission-center
     gnome-boxes
     virt-manager
+    virt-viewer
+    spice-gtk
 
     # General Software
     firefox
