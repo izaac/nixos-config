@@ -23,7 +23,7 @@
     celluloid
     foliate
     mpv
-    ffmpeg
+    ffmpeg-full
   ];
 
   # --- GNOME CONFIG ---
