@@ -3,41 +3,40 @@
 {
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
-    neovim           # The binary (managed manually via ~/.config/nvim)
-    ripgrep          # Fast grep
-    fd               # Fast find
-    lazygit          # Git TUI
-    gcc              # C Compiler (needed for Treesitter)
-    gnumake          # Make
+    neovim
+    ripgrep
+    fd
+    lazygit
+    gcc
+    gnumake
     unzip
     wget
     curl
-    tree-sitter      # Syntax highlighting core
-    xclip            # Clipboard support (X11)
-    wl-clipboard     # Clipboard support (Wayland)
+    tree-sitter
+    xclip
+    wl-clipboard
     
     # --- LANGUAGES & TOOLCHAINS ---
-    fnm              # Node.js Manager (Replaces system nodejs)
-    rustup           # Rust Toolchain Manager (Cargo, Rustc, etc.)
-    go               # Go Lang
-    python3          # Python (includes pip for venvs)
-    luarocks         # Lua Package Manager
+    fnm
+    rustup
+    go
+    python3
+    luarocks
     
     # --- DATA & FORMATTING ---
-    sqlite           # SQLite3
-    jq               # JSON Processor
+    sqlite
+    jq
     
     # --- DOCUMENTATION & LATEX ---
-    ghostscript      # 'gs' command
-    tectonic         # Modern, self-contained LaTeX engine
-    # Provides 'pdflatex' and standard packages (medium size)
+    ghostscript
+    tectonic
     texlive.combined.scheme-medium 
     
     # --- LSPs & LINTERS ---
     nodePackages.bash-language-server
     shellcheck
     luajitPackages.lua-lsp
-    nil              # Nix LSP (Best for editing .nix files)
+    nil
     
     # --- GUI IDEs ---
     vscode
@@ -46,23 +45,46 @@
     tldr
   ];
 
-  # --- GIT ---
+  # --- GIT CONFIGURATION ---
+  # REFACTOR NOTE: Moved everything to 'settings' to match new Home Manager spec
   programs.git = {
     enable = true;
+    
     settings = {
+      # User Identity
       user = {
         name = "izaac";
-        email = "jorge.izaac@gmail.com";
+        email = "izaac.zavaleta@suse.com";
+        signingKey = "0x3183124333AB684C";
       };
-    };
-    signing = {
-      # The explicit RSA 4096 Key ID you requested
-      key = "0x3183124333AB684C"; 
-      signByDefault = true;
+
+      # Core Behavior
+      init.defaultBranch = "main";
+      commit.gpgsign = true;
+      credential.helper = "store";
+      safe.directory = "/home/izaac/Documents/repos/dashboard";
+
+      # Aliases
+      alias = {
+        quickserve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/";
+        logline = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
+      };
     };
   };
 
-  # --- LAZYGIT (Theme Config) ---
+  # --- DELTA (Diff Tool) ---
+  # REFACTOR NOTE: Delta is now a standalone module, not inside git
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true; # Explicitly enabled to silence deprecation warning
+    options = {
+      navigate = true;
+      side-by-side = true;
+      line-numbers = true;
+    };
+  };
+
+  # --- LAZYGIT ---
   programs.lazygit = {
     enable = true;
     settings = {
@@ -94,7 +116,9 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
+    # REFACTOR NOTE: Fixed syntax from 'pinentryPackage' to 'pinentry.package'
     pinentry.package = pkgs.pinentry-gnome3;
     defaultCacheTtl = 3600;
   };
 }
+

@@ -12,6 +12,16 @@
       package = pkgs.qemu_kvm;
       runAsRoot = true;
       swtpm.enable = true;
+
+      verbatimConfig = ''
+        cgroup_device_acl = [
+          "/dev/null", "/dev/full", "/dev/zero",
+          "/dev/random", "/dev/urandom",
+          "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+          "/dev/rtc","/dev/hpet",
+          "/dev/dri/renderD128"
+        ]
+      '';
     };
   };
   
@@ -24,4 +34,10 @@
     { domain = "@libvirtd"; item = "memlock"; type = "soft"; value = "unlimited"; }
     { domain = "@libvirtd"; item = "memlock"; type = "hard"; value = "unlimited"; }
   ];
+  
+  # 4. This helps SPICE/QEMU find the correct EGL display
+  environment.sessionVariables = {
+    EGL_PLATFORM = "wayland"; 
+  };
 }
+

@@ -37,7 +37,7 @@
   users.users.izaac = {
     isNormalUser = true;
     description = "izaac";
-    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" "render" ];
   };
 
   # Sudo Config (No Password)
@@ -57,10 +57,18 @@
     lact
     swtpm
     file
+    libglvnd
   ];
   
   # Services
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      # Hardcore mode: No passwords, keys only.
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
+  };
   services.fstrim.enable = true;
   services.flatpak.enable = true;
 
