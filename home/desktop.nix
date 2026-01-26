@@ -16,11 +16,14 @@
     virt-manager
     virt-viewer
     spice-gtk
+    telegram-desktop
 
     # General Software
     firefox
     celluloid
     foliate
+    mpv
+    ffmpeg
   ];
 
   # --- GNOME CONFIG ---
