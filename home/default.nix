@@ -5,7 +5,8 @@
     ./shell.nix
     ./desktop.nix
     ./gaming.nix
-    ./dev.nix # Put your vim/vscode stuff here
+    ./dev.nix
+    ./ssh.nix
   ];
 
   home.username = "izaac";
