@@ -3,11 +3,23 @@
 {
   # --- FONTS ---
   fonts.fontconfig.enable = true;
+  
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
+    
+    # --- GNOME EXTENSIONS (The Missing Piece) ---
+    gnomeExtensions.appindicator        # The "Tray Icons" you asked for
+    gnomeExtensions.dash-to-dock        # A better dock/taskbar
+    gnomeExtensions.clipboard-indicator # Clipboard history
+    gnomeExtensions.caffeine            # "Keep Awake" button
+    gnomeExtensions.blur-my-shell       # Makes UI look modern/frosted
+    gnomeExtensions.vitals              # CPU/Ram/Temp monitor in top bar
+    gnomeExtensions.alphabetical-app-grid
+
     # Gnome Tools
     gnome-tweaks
     seahorse
+    amberol
     haruna
     pika-backup
     mission-center
@@ -19,7 +31,6 @@
 
     # Audio Tools
     easyeffects
-    amberol
 
     # General Software
     firefox
@@ -30,6 +41,8 @@
   ];
 
   # --- GNOME CONFIG ---
+  # You already had this part correct! These UUIDs tell Gnome to turn on 
+  # the packages we just added above.
   dconf.settings = {
     "org/gnome/shell" = {
       disable-user-extensions = false;
@@ -43,6 +56,8 @@
         "AlphabeticalAppGrid@stuarthayhurst"
       ];
     };
+
+    # Keep your existing extension settings below...
     "org/gnome/shell/extensions/dash-to-dock" = {
       dock-position = "BOTTOM";
       dock-fixed = false;
