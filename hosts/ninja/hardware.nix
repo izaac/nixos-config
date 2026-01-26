@@ -24,6 +24,18 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
+  # --- GAME DRIVE (NVMe) ---
+  fileSystems."/mnt/data" =
+    { device = "/dev/disk/by-uuid/e76c3d51-616c-446a-89ae-f7083290e290";
+      fsType = "ext4";
+      options = [ 
+        "users"
+        "nofail"
+        "noatime"
+        "x-systemd.automount" 
+      ];
+    };
+
   swapDevices =
     [ { device = "/dev/disk/by-uuid/3f12ad87-1c08-4366-a556-535bce1b9476"; }
     ];
