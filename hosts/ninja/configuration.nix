@@ -27,7 +27,26 @@
     "pcie_aspm=off"         # Fixes the 'retraining failed' PCIe error
     "iommu=pt"              # Reduces NVMe/CPU latency
     "pcie_ports=native"     # Fixes ASUS 'bridge window' conflicts"
+    "usbcore.autosuspend=-1" # Fixes Bluetooth/USB device disconnects
+    "amd_pstate=active"     # Enables the modern AMD P-State driver for Ryzen 9 9950X3D
   ];
+
+  # CPU Power Management
+  # "powersave" governor with amd_pstate=active intelligently scales clocks based on load.
+  # It does NOT mean "slow", it means "efficient".
+  powerManagement.cpuFreqGovernor = "powersave";
+
+  # Bluetooth Optimizations
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+        Experimental = true; # Enables battery reporting for some devices
+      };
+    };
+  };
 
   time.timeZone = "America/Phoenix";
   i18n.defaultLocale = "en_US.UTF-8";

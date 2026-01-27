@@ -13,11 +13,6 @@
     layout = "us";
     variant = "";
   };
-
-  # Clean up XServer options (The "Coolbits" option for Nvidia Overclocking)
-  services.xserver.deviceSection = ''
-    Option "Coolbits" "28"
-  '';
   
   # Exclude default GNOME packages you don't use (Optional debloat)
   environment.gnome.excludePackages = with pkgs; [

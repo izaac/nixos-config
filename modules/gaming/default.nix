@@ -40,15 +40,6 @@
     openrgb                 # RGB Control access
   ];
 
-  # 4. Bluetooth Tweaks
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.settings = {
-    General = {
-      Enable = "Source,Sink,Media,Socket";
-      Experimental = true;
-    };
-  };
-
   # 5. Environment Tweaks
   environment.sessionVariables = {
     # Force NVIDIA for Steam (fixes the iGPU vs dGPU conflict)
