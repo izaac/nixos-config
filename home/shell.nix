@@ -25,7 +25,10 @@
       # Cache clearing alias
       ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
       # Rebuild the system and home-manager in one go
-      nrb = "sudo nixos-rebuild switch --flake .#ninja";
+      # OLD: nrb = "sudo nixos-rebuild switch --flake .#ninja";
+      # NEW (using nh):
+      nrb = "nh os switch"; 
+      up = "nh os switch --update"; # Update flake inputs AND switch
     };
 
     sessionVariables = {

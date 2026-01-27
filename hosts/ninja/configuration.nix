@@ -9,6 +9,7 @@
       ../../modules/core/codecs.nix
       ../../modules/core/virtualization.nix
       ../../modules/core/usb-fixes.nix
+      ../../modules/core/maintenance.nix
       ../../modules/gaming/default.nix
       ../../modules/desktop/default.nix
     ];

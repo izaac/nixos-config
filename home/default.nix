@@ -9,6 +9,7 @@
     ./ssh.nix
     ./tmux.nix
     ./kitty.nix
+    ./cava.nix
   ];
 
   home.username = "izaac";

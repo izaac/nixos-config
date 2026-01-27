@@ -28,6 +28,8 @@
     virt-viewer
     spice-gtk
     telegram-desktop
+    google-chrome
+    boxbuddy
 
     # Audio Tools
     easyeffects
@@ -38,6 +40,7 @@
     foliate
     mpv
     ffmpeg-full
+    cava
   ];
 
   # --- GNOME CONFIG ---
