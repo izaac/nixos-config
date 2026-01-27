@@ -5,6 +5,7 @@
     [ 
       ./hardware.nix
       ./nvidia.nix
+      ./network.nix
       ../../modules/core/nix-ld.nix
       ../../modules/core/codecs.nix
       ../../modules/core/virtualization.nix
@@ -28,9 +29,6 @@
     "pcie_ports=native"     # Fixes ASUS 'bridge window' conflicts)
   ];
 
-  # Networking
-  networking.hostName = "ninja";
-  networking.networkmanager.enable = true;
   time.timeZone = "America/Phoenix";
   i18n.defaultLocale = "en_US.UTF-8";
 
