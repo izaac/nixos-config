@@ -1,9 +1,6 @@
 { pkgs, ... }:
 
 {
-  # License Freedom (Required for AAC, H.264, etc.)
-  nixpkgs.config.allowUnfree = true;
-
   environment.systemPackages = with pkgs; [
     ffmpeg
     libdvdcss

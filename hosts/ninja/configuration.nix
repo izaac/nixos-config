@@ -65,7 +65,6 @@
     vim
     wget
     git
-    lact
     swtpm
     file
     libglvnd
@@ -73,7 +72,7 @@
     tmux
     pciutils
   ];
-  
+
   # Services
   services.openssh = {
     enable = true;
