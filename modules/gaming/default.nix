@@ -12,6 +12,10 @@
     localNetworkGameTransfers.openFirewall = true;
     gamescopeSession.enable = true; # Adds "Steam Deck" session support
     extraCompatPackages = [ pkgs.steamtinkerlaunch ];
+    extraPackages = with pkgs; [
+      libvdpau
+      libva
+    ];
   };
 
   # 2. GameMode
@@ -47,7 +51,9 @@
 
   # 5. Environment Tweaks
   environment.sessionVariables = {
-    # Helps Steam find the NVIDIA driver in the FHS container
-    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/izaac/.steam/root/compatibilitytools.d";
+    # Force NVIDIA for Steam (fixes the iGPU vs dGPU conflict)
+    __NV_PRIME_RENDER_OFFLOAD = "1";
+    __NV_PRIME_RENDER_OFFLOAD_SET_AS_ID = "0";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
   };
 }
