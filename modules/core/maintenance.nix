@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, userConfig, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -10,6 +10,6 @@
   environment.sessionVariables = {
     # Tell nh where your flake is located so you don't need to type it every time
     # I pulled this path from your git config in home/dev.nix
-    NH_FLAKE = "/home/izaac/nixos-config";
+    NH_FLAKE = "${userConfig.dotfilesDir}";
   };
 }

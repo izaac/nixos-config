@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, userConfig, ... }:
 
 {
   home.packages = with pkgs; [
@@ -49,32 +49,33 @@
   programs.git = {
     enable = true;
     
-    settings = {
-      # User Identity
-      user = {
-        name = "izaac";
-        email = "izaac.zavaleta@suse.com";
-        signingKey = "0x3183124333AB684C";
-      };
+    # Use Home Manager's built-in top-level options for identity
+    userName  = userConfig.name;
+    userEmail = userConfig.email;
+    
+    signing = {
+      key = userConfig.gitKey;
+      signByDefault = true;
+    };
 
-      # Core Behavior
+    # Use extraConfig for the dotted keys. 
+    # This avoids the strict type-checking that 'settings' enforces.
+    extraConfig = {
       init.defaultBranch = "main";
-      commit.gpgsign = true;
-      credential.helper = "store";
-      safe.directory = "/home/izaac/Documents/repos/dashboard";
+      credential.helper = "libsecret";
+      safe.directory = "${userConfig.dotfilesDir}/dashboard";
+    };
 
-      # Aliases
-      alias = {
-        quickserve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/";
-        logline = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
-      };
+    aliases = {
+      quickserve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/";
+      logline = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
     };
   };
 
   # --- DELTA (Diff Tool) ---
   programs.delta = {
     enable = true;
-    enableGitIntegration = true; # Explicitly enabled to silence deprecation warning
+    enableGitIntegration = true; 
     options = {
       navigate = true;
       side-by-side = true;
@@ -118,4 +119,3 @@
     defaultCacheTtl = 3600;
   };
 }
-

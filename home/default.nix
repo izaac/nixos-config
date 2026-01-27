@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, userConfig, ... }:
 
 {
   imports = [
@@ -12,8 +12,9 @@
     ./cava.nix
   ];
 
-  home.username = "izaac";
-  home.homeDirectory = "/home/izaac";
+  home.username = userConfig.username;
+  home.homeDirectory = "/home/${userConfig.username}";
   home.stateVersion = "25.11";
   programs.home-manager.enable = true;
+
 }

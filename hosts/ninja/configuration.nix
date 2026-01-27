@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, userConfig, ... }:
 
 {
   imports =
@@ -45,16 +45,16 @@
   };
 
   # User Account
-  users.users.izaac = {
+  users.users.${userConfig.username} = {
     isNormalUser = true;
-    description = "izaac";
+    description = userConfig.name;
     extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" "render" ];
   };
 
   # Sudo Config (No Password)
   security.sudo = {
     enable = true;
-    wheelNeedsPassword = false;
+    wheelNeedsPassword = true;
     extraConfig = ''
       Defaults editor=${pkgs.vim}/bin/vim
     '';
@@ -71,6 +71,7 @@
     libglvnd
     tree
     tmux
+    pciutils
   ];
   
   # Services
