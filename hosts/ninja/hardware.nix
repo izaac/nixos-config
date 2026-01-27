@@ -12,6 +12,7 @@
   fileSystems."/" = { 
     device = "/dev/disk/by-uuid/4d34b1f8-2252-429d-859e-4d61bc0d6290";
     fsType = "ext4";
+    options = [ "noatime" ];
   };
 
   fileSystems."/boot" = { 
@@ -34,8 +35,6 @@
       "x-systemd.automount" 
     ];
   };
-
-  swapDevices = [ { device = "/dev/disk/by-uuid/3f12ad87-1c08-4366-a556-535bce1b9476"; } ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

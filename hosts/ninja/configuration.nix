@@ -20,6 +20,20 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 5;
 
+  # --- KERNEL & PERFORMANCE ---
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+  
+  # TCP BBR (Congestion Control)
+  boot.kernel.sysctl = {
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.default_qdisc" = "fq";
+    "net.core.wmem_max" = 1073741824; # 1 GiB
+    "net.core.rmem_max" = 1073741824; # 1 GiB
+  };
+
+  # ZRAM (Compressed RAM Swap)
+  zramSwap.enable = true;
+
   # --- CORE HARDWARE TWEAKS ---
   boot.kernelParams = [
     "split_lock_detect=off" # Improves Elden Ring latency / removes bus lock warning
@@ -88,6 +102,7 @@
     tree
     tmux
     pciutils
+    parted
   ];
 
   # Services

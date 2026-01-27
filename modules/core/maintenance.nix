@@ -5,6 +5,7 @@
     nh
     nvd
     nix-output-monitor # Used by nh for the pretty graphs
+    gparted
   ];
 
   environment.sessionVariables = {
