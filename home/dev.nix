@@ -45,30 +45,36 @@
     tldr
   ];
 
-  # --- GIT CONFIGURATION ---
+  # --- GIT CONFIGURATION (25.11 FIXED) ---
   programs.git = {
     enable = true;
     
-    # Use Home Manager's built-in top-level options for identity
-    userName  = userConfig.name;
-    userEmail = userConfig.email;
-    
+    # Signing remains a top-level attribute in Home Manager for now
     signing = {
       key = userConfig.gitKey;
       signByDefault = true;
     };
 
-    # Use extraConfig for the dotted keys. 
-    # This avoids the strict type-checking that 'settings' enforces.
-    extraConfig = {
+    # Everything else moves into 'settings'
+    settings = {
+      user = {
+        name = userConfig.name;
+        email = userConfig.email;
+      };
+
       init.defaultBranch = "main";
       credential.helper = "libsecret";
       safe.directory = "${userConfig.dotfilesDir}/dashboard";
-    };
 
-    aliases = {
-      quickserve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/";
-      logline = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
+      # Note the singular 'alias' key under settings
+      alias = {
+        quickserve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/";
+        logline = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
+        
+        # Adding your new secret-handling aliases here for good measure
+        st = "git -C $NH_FLAKE add -f -N secrets.nix";
+        forget = "git -C $NH_FLAKE rm --cached secrets.nix";
+      };
     };
   };
 

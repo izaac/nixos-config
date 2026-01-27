@@ -27,8 +27,11 @@
       # Rebuild the system and home-manager in one go
       # OLD: nrb = "sudo nixos-rebuild switch --flake .#ninja";
       # NEW (using nh):
-      nrb = "nh os switch"; 
-      up = "nh os switch --update"; # Update flake inputs AND switch
+      st = "git -C $NH_FLAKE add -f -N secrets.nix";
+      forget = "git -C $NH_FLAKE rm --cached secrets.nix";
+      g-push = "forget && git -C $NH_FLAKE push";
+      nrb = "st && nh os switch";
+      up = "st && nh os switch --update"; # Update flake inputs AND switch
       ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
     };
 
