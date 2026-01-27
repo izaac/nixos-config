@@ -13,7 +13,7 @@
 
     defaultGateway = "192.168.0.1";
 
-    # Your Custom DNS (Looks like NextDNS?)
+    # NextDNS
     nameservers = [ "45.90.28.154" "45.90.30.154" ];
 
     # --- FIREWALL ---
