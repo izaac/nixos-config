@@ -29,6 +29,7 @@
       # NEW (using nh):
       nrb = "nh os switch"; 
       up = "nh os switch --update"; # Update flake inputs AND switch
+      ersave = "cp -r ~/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
     };
 
     sessionVariables = {

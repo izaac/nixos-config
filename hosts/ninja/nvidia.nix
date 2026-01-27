@@ -26,8 +26,7 @@
 
   # Kernel Modules & Params
   boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
-  boot.kernelParams = [ "nvidia-drm.modeset=1" "nvidia-drm.fbdev=1" ];
-
+  
   # Wayland Environment
   environment.sessionVariables = {
     WLR_NO_HARDWARE_CURSORS = "1";

@@ -19,6 +19,15 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 5;
 
+  # --- CORE HARDWARE TWEAKS ---
+  boot.kernelParams = [
+    "split_lock_detect=off" # Improves Elden Ring latency / removes bus lock warning
+    "pci=realloc"           # Resolves the 'can't claim bridge window' conflict in logs
+    "pcie_aspm=off"         # Fixes the 'retraining failed' PCIe error
+    "iommu=pt"              # Reduces NVMe/CPU latency
+    "pcie_ports=native"     # Fixes ASUS 'bridge window' conflicts)
+  ];
+
   # Networking
   networking.hostName = "ninja";
   networking.networkmanager.enable = true;
