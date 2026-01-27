@@ -13,21 +13,16 @@
     let
       userConfig = import ./secrets.nix;
       system = "x86_64-linux";
-      
-      # The "External Instance" that controls everything
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
     in {
       nixosConfigurations.ninja = nixpkgs.lib.nixosSystem {
-        inherit pkgs; 
+        inherit system;
         specialArgs = { inherit inputs userConfig; };
         
         modules = [
           ./hosts/ninja/configuration.nix
           home-manager.nixosModules.home-manager
           {
+            nixpkgs.config.allowUnfree = true;
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";

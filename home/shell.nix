@@ -36,6 +36,8 @@
       up = "st && nh os switch --update"; # Update flake inputs AND switch
       ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
       gpu = "nvtop";
+      ai = "npx @google/gemini-cli@latest";
+      ask = "npx @google/gemini-cli@latest chat";
     };
 
     sessionVariables = {

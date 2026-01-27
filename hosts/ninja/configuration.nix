@@ -26,7 +26,7 @@
     "pci=realloc"           # Resolves the 'can't claim bridge window' conflict in logs
     "pcie_aspm=off"         # Fixes the 'retraining failed' PCIe error
     "iommu=pt"              # Reduces NVMe/CPU latency
-    "pcie_ports=native"     # Fixes ASUS 'bridge window' conflicts)
+    "pcie_ports=native"     # Fixes ASUS 'bridge window' conflicts"
   ];
 
   time.timeZone = "America/Phoenix";
@@ -49,7 +49,7 @@
     extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" "render" ];
   };
 
-  # Sudo Config (No Password)
+  # Sudo Config
   security.sudo = {
     enable = true;
     wheelNeedsPassword = true;
