@@ -11,6 +11,7 @@
     dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
     gamescopeSession.enable = true; # Adds "Steam Deck" session support
+    extraCompatPackages = [ pkgs.steamtinkerlaunch ];
   };
 
   # 2. GameMode
@@ -42,5 +43,11 @@
       Enable = "Source,Sink,Media,Socket";
       Experimental = true;
     };
+  };
+
+  # 5. Environment Tweaks
+  environment.sessionVariables = {
+    # Helps Steam find the NVIDIA driver in the FHS container
+    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/izaac/.steam/root/compatibilitytools.d";
   };
 }

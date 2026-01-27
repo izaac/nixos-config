@@ -41,6 +41,7 @@
     mpv
     ffmpeg-full
     cava
+    jellyfin-desktop
   ];
 
   # --- GNOME CONFIG ---

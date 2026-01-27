@@ -1,10 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  # 1. Kernel Optimization for Guest Latency
-  boot.kernelParams = [ "kvm.poll_control=1" ];
-
-  # 2. Virtualization Daemons (Libvirt & Docker)
+  # 1. Virtualization Daemons (Libvirt & Docker)
   virtualisation.libvirtd = {
     enable = true;
     qemu = {
@@ -27,14 +24,14 @@
   virtualisation.docker.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
 
-  # 3. Memory Locking Limits
+  # 2. Memory Locking Limits
   # Essential for performance and if you ever decide to use hugepages
   security.pam.loginLimits = [
     { domain = "@libvirtd"; item = "memlock"; type = "soft"; value = "unlimited"; }
     { domain = "@libvirtd"; item = "memlock"; type = "hard"; value = "unlimited"; }
   ];
   
-  # 4. This helps SPICE/QEMU find the correct EGL display
+  # 3. This helps SPICE/QEMU find the correct EGL display
   environment.sessionVariables = {
     EGL_PLATFORM = "wayland"; 
   };
