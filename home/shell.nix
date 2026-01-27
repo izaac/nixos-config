@@ -30,7 +30,7 @@
       # OLD: nrb = "sudo nixos-rebuild switch --flake .#ninja";
       # NEW (using nh):
       st = "git -C $NH_FLAKE add -f -N secrets.nix";
-      forget = "git -C $NH_FLAKE rm --cached secrets.nix";
+      forget = "git -C $NH_FLAKE rm --cached --ignore-unmatch secrets.nix";
       g-push = "forget && git -C $NH_FLAKE push";
       nrb = "st && nh os switch";
       up = "st && nh os switch --update"; # Update flake inputs AND switch
