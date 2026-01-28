@@ -4,6 +4,7 @@
   networking = {
     hostName = "ninja";
     networkmanager.enable = true;
+    networkmanager.unmanaged = [ "type:wifi" ];
 
     # --- STATIC IP CONFIGURATION ---
     interfaces.eno1.ipv4.addresses = [{
@@ -23,4 +24,8 @@
       allowedTCPPorts = [ 22 ]; 
     };
   };
+
+  # Stop wpa_supplicant and ModemManager from running
+  systemd.services.wpa_supplicant.enable = false;
+  systemd.services.ModemManager.enable = false;
 }
