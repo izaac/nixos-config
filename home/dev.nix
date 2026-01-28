@@ -4,7 +4,6 @@
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
     neovim
-    lazygit
     gcc
     gnumake
     tree-sitter

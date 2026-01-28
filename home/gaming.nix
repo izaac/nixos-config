@@ -9,7 +9,6 @@ in
     flashgbx
 
     # Gaming Tools
-    mangohud
     protonup-qt
     heroic
     lutris

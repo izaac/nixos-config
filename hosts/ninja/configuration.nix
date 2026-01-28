@@ -19,6 +19,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 5;
+  boot.loader.systemd-boot.editor = false;
 
   # --- KERNEL & PERFORMANCE ---
   boot.kernelPackages = pkgs.linuxPackages_zen;
@@ -98,7 +99,6 @@
     vim
     wget
     curl
-    swtpm
     file
     libglvnd
     tree
@@ -125,7 +125,7 @@
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
-  nix.settings.auto-optimise-store = true;
+  nix.settings.auto-optimise-store = false;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   system.stateVersion = "25.11";
