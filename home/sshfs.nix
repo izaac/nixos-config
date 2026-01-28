@@ -11,13 +11,15 @@ in
 
   systemd.user.services.jellyfin-mount = {
     Unit = {
-      Description = "Mount Jellyfin SSHFS with Performance Optimizations";
-      After = [ "network-online.target" ];
+      Description = "Mount Jellyfin SSHFS (Delayed to avoid login freeze)";
+      After = [ "network-online.target" "graphical-session.target" ];
       Wants = [ "network-online.target" ];
     };
 
     Service = {
       Type = "forking";
+      # Wait 10 seconds after the session starts to avoid blocking login UI
+      ExecStartPre = "${pkgs.coreutils}/bin/sleep 10";
       ExecStart = ''
         ${pkgs.sshfs}/bin/sshfs ${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username} ${mountPoint} \
           -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 \
@@ -29,10 +31,7 @@ in
           -o compression=no,Ciphers=aes128-gcm@openssh.com
       '';
       
-      # Warm the cache in the background immediately after mounting
-      ExecStartPost = "${pkgs.bash}/bin/bash -c '${pkgs.coreutils}/bin/ls -R ${mountPoint} > /dev/null 2>&1 &'";
-      
-      ExecStop = "fusermount -u ${mountPoint}";
+      ExecStop = "/run/current-system/sw/bin/fusermount -u ${mountPoint}";
       Restart = "on-failure";
       RestartSec = "10";
     };
