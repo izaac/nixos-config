@@ -12,31 +12,18 @@
   };
   services.desktopManager.gnome.enable = true;
 
-  # Fix for GNOME login freeze / grey screen (3-4 second pause)
-  # This explicitly tells xdg-desktop-portal to use the GNOME backend for GNOME sessions,
-  # preventing it from timing out while searching for other backends.
-  xdg.portal = {
-    enable = true;
-    xdgOpenUsePortal = true;
-    extraPortals = [ 
-      pkgs.xdg-desktop-portal-gnome
-      pkgs.xdg-desktop-portal-gtk
-    ];
-    config = {
-      common = {
-        default = [ "gnome" "gtk" ];
-        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
-      };
-      gnome = {
-        default = [ "gnome" "gtk" ];
-      };
-    };
-  };
-
   # Ensure GNOME services are optimized for speed
   services.gnome = {
     gnome-keyring.enable = true;
     gnome-initial-setup.enable = false;
+  };
+
+  # Optimized Portal Configuration to prevent 20s timeouts
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    config.common.default = [ "gnome" "gtk" ];
   };
 
   # Configure keymap
