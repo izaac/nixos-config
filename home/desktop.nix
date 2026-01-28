@@ -35,7 +35,6 @@
     easyeffects
 
     # General Software
-    firefox
     filezilla       # WinSCP Replacement
     sushi           # "Spacebar" file previewer
     celluloid

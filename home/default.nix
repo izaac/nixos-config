@@ -4,6 +4,7 @@
   imports = [
     ./shell.nix
     ./desktop.nix
+    ./firefox.nix
     ./gaming.nix
     ./dev.nix
     ./ssh.nix
