@@ -11,7 +11,7 @@
     ./tmux.nix
     ./kitty.nix
     ./cava.nix
-    # ./sshfs.nix
+    ./sshfs.nix
   ];
 
   home.username = userConfig.username;

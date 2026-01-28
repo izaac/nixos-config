@@ -1,35 +1,32 @@
-{ pkgs, config, userConfig, ... }:
+{ pkgs, config, userConfig, lib, ... }:
 
+let
+  mountPoint = "${config.home.homeDirectory}/Jellyfin";
+  # Escaped path for the unit name: /home/username/Jellyfin -> home-username-Jellyfin
+  unitName = lib.replaceStrings ["/"] ["-"] (lib.removePrefix "/" mountPoint);
+in
 {
-  systemd.user.services.mount-jellyfin = {
+  systemd.user.mounts."${unitName}" = {
     Unit = {
       Description = "Mount Jellyfin SSHFS";
       After = [ "network-online.target" ];
       Wants = [ "network-online.target" ];
     };
-
-    Service = {
-      # Ensure the mount point exists
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p %h/Jellyfin";
-      
-      # Mount using sshfs in foreground mode (-f) so systemd can track it
-      ExecStart = ''
-        ${pkgs.sshfs}/bin/sshfs ${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username} %h/Jellyfin \
-          -f \
-          -o reconnect \
-          -o ServerAliveInterval=15 \
-          -o StrictHostKeyChecking=no \
-          -o UserKnownHostsFile=/dev/null \
-          -o IdentityFile=%h/.ssh/id_ed25519
-      '';
-      
-      # Clean up on stop
-      ExecStop = "${pkgs.fuse}/bin/fusermount -u %h/Jellyfin";
-      
-      Restart = "always";
-      RestartSec = "10s";
+    Mount = {
+      What = "${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username}";
+      Where = mountPoint;
+      Type = "fuse.sshfs";
+      Options = "reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519";
     };
+  };
 
+  systemd.user.automounts."${unitName}" = {
+    Unit = {
+      Description = "Automount Jellyfin SSHFS";
+    };
+    Automount = {
+      Where = mountPoint;
+    };
     Install = {
       WantedBy = [ "graphical-session.target" ];
     };
