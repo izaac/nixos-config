@@ -37,6 +37,7 @@
 
   # --- CORE HARDWARE TWEAKS ---
   boot.kernelParams = [
+    "boot.shell_on_fail"
     "split_lock_detect=off" # Improves Elden Ring latency / removes bus lock warning
     "pci=realloc"           # Resolves the 'can't claim bridge window' conflict in logs
     "pcie_aspm=off"         # Fixes the 'retraining failed' PCIe error
@@ -80,7 +81,7 @@
   users.users.${userConfig.username} = {
     isNormalUser = true;
     description = userConfig.name;
-    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" "render" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" "render" "dialout" ];
   };
 
   # Sudo Config

@@ -1,7 +1,13 @@
 { pkgs, ... }:
 
+let
+  flashgbx = pkgs.callPackage ./flashgbx.nix { };
+in
 {
   home.packages = with pkgs; [
+    # Custom
+    flashgbx
+
     # Gaming Tools
     mangohud
     protonup-qt
