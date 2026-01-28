@@ -25,10 +25,6 @@
     capSysNice = true; # Required for performance
   };
 
-  programs.corectrl = {
-    enable = true;
-  };
-
   # 2. GameMode
   programs.gamemode = {
     enable = true;

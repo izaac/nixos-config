@@ -22,6 +22,7 @@
   };
   
   virtualisation.docker.enable = true;
+  hardware.nvidia-container-toolkit.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
 
   # 2. Memory Locking Limits

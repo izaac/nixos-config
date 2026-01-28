@@ -3,6 +3,7 @@
 {
   imports = [
     ./shell.nix
+    ./distrobox.nix
     ./desktop.nix
     ./firefox.nix
     ./gaming.nix

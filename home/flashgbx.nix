@@ -46,7 +46,7 @@ python3Packages.buildPythonApplication {
     (makeDesktopItem {
       name = "FlashGBX";
       exec = "flashgbx";
-      icon = "FlashGBX";
+      icon = "media-flash";
       desktopName = "FlashGBX";
       genericName = "GameBoy Flasher";
       categories = [ "Game" ];

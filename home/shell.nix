@@ -7,7 +7,6 @@
     zip unzip _7zz peazip
     unrar libarchive
     appimage-run
-    distrobox
     wl-clipboard  # Essential for piping to clipboard
     jq
     rsync pv
