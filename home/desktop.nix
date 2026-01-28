@@ -8,7 +8,7 @@
     nerd-fonts.jetbrains-mono
     
     # --- GNOME EXTENSIONS
-    gnomeExtensions.appindicator        # The "Tray Icons" you asked for
+    gnomeExtensions.appindicator        # Tray Icons support
     gnomeExtensions.dash-to-dock        # A better dock/taskbar
     gnomeExtensions.clipboard-indicator # Clipboard history
     gnomeExtensions.caffeine            # "Keep Awake" button
@@ -45,7 +45,7 @@
   ];
 
   # --- GNOME CONFIG ---
-  # These UUIDs tell Gnome to turn on the packages we just added above.
+  # Enable installed Gnome extensions
   dconf.settings = {
     "org/gnome/shell" = {
       disable-user-extensions = false;

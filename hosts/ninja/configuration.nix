@@ -25,6 +25,7 @@
   
   # TCP BBR (Congestion Control)
   boot.kernel.sysctl = {
+    "vm.max_map_count" = 2147483642; # Star Citizen / Hogwartz Legacy Fix
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.core.default_qdisc" = "fq";
     "net.core.wmem_max" = 1073741824; # 1 GiB

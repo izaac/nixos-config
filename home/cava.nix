@@ -7,14 +7,14 @@
     settings = {
       general = {
         # 0 = Auto-fill terminal width. 
-        # Change to a specific number (e.g. 100) if you use it in a specific window size.
+        # Change to a specific number (e.g. 100) for specific window sizes.
         bars = 0; 
         framerate = 60;
         # sensitivity = 100;
       };
 
       input = {
-        # Forced to PipeWire since we know your system uses it.
+        # Use PipeWire backend
         method = "pipewire";
         source = "auto";
       };
@@ -28,7 +28,7 @@
         gradient = 1;
         
         # Cava strictly requires single quotes for hex codes in its config file.
-        # We double-quote them here so the single quotes are written to the file.
+        # Double-quoted to preserve single quotes in the output file.
         gradient_color_1 = "'#94e2d5'"; # Teal
         gradient_color_2 = "'#89dceb'"; # Sky
         gradient_color_3 = "'#74c7ec'"; # Sapphire

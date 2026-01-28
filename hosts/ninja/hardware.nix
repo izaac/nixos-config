@@ -29,8 +29,8 @@
       "rw"
       "noatime"
       "nofail"
-      # We removed 'users' because it was forcing 'noexec'
-      # We removed 'uid/gid' because EXT4 doesn't use them (permissions are on-disk)
+      # Removed 'users' to avoid forcing 'noexec'
+      # Removed 'uid/gid' as EXT4 handles permissions on-disk
       "exec" 
       "x-systemd.automount" 
     ];

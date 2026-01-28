@@ -15,6 +15,8 @@
     extraPackages = with pkgs; [
       libvdpau
       libva
+      mangohud
+      protonup-qt
     ];
   };
 

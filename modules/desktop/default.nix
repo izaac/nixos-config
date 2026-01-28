@@ -14,7 +14,7 @@
     variant = "";
   };
   
-  # Exclude default GNOME packages you don't use (Optional debloat)
+  # Exclude unused default GNOME packages (Optional debloat)
   environment.gnome.excludePackages = with pkgs; [
     gnome-tour
   ];

@@ -9,8 +9,8 @@
   ];
 
   environment.sessionVariables = {
-    # Tell nh where your flake is located so you don't need to type it every time
-    # I pulled this path from your git config in home/dev.nix
+    # Define flake location for nh to avoid typing it explicitly
+    # Path sourced from git config in home/dev.nix
     NH_FLAKE = "${userConfig.dotfilesDir}";
   };
 }
