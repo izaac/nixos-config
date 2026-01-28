@@ -8,8 +8,7 @@
     appimage-run
     distrobox
     wl-clipboard  # Essential for piping to clipboard
-
-    nvtopPackages.nvidia
+    jq
   ];
 
   programs.bash = {

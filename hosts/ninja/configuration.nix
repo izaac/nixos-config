@@ -96,12 +96,11 @@
   environment.systemPackages = with pkgs; [
     vim
     wget
-    git
+    curl
     swtpm
     file
     libglvnd
     tree
-    tmux
     pciutils
     parted
   ];

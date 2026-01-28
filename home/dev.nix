@@ -4,17 +4,10 @@
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
     neovim
-    ripgrep
-    fd
     lazygit
     gcc
     gnumake
-    unzip
-    wget
-    curl
     tree-sitter
-    xclip
-    wl-clipboard
     
     # --- LANGUAGES & TOOLCHAINS ---
     fnm
@@ -25,7 +18,6 @@
     
     # --- DATA & FORMATTING ---
     sqlite
-    jq
     
     # --- DOCUMENTATION & LATEX ---
     ghostscript
@@ -70,10 +62,6 @@
       alias = {
         quickserve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/";
         logline = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
-        
-        # Adding your new secret-handling aliases here for good measure
-        st = "git -C $NH_FLAKE add -f -N secrets.nix";
-        forget = "git -C $NH_FLAKE rm --cached secrets.nix";
       };
     };
   };

@@ -40,6 +40,10 @@
     Option "Coolbits" "28"
   '';
 
+  environment.systemPackages = with pkgs; [
+    nvtopPackages.nvidia
+  ];
+
   # 5. The Undervolt Service (Clock Locking)
   systemd.services.nvidia-lock-clocks = {
     description = "Lock NVIDIA GPU Clocks for stability and undervolting";

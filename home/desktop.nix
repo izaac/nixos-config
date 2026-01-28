@@ -40,7 +40,6 @@
     foliate
     mpv
     ffmpeg-full
-    cava
     jellyfin-desktop
   ];
 
