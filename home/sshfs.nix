@@ -16,7 +16,7 @@ in
       What = "${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username}";
       Where = mountPoint;
       Type = "fuse.sshfs";
-      Options = "reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519,nodev,nosuid,_netdev";
+      Options = "reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin,nodev,nosuid,_netdev,allow_other";
     };
   };
 
