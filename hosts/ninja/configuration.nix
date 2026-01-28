@@ -23,7 +23,7 @@
   boot.loader.systemd-boot.editor = false;
 
   # --- KERNEL & PERFORMANCE ---
-  boot.kernelPackages = pkgs.linuxPackages;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
