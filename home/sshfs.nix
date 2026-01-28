@@ -16,20 +16,22 @@ in
       What = "${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username}";
       Where = mountPoint;
       Type = "fuse.sshfs";
-      Options = "reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519";
+      Options = "reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519,nodev,nosuid,_netdev";
     };
   };
 
   systemd.user.automounts."${unitName}" = {
     Unit = {
       Description = "Automount Jellyfin SSHFS";
+      # Start after graphical session to avoid any potential impact on login speed
+      After = [ "graphical-session.target" ];
     };
     Automount = {
       Where = mountPoint;
+      TimeoutIdleSec = 600;
     };
     Install = {
       WantedBy = [ "graphical-session.target" ];
     };
   };
 }
-
