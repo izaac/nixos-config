@@ -5,6 +5,7 @@
     lsd bat fzf fd ripgrep yazi
     duf btop fastfetch
     zip unzip _7zz peazip
+    unrar libarchive
     appimage-run
     distrobox
     wl-clipboard  # Essential for piping to clipboard
