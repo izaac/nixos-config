@@ -11,15 +11,27 @@ in
 
   systemd.user.services.jellyfin-mount = {
     Unit = {
-      Description = "Mount Jellyfin SSHFS";
+      Description = "Mount Jellyfin SSHFS with Performance Optimizations";
       After = [ "network-online.target" ];
       Wants = [ "network-online.target" ];
     };
 
     Service = {
       Type = "forking";
-      # -f runs in foreground, but forking type with sshfs (which forks by default) is often more reliable in systemd
-      ExecStart = "${pkgs.sshfs}/bin/sshfs ${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username} ${mountPoint} -o reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin,nodev,nosuid,allow_other";
+      ExecStart = ''
+        ${pkgs.sshfs}/bin/sshfs ${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username} ${mountPoint} \
+          -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 \
+          -o StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null \
+          -o IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin \
+          -o nodev,nosuid,allow_other,auto_unmount \
+          -o cache=yes,kernel_cache,auto_cache,cache_timeout=3600 \
+          -o entry_timeout=3600,attr_timeout=3600,negative_timeout=3600 \
+          -o compression=no,Ciphers=aes128-gcm@openssh.com
+      '';
+      
+      # Warm the cache in the background immediately after mounting
+      ExecStartPost = "${pkgs.bash}/bin/bash -c '${pkgs.coreutils}/bin/ls -R ${mountPoint} > /dev/null 2>&1 &'";
+      
       ExecStop = "fusermount -u ${mountPoint}";
       Restart = "on-failure";
       RestartSec = "10";
