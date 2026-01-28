@@ -18,6 +18,10 @@ in
     cartridges
     piper
     openrgb
+    goverlay
+    vkbasalt
+    input-remapper
+    umu-launcher
     
     # Emulation
     (bottles.override { removeWarningPopup = true; })
