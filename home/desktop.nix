@@ -28,6 +28,7 @@
     # Audio Tools
     lsp-plugins         # Pro-grade audio plugins
     calf                # Common audio effects
+    jamesdsp            # Audio effects processor
 
     # General Software
     filezilla       # WinSCP Replacement
@@ -54,4 +55,18 @@
     enable = true;
     createDirectories = true; 
   };
+
+  # Autostart JamesDSP in tray
+  xdg.configFile."autostart/jamesdsp.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Name=JamesDSP
+    Exec=jamesdsp --tray
+    Icon=jamesdsp
+    Comment=Audio Effect Processor
+    Terminal=false
+    Categories=AudioVideo;Audio;
+    StartupNotify=false
+    X-GNOME-Autostart-enabled=true
+  '';
 }

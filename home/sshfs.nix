@@ -26,9 +26,11 @@ in
           -o StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null \
           -o IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin \
           -o nodev,nosuid,allow_other,auto_unmount \
-          -o cache=yes,kernel_cache,auto_cache,cache_timeout=3600 \
+          -o kernel_cache,auto_cache \
           -o entry_timeout=3600,attr_timeout=3600,negative_timeout=3600 \
-          -o compression=no,Ciphers=aes128-gcm@openssh.com
+          -o dir_cache=yes,dcache_timeout=3600 \
+          -o compression=no,Ciphers=aes128-gcm@openssh.com \
+          -o max_conns=4
       '';
       
       ExecStop = "/run/current-system/sw/bin/fusermount -u ${mountPoint}";

@@ -48,9 +48,11 @@
   };
 
   # 4. Sched-ext (Dynamic Schedulers)
-  # Defaulting to disabled here as CachyOS module (if enabled) will handle this with optimized schedulers.
-  # services.scx.enable = true;
-  # services.scx.scheduler = "scx_rustland";
+  # Linux 6.12+ supports this natively. scx_lavd is excellent for gaming latency.
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd";
+  };
 
   # 5. Controller & Hardware Support (The "Maximized" List)
   hardware.xpadneo.enable = true; # Xbox Bluetooth

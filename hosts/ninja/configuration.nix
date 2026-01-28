@@ -23,7 +23,7 @@
   boot.loader.systemd-boot.editor = false;
 
   # --- KERNEL & PERFORMANCE ---
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
   
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
@@ -89,6 +89,14 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    
+    # High Fidelity Configuration
+    extraConfig.pipewire."92-high-quality" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 32000 24000 16000 ];
+      };
+    };
   };
 
   # User Account

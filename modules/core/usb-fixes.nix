@@ -29,15 +29,6 @@
     SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="2ca3", ATTRS{idProduct}=="4011", RUN+="/bin/sh -c '/run/current-system/sw/bin/modprobe snd-usb-audio; echo 2ca3 4011 > /sys/bus/usb/drivers/snd-usb-audio/new_id'"
   '';
 
-  # 5. Pipewire Configuration
-  # Ensures 16kHz support for the DJI Mic.
-  services.pipewire.extraConfig.pipewire."99-allowed-rates" = {
-    "context.properties" = {
-      "default.clock.allowed-rates" = [ 48000 44100 32000 24000 16000 ];
-      "default.clock.min-quantum" = 1024;
-    };
-  };
-
-  # 6. Ensure Audio Module Availability
+  # 5. Ensure Audio Module Availability
   boot.kernelModules = [ "snd-usb-audio" ];
 }

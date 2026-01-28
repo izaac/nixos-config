@@ -9,6 +9,7 @@
     distrobox
     wl-clipboard  # Essential for piping to clipboard
     jq
+    rsync pv
   ];
 
   programs.bash = {
@@ -24,6 +25,7 @@
       top = "btop";
       find = "fd";
       vim = "nvim";
+      cpv = "rsync -ahP";
       sysls = "systemctl --type=service --state=running";
       # Cache clearing alias
       ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
@@ -88,6 +90,7 @@
   programs.starship = {
     enable = true;
     settings = {
+      command_timeout = 1000;
       add_newline = false;
       format = "$directory$git_branch$git_status$container$character";
       directory.style = "bold lavender";
