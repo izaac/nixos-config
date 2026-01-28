@@ -2,36 +2,31 @@
 
 let
   mountPoint = "${config.home.homeDirectory}/Jellyfin";
-  # Escaped path for the unit name: /home/username/Jellyfin -> home-username-Jellyfin
-  unitName = lib.replaceStrings ["/"] ["-"] (lib.removePrefix "/" mountPoint);
 in
 {
-  systemd.user.mounts."${unitName}" = {
+  # Ensure the mount point exists
+  home.activation.createJellyfinMountPoint = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    mkdir -p ${mountPoint}
+  '';
+
+  systemd.user.services.jellyfin-mount = {
     Unit = {
       Description = "Mount Jellyfin SSHFS";
       After = [ "network-online.target" ];
       Wants = [ "network-online.target" ];
     };
-    Mount = {
-      What = "${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username}";
-      Where = mountPoint;
-      Type = "fuse.sshfs";
-      Options = "reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin,nodev,nosuid,_netdev,allow_other";
-    };
-  };
 
-  systemd.user.automounts."${unitName}" = {
-    Unit = {
-      Description = "Automount Jellyfin SSHFS";
-      # Start after graphical session to avoid any potential impact on login speed
-      After = [ "graphical-session.target" ];
+    Service = {
+      Type = "forking";
+      # -f runs in foreground, but forking type with sshfs (which forks by default) is often more reliable in systemd
+      ExecStart = "${pkgs.sshfs}/bin/sshfs ${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username} ${mountPoint} -o reconnect,ServerAliveInterval=15,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null,IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin,nodev,nosuid,allow_other";
+      ExecStop = "fusermount -u ${mountPoint}";
+      Restart = "on-failure";
+      RestartSec = "10";
     };
-    Automount = {
-      Where = mountPoint;
-      TimeoutIdleSec = 600;
-    };
+
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = [ "default.target" ];
     };
   };
 }
