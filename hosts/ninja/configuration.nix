@@ -12,7 +12,6 @@
       ../../modules/core/usb-fixes.nix
       ../../modules/core/maintenance.nix
       ../../modules/gaming/default.nix
-      ../../modules/gaming/cachyos.nix
       ../../modules/desktop/default.nix
     ];
 
