@@ -103,6 +103,7 @@
     tree
     pciutils
     parted
+    sshfs
   ];
 
   # Services

@@ -7,6 +7,7 @@
     zip unzip _7zz peazip
     appimage-run
     distrobox
+    sshfs         # Mount remote directories (great for editing remote files locally)
     wl-clipboard  # Essential for piping to clipboard
     jq
   ];
@@ -32,6 +33,7 @@
       forget = "git -C $NH_FLAKE rm --cached --ignore-unmatch secrets.nix";
       g-push = "forget && git -C $NH_FLAKE push";
       nrb = "st && nh os switch";
+      ndry = "nix build .#nixosConfigurations.ninja.config.system.build.toplevel --dry-run";
       up = "st && nh os switch --update"; # Update flake inputs AND switch
       ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
       gpu = "nvtop";
