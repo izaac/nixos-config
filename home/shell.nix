@@ -57,8 +57,13 @@
       export GPG_TTY=$(tty)
 
       # --- FNM (Node Manager) Init ---
-      # This enables the 'fnm' command and auto-switching based on .nvmrc
-      eval "$(fnm env --use-on-cd)"
+      # Add standard local install path to PATH (for Distrobox/manual installs)
+      export PATH="$HOME/.local/share/fnm:$PATH"
+      
+      # Enable 'fnm' command and auto-switching if the binary is found
+      if command -v fnm >/dev/null; then
+        eval "$(fnm env --use-on-cd)"
+      fi
 
       # --- Yazi Wrapper (CD on exit) ---
       function y() {
