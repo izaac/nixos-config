@@ -60,7 +60,7 @@
 
       init.defaultBranch = "main";
       credential.helper = "libsecret";
-      safe.directory = "${userConfig.dotfilesDir}/dashboard";
+      safe.directory = "*";
 
       # Note the singular 'alias' key under settings
       alias = {

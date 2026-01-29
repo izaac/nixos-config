@@ -9,6 +9,7 @@ in
     flashgbx
 
     # Gaming Tools
+    samrewritten
     protonup-qt
     heroic
     lutris

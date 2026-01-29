@@ -8,6 +8,7 @@
       ./network.nix
       ../../modules/core/nix-ld.nix
       ../../modules/core/codecs.nix
+      ../../modules/core/bluetooth-audio.nix
       ../../modules/core/virtualization.nix
       ../../modules/core/usb-fixes.nix
       ../../modules/core/maintenance.nix
@@ -62,8 +63,7 @@
   ];
 
   # CPU Power Management
-  # "powersave" governor with amd_pstate=active intelligently scales clocks based on load.
-  # It does NOT mean "slow", it means "efficient".
+  # "powersave" governor with amd_pstate=active intelligently scales clocks based on load for efficiency.
   powerManagement.cpuFreqGovernor = "powersave";
 
   # Bluetooth Optimizations
@@ -132,7 +132,7 @@
   services.openssh = {
     enable = true;
     settings = {
-      # Hardcore mode: No passwords, keys only.
+      # Authentication via keys only; password authentication disabled.
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
     };

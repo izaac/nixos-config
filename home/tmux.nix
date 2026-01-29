@@ -2,7 +2,7 @@
 
 let
   # --- CUSTOM PLUGIN DEFINITION ---
-  # Since tmux-menus isn't in nixpkgs, we build it right here.
+  # Build tmux-menus locally as it is not available in nixpkgs.
   tmux-menus = pkgs.tmuxPlugins.mkTmuxPlugin {
     pluginName = "tmux-menus";
     version = "unstable-2024-01-26";
@@ -33,7 +33,7 @@ in
     plugins = with pkgs.tmuxPlugins; [
       sensible
       
-      # Our custom-built plugin
+      # Custom-built plugin
       tmux-menus 
 
       {

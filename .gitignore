@@ -24,8 +24,8 @@ secring.gpg
 .node_repl_history
 
 # --- Home Manager & NixOS Backups ---
-# You set 'backupFileExtension = "backup"' in flake.nix.
-# We don't want these cluttering the repo.
+# 'backupFileExtension = "backup"' is configured in flake.nix.
+# These files are excluded to avoid cluttering the repository.
 *.backup
 *.bck
 *.old

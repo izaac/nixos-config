@@ -9,7 +9,7 @@ final: prev: {
       makeDesktopItem,
       copyDesktopItems,
       autoPatchelfHook,
-      # We override this input to be temurin-bin-25
+      # Override this input to be temurin-bin-25
       zulu25, 
       gtk3,
       gsettings-desktop-schemas,
@@ -36,10 +36,10 @@ final: prev: {
       pname = "sparrow";
       version = "2.2.3";
 
-      # Use the provided JDK (which we will pass as temurin-bin-25 via the overlay call)
-      # temurin-bin doesn't accept enableJavaFX, so we just use it directly.
-      # The original package tried to do: zulu25.override { enableJavaFX = true; }
-      # We'll just ignore that and use the input as is, assuming we passed the right one.
+      # Use the provided JDK (passed as temurin-bin-25 via the overlay call)
+      # temurin-bin does not accept enableJavaFX, so it is used directly.
+      # The original package attempted: zulu25.override { enableJavaFX = true; }
+      # This is ignored in favor of using the input as is, assuming the correct one was passed.
       openjdk = zulu25;
 
       sparrowArch =
@@ -87,17 +87,16 @@ final: prev: {
         hash = "sha256-PpruG9l7MhI30b6dd96KAkkQvyMNuh36GtmEdYaRgac=";
       };
 
-      publicKey = ./publickey.asc; # This refers to a local file in nixpkgs, we need to fetch it or skip verification if we can't access it easily.
-      # Since we are in an overlay, we don't have easy access to the adjacent 'publickey.asc'.
-      # We will rely on the hash check which implicitly trusts the content we get matches the hash we hardcoded above (from upstream nixpkgs).
-      # To avoid the gpg check erroring due to missing key file, we might need to skip verification or fetch the key.
-      # Actually, the 'src' derivation above is fixed-output (has 'hash'), so we don't need to re-verify it here if we trust the hash.
-      # But the 'src' logic is inside the fetchurl call. We can just override 'src' to be a simple fetchurl without the postFetch verification
-      # if we want to avoid the GPG dependency, OR we can try to fetch the key.
-      # Given we are replacing the package, let's just use the URL directly without the complex verification for now to simplify, 
-      # or try to keep it if we can. 
-      # The problem is 'publicKey = ./publickey.asc;' which won't resolve.
-      # Let's just use the verified tarball directly.
+      publicKey = ./publickey.asc; # Refers to a local file in nixpkgs; needs fetching or skipping verification if inaccessible.
+      # Since this is an overlay, access to the adjacent 'publickey.asc' is not guaranteed.
+      # Reliance is placed on the hash check, which implicitly trusts that the content matches the upstream nixpkgs hash.
+      # To avoid gpg check errors due to a missing key file, verification is skipped or the key must be fetched.
+      # The 'src' derivation above is fixed-output (has 'hash'), so re-verification is not strictly necessary if the hash is trusted.
+      # The 'src' logic is inside the fetchurl call. 'src' can be overridden to be a simple fetchurl without postFetch verification
+      # to avoid the GPG dependency, or the key can be fetched.
+      # Given the package replacement, the URL is used directly without complex verification to simplify the process.
+      # 'publicKey = ./publickey.asc;' will not resolve.
+      # The verified tarball is used directly.
 
       # Re-defining src to skip GPG check for simplicity in this overlay
       src_simple = fetchurl {

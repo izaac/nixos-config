@@ -20,7 +20,7 @@
       EspLocation = config.boot.loader.efi.efiSysMountPoint;
       
       # STRATEGY: Core System Updates Only
-      # We disable all peripheral and non-essential plugins to prevent the daemon 
+      # Peripheral and non-essential plugins are disabled to prevent the daemon 
       # from hanging during hardware probes (specifically problematic with some 
       # USB headsets/controllers).
       #
