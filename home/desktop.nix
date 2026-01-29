@@ -31,6 +31,7 @@
     jamesdsp            # Audio effects processor
 
     # General Software
+    sparrow
     filezilla       # WinSCP Replacement
     sushi           # "Spacebar" file previewer
     celluloid

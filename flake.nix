@@ -23,6 +23,7 @@
           home-manager.nixosModules.home-manager
           {
             nixpkgs.config.allowUnfree = true;
+            nixpkgs.overlays = [ (import ./overlays/sparrow-temurin-fix.nix) ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";

@@ -30,7 +30,12 @@
     nil
     
     # --- GUI IDEs ---
-    vscode
+    (vscode.override {
+      commandLineArgs = [
+        "--enable-features=UseOzonePlatform"
+        "--ozone-platform=wayland"
+      ];
+    })
     
     # --- UTILS ---
     tldr
