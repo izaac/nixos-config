@@ -25,18 +25,6 @@
     capSysNice = true; # Required for performance
   };
 
-  # 2. GameMode
-  programs.gamemode = {
-    enable = true;
-    enableRenice = true;
-    settings = {
-      general = {
-        renice = 10;
-        desiredgov = "performance";
-      };
-    };
-  };
-
   # 3. Ananicy-cpp (CachyOS-style auto-nice daemon)
   services.ananicy = {
     enable = true;
