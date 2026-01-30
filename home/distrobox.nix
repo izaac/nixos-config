@@ -3,6 +3,24 @@
 {
   home.packages = [ pkgs.distrobox ];
 
+  # Script to automate NVIDIA driver linking in Ubuntu containers
+  xdg.configFile."distrobox/nvidia-setup.sh".text = ''
+    #!/bin/sh
+    # 1. Enable 32-bit architecture and multiverse repos
+    sudo dpkg --add-architecture i386
+    sudo sed -i 's/Components: main restricted/Components: main restricted universe multiverse/g' /etc/apt/sources.list.d/ubuntu.sources
+    sudo apt update
+
+    # 2. Link Host NVIDIA Drivers (Vulkan/OpenGL)
+    sudo mkdir -p /usr/share/vulkan/icd.d
+    printf '{"file_format_version" : "1.0.0","ICD": {"library_path": "/run/host/run/opengl-driver/lib/libGLX_nvidia.so.0","api_version" : "1.3.260"}}' | sudo tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null
+    
+    # 3. Configure Linker
+    echo '/run/host/run/opengl-driver/lib' | sudo tee /etc/ld.so.conf.d/nvidia.conf > /dev/null
+    echo '/run/host/run/opengl-driver-32/lib' | sudo tee -a /etc/ld.so.conf.d/nvidia.conf > /dev/null
+    sudo ldconfig
+  '';
+
   # Declarative Distrobox Configuration
   # Run 'distrobox assemble create --file ~/.config/distrobox/distrobox.ini' to build these.
   xdg.configFile."distrobox/distrobox.ini".text = ''
@@ -15,28 +33,15 @@
     # Export apps to host automatically
     # export="google-chrome"
     # === Ubuntu Gaming Container (The "Golden Recipe" for NixOS + NVIDIA) ===
-    # If you recreate this container, run these steps inside 'ubu' to fix NVIDIA drivers:
-    # 1. Link Host Driver:
-    #    mkdir -p /usr/share/vulkan/icd.d
-    #    echo '{"file_format_version" : "1.0.0", "ICD": { "library_path": "/run/host/run/opengl-driver/lib/libGLX_nvidia.so.0", "api_version" : "1.3.260" }}' > /usr/share/vulkan/icd.d/nvidia_icd.json
-    # 2. Configure Linker:
-    #    echo "/run/host/run/opengl-driver/lib" > /etc/ld.so.conf.d/nvidia.conf
-    #    echo "/run/host/run/opengl-driver-32/lib" >> /etc/ld.so.conf.d/nvidia.conf
-    #    ldconfig
-    # 3. Install Steam (Valve .deb):
-    #    dpkg --add-architecture i386
-    #    sed -i 's/Components: main restricted/Components: main restricted universe multiverse/g' /etc/apt/sources.list.d/ubuntu.sources
-    #    apt update
-    #    wget https://repo.steampowered.com/steam/archive/stable/steam_latest.deb && apt install ./steam_latest.deb
-    #
-    # Future Automation (init_hooks):
-    # init_hooks="dpkg --add-architecture i386 && sed -i 's/Components: main restricted/Components: main restricted universe multiverse/g' /etc/apt/sources.list.d/ubuntu.sources && apt update && mkdir -p /usr/share/vulkan/icd.d && echo '{\"file_format_version\" : \"1.0.0\",\"ICD\": {\"library_path\": \"/run/host/run/opengl-driver/lib/libGLX_nvidia.so.0\",\"api_version\" : \"1.3.260\"}}' > /usr/share/vulkan/icd.d/nvidia_icd.json && echo '/run/host/run/opengl-driver/lib' > /etc/ld.so.conf.d/nvidia.conf && echo '/run/host/run/opengl-driver-32/lib' >> /etc/ld.so.conf.d/nvidia.conf && ldconfig"
+    # This container uses ~/.config/distrobox/nvidia-setup.sh to automatically
+    # link host NVIDIA drivers and configure 32-bit support for Steam.
     [ubu]
     image=ubuntu:24.04
     pull=true
-    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils"
+    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools"
     init=false
     nvidia=true
+    init_hooks="sh ~/.config/distrobox/nvidia-setup.sh"
 
     [debi]
     pull=true
