@@ -10,18 +10,9 @@
     
     # --- LANGUAGES & TOOLCHAINS ---
     fnm
-    rustup
-    go
-    python3
-    luarocks
     
     # --- DATA & FORMATTING ---
     sqlite
-    
-    # --- DOCUMENTATION & LATEX ---
-    ghostscript
-    tectonic
-    texlive.combined.scheme-medium 
     
     # --- LSPs & LINTERS ---
     nodePackages.bash-language-server

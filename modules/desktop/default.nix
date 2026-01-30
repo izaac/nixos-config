@@ -32,9 +32,23 @@
     variant = "";
   };
   
-  # Exclude unused default GNOME packages (Optional debloat)
+  # Comprehensive GNOME Debloat
   environment.gnome.excludePackages = with pkgs; [
     gnome-tour
     gnome-initial-setup
+    gnome-user-docs
+    baobab      # Disk usage analyzer
+    epiphany    # Web browser
+    geary       # Email client
+    totem       # Video player
+    yelp        # Help viewer
+    evince      # Document viewer (you have PeaZip/Loupe)
+    file-roller # Archive manager (you have PeaZip)
+    geoclue2    # Location services
+    gnome-maps
+    gnome-weather
+    gnome-contacts
+    gnome-music
+    gnome-logs
   ];
 }

@@ -146,8 +146,17 @@
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
-  nix.settings.auto-optimise-store = false;
+  nix.settings.auto-optimise-store = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # --- DOCUMENTATION ---
+  # Disable documentation to save space and reduce small file overhead.
+  documentation = {
+    enable = false;
+    doc.enable = false;
+    man.enable = false;
+    info.enable = false;
+  };
 
   system.stateVersion = "25.11";
 }

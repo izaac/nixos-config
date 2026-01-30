@@ -24,11 +24,11 @@ in
     # Custom Script to fetch latest Conty
     (pkgs.writeShellScriptBin "update-conty" ''
       mkdir -p $HOME/.local/bin
-      echo "Fetching latest Conty release URL..."
-      LATEST_URL=$(curl -s https://api.github.com/repos/Kron4ek/Conty/releases/latest | ${pkgs.jq}/bin/jq -r '.assets[] | select(.name == "conty.sh") | .browser_download_url')
+      echo "Fetching latest Conty (Lite DwarFS) release URL..."
+      LATEST_URL=$(curl -s https://api.github.com/repos/Kron4ek/Conty/releases/latest | ${pkgs.jq}/bin/jq -r '.assets[] | select(.name == "conty_lite_dwarfs.sh") | .browser_download_url')
       
       if [ -z "$LATEST_URL" ] || [ "$LATEST_URL" == "null" ]; then
-        echo "Error: Could not find conty.sh in the latest release."
+        echo "Error: Could not find conty_lite_dwarfs.sh in the latest release."
         exit 1
       fi
 

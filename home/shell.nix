@@ -2,14 +2,25 @@
 
 {
   home.packages = with pkgs; [
+    # --- CORE UTILS ---
     lsd bat fzf fd ripgrep yazi
     duf btop fastfetch
-    zip unzip _7zz peazip
-    unrar libarchive
+    tldr jq rsync pv
+    ncdu lazydocker
+    man-db
+    
+    # --- COMPRESSION & ARCHIVING ---
+    zip unzip 
+    p7zip
+    xz zstd lz4 
+    gnutar gzip bzip2
+    libarchive
+    peazip
+    
+    # --- SYSTEM TOOLS ---
     appimage-run
-    wl-clipboard  # Essential for piping to clipboard
-    jq
-    rsync pv
+    wl-clipboard
+    dwarfs fuse3
   ];
 
   programs.bash = {
