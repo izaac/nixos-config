@@ -21,6 +21,13 @@
     additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch"
     init=false
     nvidia=true
+
+    [rhel10]
+    image=registry.access.redhat.com/ubi10/ubi:latest
+    pull=true
+    additional_packages="subscription-manager git vim"
+    init=false
+    nvidia=true
   '';
 
   # Alias to easily create/update these containers
@@ -29,5 +36,6 @@
     db-rm = "distrobox assemble rm --file ~/.config/distrobox/distrobox.ini";
     db-arch = "distrobox enter archy";
     db-debian = "distrobox enter debi";
+    db-rhel = "distrobox enter rhel10";
   };
 }
