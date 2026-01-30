@@ -57,9 +57,6 @@
       export GPG_TTY=$(tty)
 
       # --- FNM (Node Manager) Init ---
-      # Add standard local install path to PATH (for Distrobox/manual installs)
-      export PATH="$HOME/.local/share/fnm:$PATH"
-      
       # Enable 'fnm' command and auto-switching if the binary is found
       if command -v fnm >/dev/null; then
         eval "$(fnm env --use-on-cd)"
@@ -89,6 +86,9 @@
           fi
         '
       }
+
+      # Ensure local binaries are in PATH (at the end to avoid overrides)
+      export PATH="$PATH:$HOME/.local/bin"
     '';
   };
 

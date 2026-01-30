@@ -11,11 +11,6 @@ in
     # Gaming Tools
     samrewritten
     protonup-qt
-    heroic
-    lutris
-    minigalaxy
-    wineWowPackages.stable
-    winetricks
     cartridges
     piper
     openrgb
@@ -23,9 +18,27 @@ in
     vkbasalt
     input-remapper
     umu-launcher
-    
     # Emulation
-    (bottles.override { removeWarningPopup = true; })
+    # (bottles.override { removeWarningPopup = true; }) # Removed as per user request for container-only gaming
+    
+    # Custom Script to fetch latest Conty
+    (pkgs.writeShellScriptBin "update-conty" ''
+      mkdir -p $HOME/.local/bin
+      echo "Fetching latest Conty release URL..."
+      LATEST_URL=$(curl -s https://api.github.com/repos/Kron4ek/Conty/releases/latest | ${pkgs.jq}/bin/jq -r '.assets[] | select(.name == "conty.sh") | .browser_download_url')
+      
+      if [ -z "$LATEST_URL" ] || [ "$LATEST_URL" == "null" ]; then
+        echo "Error: Could not find conty.sh in the latest release."
+        exit 1
+      fi
+
+      echo "Downloading from $LATEST_URL..."
+      curl -L -o $HOME/.local/bin/conty "$LATEST_URL"
+      chmod +x $HOME/.local/bin/conty
+      
+      echo "Successfully installed to $HOME/.local/bin/conty"
+      echo "Run it with: conty"
+    '')
   ];
 
   # MangoHud Config
