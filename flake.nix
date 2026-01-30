@@ -7,12 +7,17 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-unstable, ... }@inputs:
     let
       userConfig = import ./secrets.nix;
       system = "x86_64-linux";
+      pkgs-unstable = import nixos-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in {
       nixosConfigurations.ninja = nixpkgs.lib.nixosSystem {
         inherit system;
@@ -23,7 +28,10 @@
           home-manager.nixosModules.home-manager
           {
             nixpkgs.config.allowUnfree = true;
-            nixpkgs.overlays = [ (import ./overlays/sparrow-temurin-fix.nix) ];
+            nixpkgs.overlays = [ 
+              (import ./overlays/sparrow-temurin-fix.nix)
+              (import ./overlays/unstable-packages.nix pkgs-unstable)
+            ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "backup";
