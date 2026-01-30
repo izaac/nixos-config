@@ -32,6 +32,7 @@
     settings = {
       general = {
         renice = 10;
+        desiredgov = "performance";
       };
     };
   };
@@ -76,7 +77,22 @@
     # NVIDIA-specific DLSS/NGX
     PROTON_ENABLE_NGX_UPDATER = "1";
 
+    # Fast Synchronization (ntsync / fsync)
+    # ntsync is the modern NT synchronization driver (XanMod 6.13+)
+    # fsync is the standard high-performance sync method
+    PROTON_USE_NTSYNC = "1";
+    WINE_FSYNC = "1";
+
     # Wayland Fixes for NVIDIA
     DISABLE_RT_CHECK = "1"; # Helps with some Raytracing titles on Wayland
+    
+    # Steam UI Performance & Stability Fixes
+    # -no-cef-sandbox: Fixes web helper crashes
+    # -disable-gpu-compositing: Prevents UI flickering/lag
+    # -disable-smooth-scrolling: Reduces rendering load
+    STEAM_EXTRA_ARGS = "-no-cef-sandbox -disable-gpu-compositing -disable-smooth-scrolling";
+    
+    # Fix for X11 BadWindow errors on NVIDIA
+    STEAM_DISABLE_PH_CLIPPED_VIDEO = "1";
   };
 }

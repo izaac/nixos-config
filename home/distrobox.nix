@@ -18,7 +18,7 @@
     [debi]
     image=debian:sid
     pull=true
-    additional_packages="git curl wget neovim ripgrep lsd fastfetch"
+    additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch"
     init=false
     nvidia=true
   '';

@@ -53,6 +53,7 @@ in
       ram = true;
       fps = true;
       frametime = true; # Stutter checking
+      gamemode = true;
       
       # Layout
       table_columns = 3;

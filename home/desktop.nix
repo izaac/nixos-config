@@ -22,7 +22,6 @@
     virt-viewer
     spice-gtk
     telegram-desktop
-    google-chrome
     boxbuddy
 
     # Audio Tools
