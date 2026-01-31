@@ -9,13 +9,9 @@
     nerd-fonts.symbols-only
     font-awesome
     
-    # Essential Tools & GNOME Apps to Keep
-    seahorse
-    libsecret
-    amberol
-    haruna
+    # Essential Tools
+    haruna          # Video Player (Qt/KDE friendly)
     telegram-desktop
-    gnome-themes-extra
 
     # Audio Tools
     lsp-plugins         # Pro-grade audio plugins
@@ -25,8 +21,6 @@
     # General Software
     sparrow
     filezilla       # WinSCP Replacement
-    celluloid
-    foliate
     mpv
     ffmpeg-full
     jellyfin-desktop
@@ -37,7 +31,6 @@
     virt-viewer
     spice-gtk
     boxbuddy
-    loupe
   ];
 
   xdg.userDirs = {
@@ -56,18 +49,18 @@
       "x-scheme-handler/unknown" = [ "firefox.desktop" ];
       
       # Text
-      "text/plain" = [ "org.xfce.mousepad.desktop" ];
-      "text/markdown" = [ "org.xfce.mousepad.desktop" ];
-      "text/x-log" = [ "org.xfce.mousepad.desktop" ];
+      "text/plain" = [ "org.kde.kate.desktop" ];
+      "text/markdown" = [ "org.kde.kate.desktop" ];
+      "text/x-log" = [ "org.kde.kate.desktop" ];
 
       # Archives
-      "application/zip" = [ "peazip.desktop" ];
-      "application/x-tar" = [ "peazip.desktop" ];
-      "application/x-7z-compressed" = [ "peazip.desktop" ];
-      "application/x-rar" = [ "peazip.desktop" ];
-      "application/gzip" = [ "peazip.desktop" ];
-      "application/x-bzip2" = [ "peazip.desktop" ];
-      "application/x-xz" = [ "peazip.desktop" ];
+      "application/zip" = [ "org.kde.ark.desktop" ];
+      "application/x-tar" = [ "org.kde.ark.desktop" ];
+      "application/x-7z-compressed" = [ "org.kde.ark.desktop" ];
+      "application/x-rar" = [ "org.kde.ark.desktop" ];
+      "application/gzip" = [ "org.kde.ark.desktop" ];
+      "application/x-bzip2" = [ "org.kde.ark.desktop" ];
+      "application/x-xz" = [ "org.kde.ark.desktop" ];
       
       # Video
       "video/mp4" = [ "haruna.desktop" ];
@@ -76,23 +69,23 @@
       "video/quicktime" = [ "haruna.desktop" ];
       
       # Audio
-      "audio/mpeg" = [ "amberol.desktop" ];
-      "audio/flac" = [ "amberol.desktop" ];
-      "audio/x-wav" = [ "amberol.desktop" ];
+      "audio/mpeg" = [ "org.kde.elisa.desktop" ];
+      "audio/flac" = [ "org.kde.elisa.desktop" ];
+      "audio/x-wav" = [ "org.kde.elisa.desktop" ];
       
       # Documents / Images
-      "application/pdf" = [ "firefox.desktop" ];
-      "application/epub+zip" = [ "com.github.johnfactotum.Foliate.desktop" ];
-      "image/png" = [ "org.gnome.Loupe.desktop" ];
-      "image/jpeg" = [ "org.gnome.Loupe.desktop" ];
-      "image/webp" = [ "org.gnome.Loupe.desktop" ];
-      "image/gif" = [ "org.gnome.Loupe.desktop" ];
-      "image/svg+xml" = [ "org.gnome.Loupe.desktop" ];
-      "image/bmp" = [ "org.gnome.Loupe.desktop" ];
-      "image/tiff" = [ "org.gnome.Loupe.desktop" ];
+      "application/pdf" = [ "org.kde.okular.desktop" ];
+      "application/epub+zip" = [ "org.kde.okular.desktop" ];
+      "image/png" = [ "org.kde.gwenview.desktop" ];
+      "image/jpeg" = [ "org.kde.gwenview.desktop" ];
+      "image/webp" = [ "org.kde.gwenview.desktop" ];
+      "image/gif" = [ "org.kde.gwenview.desktop" ];
+      "image/svg+xml" = [ "org.kde.gwenview.desktop" ];
+      "image/bmp" = [ "org.kde.gwenview.desktop" ];
+      "image/tiff" = [ "org.kde.gwenview.desktop" ];
       
       # Directories
-      "inode/directory" = [ "thunar.desktop" ];
+      "inode/directory" = [ "org.kde.dolphin.desktop" ];
     };
   };
 }

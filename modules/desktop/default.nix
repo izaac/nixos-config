@@ -1,82 +1,48 @@
 { pkgs, ... }:
 
 {
-  # --- HYPRLAND DESKTOP ENVIRONMENT ---
-  programs.hyprland.enable = true;
+  # --- KDE PLASMA 6 ---
+  services.desktopManager.plasma6.enable = true;
 
-  # XServer is technically required for the DM infrastructure in NixOS
-  services.xserver.enable = true;
-
-  # Enable GDM (GNOME Display Manager)
-  services.displayManager.gdm = {
+  # --- DISPLAY MANAGER (SDDM) ---
+  services.displayManager.sddm = {
     enable = true;
-    wayland = true;
+    wayland.enable = true;
   };
 
-  # Ensure GNOME services are optimized for speed (Keyring is vital for Hyprland too)
-  services.gnome = {
-    gnome-keyring.enable = true;
-    gnome-initial-setup.enable = false;
-  };
-
-  # Explicitly enable gnome-keyring components for PAM
-  security.pam.services.gdm.enableGnomeKeyring = true;
-  security.pam.services.login.enableGnomeKeyring = true;
-  services.dbus.packages = [ pkgs.gcr ]; # Ensure GCR is available for prompts
-
-  # Optimized Portal Configuration
-  xdg.portal = {
+  # XServer is required for SDDM and XWayland
+  services.xserver = {
     enable = true;
-    xdgOpenUsePortal = true;
-    extraPortals = [ 
-      pkgs.xdg-desktop-portal-hyprland 
-      pkgs.xdg-desktop-portal-gtk 
-      pkgs.xdg-desktop-portal-gnome 
-    ];
-    config = {
-      common = {
-        default = [ "hyprland" "gtk" ];
-        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
-      };
-      hyprland = {
-        default = [ "hyprland" "gtk" ];
-      };
+    # Keyboard Layout
+    xkb = {
+      layout = "us";
+      variant = "";
     };
   };
 
-  # Keyboard Layout
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
+  # SSH Integration (KDE Wallet & Askpass)
+  programs.ssh.askPassword = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+  environment.sessionVariables = {
+    SSH_ASKPASS = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+    SSH_ASKPASS_REQUIRE = "prefer";
   };
 
-  # Services often useful for desktop usage
-  services.libinput.enable = true; # Touchpad support
-
-  # Theme and Customization Tools for GDM and Desktop
+  # Essential KDE Packages & Integration
   environment.systemPackages = with pkgs; [
-    orchis-theme
-    flat-remix-gnome
-    flat-remix-gtk
-  ];
-
-  # Comprehensive GNOME Debloat
-  environment.gnome.excludePackages = with pkgs; [
-    gnome-tour
-    gnome-initial-setup
-    gnome-user-docs
-    baobab      # Disk usage analyzer
-    epiphany    # Web browser
-    geary       # Email client
-    totem       # Video player
-    yelp        # Help viewer
-    evince      # Document viewer (you have PeaZip/Loupe)
-    file-roller # Archive manager (you have PeaZip)
-    geoclue2    # Location services
-    gnome-maps
-    gnome-weather
-    gnome-contacts
-    gnome-music
-    gnome-logs
+    kdePackages.ksshaskpass
+    kdePackages.sddm-kcm       # SDDM Config Module for Plasma Settings
+    kdePackages.partitionmanager
+    kdePackages.filelight      # Disk usage
+    kdePackages.kcalc          # Calculator
+    kdePackages.spectacle      # Screenshot tool
+    kdePackages.gwenview       # Image viewer
+    kdePackages.ark            # Archive manager
+    kdePackages.kate           # Text editor
+    kdePackages.dolphin        # File manager
+    kdePackages.konsole        # Terminal
+    kdePackages.okular         # Document viewer
+    kdePackages.kdenlive       # Video Editor (Optional but native)
+    kdePackages.kio-fuse       # FUSE interface for KIO
+    kdePackages.kio-extras     # Extra protocols for KIO
   ];
 }
