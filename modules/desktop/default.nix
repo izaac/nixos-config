@@ -29,6 +29,9 @@
     gnome-initial-setup.enable = false;
   };
 
+  security.pam.services.sddm.enableGnomeKeyring = true;
+  security.pam.services.login.enableGnomeKeyring = true;
+
   # Optimized Portal Configuration
   xdg.portal = {
     enable = true;

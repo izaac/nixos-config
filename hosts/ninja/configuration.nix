@@ -73,6 +73,7 @@
     settings = {
       General = {
         Enable = "Source,Sink,Media,Socket";
+        Disable = "bap";
         Experimental = true; # Enables battery reporting for some devices
         IdleTimeout = 0;     # Prevents the adapter from powering down too quickly
         AutoConnectTimeout = 180; # 3 minutes for auto-reconnection
