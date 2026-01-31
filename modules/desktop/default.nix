@@ -7,21 +7,11 @@
   # XServer is technically required for the DM infrastructure in NixOS
   services.xserver.enable = true;
 
-  # Enable SDDM (Simple Desktop Display Manager) with Wayland support
-  services.displayManager.sddm = {
+  # Enable GDM (GNOME Display Manager)
+  services.xserver.displayManager.gdm = {
     enable = true;
-    wayland.enable = true;
-    theme = "sddm-astronaut-theme";
-    package = pkgs.kdePackages.sddm; # Use Qt6 version for better Wayland support
-    extraPackages = [ pkgs.kdePackages.qtmultimedia ];
+    wayland = true;
   };
-
-  # Install the theme
-  environment.systemPackages = [
-    pkgs.sddm-astronaut
-  ];
-
-  # Note: services.desktopManager.gnome.enable is NOT set, so we get SDDM + Hyprland only.
 
   # Ensure GNOME services are optimized for speed (Keyring is vital for Hyprland too)
   services.gnome = {
@@ -29,15 +19,29 @@
     gnome-initial-setup.enable = false;
   };
 
-  security.pam.services.sddm.enableGnomeKeyring = true;
+  # Explicitly enable gnome-keyring components for PAM
+  security.pam.services.gdm.enableGnomeKeyring = true;
   security.pam.services.login.enableGnomeKeyring = true;
+  services.dbus.packages = [ pkgs.gcr ]; # Ensure GCR is available for prompts
 
   # Optimized Portal Configuration
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-hyprland pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-gnome ];
-    config.common.default = "hyprland";
+    extraPortals = [ 
+      pkgs.xdg-desktop-portal-hyprland 
+      pkgs.xdg-desktop-portal-gtk 
+      pkgs.xdg-desktop-portal-gnome 
+    ];
+    config = {
+      common = {
+        default = [ "hyprland" "gtk" ];
+        "org.freedesktop.impl.portal.Secret" = [ "gnome-keyring" ];
+      };
+      hyprland = {
+        default = [ "hyprland" "gtk" ];
+      };
+    };
   };
 
   # Keyboard Layout

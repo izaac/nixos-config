@@ -27,7 +27,6 @@
         "XDG_SESSION_DESKTOP, Hyprland"
         "QT_QPA_PLATFORM, wayland;xcb"
         "GBM_BACKEND, nvidia-drm"
-        "SSH_AUTH_SOCK, $XDG_RUNTIME_DIR/keyring/ssh"
       ];
 
       input = {
@@ -95,7 +94,7 @@
       # Autostart
       exec-once = [
         "dbus-update-activation-environment --systemd --all"
-        "systemctl --user import-environment QT_QPA_PLATFORMTHEME"
+        "systemctl --user import-environment SSH_AUTH_SOCK XDG_CURRENT_DESKTOP"
         "dex --autostart --environment hyprland"
         "swaync"
         "hyprpaper"
