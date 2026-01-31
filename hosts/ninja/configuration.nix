@@ -139,6 +139,7 @@
   };
   services.fstrim.enable = true;
   services.flatpak.enable = true;
+  services.power-profiles-daemon.enable = true;
 
   # Nix Maintenance
   nix.gc = {

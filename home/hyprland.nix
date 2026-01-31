@@ -12,7 +12,6 @@
       "$terminal" = "kitty";
       "$filemanager" = "kitty -e yazi";
       "$applauncher" = "fuzzel";
-      "$capturing" = "grim -g \"$(slurp)\" - | swappy -f - ";
 
       monitor = [
         ", preferred, auto, 1"
@@ -79,30 +78,51 @@
         preserve_split = true;
       };
 
+      misc = {
+        vfr = true;
+        vrr = 1;
+        animate_manual_resizes = true;
+        animate_mouse_windowdragging = true;
+        enable_swallow = true;
+        swallow_regex = "^(kitty)$";
+        disable_hyprland_logo = true;
+        disable_splash_rendering = true;
+        force_default_wallpaper = 0;
+      };
+
       # Autostart
       exec-once = [
         "waybar"
         "swaync"
         "hyprpaper"
-        "hypridle"
         "blueman-applet"
         "jamesdsp --tray"
+        "wl-paste --type text --watch cliphist store"
+        "wl-paste --type image --watch cliphist store"
+        "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
       ];
 
       # Keybinds (translated from keybinds.conf)
       bind = [
         "$mainMod, RETURN, exec, $terminal"
         "$mainMod, E, exec, $filemanager"
-        "$mainMod, A, exec, $capturing"
         "$mainMod, Q, killactive"
+        
+        # Screenshots
+        ", Print, exec, grim -g \"$(slurp)\" - | swappy -f -"
+        "$mainMod, Print, exec, grim - | swappy -f -"
+        "ALT, Print, exec, hyprctl -j activewindow | jq -r '\"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])\"' | grim -g - - | swappy -f -"
+
         "$mainMod SHIFT, M, exec, loginctl terminate-user \"\""
-        "$mainMod, V, togglefloating"
+        "$mainMod SHIFT, R, exec, systemctl reboot"
+        "$mainMod SHIFT, V, togglefloating"
+        "$mainMod, V, exec, cliphist list | fuzzel -d | cliphist decode | wl-copy"
         "$mainMod, SPACE, exec, $applauncher"
         "$mainMod, F, fullscreen, 0"
         "$mainMod, Y, pin"
         "$mainMod, J, togglesplit"
         "$mainMod, K, togglegroup"
-        "$mainMod, Tab, changegroupactive, f"
+        "$mainMod, Tab, exec, hyprctl clients | grep \"class: \" | awk '{print $2}' | fuzzel -d | xargs -I {} hyprctl dispatch focuswindow class:^{}$"
         
         # Gaps
         "$mainMod SHIFT, G, exec, hyprctl --batch \"keyword general:gaps_out 5;keyword general:gaps_in 3\""
@@ -170,14 +190,51 @@
         "float, class:^(blueman-manager)$"
         "opacity 0.92 0.92, class:^(thunar)$"
         "opacity 0.95 0.95, class:^(TelegramDesktop)$"
+
+        # Steam Rules
+        "float, class:^(steam)$"
+        "tile, class:^(steam)$, title:^(Steam)$" # Force main window to tile
+        "float, class:^(steam)$, title:^(Friends List)$"
+        "float, class:^(steam)$, title:^(Steam - News)$"
+        "float, class:^(steam)$, title:^()$" # For empty title popups
+        "center, class:^(steam)$"
       ];
     };
   };
 
-  # Waybar Config
-  programs.waybar = {
+  # GTK and Dark Mode Settings
+  gtk = {
     enable = true;
-    # We will copy the style/config later or let user manage it
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome-themes-extra;
+    };
+    iconTheme = {
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
+    };
+    cursorTheme = {
+      name = "Adwaita";
+      package = pkgs.adwaita-icon-theme;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+    };
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+    };
+  };
+
+  qt = {
+    enable = true;
+    platformTheme.name = "gtk";
+    style.name = "adwaita-dark";
+  };
+
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+    };
   };
 
   # Fuzzel Config
@@ -207,12 +264,15 @@
     hyprpaper
     hyprlock
     hypridle
+    wlogout
+    polkit_gnome
     swappy               # Screenshot editor (used in $capturing)
     
     # Utilities
     cliphist
     grim
     slurp
+    jq
     blueman
     pavucontrol
     brightnessctl
@@ -220,6 +280,142 @@
     
     # Minimalistic Apps
     xfce.thunar
-    xfce.mousepad
-  ];
-}
+        xfce.mousepad
+      ];
+    
+                  # Wlogout Style Overrides
+    
+                  xdg.configFile."swappy/config".text = ''
+    
+                    [Default]
+    
+                    save_dir=$HOME/Pictures/Screenshots
+    
+                    save_filename_format=screenshot_%Y%m%d_%H%M%S.png
+    
+                    show_panel=false
+    
+                    line_size=5
+    
+                    text_size=20
+    
+                    text_font=JetBrainsMono Nerd Font
+    
+                    paint_mode=brush
+    
+                    early_exit=true
+    
+                    fill_shape=false
+    
+                  '';
+    
+                
+    
+                  xdg.configFile."wlogout/layout".text = ''
+    
+                
+    
+                  {
+    
+                      "label" : "lock",
+    
+                      "action" : "hyprlock",
+    
+                      "text" : "Lock",
+    
+                      "keybind" : "l"
+    
+                  }
+    
+                  {
+    
+                      "label" : "logout",
+    
+                      "action" : "hyprctl dispatch exit",
+    
+                      "text" : "Logout",
+    
+                      "keybind" : "e"
+    
+                  }
+    
+                  {
+    
+                      "label" : "suspend",
+    
+                      "action" : "systemctl suspend",
+    
+                      "text" : "Suspend",
+    
+                      "keybind" : "u"
+    
+                  }
+    
+                  {
+    
+                      "label" : "reboot",
+    
+                      "action" : "systemctl reboot",
+    
+                      "text" : "Reboot",
+    
+                      "keybind" : "r"
+    
+                  }
+    
+                  {
+    
+                      "label" : "shutdown",
+    
+                      "action" : "systemctl poweroff",
+    
+                      "text" : "Shutdown",
+    
+                      "keybind" : "s"
+    
+                  }
+    
+                '';
+    
+              
+    
+            
+    
+          
+    
+        
+            xdg.configFile."wlogout/style.css".text = ''
+        * {
+            background-image: none;
+            font-family: "JetBrainsMono Nerd Font";
+        }
+    
+        window {
+            background-color: rgba(30, 30, 46, 0.9);
+        }
+    
+        button {
+            color: #cdd6f4;
+            background-color: #1e1e2e;
+            border: 2px solid #313244;
+            border-radius: 20px;
+            margin: 10px;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 35%;
+        }
+    
+        button:hover {
+            background-color: #313244;
+            border-color: #f38ba8;
+        }
+    
+        #lock { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/lock.png")); }
+        #logout { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/logout.png")); }
+        #suspend { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/suspend.png")); }
+        #hibernate { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/hibernate.png")); }
+        #shutdown { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/shutdown.png")); }
+        #reboot { background-image: image(url("${pkgs.wlogout}/share/wlogout/icons/reboot.png")); }
+      '';
+    }
+    

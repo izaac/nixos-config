@@ -14,6 +14,9 @@
     ./kitty.nix
     ./cava.nix
     ./hyprland.nix
+    ./waybar.nix
+    ./hyprlock.nix
+    ./hypridle.nix
   ];
 
   home.username = userConfig.username;

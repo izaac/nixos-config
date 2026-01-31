@@ -27,6 +27,7 @@
     '';
 
     settings = {
+      enabled_layouts = "splits,stack";
       background_opacity = "0.85";
       background_opacity_unfocused = "0.7";
       window_padding_width = 10;
@@ -58,7 +59,9 @@
 
     keybindings = {
       "ctrl+shift+t" = "new_tab_with_cwd";
-      "ctrl+shift+n" = "new_window_with_cwd";
+      "ctrl+shift+n" = "launch --location=hsplit --cwd=current";
+      "ctrl+shift+\\" = "launch --location=vsplit --cwd=current";
+      "ctrl+shift+f" = "toggle_layout stack";
       "ctrl+shift+left"  = "neighboring_window left";
       "ctrl+shift+right" = "neighboring_window right";
       "ctrl+shift+up"    = "neighboring_window up";

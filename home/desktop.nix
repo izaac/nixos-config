@@ -6,6 +6,8 @@
   
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
+    nerd-fonts.symbols-only
+    font-awesome
     
     # Essential Tools & GNOME Apps to Keep
     seahorse
