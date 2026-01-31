@@ -103,7 +103,7 @@
   users.users.${userConfig.username} = {
     isNormalUser = true;
     description = userConfig.name;
-    extraGroups = [ "networkmanager" "wheel" "docker" "input" "video" "libvirtd" "kvm" "render" "dialout" ];
+    extraGroups = [ "networkmanager" "wheel" "input" "video" "libvirtd" "kvm" "render" "dialout" "podman" ];
   };
 
   # Sudo Config

@@ -67,12 +67,6 @@
       # Critical for GPG password prompts to appear in the terminal
       export GPG_TTY=$(tty)
 
-      # --- FNM (Node Manager) Init ---
-      # Enable 'fnm' command and auto-switching if the binary is found
-      if command -v fnm >/dev/null; then
-        eval "$(fnm env --use-on-cd)"
-      fi
-
       # --- Yazi Wrapper (CD on exit) ---
       function y() {
         local tmp="''$(mktemp -t "yazi-cwd.XXXXXX")"
@@ -96,6 +90,50 @@
             echo -e "\n"
           fi
         '
+      }
+
+      # --- Project Initializers (Golden Master) ---
+      function ninit() {
+        local ver="''${1:-}"
+        local target="node"
+        if [ -n "$ver" ]; then target="node_$ver"; fi
+        
+        cat <<EOF > .envrc
+use flake ~/nixos-config/templates#$target
+watch_file package.json
+watch_file yarn.lock
+watch_file pnpm-lock.yaml
+
+if [ ! -d "node_modules" ]; then
+  echo "📦 node_modules missing. Attempting install..."
+  if [ -f "pnpm-lock.yaml" ]; then pnpm install;
+  elif [ -f "yarn.lock" ]; then yarn install;
+  else npm install; fi
+fi
+EOF
+        direnv allow
+      }
+
+      function pinit() {
+        local ver="''${1:-}"
+        local target="python"
+        if [ -n "$ver" ]; then target="python_$ver"; fi
+
+        cat <<EOF > .envrc
+use flake ~/nixos-config/templates#$target
+watch_file requirements.txt
+watch_file pyproject.toml
+EOF
+        direnv allow
+      }
+
+      function rinit() {
+        cat <<EOF > .envrc
+use flake ~/nixos-config/templates#rust
+watch_file Cargo.toml
+watch_file Cargo.lock
+EOF
+        direnv allow
       }
 
       # Ensure local binaries are in PATH (at the end to avoid overrides)

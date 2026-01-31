@@ -9,7 +9,7 @@
     tree-sitter
     
     # --- LANGUAGES & TOOLCHAINS ---
-    fnm
+    docker-compose
     
     # --- DATA & FORMATTING ---
     sqlite
@@ -106,5 +106,12 @@
     enableSshSupport = true;
     pinentry.package = pkgs.pinentry-gnome3;
     defaultCacheTtl = 3600;
+  };
+
+  # --- DIRENV ---
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    enableBashIntegration = true;
   };
 }
