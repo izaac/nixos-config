@@ -147,14 +147,15 @@
     dates = "weekly";
     options = "--delete-older-than 7d";
   };
+  nix.settings.max-jobs = 16;
   nix.settings.auto-optimise-store = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.trusted-users = [ "root" "@wheel" ];
 
   # Limit Nix Build Resources
   systemd.services.nix-daemon.serviceConfig.Nice = lib.mkForce 10;
-  systemd.services.nix-daemon.serviceConfig.MemoryMax = lib.mkForce "16G";
-  systemd.services.nix-daemon.serviceConfig.MemoryHigh = lib.mkForce "14G";
+  systemd.services.nix-daemon.serviceConfig.MemoryMax = lib.mkForce "24G";
+  systemd.services.nix-daemon.serviceConfig.MemoryHigh = lib.mkForce "20G";
 
   # --- DOCUMENTATION ---
   # Disable documentation to save space and reduce small file overhead.

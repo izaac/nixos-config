@@ -21,6 +21,9 @@
     appimage-run
     wl-clipboard
     dwarfs fuse3
+    nvitop
+    nvtopPackages.nvidia
+    bluetuith
   ];
 
   programs.bash = {
@@ -51,7 +54,7 @@
       ncl = "nh clean all --keep 10";
       up = "st && nh os switch --update"; # Update flake inputs AND switch
       ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
-      gpu = "nvtop";
+      gpu = "nvitop";
       ai = "npx @google/gemini-cli@latest";
       ask = "npx @google/gemini-cli@latest chat";
     };
@@ -60,6 +63,7 @@
       EDITOR = "nvim";
       VISUAL = "nvim";
       BAT_THEME = "TwoDark";
+      SSH_AUTH_SOCK = "/run/user/${userConfig.username}/keyring/ssh";
     };
 
     initExtra = ''

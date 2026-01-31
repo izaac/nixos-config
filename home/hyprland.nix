@@ -15,6 +15,7 @@
 
       monitor = [
         ", preferred, auto, 1"
+        "DP-1, 3440x1440@144, 0x0, 1"
       ];
 
       env = [
@@ -26,6 +27,7 @@
         "XDG_SESSION_DESKTOP, Hyprland"
         "QT_QPA_PLATFORM, wayland;xcb"
         "GBM_BACKEND, nvidia-drm"
+        "SSH_AUTH_SOCK, $XDG_RUNTIME_DIR/keyring/ssh"
       ];
 
       input = {
@@ -92,7 +94,6 @@
 
       # Autostart
       exec-once = [
-        "waybar"
         "swaync"
         "hyprpaper"
         "blueman-applet"
@@ -113,6 +114,8 @@
         "$mainMod, Print, exec, grim - | swappy -f -"
         "ALT, Print, exec, hyprctl -j activewindow | jq -r '\"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])\"' | grim -g - - | swappy -f -"
 
+        "$mainMod, L, exec, loginctl lock-session"
+        "$mainMod, BACKSPACE, exec, wlogout -b 5"
         "$mainMod SHIFT, M, exec, loginctl terminate-user \"\""
         "$mainMod SHIFT, R, exec, systemctl reboot"
         "$mainMod SHIFT, V, togglefloating"
@@ -280,10 +283,10 @@
     
     # Minimalistic Apps
     xfce.thunar
-        xfce.mousepad
-      ];
-    
-                  # Wlogout Style Overrides
+    xfce.mousepad
+  ];
+
+  # Swappy Style Overrides
     
                   xdg.configFile."swappy/config".text = ''
     
