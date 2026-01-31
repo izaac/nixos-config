@@ -26,6 +26,10 @@
     bluetuith
   ];
 
+  home.sessionVariables = {
+    DIRENV_LOG_FORMAT = "";
+  };
+
   programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -64,7 +68,6 @@
       VISUAL = "nvim";
       BAT_THEME = "TwoDark";
       SSH_AUTH_SOCK = "/run/user/${userConfig.username}/keyring/ssh";
-      DIRENV_LOG_FORMAT = "";
     };
 
     initExtra = ''

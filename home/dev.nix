@@ -25,6 +25,7 @@
       commandLineArgs = [
         "--enable-features=UseOzonePlatform"
         "--ozone-platform=wayland"
+        "--password-store=gnome-libsecret"
       ];
     })
     
@@ -113,5 +114,12 @@
     enable = true;
     nix-direnv.enable = true;
     enableBashIntegration = true;
+    
+    # TOML configuration to surgically silence the export list.
+    config = {
+      global = {
+        hide_env_diff = true; 
+      };
+    };
   };
 }

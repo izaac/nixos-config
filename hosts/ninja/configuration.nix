@@ -90,14 +90,31 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     
-    # High Fidelity Configuration
+    # High Fidelity & Stability Configuration
     extraConfig.pipewire."92-high-quality" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
         "default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 32000 24000 16000 ];
+        "default.clock.quantum" = 512;
+        "default.clock.min-quantum" = 32;
+        "default.clock.max-quantum" = 1024;
       };
     };
+    extraConfig.pipewire."99-input-denoising" = {
+      "context.modules" = [
+        {
+          name = "libpipewire-module-protocol-native";
+          args = { };
+        }
+      ];
+    };
   };
+
+  # Disable audio power saving to prevent "popping" when sound starts
+  boot.extraModprobeConfig = ''
+    options snd_hda_intel power_save=0
+    options snd_usb_audio ignore_ctl_error=1
+  '';
 
   # User Account
     users.users.${userConfig.username} = {
