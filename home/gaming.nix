@@ -9,6 +9,8 @@ in
     flashgbx
 
     # Gaming Tools
+    heroic
+    lutris
     samrewritten
     protonup-qt
     cartridges

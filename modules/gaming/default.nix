@@ -3,8 +3,23 @@
 {
   # 1. Controller & Hardware Support
   # Provides udev rules for Steam Deck, DualSense, and other controllers.
-  # Still needed for games running in containers.
   hardware.steam-hardware.enable = true;
+
+  # 2. Host Steam Configuration
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+    gamescopeSession.enable = true; # Adds "Steam Deck" session support
+    extraCompatPackages = [ pkgs.steamtinkerlaunch ];
+    extraPackages = with pkgs; [
+      libvdpau
+      libva
+      mangohud
+      protonup-qt
+    ];
+  };
 
   programs.gamescope = {
     enable = true;
