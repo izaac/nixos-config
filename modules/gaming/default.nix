@@ -54,7 +54,7 @@
     # Fast Synchronization (ntsync / fsync)
     # ntsync is the modern NT synchronization driver (XanMod 6.13+)
     # fsync is the standard high-performance sync method
-    PROTON_USE_NTSYNC = "1";
+    # PROTON_USE_NTSYNC = "1";
     WINE_FSYNC = "1";
 
     # Wayland Fixes for NVIDIA
