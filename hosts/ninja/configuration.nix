@@ -141,6 +141,7 @@
     pciutils
     parted
     sshfs
+    gcr # Required for gnome-keyring graphical prompts
   ];
 
   # Services

@@ -67,7 +67,6 @@
       EDITOR = "nvim";
       VISUAL = "nvim";
       BAT_THEME = "TwoDark";
-      SSH_AUTH_SOCK = "/run/user/${userConfig.username}/keyring/ssh";
     };
 
     initExtra = ''

@@ -94,8 +94,9 @@
 
       # Autostart
       exec-once = [
-        "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-        "gnome-keyring-daemon --start --components=secrets,ssh"
+        "dbus-update-activation-environment --systemd --all"
+        "systemctl --user import-environment QT_QPA_PLATFORMTHEME"
+        "dex --autostart --environment hyprland"
         "swaync"
         "hyprpaper"
         "blueman-applet"
@@ -271,6 +272,7 @@
     hypridle
     wlogout
     polkit_gnome
+    dex                  # XDG Autostart tool
     swappy               # Screenshot editor (used in $capturing)
     
     # Utilities

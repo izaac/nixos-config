@@ -11,6 +11,7 @@
     
     # Essential Tools & GNOME Apps to Keep
     seahorse
+    libsecret
     amberol
     haruna
     telegram-desktop
@@ -29,7 +30,6 @@
     mpv
     ffmpeg-full
     jellyfin-desktop
-    seahorse        # Keyring Manager
     
     # Virtualization (keep these)
     gnome-boxes
@@ -95,18 +95,4 @@
       "inode/directory" = [ "thunar.desktop" ];
     };
   };
-
-  # Autostart JamesDSP in tray
-  xdg.configFile."autostart/jamesdsp.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Name=JamesDSP
-    Exec=jamesdsp --tray
-    Icon=jamesdsp
-    Comment=Audio Effect Processor
-    Terminal=false
-    Categories=AudioVideo;Audio;
-    StartupNotify=false
-    X-GNOME-Autostart-enabled=true
-  '';
 }
