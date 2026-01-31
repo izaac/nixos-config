@@ -7,22 +7,11 @@
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     
-    # --- GNOME EXTENSIONS
-    gnomeExtensions.appindicator        # Tray Icons support
-
-    # Gnome Tools
-    gnome-tweaks
+    # Essential Tools & GNOME Apps to Keep
     seahorse
     amberol
     haruna
-    pika-backup
-    mission-center
-    gnome-boxes
-    virt-manager
-    virt-viewer
-    spice-gtk
     telegram-desktop
-    boxbuddy
 
     # Audio Tools
     lsp-plugins         # Pro-grade audio plugins
@@ -32,24 +21,21 @@
     # General Software
     sparrow
     filezilla       # WinSCP Replacement
-    sushi           # "Spacebar" file previewer
     celluloid
     foliate
     mpv
     ffmpeg-full
     jellyfin-desktop
+    seahorse        # Keyring Manager
+    
+    # Virtualization (keep these)
+    gnome-boxes
+    virt-manager
+    virt-viewer
+    spice-gtk
+    boxbuddy
+    loupe
   ];
-
-  # --- GNOME CONFIG ---
-  # Enable installed Gnome extensions
-  dconf.settings = {
-    "org/gnome/shell" = {
-      disable-user-extensions = false;
-      enabled-extensions = [
-        "appindicatorsupport@rgcjonas.gmail.com"
-      ];
-    };
-  };
 
   xdg.userDirs = {
     enable = true;
@@ -67,9 +53,9 @@
       "x-scheme-handler/unknown" = [ "firefox.desktop" ];
       
       # Text
-      "text/plain" = [ "org.gnome.TextEditor.desktop" ];
-      "text/markdown" = [ "org.gnome.TextEditor.desktop" ];
-      "text/x-log" = [ "org.gnome.TextEditor.desktop" ];
+      "text/plain" = [ "org.xfce.mousepad.desktop" ];
+      "text/markdown" = [ "org.xfce.mousepad.desktop" ];
+      "text/x-log" = [ "org.xfce.mousepad.desktop" ];
 
       # Archives
       "application/zip" = [ "peazip.desktop" ];
@@ -103,7 +89,7 @@
       "image/tiff" = [ "org.gnome.Loupe.desktop" ];
       
       # Directories
-      "inode/directory" = [ "org.gnome.Nautilus.desktop" ];
+      "inode/directory" = [ "thunar.desktop" ];
     };
   };
 

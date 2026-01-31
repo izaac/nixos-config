@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, userConfig, ... }:
+{ config, pkgs, inputs, lib, userConfig, ... }:
 
 {
   imports =
@@ -100,11 +100,11 @@
   };
 
   # User Account
-  users.users.${userConfig.username} = {
-    isNormalUser = true;
-    description = userConfig.name;
-    extraGroups = [ "networkmanager" "wheel" "input" "video" "libvirtd" "kvm" "render" "dialout" "podman" ];
-  };
+    users.users.${userConfig.username} = {
+      isNormalUser = true;
+      description = userConfig.name;
+      extraGroups = [ "wheel" "input" "video" "libvirtd" "kvm" "render" "dialout" "podman" ];
+    };
 
   # Sudo Config
   security.sudo = {
@@ -148,6 +148,12 @@
   };
   nix.settings.auto-optimise-store = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.trusted-users = [ "root" "@wheel" ];
+
+  # Limit Nix Build Resources
+  systemd.services.nix-daemon.serviceConfig.Nice = lib.mkForce 10;
+  systemd.services.nix-daemon.serviceConfig.MemoryMax = lib.mkForce "16G";
+  systemd.services.nix-daemon.serviceConfig.MemoryHigh = lib.mkForce "14G";
 
   # --- DOCUMENTATION ---
   # Disable documentation to save space and reduce small file overhead.

@@ -19,7 +19,6 @@ in
     input-remapper
     umu-launcher
     # Emulation
-    # (bottles.override { removeWarningPopup = true; }) # Removed as per user request for container-only gaming
     
     # Custom Script to fetch latest Conty
     (pkgs.writeShellScriptBin "update-conty" ''

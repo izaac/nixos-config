@@ -1,37 +1,51 @@
 { pkgs, ... }:
 
 {
-  # Enable the X11 windowing system.
+  # --- HYPRLAND DESKTOP ENVIRONMENT ---
+  programs.hyprland.enable = true;
+
+  # XServer is technically required for the DM infrastructure in NixOS
   services.xserver.enable = true;
 
-  # Enable the GNOME Desktop Environment.
-  services.displayManager.gdm = {
+  # Enable SDDM (Simple Desktop Display Manager) with Wayland support
+  services.displayManager.sddm = {
     enable = true;
-    wayland = true;
-    autoSuspend = false;
+    wayland.enable = true;
+    theme = "sddm-astronaut-theme";
+    package = pkgs.kdePackages.sddm; # Use Qt6 version for better Wayland support
+    extraPackages = [ pkgs.kdePackages.qtmultimedia ];
   };
-  services.desktopManager.gnome.enable = true;
 
-  # Ensure GNOME services are optimized for speed
+  # Install the theme
+  environment.systemPackages = [
+    pkgs.sddm-astronaut
+  ];
+
+  # Note: services.desktopManager.gnome.enable is NOT set, so we get SDDM + Hyprland only.
+
+  # Ensure GNOME services are optimized for speed (Keyring is vital for Hyprland too)
   services.gnome = {
     gnome-keyring.enable = true;
     gnome-initial-setup.enable = false;
   };
 
-  # Optimized Portal Configuration to prevent 20s timeouts
+  # Optimized Portal Configuration
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
-    config.common.default = [ "gnome" "gtk" ];
+    extraPortals = [ pkgs.xdg-desktop-portal-hyprland pkgs.xdg-desktop-portal-gtk ];
+    config.common.default = "hyprland";
   };
 
-  # Configure keymap
+  # Keyboard Layout
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
-  
+
+  # Services often useful for desktop usage
+  services.libinput.enable = true; # Touchpad support
+
   # Comprehensive GNOME Debloat
   environment.gnome.excludePackages = with pkgs; [
     gnome-tour

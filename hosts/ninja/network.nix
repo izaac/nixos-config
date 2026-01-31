@@ -1,10 +1,10 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   networking = {
     hostName = "ninja";
-    networkmanager.enable = true;
-    networkmanager.unmanaged = [ "type:wifi" ];
+    useDHCP = false;
+    networkmanager.enable = lib.mkForce false;
 
     # --- STATIC IP CONFIGURATION ---
     interfaces.eno1.ipv4.addresses = [{
@@ -28,4 +28,5 @@
   # Stop wpa_supplicant and ModemManager from running
   systemd.services.wpa_supplicant.enable = false;
   systemd.services.ModemManager.enable = false;
+  programs.nm-applet.enable = false;
 }

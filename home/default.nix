@@ -13,6 +13,7 @@
     ./tmux.nix
     ./kitty.nix
     ./cava.nix
+    ./hyprland.nix
   ];
 
   home.username = userConfig.username;
