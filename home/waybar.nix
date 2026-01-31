@@ -4,6 +4,7 @@
   programs.waybar = {
     enable = true;
     systemd.enable = true;
+    systemd.target = "hyprland-session.target";
     
     settings = {
       mainBar = {
@@ -167,4 +168,8 @@
       }
     '';
   };
+
+  # Waybar has a known PulseAudio file descriptor leak that causes it to crash
+  # every few minutes when reaching the 1024 limit. Raising the limit mitigates this.
+  systemd.user.services.waybar.Service.LimitNOFILE = 1048576;
 }

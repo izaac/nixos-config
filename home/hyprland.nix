@@ -95,7 +95,7 @@
       # Autostart
       exec-once = [
         "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-        "gnome-keyring-daemon --start --components=secrets"
+        "gnome-keyring-daemon --start --components=secrets,ssh"
         "swaync"
         "hyprpaper"
         "blueman-applet"
