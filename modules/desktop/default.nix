@@ -8,7 +8,7 @@
   services.xserver.enable = true;
 
   # Enable GDM (GNOME Display Manager)
-  services.xserver.displayManager.gdm = {
+  services.displayManager.gdm = {
     enable = true;
     wayland = true;
   };
@@ -52,6 +52,13 @@
 
   # Services often useful for desktop usage
   services.libinput.enable = true; # Touchpad support
+
+  # Theme and Customization Tools for GDM and Desktop
+  environment.systemPackages = with pkgs; [
+    orchis-theme
+    flat-remix-gnome
+    flat-remix-gtk
+  ];
 
   # Comprehensive GNOME Debloat
   environment.gnome.excludePackages = with pkgs; [

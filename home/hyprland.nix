@@ -133,9 +133,10 @@
         "$mainMod SHIFT, G, exec, hyprctl --batch \"keyword general:gaps_out 5;keyword general:gaps_in 3\""
         "$mainMod, G, exec, hyprctl --batch \"keyword general:gaps_out 0;keyword general:gaps_in 0\""
 
-        # Waybar
+        # Waybar / SwayNC
         "$mainMod, O, exec, killall -SIGUSR2 waybar"
         "$mainMod SHIFT, W, exec, killall waybar || waybar"
+        "$mainMod SHIFT, N, exec, swaync-client -rs"
 
         # Focus
         "$mainMod, left, movefocus, l"
@@ -211,8 +212,8 @@
   gtk = {
     enable = true;
     theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
     };
     iconTheme = {
       name = "Adwaita";
@@ -221,12 +222,6 @@
     cursorTheme = {
       name = "Adwaita";
       package = pkgs.adwaita-icon-theme;
-    };
-    gtk3.extraConfig = {
-      gtk-application-prefer-dark-theme = 1;
-    };
-    gtk4.extraConfig = {
-      gtk-application-prefer-dark-theme = 1;
     };
   };
 

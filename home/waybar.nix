@@ -19,7 +19,18 @@
         
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "network" "cpu" "memory" "tray" "custom/power" ];
+        modules-right = [ "pulseaudio" "bluetooth" "network" "cpu" "memory" "tray" "custom/power" ];
+
+        "bluetooth" = {
+          format = " {status}";
+          format-connected = " {device_alias}";
+          format-connected-battery = " {device_alias} {device_battery_percentage}%";
+          tooltip-format = "{controller_alias}\t{controller_address}\n\n{num_connections} connected";
+          tooltip-format-connected = "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}";
+          tooltip-format-enumerate-connected = "{device_alias}\t{device_address}";
+          tooltip-format-enumerate-connected-battery = "{device_alias}\t{device_address}\t{device_battery_percentage}%";
+          on-click = "blueman-manager";
+        };
 
         "hyprland/workspaces" = {
           disable-scroll = true;
@@ -156,11 +167,15 @@
         padding: 0 10px;
       }
 
-      #cpu, #memory, #network, #pulseaudio, #custom-power, #tray {
+      #cpu, #memory, #network, #pulseaudio, #bluetooth, #custom-power, #tray {
         background-color: #1e1e2e;
         padding: 0 10px;
         margin-left: 10px;
         border-radius: 10px;
+      }
+
+      #bluetooth {
+        color: #89b4fa;
       }
 
       #custom-power {
