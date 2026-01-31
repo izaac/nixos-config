@@ -74,9 +74,14 @@
       General = {
         Enable = "Source,Sink,Media,Socket";
         Experimental = true; # Enables battery reporting for some devices
+        IdleTimeout = 0;     # Prevents the adapter from powering down too quickly
+        AutoConnectTimeout = 180; # 3 minutes for auto-reconnection
       };
     };
   };
+
+  # Enable systemd-oomd for better memory pressure management
+  systemd.oomd.enable = true;
 
   time.timeZone = "America/Phoenix";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -99,14 +104,6 @@
         "default.clock.min-quantum" = 32;
         "default.clock.max-quantum" = 1024;
       };
-    };
-    extraConfig.pipewire."99-input-denoising" = {
-      "context.modules" = [
-        {
-          name = "libpipewire-module-protocol-native";
-          args = { };
-        }
-      ];
     };
   };
 

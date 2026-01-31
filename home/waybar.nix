@@ -15,6 +15,7 @@
         margin-top = 6;
         margin-left = 10;
         margin-right = 10;
+        restart-interval = 5;
         
         modules-left = [ "hyprland/workspaces" "hyprland/window" ];
         modules-center = [ "clock" ];

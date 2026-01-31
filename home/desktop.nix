@@ -14,6 +14,7 @@
     amberol
     haruna
     telegram-desktop
+    gnome-themes-extra
 
     # Audio Tools
     lsp-plugins         # Pro-grade audio plugins
