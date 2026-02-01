@@ -48,5 +48,9 @@
     kdePackages.kdenlive       # Video Editor (Optional but native)
     kdePackages.kio-fuse       # FUSE interface for KIO
     kdePackages.kio-extras     # Extra protocols for KIO
+    
+    # Secret Management (Seahorse Replacement)
+    kdePackages.kwalletmanager # Manage KWallet secrets GUI
+    kdePackages.kleopatra      # Certificate Manager (GPG/S/MIME)
   ];
 }

@@ -18,7 +18,8 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true; # Better for 50-series power state switching
-    open = true; # Using the open kernel modules for the 5070 Ti
+    powerManagement.finegrained = false;
+    open = true; # Open modules required for RTX 50-series (Blackwell)
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     nvidiaPersistenced = true;
@@ -26,7 +27,7 @@
 
   # 3. Kernel Modules & Wayland Environment
   boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
-  boot.kernelParams = [ "nvidia_drm.fbdev=1" ];
+  boot.kernelParams = [ ]; 
   
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
@@ -45,6 +46,7 @@
 
   # 5. The Undervolt Service (Clock Locking)
   systemd.services.nvidia-lock-clocks = {
+    enable = true; 
     description = "Lock NVIDIA GPU Clocks for stability and undervolting";
     after = [ "display-manager.service" "nvidia-persistenced.service" ];
     wantedBy = [ "multi-user.target" ];

@@ -19,6 +19,7 @@
     jamesdsp            # Audio effects processor
 
     # General Software
+    kdePackages.elisa # Simple Music Player
     sparrow
     filezilla       # WinSCP Replacement
     mpv

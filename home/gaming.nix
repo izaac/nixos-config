@@ -20,6 +20,8 @@ in
     vkbasalt
     input-remapper
     umu-launcher
+    steamtinkerlaunch
+    gamescope
     # Emulation
     
     # Custom Script to fetch latest Conty

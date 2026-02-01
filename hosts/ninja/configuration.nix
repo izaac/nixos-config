@@ -66,14 +66,28 @@
   # "powersave" governor with amd_pstate=active intelligently scales clocks based on load for efficiency.
   powerManagement.cpuFreqGovernor = "powersave";
 
+  # --- DISABLE SUSPEND/HIBERNATE ---
+  # Prevent accidental suspend which causes black screen freezes
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+  services.logind = {
+    settings.Login = {
+      HandleSuspendKey = "ignore";
+      HandleHibernateKey = "ignore";
+      HandleLidSwitch = "ignore";
+    };
+  };
+
   # Bluetooth Optimizations
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
+    disabledPlugins = [ "bap" ];
     settings = {
       General = {
         Enable = "Source,Sink,Media,Socket";
-        Disable = "bap";
         Experimental = true; # Enables battery reporting for some devices
         IdleTimeout = 0;     # Prevents the adapter from powering down too quickly
         AutoConnectTimeout = 180; # 3 minutes for auto-reconnection
