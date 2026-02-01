@@ -13,6 +13,8 @@
     ./tmux.nix
     ./kitty.nix
     ./cava.nix
+    ./qt.nix
+    ./chromium.nix
   ];
 
   home.username = userConfig.username;

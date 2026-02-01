@@ -39,6 +39,7 @@
         "browser.tabs.firefox-view" = false;
         "browser.compactmode.show" = true;
         "browser.uidensity" = 1;
+        "ui.systemUsesDarkTheme" = 1;
       };
     };
   };
