@@ -101,12 +101,20 @@
   };
   
   home.file.".gnupg/common.conf".text = "use-keyboxd";
+  home.file.".pam-gnupg".text = ''
+    558F90AD0CFA39DB14CF2E9370073BF860AE0A2A
+    9FE9496B3FF98EED829F2FD4BE0A07C5C64AA998
+    841969EBFACD2E9E45FF7349BE991D37D7079FBF
+  '';
   
   services.gpg-agent = {
     enable = true;
     enableSshSupport = false;
-    pinentry.package = pkgs.pinentry-gnome3;
+    pinentry.package = pkgs.pinentry-qt;
     defaultCacheTtl = 3600;
+    extraConfig = ''
+      allow-preset-passphrase
+    '';
   };
 
   # --- DIRENV ---

@@ -9,6 +9,10 @@
     enable = true;
     wayland.enable = true;
   };
+  
+  # Auto-unlock KWallet on login
+  security.pam.services.sddm.enableKwallet = true;
+  security.pam.services.sddm.gnupg.enable = true;
 
   # XServer is required for SDDM and XWayland
   services.xserver = {

@@ -33,7 +33,8 @@ in
           -o max_conns=4
       '';
       
-      ExecStop = "/run/current-system/sw/bin/fusermount -u ${mountPoint}";
+      ExecStop = "/run/current-system/sw/bin/fusermount -uz ${mountPoint}";
+      TimeoutStopSec = 5;
       Restart = "on-failure";
       RestartSec = "10";
     };

@@ -143,7 +143,10 @@
     sshfs
     psmisc
     gcr # Required for gnome-keyring graphical prompts
+    pam_gnupg # Required for GPG unlocking
   ];
+
+  security.pam.services.login.gnupg.enable = true;
 
   # Services
   services.openssh = {
