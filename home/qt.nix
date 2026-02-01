@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   qt = {
@@ -23,6 +23,9 @@
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
     };
+    # Move GTK2 config to a non-conflicting location since KDE/Plasma 
+    # manages the main .gtkrc-2.0 and causes HM activation failures.
+    gtk2.configLocation = "${config.home.homeDirectory}/.gtkrc-2.0-hm";
   };
 
   # Modern GTK apps (Libadwaita, etc.) look at dconf for color scheme

@@ -15,7 +15,6 @@
     xz zstd lz4 
     gnutar gzip bzip2
     libarchive
-    peazip
     
     # --- SYSTEM TOOLS ---
     appimage-run

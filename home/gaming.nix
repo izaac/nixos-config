@@ -22,6 +22,11 @@ in
     umu-launcher
     steamtinkerlaunch
     gamescope
+    
+    # Wine / Windows Compatibility
+    wineWowPackages.waylandFull # 32-bit + 64-bit Wine with Wayland support
+    winetricks
+    
     # Emulation
     
     # Custom Script to fetch latest Conty

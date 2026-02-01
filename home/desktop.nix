@@ -14,24 +14,42 @@
     telegram-desktop
 
     # Audio Tools
-    lsp-plugins         # Pro-grade audio plugins
-    calf                # Common audio effects
+    (pkgs.symlinkJoin {
+      name = "lsp-plugins-hidden";
+      paths = [ pkgs.lsp-plugins ];
+      postBuild = "rm -rf $out/share/applications";
+    })
+    (pkgs.symlinkJoin {
+      name = "calf-hidden";
+      paths = [ pkgs.calf ];
+      postBuild = "rm -rf $out/share/applications";
+    })
     jamesdsp            # Audio effects processor
 
     # General Software
     kdePackages.elisa # Simple Music Player
+    kdePackages.k3b   # CD/DVD/Blu-ray Burning & Ripping
     sparrow
     filezilla       # WinSCP Replacement
     mpv
     ffmpeg-full
     jellyfin-desktop
+
+    # CD/DVD Backup & Cloning
+    cdrtools        # CLI: readcd, etc.
+    cdrdao          # CLI: Disc-at-once cloning
+    dvdisaster      # Error correction/data preservation
+    ddrescue        # Robust data recovery
     
-    # Virtualization (keep these)
-    gnome-boxes
-    virt-manager
-    virt-viewer
-    spice-gtk
+    # Virtualization (Distrobox Management)
     boxbuddy
+
+    # Core KDE Apps (Ensuring they are present and managed)
+    kdePackages.kate      # Advanced Text Editor (Includes KWrite)
+    kdePackages.gwenview  # Image Viewer
+    kdePackages.ark       # Archive Manager
+    kdePackages.dolphin   # File Manager
+    kdePackages.okular    # Document Viewer
   ];
 
   xdg.userDirs = {

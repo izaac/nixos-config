@@ -13,6 +13,7 @@
       ../../modules/core/usb-fixes.nix
       ../../modules/core/maintenance.nix
       ../../modules/core/sshfs.nix
+      ../../modules/core/nfs.nix
       ../../modules/gaming/default.nix
       ../../modules/desktop/default.nix
     ];
@@ -132,7 +133,7 @@
     users.users.${userConfig.username} = {
       isNormalUser = true;
       description = userConfig.name;
-      extraGroups = [ "wheel" "input" "video" "libvirtd" "kvm" "render" "dialout" "podman" ];
+      extraGroups = [ "wheel" "input" "video" "render" "dialout" "podman" ];
     };
 
   # Sudo Config
@@ -144,6 +145,9 @@
     '';
   };
 
+  # Optical Drive Support
+  programs.k3b.enable = true;
+
   # System Packages (Essentials Only)
   environment.systemPackages = with pkgs; [
     vim
@@ -153,6 +157,7 @@
     libglvnd
     tree
     pciutils
+    usbutils
     parted
     sshfs
     psmisc

@@ -34,7 +34,7 @@
             ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
+            home-manager.backupFileExtension = "hm-backup";
             home-manager.extraSpecialArgs = { inherit userConfig; };
             home-manager.users.${userConfig.username} = import ./home/default.nix;
           }
