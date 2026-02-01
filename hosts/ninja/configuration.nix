@@ -13,7 +13,6 @@
       ../../modules/core/usb-fixes.nix
       ../../modules/core/maintenance.nix
       ../../modules/core/sshfs.nix
-      ../../modules/core/nfs.nix
       ../../modules/gaming/default.nix
       ../../modules/desktop/default.nix
     ];
@@ -48,6 +47,14 @@
 
   # ZRAM (Compressed RAM Swap)
   zramSwap.enable = true;
+
+  # --- KERNEL MODULES ---
+  boot.blacklistedKernelModules = [
+    "sp5100_tco" # AMD Watchdog (can cause freezes)
+    "eeepc_wmi"  # Legacy ASUS laptop driver
+    "joydev"     # Legacy joystick API
+    "pcspkr"     # Motherboard beep
+  ];
 
   # --- CORE HARDWARE TWEAKS ---
   boot.kernelParams = [
@@ -167,18 +174,17 @@
 
   security.pam.services.login.gnupg.enable = true;
 
-  # Services
   services.openssh = {
     enable = true;
     settings = {
-      # Authentication via keys only; password authentication disabled.
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
     };
   };
   services.fstrim.enable = true;
   services.flatpak.enable = true;
-  services.power-profiles-daemon.enable = true;
+  services.power-profiles-daemon.enable = false;
+  services.acpid.enable = lib.mkForce false;
 
   # Nix Maintenance
   nix.gc = {

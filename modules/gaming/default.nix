@@ -42,7 +42,7 @@
 
   # 5. Controller & Hardware Support (The "Maximized" List)
   hardware.xpadneo.enable = true; # Xbox Bluetooth
-  services.joycond.enable = true; # Nintendo Switch JoyCons (Merge L+R)
+  services.joycond.enable = false; # Nintendo Switch JoyCons (Merge L+R)
   hardware.uinput.enable = true;  # Virtual Input (Critical for remapping tools)
   services.input-remapper.enable = true; # Easy input remapping daemon
   
