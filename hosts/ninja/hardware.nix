@@ -12,7 +12,7 @@
   fileSystems."/" = { 
     device = "/dev/disk/by-uuid/4d34b1f8-2252-429d-859e-4d61bc0d6290";
     fsType = "ext4";
-    options = [ "noatime" "commit=60" ];
+    options = [ "noatime" "commit=60" "lazytime" ];
   };
 
   fileSystems."/boot" = { 
@@ -30,6 +30,7 @@
       "noatime"
       "commit=60"
       "nofail"
+      "lazytime"
       # Removed 'users' to avoid forcing 'noexec'
       # Removed 'uid/gid' as EXT4 handles permissions on-disk
       "exec" 

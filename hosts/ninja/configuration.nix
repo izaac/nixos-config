@@ -23,8 +23,12 @@
   boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.systemd-boot.editor = false;
 
+  # File Systems
+  boot.supportedFilesystems = [ "exfat" ];
+
   # --- KERNEL & PERFORMANCE ---
-  boot.kernelPackages = pkgs.linuxPackages_xanmod_latest;
+  # Switch to Unstable Mainline Kernel for latest scheduler/driver updates (Ryzen 9000/RTX 5000)
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
   
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
@@ -43,10 +47,22 @@
     "vm.dirty_ratio" = 10;
     "vm.dirty_background_ratio" = 5;
     "vm.compaction_proactiveness" = 0; # Reduce background jitter
+
+    # MGLRU (Multi-Gen LRU) Optimizations
+    # Helps with system responsiveness under high memory pressure.
+    "vm.lr_gen_stats" = 1;
+    "vm.lr_gen_active" = 1;
+
+    # Network Throughput (Max Backlog for 2.5G+ NICs)
+    "net.core.netdev_max_backlog" = 16384;
+    "net.ipv4.tcp_max_syn_backlog" = 8192;
   };
 
   # ZRAM (Compressed RAM Swap)
   zramSwap.enable = true;
+
+  # Irqbalance for better interrupt distribution across cores
+  services.irqbalance.enable = true;
 
   # --- KERNEL MODULES ---
   boot.blacklistedKernelModules = [

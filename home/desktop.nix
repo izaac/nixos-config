@@ -10,7 +10,6 @@
     font-awesome
     
     # Essential Tools
-    haruna          # Video Player (Qt/KDE friendly)
     telegram-desktop
 
     # Audio Tools
@@ -31,7 +30,7 @@
     kdePackages.k3b   # CD/DVD/Blu-ray Burning & Ripping
     sparrow
     filezilla       # WinSCP Replacement
-    mpv
+    vlc
     ffmpeg-full
     jellyfin-desktop
 
@@ -44,7 +43,7 @@
     # Virtualization (Distrobox Management)
     boxbuddy
 
-    # Core KDE Apps (Ensuring they are present and managed)
+    # Core KDE Apps (Ensured in system config, managed here for user context)
     kdePackages.kate      # Advanced Text Editor (Includes KWrite)
     kdePackages.gwenview  # Image Viewer
     kdePackages.ark       # Archive Manager
@@ -82,10 +81,10 @@
       "application/x-xz" = [ "org.kde.ark.desktop" ];
       
       # Video
-      "video/mp4" = [ "haruna.desktop" ];
-      "video/x-matroska" = [ "haruna.desktop" ];
-      "video/webm" = [ "haruna.desktop" ];
-      "video/quicktime" = [ "haruna.desktop" ];
+      "video/mp4" = [ "vlc.desktop" ];
+      "video/x-matroska" = [ "vlc.desktop" ];
+      "video/webm" = [ "vlc.desktop" ];
+      "video/quicktime" = [ "vlc.desktop" ];
       
       # Audio
       "audio/mpeg" = [ "org.kde.elisa.desktop" ];

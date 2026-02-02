@@ -41,8 +41,8 @@
     kdePackages.spectacle      # Screenshot tool
     kdePackages.gwenview       # Image viewer
     kdePackages.ark            # Archive manager
-    kdePackages.kate           # Text editor
     kdePackages.dolphin        # File manager
+    kdePackages.dolphin-plugins # Extra context menu options (Git, SVN, etc.)
     kdePackages.konsole        # Terminal
     kdePackages.okular         # Document viewer
     kdePackages.kdenlive       # Video Editor (Optional but native)

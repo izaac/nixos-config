@@ -6,6 +6,7 @@
     nvd
     nix-output-monitor # Used by nh for the pretty graphs
     gparted
+    exfatprogs
   ];
 
   environment.sessionVariables = {

@@ -15,7 +15,7 @@
     defaultGateway = "192.168.0.1";
 
     # NextDNS
-    nameservers = [ "45.90.28.154" "45.90.30.154" ];
+    nameservers = [ "1.1.1.1" "1.0.0.1" ];
 
     # --- FIREWALL ---
     firewall = {
