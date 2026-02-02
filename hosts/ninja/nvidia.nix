@@ -21,7 +21,7 @@
     powerManagement.finegrained = false;
     open = true; # Open modules required for RTX 50-series (Blackwell)
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
     nvidiaPersistenced = true;
   };
 
@@ -52,7 +52,7 @@
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${config.boot.kernelPackages.nvidiaPackages.stable.bin}/bin/nvidia-smi -lgc 210,2500";
+      ExecStart = "${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2500";
       RemainAfterExit = true;
     };
   };

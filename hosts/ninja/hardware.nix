@@ -34,7 +34,6 @@
       # Removed 'users' to avoid forcing 'noexec'
       # Removed 'uid/gid' as EXT4 handles permissions on-disk
       "exec" 
-      "x-systemd.automount" 
     ];
   };
 

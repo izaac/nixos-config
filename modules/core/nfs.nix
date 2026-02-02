@@ -5,7 +5,7 @@
   services.rpcbind.enable = true; # Required for NFSv3
 
   environment.systemPackages = with pkgs; [
-    nfs-utils
+    small.nfs-utils
   ];
 
   # Kernel modules for NFS support

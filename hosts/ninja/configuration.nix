@@ -173,17 +173,17 @@
 
   # System Packages (Essentials Only)
   environment.systemPackages = with pkgs; [
-    vim
-    wget
-    curl
-    file
+    small.vim
+    small.wget
+    small.curl
+    small.file
     libglvnd
-    tree
-    pciutils
-    usbutils
-    parted
-    sshfs
-    psmisc
+    small.tree
+    small.pciutils
+    small.usbutils
+    small.parted
+    small.sshfs
+    small.psmisc
     gcr # Required for gnome-keyring graphical prompts
     pam_gnupg # Required for GPG unlocking
   ];

@@ -3,26 +3,26 @@
 {
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    lsd bat fzf fd ripgrep yazi
-    duf btop fastfetch
-    tldr jq rsync pv
-    ncdu lazydocker
-    man-db
+    small.lsd small.bat small.fzf small.fd small.ripgrep small.yazi
+    small.duf small.btop small.fastfetch
+    small.tldr small.jq small.rsync small.pv
+    small.ncdu small.lazydocker
+    small.man-db
     
     # --- COMPRESSION & ARCHIVING ---
-    zip unzip 
-    p7zip
-    xz zstd lz4 
-    gnutar gzip bzip2
-    libarchive
+    small.zip small.unzip 
+    small.p7zip
+    small.xz small.zstd small.lz4 
+    small.gnutar small.gzip small.bzip2
+    small.libarchive
     
     # --- SYSTEM TOOLS ---
-    appimage-run
-    wl-clipboard
-    dwarfs fuse3
-    nvitop
-    nvtopPackages.nvidia
-    bluetuith
+    small.appimage-run
+    small.wl-clipboard
+    small.dwarfs small.fuse3
+    small.nvitop
+    small.nvtopPackages.nvidia
+    small.bluetuith
   ];
 
   home.sessionVariables = {
@@ -150,6 +150,7 @@ EOF
 
   programs.starship = {
     enable = true;
+    package = pkgs.small.starship;
     settings = {
       command_timeout = 1000;
       add_newline = false;

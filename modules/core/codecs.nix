@@ -2,7 +2,7 @@
 
 {
   environment.systemPackages = with pkgs; [
-    ffmpeg
+    small.ffmpeg
     libdvdcss
     
     # GStreamer (The "Good, Bad, and Ugly")

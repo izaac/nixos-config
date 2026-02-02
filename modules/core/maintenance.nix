@@ -2,11 +2,11 @@
 
 {
   environment.systemPackages = with pkgs; [
-    nh
-    nvd
-    nix-output-monitor # Used by nh for the pretty graphs
+    small.nh
+    small.nvd
+    small.nix-output-monitor # Used by nh for the pretty graphs
     gparted
-    exfatprogs
+    small.exfatprogs
   ];
 
   environment.sessionVariables = {

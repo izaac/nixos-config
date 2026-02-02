@@ -3,6 +3,7 @@
 {
   programs.cava = {
     enable = true;
+    package = pkgs.small.cava;
     
     settings = {
       general = {

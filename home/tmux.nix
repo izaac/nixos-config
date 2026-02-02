@@ -17,6 +17,7 @@ in
 {
   programs.tmux = {
     enable = true;
+    package = pkgs.small.tmux;
     
     # --- CORE BEHAVIOR ---
     shortcut = "a";          # Replaces C-b with C-a

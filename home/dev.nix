@@ -3,22 +3,22 @@
 {
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
-    neovim
-    gcc
-    gnumake
-    tree-sitter
+    small.neovim
+    small.gcc
+    small.gnumake
+    small.tree-sitter
     
     # --- LANGUAGES & TOOLCHAINS ---
-    docker-compose
+    small.docker-compose
     
     # --- DATA & FORMATTING ---
-    sqlite
+    small.sqlite
     
     # --- LSPs & LINTERS ---
-    nodePackages.bash-language-server
-    shellcheck
-    luajitPackages.lua-lsp
-    nil
+    small.nodePackages.bash-language-server
+    small.shellcheck
+    small.luajitPackages.lua-lsp
+    small.nil
     
     # --- GUI IDEs ---
     (vscode.override {
@@ -30,12 +30,13 @@
     })
     
     # --- UTILS ---
-    tldr
+    small.tldr
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---
   programs.git = {
     enable = true;
+    package = pkgs.small.git;
     
     # Signing remains a top-level attribute in Home Manager for now
     signing = {
@@ -65,6 +66,7 @@
   # --- DELTA (Diff Tool) ---
   programs.delta = {
     enable = true;
+    package = pkgs.small.delta;
     enableGitIntegration = true; 
     options = {
       navigate = true;
@@ -76,6 +78,7 @@
   # --- LAZYGIT ---
   programs.lazygit = {
     enable = true;
+    package = pkgs.small.lazygit;
     settings = {
       gui = {
         theme = {
@@ -96,6 +99,7 @@
   # --- GPG ---
   programs.gpg = {
     enable = true;
+    package = pkgs.small.gnupg;
     mutableKeys = true;
     mutableTrust = true;
   };
@@ -110,7 +114,7 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = false;
-    pinentry.package = pkgs.pinentry-qt;
+    pinentry.package = pkgs.small.pinentry-qt;
     defaultCacheTtl = 3600;
     extraConfig = ''
       allow-preset-passphrase
@@ -120,6 +124,7 @@
   # --- DIRENV ---
   programs.direnv = {
     enable = true;
+    package = pkgs.small.direnv;
     nix-direnv.enable = true;
     enableBashIntegration = true;
     

@@ -21,6 +21,22 @@
         "type": "github"
       }
     },
+    "nixos-small": {
+      "locked": {
+        "lastModified": 1770036691,
+        "narHash": "sha256-jNvn9TthNQE0ZOhUBDbo5lfQ73j7yv8j1sRAtUIbuA0=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "361b7832526dae101fd93cfd967079063c1d5f94",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-25.11-small",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixos-unstable": {
       "locked": {
         "lastModified": 1769789167,
@@ -56,6 +72,7 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
+        "nixos-small": "nixos-small",
         "nixos-unstable": "nixos-unstable",
         "nixpkgs": "nixpkgs"
       }
