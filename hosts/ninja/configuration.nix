@@ -20,7 +20,7 @@
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.systemd-boot.configurationLimit = 5;
+  boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.systemd-boot.editor = false;
 
   # File Systems
@@ -60,6 +60,7 @@
 
   # ZRAM (Compressed RAM Swap)
   zramSwap.enable = true;
+  boot.tmp.useTmpfs = true;
 
   # Irqbalance for better interrupt distribution across cores
   services.irqbalance.enable = true;
@@ -214,9 +215,13 @@
   nix.settings.trusted-users = [ "root" "@wheel" ];
 
   # Limit Nix Build Resources
-  systemd.services.nix-daemon.serviceConfig.Nice = lib.mkForce 10;
-  systemd.services.nix-daemon.serviceConfig.MemoryMax = lib.mkForce "24G";
-  systemd.services.nix-daemon.serviceConfig.MemoryHigh = lib.mkForce "20G";
+  systemd.services.nix-daemon.serviceConfig = lib.mkForce {
+    Nice = 19;
+    CPUSchedulingPolicy = "idle";
+    IOSchedulingClass = "idle";
+    MemoryMax = "16G";
+    MemoryHigh = "20G";
+  };
 
   # --- DOCUMENTATION ---
   # Disable documentation to save space and reduce small file overhead.

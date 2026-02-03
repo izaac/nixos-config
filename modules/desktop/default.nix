@@ -3,6 +3,9 @@
 {
   # --- KDE PLASMA 6 ---
   services.desktopManager.plasma6.enable = true;
+  environment.plasma6.excludePackages = with pkgs; [
+    kdePackages.baloo
+  ];
 
   # --- DISPLAY MANAGER (SDDM) ---
   services.displayManager.sddm = {

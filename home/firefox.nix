@@ -1,6 +1,11 @@
 { pkgs, ... }:
 
+
+
 {
+
+
+  # Configure the standard firefox package (home-manager's module will handle it)
   programs.firefox = {
     enable = true;
     # Policies apply globally to all profiles and won't delete your history/extensions
@@ -43,4 +48,6 @@
       };
     };
   };
+
+
 }
