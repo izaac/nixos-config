@@ -24,5 +24,9 @@
 
   programs.home-manager.enable = true;
 
+  home.packages = with pkgs; [
+    ventoy-full-qt
+  ];
+
   services.ssh-agent.enable = true;
 }

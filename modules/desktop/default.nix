@@ -7,6 +7,12 @@
     kdePackages.baloo
   ];
 
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+    pinentryPackage = pkgs.pinentry-qt; # Assuming Qt for Plasma desktop
+  };
+
   # --- DISPLAY MANAGER (SDDM) ---
   services.displayManager.sddm = {
     enable = true;

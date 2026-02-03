@@ -214,6 +214,10 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.trusted-users = [ "root" "@wheel" ];
 
+  nixpkgs.config.permittedInsecurePackages = [
+    "ventoy-qt5-1.1.07"
+  ];
+
   # Limit Nix Build Resources
   systemd.services.nix-daemon.serviceConfig = lib.mkForce {
     Nice = 19;
