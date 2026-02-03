@@ -21,9 +21,6 @@
 
       # Simplified template to avoid the single-quote escape nightmare
       tab_title_template          "{title}"
-      
-      # Fix for NVIDIA Wayland
-      linux_display_server wayland
     '';
 
     settings = {

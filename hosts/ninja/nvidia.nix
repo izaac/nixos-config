@@ -30,7 +30,6 @@
   boot.kernelParams = [ ]; 
   
   environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1";
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     LIBVA_DRIVER_NAME = "nvidia";
   };

@@ -10,20 +10,20 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = { 
-    device = "/dev/disk/by-uuid/4d34b1f8-2252-429d-859e-4d61bc0d6290";
+    device = "/dev/disk/by-uuid/522b2e41-a6da-40eb-a666-84c80503afdc";
     fsType = "ext4";
     options = [ "noatime" "commit=60" "lazytime" ];
   };
 
   fileSystems."/boot" = { 
-    device = "/dev/disk/by-uuid/D09D-4904";
+    device = "/dev/disk/by-uuid/F1EC-8130";
     fsType = "vfat";
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
   # --- GAME DRIVE (NVMe) ---
   fileSystems."/mnt/data" = { 
-    device = "/dev/disk/by-uuid/e76c3d51-616c-446a-89ae-f7083290e290";
+    device = "/dev/disk/by-uuid/ebde3930-7313-4fe2-aee8-a15b7a96ae2e";
     fsType = "ext4";
     options = [ 
       "rw"

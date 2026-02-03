@@ -15,7 +15,6 @@
       "--enable-zero-copy"
       
       # --- Wayland/Video ---
-      "--ozone-platform-hint=auto"
       "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
     ];
   };
@@ -34,7 +33,6 @@
       "--enable-zero-copy"
 
       # --- Wayland/Video ---
-      "--ozone-platform-hint=auto"
       "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
     ];
   };

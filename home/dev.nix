@@ -3,7 +3,6 @@
 {
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
-    small.neovim
     small.gcc
     small.gnumake
     small.tree-sitter
@@ -23,8 +22,6 @@
     # --- GUI IDEs ---
     (vscode.override {
       commandLineArgs = [
-        "--enable-features=UseOzonePlatform"
-        "--ozone-platform=wayland"
         "--password-store=gnome-libsecret"
       ];
     })

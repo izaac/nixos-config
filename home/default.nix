@@ -15,6 +15,7 @@
     ./cava.nix
     ./qt.nix
     ./chromium.nix
+    ./lazyvim.nix
   ];
 
   home.username = userConfig.username;
