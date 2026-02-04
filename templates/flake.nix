@@ -25,6 +25,10 @@
               (pkgs.yarn.override { nodejs = nodePkg; })
             ];
             shellHook = ''
+              # Unset NODE_PATH to prevent VS Code Extension Host from loading
+              # incompatible native modules from the Nix store.
+              unset NODE_PATH
+              
               echo "Node.js ${nodePkg.version} Shell"
               echo "  - Node: $(node --version)"
               echo "  - Yarn: $(yarn --version)"
