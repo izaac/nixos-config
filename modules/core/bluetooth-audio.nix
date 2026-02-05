@@ -19,6 +19,16 @@
           
           # Priority: LDAC > AptX HD > AptX > AAC > SBC
           "bluez5.codecs" = [ "ldac" "aptx_hd" "aptx" "aac" "sbc_xq" "sbc" ];
+
+          # Force LDAC to High Quality (990kbps) instead of 'auto'
+          "bluez5.a2dp.ldac.quality" = "hq";
+          
+          # Use high-quality VBR for AAC
+          "bluez5.a2dp.aac.bitratemode" = 0;
+          
+          # Increase SBC-XQ bitpool for better baseline quality
+          "bluez5.a2dp.sbc_xq.min-bitpool" = 40;
+          "bluez5.a2dp.sbc_xq.max-bitpool" = 53;
         };
       };
       

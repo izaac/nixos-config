@@ -25,6 +25,14 @@
       # Language servers / Formatters (optional but recommended defaults)
       lua-language-server
       stylua
+      shfmt
+      vtsls
+      nixd
+      nil
+      rust-analyzer
+      pyright
+      ruff
+      python3
     ];
   };
 
@@ -57,6 +65,18 @@
         spec = {
           -- add LazyVim and import its plugins
           { "LazyVim/LazyVim", import = "lazyvim.plugins" },
+
+          -- VS Code-like Editor Features
+          { import = "lazyvim.plugins.extras.editor.aerial" }, -- Symbols Outline
+          { import = "lazyvim.plugins.extras.coding.mini-surround" }, -- Change/Add quotes and brackets
+          { "mg979/vim-visual-multi" }, -- Multi-cursor support (Ctrl-N / Ctrl-D style)
+
+          -- Languages
+          { import = "lazyvim.plugins.extras.lang.nix" },
+          { import = "lazyvim.plugins.extras.lang.typescript" },
+          { import = "lazyvim.plugins.extras.lang.rust" },
+          { import = "lazyvim.plugins.extras.lang.python" },
+
           -- import/override with your plugins
           { import = "plugins" },
         },
@@ -100,8 +120,29 @@
 
     # Placeholder to prevent "No specs found for module 'plugins'"
     "nvim/lua/plugins/example.lua".text = ''
-      -- You can add your own plugins here or in other files in this directory
-      return {}
+      return {
+        -- Configure Nix LSP specifically
+        {
+          "neovim/nvim-lspconfig",
+          opts = {
+            servers = {
+              -- Disable Mason for all Nix-managed servers
+              nil_ls = { mason = false },
+              nixd = { mason = false },
+              vtsls = { mason = false },
+              rust_analyzer = { mason = false },
+              pyright = { mason = false },
+              ruff = { mason = false },
+            },
+            setup = {
+              nil_ls = function()
+                -- Only use nil_ls if nixd is not available or as a secondary
+                return false -- Set to true if you want both, but nixd is usually enough
+              end,
+            },
+          },
+        },
+      }
     '';
   };
 }

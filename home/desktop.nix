@@ -49,6 +49,8 @@
     kdePackages.ark       # Archive Manager
     kdePackages.dolphin   # File Manager
     kdePackages.okular    # Document Viewer
+    kdePackages.kamoso
+    kdePackages.krecorder
   ];
 
   xdg.userDirs = {

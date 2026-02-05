@@ -16,8 +16,6 @@
     # --- LSPs & LINTERS ---
     small.nodePackages.bash-language-server
     small.shellcheck
-    small.luajitPackages.lua-lsp
-    small.nil
     
     # --- GUI IDEs ---
     (vscode.override {
