@@ -108,14 +108,18 @@
         cat <<EOF > .envrc
 use flake ~/nixos-config/templates#$target
 watch_file package.json
+watch_file package-lock.json
 watch_file yarn.lock
 watch_file pnpm-lock.yaml
 
-if [ ! -d "node_modules" ]; then
-  echo "📦 node_modules missing. Attempting install..."
-  if [ -f "pnpm-lock.yaml" ]; then pnpm install;
-  elif [ -f "yarn.lock" ]; then yarn install;
-  else npm install; fi
+if [ -f "package.json" ]; then
+  if [ ! -d "node_modules" ]; then
+    echo "📦 node_modules missing. Attempting install..."
+    if [ -f "pnpm-lock.yaml" ]; then pnpm install;
+    elif [ -f "yarn.lock" ]; then yarn install;
+    elif [ -f "package-lock.json" ]; then npm install;
+    else npm install; fi
+  fi
 fi
 EOF
         direnv allow
