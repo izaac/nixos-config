@@ -187,6 +187,7 @@
     small.psmisc
     gcr # Required for gnome-keyring graphical prompts
     pam_gnupg # Required for GPG unlocking
+    kitty.terminfo # Fixes "xterm-kitty" errors when SSHing INTO this machine
   ];
 
   security.pam.services.login.gnupg.enable = true;

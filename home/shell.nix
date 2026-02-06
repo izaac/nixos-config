@@ -53,6 +53,7 @@
       forget = "git -C $NH_FLAKE rm --cached --ignore-unmatch secrets.nix";
       g-push = "forget && git -C $NH_FLAKE push";
       nrb = "st && nh os switch";
+      ssh = "TERM=xterm-256color command ssh";
       ndry = "nix build .#nixosConfigurations.ninja.config.system.build.toplevel --dry-run";
       ncl = "nh clean all --keep 10";
       up = "st && nh os switch --update"; # Update flake inputs AND switch
