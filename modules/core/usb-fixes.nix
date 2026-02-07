@@ -29,6 +29,7 @@
     SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="2ca3", ATTRS{idProduct}=="4011", RUN+="/bin/sh -c '/run/current-system/sw/bin/modprobe snd-usb-audio; echo 2ca3 4011 > /sys/bus/usb/drivers/snd-usb-audio/new_id'"
   '';
 
-  # 5. Ensure Audio Module Availability
-  boot.kernelModules = [ "snd-usb-audio" ];
+  # 5. Ensure Audio Module Availability (Parallel)
+  # Adding to availableKernelModules allows udev to load it in parallel during boot.
+  boot.initrd.availableKernelModules = [ "snd-usb-audio" ];
 }

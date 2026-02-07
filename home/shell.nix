@@ -23,6 +23,7 @@
     small.nvitop
     small.nvtopPackages.nvidia
     small.bluetuith
+    small.pulsemixer
   ];
 
   home.sessionVariables = {
@@ -42,6 +43,7 @@
       top = "btop";
       find = "fd";
       vim = "nvim";
+      pavumixer = "pulsemixer";
       cpv = "rsync -ahP";
       sysls = "systemctl --type=service --state=running";
       # Cache clearing alias

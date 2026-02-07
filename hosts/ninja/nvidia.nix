@@ -26,7 +26,7 @@
   };
 
   # 3. Kernel Modules & Wayland Environment
-  boot.initrd.kernelModules = [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ];
+  boot.initrd.kernelModules = [ ];
   boot.kernelParams = [ ]; 
   
   environment.sessionVariables = {
