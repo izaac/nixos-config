@@ -4,7 +4,7 @@
   qt = {
     enable = true;
     platformTheme.name = "kde";
-    style.name = "breeze";
+    style.name = "breeze-dark";
   };
 
   # Ensure GTK apps (Libadwaita, etc.) use dark theme for consistency in KDE

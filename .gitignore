@@ -68,3 +68,4 @@ bin/
 
 # Centralized user info
 secrets.nix
+.envrc

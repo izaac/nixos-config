@@ -9,9 +9,14 @@
     };
     nixos-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-small.url = "github:nixos/nixpkgs/nixos-25.11-small";
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-unstable, nixos-small, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-unstable, nixos-small, plasma-manager, ... }@inputs:
     let
       userConfig = import ./secrets.nix;
       system = "x86_64-linux";
@@ -42,7 +47,12 @@
             home-manager.useUserPackages = true;
             home-manager.backupFileExtension = "hm-backup";
             home-manager.extraSpecialArgs = { inherit userConfig; };
-            home-manager.users.${userConfig.username} = import ./home/default.nix;
+            home-manager.users.${userConfig.username} = {
+              imports = [ 
+                ./home/default.nix
+                plasma-manager.homeModules.plasma-manager
+              ];
+            };
           }
         ];
       };
