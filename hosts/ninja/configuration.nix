@@ -42,7 +42,8 @@
     "net.ipv4.tcp_fastopen" = 3;      # Enable TCP Fast Open for better connection times
     
     # Virtual Memory & Latency
-    "vm.swappiness" = 10;             # Only swap if absolutely necessary
+    "vm.swappiness" = 180;            # Aggressively use ZRAM
+    "vm.watermark_boost_factor" = 0;  # Reduce latency spikes
     "vm.vfs_cache_pressure" = 50;     # Keep inode/dentry caches longer
     "vm.dirty_ratio" = 10;
     "vm.dirty_background_ratio" = 5;
@@ -59,7 +60,11 @@
   };
 
   # ZRAM (Compressed RAM Swap)
-  zramSwap.enable = true;
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 100;
+  };
   boot.tmp.useTmpfs = true;
 
   # Irqbalance for better interrupt distribution across cores
