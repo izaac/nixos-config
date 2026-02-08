@@ -37,9 +37,10 @@
     # Network Optimizations
     "net.ipv4.tcp_congestion_control" = "bbr";
     "net.core.default_qdisc" = "fq";
-    "net.core.wmem_max" = 1073741824; # 1 GiB
-    "net.core.rmem_max" = 1073741824; # 1 GiB
+    "net.core.wmem_max" = 67108864;    # 64 MiB - Optimized for high speed without bufferbloat
+    "net.core.rmem_max" = 67108864;    # 64 MiB
     "net.ipv4.tcp_fastopen" = 3;      # Enable TCP Fast Open for better connection times
+    "net.ipv4.tcp_slow_start_after_idle" = 0; # Keep TCP connection "hot"
     
     # Virtual Memory & Latency
     "vm.swappiness" = 180;            # Aggressively use ZRAM

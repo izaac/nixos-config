@@ -4,24 +4,26 @@
   networking = {
     hostName = "ninja";
     useDHCP = false;
+    useNetworkd = true;
     networkmanager.enable = lib.mkForce false;
-
-    # --- STATIC IP CONFIGURATION ---
-    interfaces.eno1.ipv4.addresses = [{
-      address = "192.168.0.230";
-      prefixLength = 24;
-    }];
-
-    defaultGateway = "192.168.0.1";
-
-    # Internal DNS
-    nameservers = [ "192.168.0.96" ];
 
     # --- FIREWALL ---
     firewall = {
       enable = true;
       # Open SSH or Steam ports here if needed
       allowedTCPPorts = [ 22 ]; 
+    };
+  };
+
+  # --- SYSTEMD-NETWORKD CONFIGURATION ---
+  systemd.network = {
+    enable = true;
+    networks."40-eno1" = {
+      matchConfig.Name = "eno1";
+      address = [ "192.168.0.230/24" ];
+      routes = [{ Gateway = "192.168.0.1"; }];
+      networkConfig.DNS = [ "192.168.0.96" ];
+      linkConfig.RequiredForOnline = "routable";
     };
   };
 
