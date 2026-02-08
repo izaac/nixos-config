@@ -6,24 +6,25 @@
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "usb_storage" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "ntsync" ];
+  boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" = { 
-    device = "/dev/disk/by-uuid/522b2e41-a6da-40eb-a666-84c80503afdc";
-    fsType = "ext4";
-    options = [ "noatime" "commit=60" "lazytime" ];
-  };
+  fileSystems."/" =
+    { device = "/dev/mapper/luks-782b8c84-7a71-4244-8a98-c884f7678b96";
+      fsType = "ext4";
+    };
+
+  boot.initrd.luks.devices."luks-782b8c84-7a71-4244-8a98-c884f7678b96".device = "/dev/disk/by-uuid/782b8c84-7a71-4244-8a98-c884f7678b96";
 
   fileSystems."/boot" = { 
-    device = "/dev/disk/by-uuid/F1EC-8130";
+    device = "/dev/disk/by-uuid/48E1-0BDF";
     fsType = "vfat";
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
   # --- GAME DRIVE (NVMe) ---
   fileSystems."/mnt/data" = { 
-    device = "/dev/disk/by-uuid/ebde3930-7313-4fe2-aee8-a15b7a96ae2e";
+    device = "/dev/disk/by-uuid/7f69bc73-1ebb-4883-851a-f08d8101da9e";
     fsType = "ext4";
     options = [ 
       "rw"
@@ -36,6 +37,24 @@
       "exec" 
     ];
   };
+
+  fileSystems."/mnt/storage" = {
+    device = "//192.168.0.173/storage";
+    fsType = "cifs";
+    options = [
+      "credentials=/etc/nixos/samba-creds"
+      "uid=1000"
+      "gid=100"
+      "vers=3.0"
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=60"
+      "x-systemd.device-timeout=5s"
+      "x-systemd.mount-timeout=5s"
+    ];
+  };
+
+  swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

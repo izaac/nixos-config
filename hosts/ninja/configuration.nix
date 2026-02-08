@@ -185,7 +185,7 @@
     small.parted
     small.sshfs
     small.psmisc
-    gcr # Required for gnome-keyring graphical prompts
+    gcr # Required for graphical prompts (GPG, etc.)
     pam_gnupg # Required for GPG unlocking
   ];
 
@@ -210,9 +210,14 @@
     options = "--delete-older-than 7d";
   };
   nix.settings.max-jobs = 16;
+  nix.settings.cores = 8; # Limit each job to 8 cores to leave room for the system
   nix.settings.auto-optimise-store = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.trusted-users = [ "root" "@wheel" ];
+
+  # Lower nix-daemon priority
+  nix.daemonCPUSchedPolicy = "idle";
+  nix.daemonIOSchedClass = "idle";
 
   nixpkgs.config.permittedInsecurePackages = [
     "ventoy-qt5-1.1.07"
@@ -221,8 +226,8 @@
   # Limit Nix Build Resources
   systemd.services.nix-daemon.serviceConfig = lib.mkForce {
     Nice = 19;
-    CPUSchedulingPolicy = "idle";
-    IOSchedulingClass = "idle";
+    CPUWeight = 1;
+    IOWeight = 1;
     MemoryMax = "16G";
     MemoryHigh = "20G";
   };

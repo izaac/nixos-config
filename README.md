@@ -3,7 +3,7 @@
 ## Overview
 
 - **OS:** NixOS (Branch: 25.11)
-- **DE:** GNOME 47+ (Customized with extensions)
+- **DE:** KDE Plasma 6 (Wayland)
 - **Shell:** Bash + Starship + FNM (Node) + Rustup
 - **Terminal:** Kitty + Tmux
 - **Editor:** Neovim (LazyVim)

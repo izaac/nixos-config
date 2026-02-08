@@ -7,7 +7,7 @@
     style.name = "breeze";
   };
 
-  # Modern GTK apps (Libadwaita, etc.) look at dconf for color scheme
+  # Ensure GTK apps (Libadwaita, etc.) use dark theme for consistency in KDE
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";

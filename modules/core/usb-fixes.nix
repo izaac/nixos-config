@@ -30,5 +30,5 @@
   '';
 
   # 5. Ensure Audio Module Availability
-  boot.kernelModules = [ "snd-usb-audio" ];
+  boot.kernelModules = [ ];
 }
