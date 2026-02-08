@@ -88,6 +88,13 @@
         number = 9;
         rows = 3;
       };
+      tiling.padding = 4;
+    };
+
+    startup.startupScript."set_monitor_config" = {
+      text = "kscreen-doctor output.DP-1.mode.3440x1440@144 output.DP-1.scale.0.9 output.DP-1.rotation.none output.DP-1.vrrpolicy.always output.DP-1.hdr.enable output.DP-1.wcg.enable";
+      priority = 1;
+      runAlways = true;
     };
     
     # Optional: Configure some workspace settings to feel more like a WM
@@ -97,5 +104,53 @@
       colorScheme = "BreezeDark";
       cursor.theme = "Breeze_Snow";
     };
+
+    panels = [
+      {
+        location = "bottom";
+        height = 56;
+        floating = true;
+        widgets = [
+          "org.kde.plasma.kickoff"
+          "org.kde.plasma.pager"
+          {
+            iconTasks = {
+              launchers = [
+                "applications:systemsettings.desktop"
+                "preferred://filemanager"
+                "preferred://browser"
+                "applications:kitty.desktop"
+              ];
+            };
+          }
+          "org.kde.plasma.marginsseparator"
+          {
+            systemTray.items = {
+              shown = [
+                "org.kde.plasma.notifications"
+                "org.kde.plasma.volume"
+                "org.kde.plasma.bluetooth"
+                "org.kde.plasma.networkmanagement"
+              ];
+              hidden = [
+                "org.kde.plasma.cameraindicator"
+                "org.kde.plasma.clipboard"
+                "org.kde.plasma.manage-inputmethod"
+                "org.kde.plasma.keyboardlayout"
+                "org.kde.plasma.devicenotifier"
+                "org.kde.plasma.mediacontroller"
+                "org.kde.plasma.keyboardindicator"
+                "org.kde.plasma.battery"
+                "org.kde.plasma.weather"
+                "org.kde.plasma.brightness"
+                "org.kde.kscreen"
+              ];
+            };
+          }
+          "org.kde.plasma.digitalclock"
+          "org.kde.plasma.showdesktop"
+        ];
+      }
+    ];
   };
 }

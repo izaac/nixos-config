@@ -179,17 +179,17 @@
 
   # System Packages (Essentials Only)
   environment.systemPackages = with pkgs; [
-    small.vim
-    small.wget
-    small.curl
-    small.file
+    vim
+    wget
+    curl
+    file
     libglvnd
-    small.tree
-    small.pciutils
-    small.usbutils
-    small.parted
-    small.sshfs
-    small.psmisc
+    tree
+    pciutils
+    usbutils
+    parted
+    sshfs
+    psmisc
     gcr # Required for graphical prompts (GPG, etc.)
     pam_gnupg # Required for GPG unlocking
   ];
@@ -225,7 +225,7 @@
   nix.daemonIOSchedClass = "idle";
 
   nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-qt5-1.1.07"
+    "ventoy-qt5-1.1.10"
   ];
 
   # Limit Nix Build Resources
@@ -242,7 +242,7 @@
   documentation = {
     enable = false;
     doc.enable = false;
-    man.enable = false;
+    man.enable = true;
     info.enable = false;
   };
 

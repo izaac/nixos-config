@@ -15,13 +15,11 @@ in
     protonup-qt
     cartridges
     piper
-    openrgb
     goverlay
     vkbasalt
     input-remapper
     umu-launcher
     steamtinkerlaunch
-    gamescope
     
     # Wine / Windows Compatibility
     wineWowPackages.waylandFull # 32-bit + 64-bit Wine with Wayland support

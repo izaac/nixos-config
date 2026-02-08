@@ -5,12 +5,13 @@
   services.desktopManager.plasma6.enable = true;
   environment.plasma6.excludePackages = with pkgs; [
     kdePackages.baloo
+    kdePackages.discover
   ];
 
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = true;
-    pinentryPackage = pkgs.pinentry-qt; # Assuming Qt for Plasma desktop
+    pinentryPackage = pkgs.pinentry-qt;
   };
 
   # --- DISPLAY MANAGER (SDDM) ---

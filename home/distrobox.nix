@@ -1,7 +1,7 @@
 { pkgs, userConfig, ... }:
 
 {
-  home.packages = [ pkgs.small.distrobox ];
+  home.packages = [ pkgs.distrobox ];
 
   # Script to automate NVIDIA driver linking in Ubuntu containers
   xdg.configFile."distrobox/nvidia-setup.sh".text = ''

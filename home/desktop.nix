@@ -13,17 +13,7 @@
     telegram-desktop
 
     # Audio Tools
-    (pkgs.symlinkJoin {
-      name = "lsp-plugins-hidden";
-      paths = [ pkgs.lsp-plugins ];
-      postBuild = "rm -rf $out/share/applications";
-    })
-    (pkgs.symlinkJoin {
-      name = "calf-hidden";
-      paths = [ pkgs.calf ];
-      postBuild = "rm -rf $out/share/applications";
-    })
-    jamesdsp            # Audio effects processor
+    pulsemixer
 
     # General Software
     kdePackages.elisa # Simple Music Player
