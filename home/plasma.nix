@@ -80,6 +80,14 @@
       };
     };
 
+    session = {
+      sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
+    };
+
+    configFile = {
+      "kwinrc"."Plugins"."logoutEffectEnabled" = false;
+    };
+
     startup.startupScript."set_monitor_config" = {
       text = "kscreen-doctor output.DP-1.mode.3440x1440@144 output.DP-1.scale.0.9 output.DP-1.rotation.none output.DP-1.vrrpolicy.always output.DP-1.hdr.enable output.DP-1.wcg.enable";
       priority = 1;
@@ -89,9 +97,11 @@
     # Optional: Configure some workspace settings to feel more like a WM
     workspace = {
       clickItemTo = "select"; # Single click to select, double click to open (more standard)
-      lookAndFeel = "org.kde.breezedark.desktop";
+      theme = "breeze-dark";
       colorScheme = "BreezeDark";
+      iconTheme = "breeze-dark";
       cursor.theme = "Breeze_Snow";
+      splashScreen.theme = "None";
     };
 
     panels = [
