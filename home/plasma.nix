@@ -16,22 +16,12 @@
         "Switch to Desktop 2" = "Meta+2";
         "Switch to Desktop 3" = "Meta+3";
         "Switch to Desktop 4" = "Meta+4";
-        "Switch to Desktop 5" = "Meta+5";
-        "Switch to Desktop 6" = "Meta+6";
-        "Switch to Desktop 7" = "Meta+7";
-        "Switch to Desktop 8" = "Meta+8";
-        "Switch to Desktop 9" = "Meta+9";
         
         # Moving Windows to Desktops
         "Window to Desktop 1" = "Meta+Shift+1";
         "Window to Desktop 2" = "Meta+Shift+2";
         "Window to Desktop 3" = "Meta+Shift+3";
         "Window to Desktop 4" = "Meta+Shift+4";
-        "Window to Desktop 5" = "Meta+Shift+5";
-        "Window to Desktop 6" = "Meta+Shift+6";
-        "Window to Desktop 7" = "Meta+Shift+7";
-        "Window to Desktop 8" = "Meta+Shift+8";
-        "Window to Desktop 9" = "Meta+Shift+9";
         
         # Focus / Movement (Tiling-like)
         "Switch Window Left" = "Meta+Left";
@@ -85,9 +75,15 @@
 
     kwin = {
       virtualDesktops = {
-        number = 9;
-        rows = 3;
+        number = 4;
+        rows = 2;
       };
+    };
+
+    startup.startupScript."set_monitor_config" = {
+      text = "kscreen-doctor output.DP-1.mode.3440x1440@144 output.DP-1.scale.0.9 output.DP-1.rotation.none output.DP-1.vrrpolicy.always output.DP-1.hdr.enable output.DP-1.wcg.enable";
+      priority = 1;
+      runAlways = true;
     };
     
     # Optional: Configure some workspace settings to feel more like a WM
@@ -97,5 +93,55 @@
       colorScheme = "BreezeDark";
       cursor.theme = "Breeze_Snow";
     };
+
+    panels = [
+      {
+        location = "left";
+        height = 64;
+        floating = true;
+        alignment = "center";
+        lengthMode = "fit"; # Automatically expand/shrink based on widgets
+        hiding = "none"; # Always visible
+        widgets = [
+          "org.kde.plasma.kickoff"
+          "org.kde.plasma.pager"
+          {
+            iconTasks = {
+              launchers = [
+                "applications:systemsettings.desktop"
+                "preferred://filemanager"
+                "preferred://browser"
+                "applications:kitty.desktop"
+              ];
+            };
+          }
+          "org.kde.plasma.marginsseparator"
+          {
+            systemTray.items = {
+              shown = [
+                "org.kde.plasma.notifications"
+                "org.kde.plasma.volume"
+                "org.kde.plasma.bluetooth"
+                "org.kde.plasma.networkmanagement"
+              ];
+              hidden = [
+                "org.kde.plasma.cameraindicator"
+                "org.kde.plasma.clipboard"
+                "org.kde.plasma.manage-inputmethod"
+                "org.kde.plasma.keyboardlayout"
+                "org.kde.plasma.devicenotifier"
+                "org.kde.plasma.mediacontroller"
+                "org.kde.plasma.keyboardindicator"
+                "org.kde.plasma.battery"
+                "org.kde.plasma.weather"
+                "org.kde.plasma.brightness"
+                "org.kde.kscreen"
+              ];
+            };
+          }
+          "org.kde.plasma.digitalclock"
+        ];
+      }
+    ];
   };
 }
