@@ -7,33 +7,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1770260404,
-        "narHash": "sha256-3iVX1+7YUIt23hBx1WZsUllhbmP2EnXrV8tCRbLxHc8=",
+        "lastModified": 1770654520,
+        "narHash": "sha256-mg5WZMIPGsFu9MxSrUcuJUPMbfMsF77el5yb/7rc10k=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "0d782ee42c86b196acff08acfbf41bb7d13eed5b",
+        "rev": "6c4fdbe1ad198fac36c320fd45c5957324a80b8e",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
-        "ref": "release-25.11",
+        "ref": "master",
         "repo": "home-manager",
-        "type": "github"
-      }
-    },
-    "nixos-small": {
-      "locked": {
-        "lastModified": 1770564273,
-        "narHash": "sha256-SdkclHA6ikODJVQLuiUrIAiqYJbIGFVWzyzfWaIx6JU=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "88b77d781037e8e36d799a714ad518c8873697a0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-25.11-small",
-        "repo": "nixpkgs",
         "type": "github"
       }
     },
@@ -55,16 +39,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1770464364,
-        "narHash": "sha256-z5NJPSBwsLf/OfD8WTmh79tlSU8XgIbwmk6qB1/TFzY=",
+        "lastModified": 1770562336,
+        "narHash": "sha256-ub1gpAONMFsT/GU2hV6ZWJjur8rJ6kKxdm9IlCT0j84=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "23d72dabcb3b12469f57b37170fcbc1789bd7457",
+        "rev": "d6c71932130818840fc8fe9509cf50be8c64634f",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixos-25.11",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -95,7 +79,6 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixos-small": "nixos-small",
         "nixos-unstable": "nixos-unstable",
         "nixpkgs": "nixpkgs",
         "plasma-manager": "plasma-manager"

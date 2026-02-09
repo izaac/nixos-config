@@ -169,20 +169,20 @@
 
   # System Packages (Essentials Only)
   environment.systemPackages = with pkgs; [
-    small.vim
-    small.wget
-    small.curl
-    small.file
+    pkgs.vim
+    pkgs.wget
+    pkgs.curl
+    pkgs.file
     libglvnd
-    small.tree
-    small.pciutils
-    small.usbutils
-    small.parted
-    small.sshfs
-    small.psmisc
-    # small.pavucontrol # Graphical audio control (Removed per user request)
+    pkgs.tree
+    pkgs.pciutils
+    pkgs.usbutils
+    pkgs.parted
+    pkgs.sshfs
+    pkgs.psmisc
+    # pkgs.pavucontrol # Graphical audio control (Removed per user request)
     zathura # TUI-like PDF viewer
-    small.alsa-utils # CLI audio tools (aplay, amixer)
+    pkgs.alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
     gcr # Required for graphical prompts (GPG, etc.)
     pam_gnupg # Required for GPG unlocking
@@ -219,7 +219,7 @@
   nix.daemonIOSchedClass = "idle";
 
   nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-qt5-1.1.07"
+    "ventoy-qt5-1.1.10"
   ];
 
   # Limit Nix Build Resources

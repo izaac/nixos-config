@@ -3,21 +3,21 @@
 {
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
-    small.gcc
-    small.gnumake
-    small.tree-sitter
+    pkgs.gcc
+    pkgs.gnumake
+    pkgs.tree-sitter
     
     # --- LANGUAGES & TOOLCHAINS ---
-    small.docker-compose
+    pkgs.docker-compose
     
     # --- DATA & FORMATTING ---
-    small.sqlite
+    pkgs.sqlite
     
     # --- LSPs & LINTERS ---
-    small.nodePackages.bash-language-server
-    small.shellcheck
-    small.luajitPackages.lua-lsp
-    small.nil
+    pkgs.nodePackages.bash-language-server
+    pkgs.shellcheck
+    pkgs.luajitPackages.lua-lsp
+    pkgs.nil
     
     # --- GUI IDEs ---
     (vscode.override {
@@ -29,13 +29,13 @@
     })
     
     # --- UTILS ---
-    small.tldr
+    pkgs.tldr
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---
   programs.git = {
     enable = true;
-    package = pkgs.small.git;
+    package = pkgs.git;
     
     # Signing remains a top-level attribute in Home Manager for now
     signing = {
@@ -65,7 +65,7 @@
   # --- DELTA (Diff Tool) ---
   programs.delta = {
     enable = true;
-    package = pkgs.small.delta;
+    package = pkgs.delta;
     enableGitIntegration = true; 
     options = {
       navigate = true;
@@ -77,7 +77,7 @@
   # --- LAZYGIT ---
   programs.lazygit = {
     enable = true;
-    package = pkgs.small.lazygit;
+    package = pkgs.lazygit;
     settings = {
       gui = {
         theme = {
@@ -98,7 +98,7 @@
   # --- GPG ---
   programs.gpg = {
     enable = true;
-    package = pkgs.small.gnupg;
+    package = pkgs.gnupg;
     mutableKeys = true;
     mutableTrust = true;
   };
@@ -113,7 +113,7 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = false;
-    pinentry.package = pkgs.small.pinentry-qt;
+    pinentry.package = pkgs.pinentry-qt;
     defaultCacheTtl = 3600;
     extraConfig = ''
       allow-preset-passphrase
@@ -123,7 +123,7 @@
   # --- DIRENV ---
   programs.direnv = {
     enable = true;
-    package = pkgs.small.direnv;
+    package = pkgs.direnv;
     nix-direnv.enable = true;
     enableBashIntegration = true;
     

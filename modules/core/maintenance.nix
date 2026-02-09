@@ -2,11 +2,11 @@
 
 {
   environment.systemPackages = with pkgs; [
-    small.nh
-    small.nvd
-    small.nix-output-monitor # Used by nh for the pretty graphs
+    pkgs.nh
+    pkgs.nvd
+    pkgs.nix-output-monitor # Used by nh for the pretty graphs
     kdePackages.partitionmanager
-    small.exfatprogs
+    pkgs.exfatprogs
   ];
 
   environment.sessionVariables = {
