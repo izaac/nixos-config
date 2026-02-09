@@ -91,7 +91,30 @@
 
     configFile = {
       "kwinrc"."Plugins"."logoutEffectEnabled" = false;
+      "kwinrc"."Plugins"."screenedgeEnabled" = false;
+      "kwinrc"."Windows"."ElectricBorderMaximize" = false;
+      "kwinrc"."Windows"."ElectricBorderTiling" = false;
       "kwinrc"."Xwayland"."Scale" = 1;
+      "kwinrc"."ScreenEdges"."Top" = 0;
+      "kwinrc"."ScreenEdges"."Bottom" = 0;
+      "kwinrc"."ScreenEdges"."Left" = 0;
+      "kwinrc"."ScreenEdges"."Right" = 0;
+      "kwinrc"."ScreenEdges"."TopLeft" = 0;
+      "kwinrc"."ScreenEdges"."TopRight" = 0;
+      "kwinrc"."ScreenEdges"."BottomLeft" = 0;
+      "kwinrc"."ScreenEdges"."BottomRight" = 0;
+      "kwinrc"."TouchEdges"."Top" = 0;
+      "kwinrc"."TouchEdges"."Bottom" = 0;
+      "kwinrc"."TouchEdges"."Left" = 0;
+      "kwinrc"."TouchEdges"."Right" = 0;
+      "kwinrc"."EdgeBarrier"."EdgeBarrier" = 0;
+      "kwinrc"."EdgeBarrier"."CornerBarrier" = false;
+      "kwinrc"."Effect-overview"."BorderActivate" = 9;
+      "kwinrc"."Effect-overview"."TouchBorderActivate" = 0;
+      "kwinrc"."Effect-presentwindows"."BorderActivate" = 0;
+      "kwinrc"."Effect-presentwindows"."TouchBorderActivate" = 0;
+      "kwinrc"."Effect-desktopgrid"."BorderActivate" = 0;
+      "kwinrc"."Effect-desktopgrid"."TouchBorderActivate" = 0;
     };
 
     startup.startupScript."set_monitor_config" = {

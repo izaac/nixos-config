@@ -37,12 +37,14 @@
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
-    disabledPlugins = [ "bap" ];
+    disabledPlugins = [ "bap" "sap" ];
     settings = {
       General = {
-        Enable = "Source,Sink,Media,Socket";
+        Enable = "Source,Sink,Media";
         # MultiProfile ensures simultaneous support for multiple Bluetooth profiles (e.g. A2DP + HFP)
         MultiProfile = "multiple";
+        # Force dual mode to ensure compatibility with both LE and Classic devices
+        ControllerMode = "dual";
         # Faster connection/pairing for desktops (slightly more power, but better UX)
         FastConnectable = true;
         # Better handling of repairing for some headsets
@@ -53,6 +55,8 @@
         IdleTimeout = 0;
         # Reconnection timeout
         AutoConnectTimeout = 180;
+        # Better HID support for modern headsets (e.g. Sony WH series)
+        UserspaceHID = true;
       };
     };
   };
