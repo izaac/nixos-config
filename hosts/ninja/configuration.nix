@@ -180,7 +180,8 @@
     small.parted
     small.sshfs
     small.psmisc
-    small.pavucontrol # Graphical audio control
+    # small.pavucontrol # Graphical audio control (Removed per user request)
+    zathura # TUI-like PDF viewer
     small.alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
     gcr # Required for graphical prompts (GPG, etc.)

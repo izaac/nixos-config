@@ -20,8 +20,10 @@
     kdePackages.k3b    # CD/DVD/Blu-ray Burning & Ripping
     kdePackages.kamoso # Camera App
     sparrow
-    filezilla       # WinSCP Replacement
+    # filezilla       # Removed (not KDE/Qt)
     vlc
+    qutebrowser     # Qt-based keyboard-driven browser
+    zathura         # Minimalist PDF viewer
     ffmpeg-full
     jellyfin-desktop
 
@@ -83,8 +85,8 @@
       "audio/x-wav" = [ "org.kde.elisa.desktop" ];
       
       # Documents / Images
-      "application/pdf" = [ "org.kde.okular.desktop" ];
-      "application/epub+zip" = [ "org.kde.okular.desktop" ];
+      "application/pdf" = [ "org.pwmt.zathura.desktop" ];
+      "application/epub+zip" = [ "org.pwmt.zathura.desktop" ];
       "image/png" = [ "org.kde.gwenview.desktop" ];
       "image/jpeg" = [ "org.kde.gwenview.desktop" ];
       "image/webp" = [ "org.kde.gwenview.desktop" ];

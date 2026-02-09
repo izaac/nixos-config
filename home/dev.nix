@@ -24,6 +24,7 @@
       commandLineArgs = [
         # Uses libsecret to interface with KWallet/Gnome-Keyring
         "--password-store=gnome-libsecret"
+        "--ozone-platform=x11"
       ];
     })
     

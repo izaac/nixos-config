@@ -7,6 +7,9 @@
     small.duf small.btop small.fastfetch
     small.tldr small.jq small.rsync small.pv
     small.ncdu small.lazydocker
+    small.lftp
+    small.khal
+    small.khard
     small.man-db
     
     # --- COMPRESSION & ARCHIVING ---

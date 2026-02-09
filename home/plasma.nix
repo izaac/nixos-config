@@ -81,6 +81,7 @@
       virtualDesktops = {
         number = 4;
         rows = 2;
+        names = [ "Main" "Dev" "Web" "Media" ];
       };
     };
 
@@ -90,6 +91,7 @@
 
     configFile = {
       "kwinrc"."Plugins"."logoutEffectEnabled" = false;
+      "kwinrc"."Xwayland"."Scale" = 1;
     };
 
     startup.startupScript."set_monitor_config" = {
