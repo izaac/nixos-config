@@ -12,6 +12,8 @@
       enable = true;
       # Open SSH or Steam ports here if needed
       allowedTCPPorts = [ 22 ]; 
+      allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+      allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
     };
   };
 

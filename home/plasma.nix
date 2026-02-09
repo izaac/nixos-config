@@ -63,6 +63,10 @@
       "ksmserver" = {
         "Lock Session" = "Meta+L";
       };
+
+      "klipper" = {
+        "clipboard_action" = "none";
+      };
     };
 
     hotkeys.commands = {

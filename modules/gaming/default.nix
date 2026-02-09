@@ -11,7 +11,6 @@
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
-    gamescopeSession.enable = true; # Adds "Steam Deck" session support
     extraCompatPackages = [ pkgs.steamtinkerlaunch ];
     extraPackages = with pkgs; [
       libvdpau
@@ -19,11 +18,6 @@
       mangohud
       protonup-qt
     ];
-  };
-
-  programs.gamescope = {
-    enable = true;
-    capSysNice = true; # Required for performance
   };
 
   # 3. Ananicy-cpp (CachyOS-style auto-nice daemon)

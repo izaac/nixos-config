@@ -16,6 +16,8 @@
           "bluez5.enable-msbc" = true;
           "bluez5.enable-hw-volume" = true;
           "bluez5.headset-roles" = [ "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag" ];
+          "bluez5.roles" = [ "a2dp_sink" "a2dp_source" "hfp_hf" "hfp_ag" "hsp_hs" "hsp_ag" ];
+          "bluez5.hfphsp-backend" = "native";
           
           # Priority: LDAC > AptX HD > AptX > AAC > SBC
           "bluez5.codecs" = [ "ldac" "aptx_hd" "aptx" "aac" "sbc_xq" "sbc" ];
@@ -32,12 +34,26 @@
     };
   };
   
-  # Ensure the Bluetooth controller is optimized for audio
-  hardware.bluetooth.settings = {
-    General = {
-      # MultiProfile ensures simultaneous support for multiple Bluetooth profiles (e.g. A2DP + HFP)
-      # "bredr" vs "dual" logic is handled by defaults; focusing on profile availability here.
-      MultiProfile = "multiple";
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    disabledPlugins = [ "bap" ];
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+        # MultiProfile ensures simultaneous support for multiple Bluetooth profiles (e.g. A2DP + HFP)
+        MultiProfile = "multiple";
+        # Faster connection/pairing for desktops (slightly more power, but better UX)
+        FastConnectable = true;
+        # Better handling of repairing for some headsets
+        JustWorksRepairing = "always";
+        # Enables battery reporting and other experimental features
+        Experimental = true;
+        # Prevents the adapter from powering down too quickly
+        IdleTimeout = 0;
+        # Reconnection timeout
+        AutoConnectTimeout = 180;
+      };
     };
   };
 }

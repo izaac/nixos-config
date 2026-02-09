@@ -16,8 +16,9 @@
     pulsemixer
 
     # General Software
-    kdePackages.elisa # Simple Music Player
-    kdePackages.k3b   # CD/DVD/Blu-ray Burning & Ripping
+    kdePackages.elisa  # Simple Music Player
+    kdePackages.k3b    # CD/DVD/Blu-ray Burning & Ripping
+    kdePackages.kamoso # Camera App
     sparrow
     filezilla       # WinSCP Replacement
     vlc

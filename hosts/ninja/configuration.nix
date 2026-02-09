@@ -83,8 +83,8 @@
   boot.kernelParams = [
     "boot.shell_on_fail"
     "split_lock_detect=off"    # Improves Elden Ring latency / removes bus lock warning
-    "pci=realloc"              # Resolves the 'can't claim bridge window' conflict in logs
-    "pcie_aspm=off"            # Fixes the 'retraining failed' PCIe error
+    "pci=realloc,pcie_bus_safe" # Resolves the 'can't claim bridge window' conflict in logs & ensures MPS stability
+    "pcie_aspm=off"            # Disables Active State Power Management
     "iommu=pt"                 # Reduces NVMe/CPU latency
     "pcie_ports=native"        # Fixes ASUS 'bridge window' conflicts
     "usbcore.autosuspend=-1"   # Fixes Bluetooth/USB device disconnects
@@ -111,21 +111,6 @@
     };
   };
 
-  # Bluetooth Optimizations
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    disabledPlugins = [ "bap" ];
-    settings = {
-      General = {
-        Enable = "Source,Sink,Media,Socket";
-        Experimental = true; # Enables battery reporting for some devices
-        IdleTimeout = 0;     # Prevents the adapter from powering down too quickly
-        AutoConnectTimeout = 180; # 3 minutes for auto-reconnection
-      };
-    };
-  };
-
   # Enable systemd-oomd for better memory pressure management
   systemd.oomd.enable = true;
 
@@ -140,6 +125,7 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    jack.enable = true;
     
     # High Fidelity & Stability Configuration
     extraConfig.pipewire."92-high-quality" = {
@@ -153,17 +139,17 @@
     };
   };
 
-  # Disable audio power saving to prevent "popping" when sound starts
+  # Disable audio power saving & optimized USB audio for DJI/Razer/Pro devices
   boot.extraModprobeConfig = ''
     options snd_hda_intel power_save=0
-    options snd_usb_audio ignore_ctl_error=1
+    options snd_usb_audio skip_validation=1 ignore_ctl_error=1 device_setup=1
   '';
 
   # User Account
     users.users.${userConfig.username} = {
       isNormalUser = true;
       description = userConfig.name;
-      extraGroups = [ "wheel" "input" "video" "render" "dialout" "podman" ];
+      extraGroups = [ "wheel" "input" "video" "render" "dialout" "podman" "audio" ];
     };
 
   # Sudo Config
@@ -174,6 +160,9 @@
       Defaults editor=${pkgs.vim}/bin/vim
     '';
   };
+
+  # Hardware Firmware
+  hardware.enableAllFirmware = true;
 
   # Optical Drive Support
   programs.k3b.enable = true;
@@ -191,6 +180,9 @@
     small.parted
     small.sshfs
     small.psmisc
+    small.pavucontrol # Graphical audio control
+    small.alsa-utils # CLI audio tools (aplay, amixer)
+    libpulseaudio # Compatibility library
     gcr # Required for graphical prompts (GPG, etc.)
     pam_gnupg # Required for GPG unlocking
   ];
@@ -205,7 +197,7 @@
     };
   };
   services.fstrim.enable = true;
-  services.flatpak.enable = true;
+  services.flatpak.enable = false;
   services.power-profiles-daemon.enable = false;
   services.acpid.enable = lib.mkForce false;
 

@@ -34,6 +34,7 @@
     LIBVA_DRIVER_NAME = "nvidia";
     NVD_BACKEND = "direct";
     GBM_BACKEND = "nvidia-drm";
+    NIXOS_OZONE_WL = "1";
   };
 
   # 4. Unlock Overclocking/Undervolting (Coolbits)
