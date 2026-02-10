@@ -30,6 +30,9 @@ final: prev: {
       pango,
       xorg,
       libglvnd,
+      libXxf86vm,
+      libXtst,
+      libX11,
     }:
 
     let
@@ -197,10 +200,10 @@ final: prev: {
           glib
           cairo
           pango
-          xorg.libXxf86vm
-          xorg.libXtst
+          libXxf86vm
+          libXtst
           libglvnd # For libGL.so.1
-          xorg.libX11
+          libX11
         ];
 
         buildPhase = ''

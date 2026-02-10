@@ -9,6 +9,8 @@
       nvidia-vaapi-driver
       libva-vdpau-driver
       libvdpau-va-gl
+      libva
+      vulkan-loader
     ];
   };
 

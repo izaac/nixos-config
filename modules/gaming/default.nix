@@ -13,8 +13,6 @@
     localNetworkGameTransfers.openFirewall = true;
     extraCompatPackages = [ pkgs.steamtinkerlaunch ];
     extraPackages = with pkgs; [
-      libvdpau
-      libva
       mangohud
       protonup-qt
     ];
@@ -61,21 +59,22 @@
     PROTON_ENABLE_NGX_UPDATER = "1";
 
     # Fast Synchronization (ntsync / fsync)
-    # ntsync is the modern NT synchronization driver (XanMod 6.13+)
-    # fsync is the standard high-performance sync method
-    PROTON_USE_NTSYNC = "1";
+    # ntsync is the modern NT synchronization driver (XanMod 6.13+ or 6.14 mainline)
+    # WINE_FSYNC is the standard high-performance sync method
     WINE_FSYNC = "1";
 
     # Wayland Fixes for NVIDIA
     DISABLE_RT_CHECK = "1"; # Helps with some Raytracing titles on Wayland
     
     # Steam UI Performance & Stability Fixes
-    # -no-cef-sandbox: Fixes web helper crashes
-    # -disable-gpu-compositing: Prevents UI flickering/lag
-    # -disable-smooth-scrolling: Reduces rendering load
+    # NOTE: Steam doesn't read STEAM_EXTRA_ARGS natively. 
+    # Use these in per-game launch options or custom wrappers if needed.
     STEAM_EXTRA_ARGS = "-no-cef-sandbox -disable-gpu-compositing -disable-smooth-scrolling";
     
     # Fix for X11 BadWindow errors on NVIDIA
     STEAM_DISABLE_PH_CLIPPED_VIDEO = "1";
+    
+    # Force SDL to use X11 (Fixes many Native/Proton game launch issues on NVIDIA)
+    SDL_VIDEODRIVER = "x11";
   };
 }
