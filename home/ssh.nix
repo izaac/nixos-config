@@ -12,6 +12,9 @@
         identityFile = "~/.ssh/id_ed25519";
         serverAliveInterval = 60;
         serverAliveCountMax = 2;
+        extraOptions = {
+          StrictHostKeyChecking = "accept-new";
+        };
       };
     };
   };

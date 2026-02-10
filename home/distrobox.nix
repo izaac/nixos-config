@@ -1,7 +1,7 @@
 { pkgs, userConfig, ... }:
 
 {
-  home.packages = [ pkgs.small.distrobox ];
+  home.packages = [ pkgs.distrobox ];
 
   # Script to automate NVIDIA driver linking in Ubuntu containers
   xdg.configFile."distrobox/nvidia-setup.sh".text = ''
@@ -20,6 +20,13 @@
     echo '/run/host/run/opengl-driver-32/lib' | sudo tee -a /etc/ld.so.conf.d/nvidia.conf > /dev/null
     sudo ldconfig
   '';
+
+  # Ensure host directories exist for persistent RHEL subscription volumes
+  systemd.user.tmpfiles.rules = [
+    "d %h/.local/share/distrobox/rhel10/rhsm - - - -"
+    "d %h/.local/share/distrobox/rhel10/pki-entitlement - - - -"
+    "d %h/.local/share/distrobox/rhel10/var-lib-rhsm - - - -"
+  ];
 
   # Declarative Distrobox Configuration
   # Run 'distrobox assemble create --file ~/.config/distrobox/distrobox.ini' to build these.
@@ -55,6 +62,8 @@
     additional_packages="subscription-manager git vim"
     init=false
     nvidia=true
+    volume="/home/${userConfig.username}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement /home/${userConfig.username}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
+    init_hooks="if [ ! -f /etc/rhsm/ca/redhat-uep.pem ]; then dnf reinstall -y subscription-manager-rhsm-certificates subscription-manager; fi"
   '';
 
   # Alias to easily create/update these containers

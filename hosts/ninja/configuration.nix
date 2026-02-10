@@ -169,23 +169,38 @@
 
   # System Packages (Essentials Only)
   environment.systemPackages = with pkgs; [
-    small.vim
-    small.wget
-    small.curl
-    small.file
+    vim
+    wget
+    curl
+    file
     libglvnd
-    small.tree
-    small.pciutils
-    small.usbutils
-    small.parted
-    small.sshfs
-    small.psmisc
-    # small.pavucontrol # Graphical audio control (Removed per user request)
+    tree
+    pciutils
+    usbutils
+    parted
+    sshfs
+    psmisc
+    # pavucontrol # Graphical audio control (Removed per user request)
     zathura # TUI-like PDF viewer
-    small.alsa-utils # CLI audio tools (aplay, amixer)
+    alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
     gcr # Required for graphical prompts (GPG, etc.)
     pam_gnupg # Required for GPG unlocking
+    
+    # Archives
+    zip
+    xz
+    unzip
+    p7zip
+    
+    # Monitoring
+    btop
+    iotop
+    iftop
+    strace
+    lsof
+    lm_sensors
+    ethtool
   ];
 
   security.pam.services.login.gnupg.enable = true;
@@ -199,6 +214,7 @@
   };
   services.fstrim.enable = true;
   services.flatpak.enable = false;
+  services.fwupd.enable = false;
   services.power-profiles-daemon.enable = false;
   services.acpid.enable = lib.mkForce false;
 

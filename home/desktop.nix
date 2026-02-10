@@ -22,7 +22,6 @@
     sparrow
     # filezilla       # Removed (not KDE/Qt)
     vlc
-    qutebrowser     # Qt-based keyboard-driven browser
     zathura         # Minimalist PDF viewer
     ffmpeg-full
     jellyfin-desktop

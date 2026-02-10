@@ -3,29 +3,30 @@
 {
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    small.lsd small.bat small.fzf small.fd small.ripgrep small.yazi
-    small.duf small.btop small.fastfetch
-    small.tldr small.jq small.rsync small.pv
-    small.ncdu small.lazydocker
-    small.lftp
-    small.khal
-    small.khard
-    small.man-db
+    lsd bat fzf fd ripgrep yazi
+    duf btop bottom fastfetch
+    tldr jq rsync pv
+    ncdu lazydocker
+    lftp
+    khal
+    khard
+    man-db
+    gh
     
     # --- COMPRESSION & ARCHIVING ---
-    small.zip small.unzip 
-    small.p7zip
-    small.xz small.zstd small.lz4 
-    small.gnutar small.gzip small.bzip2
-    small.libarchive
+    zip unzip 
+    p7zip
+    xz zstd lz4 
+    gnutar gzip bzip2
+    libarchive
     
     # --- SYSTEM TOOLS ---
-    small.appimage-run
-    small.wl-clipboard
-    small.dwarfs small.fuse3
-    small.nvitop
-    small.nvtopPackages.nvidia
-    small.bluetuith
+    appimage-run
+    wl-clipboard
+    dwarfs fuse3
+    nvitop
+    nvtopPackages.nvidia
+    bluetuith
   ];
 
   home.sessionVariables = {
@@ -55,6 +56,7 @@
       st = "git -C $NH_FLAKE add -f -N secrets.nix";
       forget = "git -C $NH_FLAKE rm --cached --ignore-unmatch secrets.nix";
       g-push = "forget && git -C $NH_FLAKE push";
+      gco = "git checkout";
       nrb = "st && nh os switch";
       ndry = "nix build .#nixosConfigurations.ninja.config.system.build.toplevel --dry-run";
       ncl = "nh clean all --keep 10";
@@ -151,9 +153,24 @@ EOF
     '';
   };
 
+  programs.zoxide = {
+    enable = true;
+    enableBashIntegration = true;
+  };
+
+  programs.bottom = {
+    enable = true;
+    settings = {
+      flags = {
+        avg_cpu = true;
+        temperature_type = "c";
+      };
+    };
+  };
+
   programs.starship = {
     enable = true;
-    package = pkgs.small.starship;
+    package = pkgs.starship;
     settings = {
       command_timeout = 1000;
       add_newline = false;

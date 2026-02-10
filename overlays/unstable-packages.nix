@@ -9,4 +9,6 @@ unstable: final: prev: {
   protonup-qt = unstable.protonup-qt;
   mission-center = unstable.mission-center;
   bottles = unstable.bottles;
+  goverlay = unstable.goverlay;
+  vlc = unstable.vlc;
 }

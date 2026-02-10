@@ -14,7 +14,8 @@
       "--enable-gpu-rasterization"
       "--enable-zero-copy"
       
-      # --- Wayland/Video ---
+      # --- Wayland/Video/Compatibility ---
+      "--ozone-platform=x11"
       "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
     ];
   };
@@ -32,7 +33,8 @@
       "--enable-gpu-rasterization"
       "--enable-zero-copy"
 
-      # --- Wayland/Video ---
+      # --- Wayland/Video/Compatibility ---
+      "--ozone-platform=x11"
       "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
     ];
   };
