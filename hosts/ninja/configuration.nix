@@ -214,6 +214,7 @@
   };
   services.fstrim.enable = true;
   services.flatpak.enable = false;
+  services.fwupd.enable = false;
   services.power-profiles-daemon.enable = false;
   services.acpid.enable = lib.mkForce false;
 

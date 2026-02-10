@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  flashgbx = pkgs.callPackage ./flashgbx.nix { };
+  flashgbx = pkgs.unstable.callPackage ./flashgbx.nix { };
 in
 {
   home.packages = with pkgs; [
