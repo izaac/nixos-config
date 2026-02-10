@@ -21,22 +21,6 @@
         "type": "github"
       }
     },
-    "nixos-small": {
-      "locked": {
-        "lastModified": 1770564273,
-        "narHash": "sha256-SdkclHA6ikODJVQLuiUrIAiqYJbIGFVWzyzfWaIx6JU=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "88b77d781037e8e36d799a714ad518c8873697a0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "ref": "nixos-25.11-small",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixos-unstable": {
       "locked": {
         "lastModified": 1770562336,
@@ -95,7 +79,6 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixos-small": "nixos-small",
         "nixos-unstable": "nixos-unstable",
         "nixpkgs": "nixpkgs",
         "plasma-manager": "plasma-manager"

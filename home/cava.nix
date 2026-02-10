@@ -1,11 +1,10 @@
 { pkgs, ... }:
 
 {
-  programs.cava = {
-    enable = true;
-    package = pkgs.small.cava;
-    
-    settings = {
+    programs.cava = {
+      enable = true;
+      package = pkgs.cava;
+      settings = {
       general = {
         # 0 = Auto-fill terminal width. 
         # Change to a specific number (e.g. 100) for specific window sizes.
