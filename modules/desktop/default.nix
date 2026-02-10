@@ -10,7 +10,7 @@
 
   programs.gnupg.agent = {
     enable = true;
-    enableSSHSupport = true;
+    enableSSHSupport = false;
     pinentryPackage = pkgs.pinentry-qt; # Assuming Qt for Plasma desktop
   };
 
@@ -38,7 +38,6 @@
   programs.ssh.askPassword = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
   environment.sessionVariables = {
     SSH_ASKPASS = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
-    SSH_ASKPASS_REQUIRE = "prefer";
   };
 
   # Essential KDE Packages & Integration
