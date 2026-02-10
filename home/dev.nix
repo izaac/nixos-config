@@ -30,6 +30,7 @@
     
     # --- UTILS ---
     tldr
+    unstable.gemini-cli
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---
@@ -134,4 +135,5 @@
       };
     };
   };
+
 }

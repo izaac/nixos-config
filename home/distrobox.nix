@@ -21,6 +21,13 @@
     sudo ldconfig
   '';
 
+  # Ensure host directories exist for persistent RHEL subscription volumes
+  systemd.user.tmpfiles.rules = [
+    "d %h/.local/share/distrobox/rhel10/rhsm - - - -"
+    "d %h/.local/share/distrobox/rhel10/pki-entitlement - - - -"
+    "d %h/.local/share/distrobox/rhel10/var-lib-rhsm - - - -"
+  ];
+
   # Declarative Distrobox Configuration
   # Run 'distrobox assemble create --file ~/.config/distrobox/distrobox.ini' to build these.
   xdg.configFile."distrobox/distrobox.ini".text = ''
@@ -55,6 +62,8 @@
     additional_packages="subscription-manager git vim"
     init=false
     nvidia=true
+    volume="/home/${userConfig.username}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement /home/${userConfig.username}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
+    init_hooks="if [ ! -f /etc/rhsm/ca/redhat-uep.pem ]; then dnf reinstall -y subscription-manager-rhsm-certificates subscription-manager; fi"
   '';
 
   # Alias to easily create/update these containers
