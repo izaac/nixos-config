@@ -4,13 +4,14 @@
   home.packages = with pkgs; [
     # --- CORE UTILS ---
     lsd bat fzf fd ripgrep yazi
-    duf btop fastfetch
+    duf btop bottom fastfetch
     tldr jq rsync pv
     ncdu lazydocker
     lftp
     khal
     khard
     man-db
+    gh
     
     # --- COMPRESSION & ARCHIVING ---
     zip unzip 
@@ -150,6 +151,21 @@ EOF
       # Ensure local binaries are in PATH (at the end to avoid overrides)
       export PATH="$PATH:$HOME/.local/bin"
     '';
+  };
+
+  programs.zoxide = {
+    enable = true;
+    enableBashIntegration = true;
+  };
+
+  programs.bottom = {
+    enable = true;
+    settings = {
+      flags = {
+        avg_cpu = true;
+        temperature_type = "c";
+      };
+    };
   };
 
   programs.starship = {
