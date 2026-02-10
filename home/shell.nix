@@ -55,6 +55,7 @@
       st = "git -C $NH_FLAKE add -f -N secrets.nix";
       forget = "git -C $NH_FLAKE rm --cached --ignore-unmatch secrets.nix";
       g-push = "forget && git -C $NH_FLAKE push";
+      gco = "git checkout";
       nrb = "st && nh os switch";
       ndry = "nix build .#nixosConfigurations.ninja.config.system.build.toplevel --dry-run";
       ncl = "nh clean all --keep 10";
