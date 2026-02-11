@@ -7,6 +7,7 @@
     nix-output-monitor # Used by nh for the pretty graphs
     kdePackages.partitionmanager
     exfatprogs
+    atop # For historical system monitoring
   ];
 
   environment.sessionVariables = {
