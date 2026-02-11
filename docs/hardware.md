@@ -12,7 +12,7 @@
 |-----------|-------|-------|
 | **Motherboard** | ASUS ROG STRIX X670E-F GAMING WIFI | BIOS: 3304 (2025-09-19) |
 | **CPU** | AMD Ryzen 9 9950X3D | 16-Core, 32-Thread @ 4.3 GHz |
-| **GPU** | NVIDIA GeForce RTX 5070 Ti (PNY) | PCIe 5.0 x16 @ **full x16 speed** ✅ |
+| **GPU** | NVIDIA GeForce RTX 5070 Ti (PNY) | PCIe 5.0 x16 @ **full x16 speed** |
 | **RAM** | 64GB DDR5 | 2x 32GB DIMMs (Slots 1 & 3) |
 | **Chipset** | AMD X670E | Dual chipset design |
 
@@ -31,8 +31,7 @@
 ### PCIe Lane Allocation
 
 **From CPU (28 lanes total):**
-- 16 lanes → GPU slot (PCIEX16_1) - **all 16 lanes active** ✅
-- 4 lanes → M.2_1 slot (PCIe 5.0)
+- 16 lanes → GPU slot (PCIEX16_1) - **all 16 lanes active** - 4 lanes → M.2_1 slot (PCIe 5.0)
 - 4 lanes → Chipset uplink
 - 4 lanes → M.2_2 slot (currently **empty** - no bifurcation)
 
@@ -49,7 +48,7 @@
 | Slot | Device | Capacity | Interface | Speed | Usage | PCIe Address |
 |------|--------|----------|-----------|-------|-------|--------------|
 | **M.2_1** | Crucial T705 | 1TB | PCIe 5.0 x4 | ~14 GB/s | Root filesystem (encrypted) | `0000:02:00.0` |
-| **M.2_2** | **Empty** | - | PCIe 5.0 x4 | - | ⚠️ **Keep empty for GPU x16** | - |
+| **M.2_2** | **Empty** | - | PCIe 5.0 x4 | - |  **Keep empty for GPU x16** | - |
 | **M.2_3** | Empty | - | PCIe 4.0 x4 | - | From chipset | - |
 | **M.2_4** | **WD Black SN850X** | **4TB** | **PCIe 4.0 x4** | **~7 GB/s** | **/mnt/storage (unencrypted)** | **`0000:08:00.0`** ✅ |
 
@@ -125,8 +124,7 @@
 **NVIDIA GeForce RTX 5070 Ti**
 - **Model**: GB203 (rev a1)
 - **Vendor**: PNY (Device ID: 196e:143c)
-- **PCIe**: 5.0 x16 @ **full x16 speed** (256 GB/s) ✅
-- **VRAM**: 16GB GDDR7
+- **PCIe**: 5.0 x16 @ **full x16 speed** (256 GB/s) - **VRAM**: 16GB GDDR7
 - **Driver**: NVIDIA Open Kernel Module 590.48.01
 - **Features**:
   - SR-IOV capable (1 VF supported)
@@ -274,8 +272,7 @@ sensors nvme-pci-0800  # WD Black SN850X
      └─04:0d.0 → 10:00.0 SATA Controller (4 ports)
 
 00:02.2 PCIe Root Port [Chipset - M.2_4]
-  └─08:00.0 WD Black SN850X NVMe (x4 @ PCIe 4.0) ✅
-
+  └─08:00.0 WD Black SN850X NVMe (x4 @ PCIe 4.0) 
 00:08.1 PCIe Root Port [CPU USB/PSP]
   └─11:00.x Internal devices (PSP, USB 3.1 x2, CCP)
 
@@ -292,7 +289,7 @@ sensors nvme-pci-0800  # WD Black SN850X
 ```nix
 boot.kernelModules = [
   "kvm-amd"           # CPU virtualization
-  "nct6775"           # Motherboard sensors ⚠️ Required
+  "nct6775"           # Motherboard sensors  Required
   "nvidia"            # GPU driver
   "nvidia_modeset"
   "nvidia_uvm"
@@ -352,7 +349,7 @@ boot.extraModulePackages = [
 - Both NVMe drives at full speed
 - No PCIe lane conflicts
 
-### ⚠️ What NOT to Do
+###  What NOT to Do
 
 **Don't populate M.2_2 slot** unless you're willing to sacrifice GPU performance:
 - M.2_2 shares PCIe lanes with GPU slot (PCIEX16_1)
@@ -384,7 +381,7 @@ boot.kernelParams = [
 
 ### Storage
 
-- **M.2_2**: Available (⚠️ avoid - causes GPU x8 mode)
+- **M.2_2**: Available ( avoid - causes GPU x8 mode)
 - **M.2_3**: Available (chipset, PCIe 4.0 x4) - **Use this for expansion**
 - **SATA**: 8 ports available (unused)
 
