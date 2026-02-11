@@ -24,16 +24,16 @@
 
 | Slot | Type | Speed | Device | Bandwidth |
 |------|------|-------|--------|-----------|
-| **PCIEX16_1** | x16 | PCIe 5.0 | NVIDIA RTX 5070 Ti | **256 GB/s** (full x16) ✅ |
+| **PCIEX16_1** | x16 | PCIe 5.0 | NVIDIA RTX 5070 Ti | **256 GB/s** (full x16) |
 | **PCIEX16_2** | x16 (x4) | PCIe 4.0 | Empty | - |
 | **PCIEX1** | x1 | PCIe 3.0 | Empty | - |
 
 ### PCIe Lane Allocation
 
 **From CPU (28 lanes total):**
-- 16 lanes → GPU slot (PCIEX16_1) - **all 16 lanes active** - 4 lanes → M.2_1 slot (PCIe 5.0)
-- 4 lanes → Chipset uplink
-- 4 lanes → M.2_2 slot (currently **empty** - no bifurcation)
+- 16 lanes -> GPU slot (PCIEX16_1) - **all 16 lanes active** - 4 lanes -> M.2_1 slot (PCIe 5.0)
+- 4 lanes -> Chipset uplink
+- 4 lanes -> M.2_2 slot (currently **empty** - no bifurcation)
 
 **From Chipset:**
 - M.2_3 and M.2_4 (PCIe 4.0 x4 each)
@@ -50,13 +50,13 @@
 | **M.2_1** | Crucial T705 | 1TB | PCIe 5.0 x4 | ~14 GB/s | Root filesystem (encrypted) | `0000:02:00.0` |
 | **M.2_2** | **Empty** | - | PCIe 5.0 x4 | - |  **Keep empty for GPU x16** | - |
 | **M.2_3** | Empty | - | PCIe 4.0 x4 | - | From chipset | - |
-| **M.2_4** | **WD Black SN850X** | **4TB** | **PCIe 4.0 x4** | **~7 GB/s** | **/mnt/storage (unencrypted)** | **`0000:08:00.0`** ✅ |
+| **M.2_4** | **WD Black SN850X** | **4TB** | **PCIe 4.0 x4** | **~7 GB/s** | **/mnt/storage (unencrypted)** | **`0000:08:00.0`** |
 
 > **Important**: M.2_2 slot shares PCIe lanes with PCIEX16_1 via bifurcation. When populated, GPU drops from x16 to x8 mode. **Currently M.2_2 is empty, so GPU runs at full x16 speed.**
 
 ### Current Configuration (Optimized)
 
-✅ **GPU at full x16 bandwidth (256 GB/s)**
+**GPU at full x16 bandwidth (256 GB/s)**
 - M.2_1: Crucial T705 (PCIe 5.0 from CPU)
 - M.2_2: **Empty** (no lane sharing)
 - M.2_4: WD Black SN850X (PCIe 4.0 from chipset)
@@ -253,31 +253,31 @@ sensors nvme-pci-0800  # WD Black SN850X
 
 ```
 00:00.0 Host bridge: AMD Raphael/Granite Ridge Root Complex
-00:01.1 PCIe Root Port [GPU] ✅ x16 @ PCIe 5.0
-  └─01:00.0 NVIDIA RTX 5070 Ti (full x16 bandwidth)
-     └─01:00.1 NVIDIA HDA Audio
+00:01.1 PCIe Root Port [GPU] x16 @ PCIe 5.0
+    `-01:00.0 NVIDIA RTX 5070 Ti (full x16 bandwidth)
+       `-01:00.1 NVIDIA HDA Audio
 
 00:01.2 PCIe Root Port [M.2_1]
-  └─02:00.0 Crucial T705 NVMe (x4 @ PCIe 5.0)
+    `-02:00.0 Crucial T705 NVMe (x4 @ PCIe 5.0)
 
 00:02.1 PCIe Root Port [Chipset]
-  └─03:00.0 AMD 600 Series PCIe Switch
-     └─04:08.0 PCIe Switch
-        └─06:00.0 PCIe Switch
-           └─07:05.0 PCIe Switch
-              └─09:00.0 Intel I225-V Ethernet
-     ├─07:0c.0 → 0d:00.0 USB 3.2 Controller
-     ├─07:0d.0 → 0e:00.0 SATA Controller (4 ports)
-     ├─04:0c.0 → 0f:00.0 USB 3.2 Controller
-     └─04:0d.0 → 10:00.0 SATA Controller (4 ports)
+    `-03:00.0 AMD 600 Series PCIe Switch
+       `-04:08.0 PCIe Switch
+          `-06:00.0 PCIe Switch
+             `-07:05.0 PCIe Switch
+                `-09:00.0 Intel I225-V Ethernet
+       |-07:0c.0 -> 0d:00.0 USB 3.2 Controller
+       |-07:0d.0 -> 0e:00.0 SATA Controller (4 ports)
+       |-04:0c.0 -> 0f:00.0 USB 3.2 Controller
+       `-04:0d.0 -> 10:00.0 SATA Controller (4 ports)
 
 00:02.2 PCIe Root Port [Chipset - M.2_4]
-  └─08:00.0 WD Black SN850X NVMe (x4 @ PCIe 4.0) 
+    `-08:00.0 WD Black SN850X NVMe (x4 @ PCIe 4.0) 
 00:08.1 PCIe Root Port [CPU USB/PSP]
-  └─11:00.x Internal devices (PSP, USB 3.1 x2, CCP)
+    `-11:00.x Internal devices (PSP, USB 3.1 x2, CCP)
 
 00:08.3 PCIe Root Port [CPU USB]
-  └─12:00.0 USB 2.0 xHCI Controller
+    `-12:00.0 USB 2.0 xHCI Controller
 ```
 
 ---
@@ -337,7 +337,7 @@ boot.extraModulePackages = [
 
 ## Configuration Optimization Notes
 
-### ✅ Current Optimized Setup (2026-02-11)
+### Current Optimized Setup (2026-02-11)
 
 **Storage Layout:**
 - M.2_1: Crucial T705 (PCIe 5.0 from CPU)
@@ -353,7 +353,7 @@ boot.extraModulePackages = [
 
 **Don't populate M.2_2 slot** unless you're willing to sacrifice GPU performance:
 - M.2_2 shares PCIe lanes with GPU slot (PCIEX16_1)
-- When M.2_2 is populated → GPU drops from x16 to x8 (50% bandwidth loss)
+- When M.2_2 is populated -> GPU drops from x16 to x8 (50% bandwidth loss)
 - Use M.2_3 or M.2_4 instead (chipset-fed, no GPU impact)
 
 ---
