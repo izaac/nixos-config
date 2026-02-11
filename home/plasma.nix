@@ -125,7 +125,55 @@
       # Keep ONLY these enabled:
       "krunnerrc"."Plugins"."krunner_servicesEnabled" = true; # Applications
       "krunnerrc"."Plugins"."krunner_systemsettingsEnabled" = true; # System Settings
-      
+
+      # ========================================
+      # COMPOSITOR - GAMING OPTIMIZED
+      # ========================================
+      "kwinrc"."Compositing"."Backend" = "OpenGL";
+      "kwinrc"."Compositing"."GLCore" = true;
+      "kwinrc"."Compositing"."GLPlatformInterface" = "egl";
+      "kwinrc"."Compositing"."LatencyPolicy" = "Low";
+      "kwinrc"."Compositing"."MaxFPS" = 144;
+      "kwinrc"."Compositing"."RefreshRate" = 144;
+      "kwinrc"."Compositing"."AnimationSpeed" = 1;  # Fast animations (0=instant, 1=fast, 2=normal)
+
+      # CRITICAL FOR GAMING - Bypass compositor in fullscreen games
+      "kwinrc"."Compositing"."UnredirectFullscreen" = true;
+
+      # Works WITH VRR for better frame pacing
+      "kwinrc"."Compositing"."AllowTearing" = true;
+
+      # ========================================
+      # EFFECTS - DISABLED FOR SPEED
+      # Steam overlay works without these
+      # ========================================
+      "kwinrc"."Plugins"."blurEnabled" = false;
+      "kwinrc"."Plugins"."contrastEnabled" = false;
+      "kwinrc"."Plugins"."dimscreenEnabled" = false;
+      "kwinrc"."Plugins"."diminactiveEnabled" = false;
+      "kwinrc"."Plugins"."fadeEnabled" = false;
+      "kwinrc"."Plugins"."fadedesktopEnabled" = false;
+      "kwinrc"."Plugins"."highlightwindowEnabled" = false;
+      "kwinrc"."Plugins"."magiclampEnabled" = false;
+      "kwinrc"."Plugins"."morphingpopupsEnabled" = false;
+      "kwinrc"."Plugins"."scaleinEnabled" = false;
+      "kwinrc"."Plugins"."slideEnabled" = false;
+      "kwinrc"."Plugins"."slidingpopupsEnabled" = false;
+      "kwinrc"."Plugins"."squashEnabled" = false;
+      "kwinrc"."Plugins"."translucencyEnabled" = false;
+      "kwinrc"."Plugins"."windowapertureEnabled" = false;
+      "kwinrc"."Plugins"."zoomEnabled" = false;
+
+      # Keep overview for Meta+Tab workspace switching
+      "kwinrc"."Plugins"."overviewEnabled" = true;
+
+      # ========================================
+      # WINDOW MANAGEMENT - GAMING SAFE
+      # ========================================
+      "kwinrc"."Windows"."RollOverDesktops" = true;
+      "kwinrc"."Windows"."DelayFocusInterval" = 0;
+      "kwinrc"."Windows"."BorderlessMaximizedWindows" = true;
+
       "kwinrc"."Plugins"."logoutEffectEnabled" = false;
       "kwinrc"."Plugins"."screenedgeEnabled" = false;
       "kwinrc"."Windows"."ElectricBorderMaximize" = false;
