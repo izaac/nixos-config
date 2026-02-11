@@ -53,7 +53,7 @@
       };
 
       "org.kde.krunner.desktop" = {
-        "_launch" = "Meta+Space";
+        "_launch" = "none";
       };
 
       "services/org.kde.dolphin.desktop" = {
@@ -75,6 +75,11 @@
         key = "Meta+Return";
         command = "kitty";
       };
+      "launch-fuzzel" = {
+        name = "Launch Fuzzel";
+        key = "Meta+Space";
+        command = "fuzzel";
+      };
     };
 
     kwin = {
@@ -90,6 +95,37 @@
     };
 
     configFile = {
+      "krunnerrc"."Plugins"."breezeEnabled" = false;
+      "krunnerrc"."Plugins"."fileEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_appstreamEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_bookmarksrunnerEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_calculatorEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_charrunnerEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_consoleEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_converterEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_datetimeEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_dictionaryEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_katesessionsEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_konsoleprofilesEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_killEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_locationsEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_placesrunnerEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_powerdevilEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_recentdocumentsEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_sessionsEnabled" = false; # System settings handles logout/etc
+      "krunnerrc"."Plugins"."krunner_shellEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_spellcheckEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_systemdEnabled" = false;
+      "krunnerrc"."Plugins"."krunner_webshortcutsEnabled" = false;
+      "krunnerrc"."Plugins"."windowsEnabled" = false;
+      "krunnerrc"."Plugins"."baloosearchEnabled" = false; # Files search
+      
+      "baloofilerc"."Basic Settings"."Indexing-Enabled" = false;
+
+      # Keep ONLY these enabled:
+      "krunnerrc"."Plugins"."krunner_servicesEnabled" = true; # Applications
+      "krunnerrc"."Plugins"."krunner_systemsettingsEnabled" = true; # System Settings
+      
       "kwinrc"."Plugins"."logoutEffectEnabled" = false;
       "kwinrc"."Plugins"."screenedgeEnabled" = false;
       "kwinrc"."Windows"."ElectricBorderMaximize" = false;
@@ -120,6 +156,12 @@
     startup.startupScript."set_monitor_config" = {
       text = "kscreen-doctor output.DP-1.mode.3440x1440@144 output.DP-1.scale.0.9 output.DP-1.rotation.none output.DP-1.vrrpolicy.always output.DP-1.hdr.enable output.DP-1.wcg.enable";
       priority = 1;
+      runAlways = true;
+    };
+
+    startup.startupScript."ensure_krunner_running" = {
+      text = "systemctl --user start plasma-krunner.service";
+      priority = 2;
       runAlways = true;
     };
     
