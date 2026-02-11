@@ -48,11 +48,6 @@
 
   # 6. Environment Tweaks
   environment.sessionVariables = {
-    # Force NVIDIA for Steam (fixes the iGPU vs dGPU conflict)
-    __NV_PRIME_RENDER_OFFLOAD = "1";
-    __NV_PRIME_RENDER_OFFLOAD_SET_AS_ID = "0";
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-
     # G-Sync / VRR support
     __GL_GSYNC_ALLOWED = "1";
     __GL_VRR_ALLOWED = "1";

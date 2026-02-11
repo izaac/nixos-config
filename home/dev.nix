@@ -31,6 +31,7 @@
     # --- UTILS ---
     tldr
     unstable.gemini-cli
+    claude-code
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---

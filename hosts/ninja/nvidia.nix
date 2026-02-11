@@ -17,7 +17,7 @@
 
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = true; # Better for 50-series power state switching
+    powerManagement.enable = false; # Disabled to fix slow wake-up/EGL context loss on DPMS
     powerManagement.finegrained = false;
     open = true; # Open modules required for RTX 50-series (Blackwell)
     nvidiaSettings = true;

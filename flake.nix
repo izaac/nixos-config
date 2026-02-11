@@ -8,6 +8,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    claude-code.url = "github:sadjow/claude-code-nix";
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -15,7 +16,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-unstable, plasma-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-unstable, plasma-manager, claude-code, ... }@inputs:
     let
       userConfig = import ./secrets.nix;
       system = "x86_64-linux";
@@ -37,6 +38,7 @@
               (import ./overlays/sparrow-temurin-fix.nix)
               (import ./overlays/unstable-packages.nix pkgs-unstable)
               (import ./overlays/kde-unstable.nix)
+              claude-code.overlays.default
             ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
