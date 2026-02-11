@@ -3,30 +3,23 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    devenv.url = "github:cachix/devenv";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, devenv, ... } @ inputs:
     let
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      pkgsFor = system: nixpkgs.legacyPackages.${system};
+      systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+      forEachSystem = f: nixpkgs.lib.genAttrs systems (system: f {
+        pkgs = nixpkgs.legacyPackages.${system};
+        inherit system;
+      });
     in
     {
-      devShells = forAllSystems (system:
-        let pkgs = pkgsFor system;
-        in {
-          default = pkgs.mkShell {
-            packages = with pkgs; [
-              nodejs
-              pnpm
-              yarn
-            ];
-
-            shellHook = ''
-              echo "Node.js dev environment activated."
-              echo "Tools: node $(node --version), pnpm $(pnpm --version), yarn $(yarn --version)"
-            '';
-          };
-        });
+      devShells = forEachSystem ({ pkgs, system }: {
+        default = devenv.lib.mkShell {
+          inherit inputs pkgs;
+          modules = [ ./devenv.nix ];
+        };
+      });
     };
 }

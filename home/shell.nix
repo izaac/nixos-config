@@ -110,14 +110,14 @@
         local ver="''${1:-}"
         local target="node"
         if [ -n "$ver" ]; then target="node_$ver"; fi
-        
+
         cat <<EOF > .envrc
 use flake ~/nixos-config/templates#$target
 watch_file package.json
 watch_file yarn.lock
 watch_file pnpm-lock.yaml
 
-if [ ! -d "node_modules" ]; then
+if [ -f "package.json" ] && [ ! -d "node_modules" ]; then
   echo "📦 node_modules missing. Attempting install..."
   if [ -f "pnpm-lock.yaml" ]; then pnpm install;
   elif [ -f "yarn.lock" ]; then yarn install;
@@ -136,6 +136,13 @@ EOF
 use flake ~/nixos-config/templates#$target
 watch_file requirements.txt
 watch_file pyproject.toml
+
+if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
+  if [ ! -d ".venv" ] && [ -f "requirements.txt" ]; then
+    echo "📦 Creating virtual environment and installing dependencies..."
+    uv venv && uv pip install -r requirements.txt
+  fi
+fi
 EOF
         direnv allow
       }
@@ -145,6 +152,24 @@ EOF
 use flake ~/nixos-config/templates#rust
 watch_file Cargo.toml
 watch_file Cargo.lock
+EOF
+        direnv allow
+      }
+
+      function cinit() {
+        cat <<EOF > .envrc
+use flake ~/nixos-config/templates#c
+watch_file CMakeLists.txt
+watch_file Makefile
+EOF
+        direnv allow
+      }
+
+      function cppinit() {
+        cat <<EOF > .envrc
+use flake ~/nixos-config/templates#cpp
+watch_file CMakeLists.txt
+watch_file Makefile
 EOF
         direnv allow
       }
