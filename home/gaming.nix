@@ -49,6 +49,23 @@ in
     '')
   ];
 
+  # Custom Desktop Entry for SAM Rewritten
+  xdg.desktopEntries.samrewritten = {
+    name = "Steam Achievement Manager";
+    genericName = "Achievement Manager";
+    exec = "samrewritten";
+    terminal = false;
+    categories = [ "Game" "Utility" ];
+    icon = "samrewritten";
+    comment = "Unlock Steam Achievements on Linux";
+  };
+
+  # Fetch the icon
+  home.file.".local/share/icons/hicolor/256x256/apps/samrewritten.png".source = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/PaulCombal/SamRewritten/master/assets/icon_256.png";
+    hash = "sha256-EtvqBfodD8m51cYgkqmUCrlNG3+XnHL5RYncqeYb4kg="; 
+  };
+
   # MangoHud Config
   programs.mangohud = {
     enable = true;
