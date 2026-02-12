@@ -19,6 +19,7 @@
     ./plasma.nix
     ./fuzzel.nix
     ./cmus.nix
+    ./dolphin-actions.nix
   ];
 
   home.username = userConfig.username;
