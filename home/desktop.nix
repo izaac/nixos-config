@@ -8,7 +8,7 @@
     nerd-fonts.jetbrains-mono
     nerd-fonts.symbols-only
     font-awesome
-    
+
     # Essential Tools
     telegram-desktop
 
@@ -31,7 +31,7 @@
     cdrdao          # CLI: Disc-at-once cloning
     dvdisaster      # Error correction/data preservation
     ddrescue        # Robust data recovery
-    
+
     # Virtualization (Distrobox Management)
     boxbuddy
 
@@ -96,6 +96,10 @@
       
       # Directories
       "inode/directory" = [ "org.kde.dolphin.desktop" ];
+
+      # AppImages / Executables
+      "application/vnd.appimage" = [ "steam-runner.desktop" ];
+      "application/x-executable" = [ "steam-runner.desktop" ];
     };
   };
 }

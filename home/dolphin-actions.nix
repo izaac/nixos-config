@@ -20,7 +20,7 @@
     Name=To PNG (Compressed)
     Icon=image-png
     Exec=sh -c "${pkgs.imagemagick}/bin/convert '%f' -strip -depth 8 png:- | ${pkgs.pngquant}/bin/pngquant - > '%n.png'"
-
+    
     [Desktop Action convertToJpg]
     Name=To JPG
     Icon=image-jpeg
@@ -31,4 +31,16 @@
     Icon=image-x-generic
     Exec=${pkgs.imagemagick}/bin/convert %f -strip -quality 90 "%n.webp"
   '';
+
+  # Create a proper Application Entry for Steam Run (allows double-clicking AppImages)
+  xdg.desktopEntries.steam-runner = {
+    name = "Run on NixOS";
+    genericName = "AppImage Runner";
+    exec = "steam-run %f";
+    terminal = false;
+    categories = [ "Utility" ];
+    icon = "nix-snowflake";
+    mimeType = [ "application/vnd.appimage" "application/x-executable" ];
+    noDisplay = true; # Hide from the app menu, only show in "Open With"
+  };
 }

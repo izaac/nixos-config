@@ -30,6 +30,7 @@
     
     # --- UTILS ---
     tldr
+    unstable.qwen-code
     unstable.gemini-cli
   ];
 
