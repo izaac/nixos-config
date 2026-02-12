@@ -8,6 +8,9 @@
     kdePackages.discover
   ];
 
+  # --- KDE Connect ---
+  programs.kdeconnect.enable = true;
+
   programs.gnupg.agent = {
     enable = true;
     enableSSHSupport = false;
@@ -61,5 +64,8 @@
     # Secret Management (Seahorse Replacement)
     kdePackages.kwalletmanager # Manage KWallet secrets GUI
     kdePackages.kleopatra      # Certificate Manager (GPG/S/MIME)
+    
+    # Bluetooth
+    kdePackages.bluedevil
   ];
 }

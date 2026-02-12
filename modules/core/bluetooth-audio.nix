@@ -3,8 +3,8 @@
 {
   # Enable high-quality Bluetooth codecs
   environment.systemPackages = with pkgs; [
-    # A generic "all-codecs" library often helps wireplumber find them
-    # But mostly it relies on pipewire's internal implementation
+    bluez
+    bluez-tools
   ];
 
   services.pipewire = {

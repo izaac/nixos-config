@@ -4,7 +4,7 @@
   home.packages = with pkgs; [
     # --- CORE UTILS ---
     lsd bat fzf fd ripgrep yazi
-    duf btop bottom fastfetch
+    duf dust btop bottom fastfetch
     tldr jq rsync pv
     ncdu lazydocker
     lftp
@@ -60,7 +60,10 @@
       nrb = "st && nh os switch";
       ndr = "st && nh os build"; # Dry-run: build without switching (no sudo needed)
       ndry = "nix build .#nixosConfigurations.ninja.config.system.build.toplevel --dry-run"; # Old dry-run
-      ncl = "nh clean all --keep 10";
+      # Nix cleanup: keep last 10 generations, preserve dev environments
+      ncl = "nh clean all --keep 10 --nogc";
+      # Full cleanup: prune stale direnvs, then garbage collect everything
+      ncl-full = "direnv prune && nh clean all --keep 10";
       up = "st && nh os switch --update"; # Update flake inputs AND switch
       ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
       gpu = "nvitop";
@@ -177,6 +180,15 @@ EOF
       # Ensure local binaries are in PATH (at the end to avoid overrides)
       export PATH="$PATH:$HOME/.local/bin"
     '';
+  };
+
+  # direnv: Automatically load development environments when entering project directories
+  programs.direnv = {
+    enable = true;
+    # nix-direnv: Prevents dev environments from being garbage collected
+    # Creates GC roots in ~/.local/share/direnv/allow/ so your cached
+    # environments persist across 'nh clean' and 'nix-collect-garbage'
+    nix-direnv.enable = true;
   };
 
   programs.zoxide = {

@@ -18,6 +18,7 @@
     ./lazyvim.nix
     ./plasma.nix
     ./fuzzel.nix
+    ./cmus.nix
   ];
 
   home.username = userConfig.username;
