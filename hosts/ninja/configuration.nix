@@ -27,8 +27,8 @@
   boot.supportedFilesystems = [ "exfat" ];
 
   # --- KERNEL & PERFORMANCE ---
-  # Switch to Unstable Mainline Kernel for latest scheduler/driver updates (Ryzen 9000/RTX 5000)
-  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+  # Pin to Linux 6.18 to avoid NVIDIA build failures on latest (6.19)
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
   
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {

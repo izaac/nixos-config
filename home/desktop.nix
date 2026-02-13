@@ -16,6 +16,7 @@
     pulsemixer
 
     # General Software
+    qbittorrent
     kdePackages.elisa  # Simple Music Player
     kdePackages.k3b    # CD/DVD/Blu-ray Burning & Ripping
     kdePackages.kamoso # Camera App

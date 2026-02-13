@@ -14,6 +14,7 @@
         serverAliveCountMax = 2;
         extraOptions = {
           StrictHostKeyChecking = "accept-new";
+          SetEnv = "TERM=xterm-256color";
         };
       };
     };

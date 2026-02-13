@@ -12,6 +12,9 @@
     khard
     man-db
     gh
+    kubernetes-helm
+    k9s
+    kubectl
     
     # --- COMPRESSION & ARCHIVING ---
     zip unzip 
@@ -45,7 +48,8 @@
       grep = "rg";
       top = "btop";
       find = "fd";
-      vim = "nvim";
+      vim = "TERM=xterm-256color nvim";
+      nvim = "TERM=xterm-256color nvim";
       cpv = "rsync -ahP";
       sysls = "systemctl --type=service --state=running";
       # Cache clearing alias
@@ -68,7 +72,7 @@
       ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
       gpu = "nvitop";
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
-      ai = "npx @google/gemini-cli@latest";
+      ssh = "TERM=xterm-256color ssh";
       ask = "npx @google/gemini-cli@latest chat";
     };
 

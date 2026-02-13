@@ -15,7 +15,7 @@ python3Packages.buildPythonApplication {
     owner = "lesserkuma";
     repo = "FlashGBX";
     rev = "master";
-    hash = "sha256-GQBLLUd30MAqlPWTeTPpxp4llzpttL65ih9P6NSA+5w=";
+    hash = "sha256-rxeIGs8Afm2VSVMRd4a84ujkuiV56Q5jwj+5zXtNitk=";
   };
 
   nativeBuildInputs = [ 
