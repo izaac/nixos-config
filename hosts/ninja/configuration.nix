@@ -203,7 +203,7 @@
     ethtool
   ];
 
-  security.pam.services.login.gnupg.enable = true;
+
 
   services.openssh = {
     enable = true;

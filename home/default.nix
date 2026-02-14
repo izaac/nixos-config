@@ -16,10 +16,6 @@
     ./qt.nix
     ./chromium.nix
     ./lazyvim.nix
-    ./plasma.nix
-    ./fuzzel.nix
-    ./cmus.nix
-    ./dolphin-actions.nix
   ];
 
   home.username = userConfig.username;
@@ -32,5 +28,5 @@
     ventoy-full-qt
   ];
 
-  services.ssh-agent.enable = true;
+
 }

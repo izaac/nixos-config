@@ -1,31 +1,29 @@
 { pkgs, ... }:
 
 {
+  # --- GNOME ---
+  services.xserver.desktopManager.gnome.enable = true;
+
   # --- KDE PLASMA 6 ---
-  services.desktopManager.plasma6.enable = true;
-  environment.plasma6.excludePackages = with pkgs; [
-    kdePackages.baloo
-    kdePackages.discover
-  ];
+  services.desktopManager.plasma6.enable = false;
 
   # --- KDE Connect ---
-  programs.kdeconnect.enable = true;
+  programs.kdeconnect.enable = false;
 
   programs.gnupg.agent = {
     enable = true;
-    enableSSHSupport = false;
-    pinentryPackage = pkgs.pinentry-qt; # Assuming Qt for Plasma desktop
+    enableSSHSupport = true;
+    pinentryPackage = pkgs.pinentry-gnome3;
   };
 
-  # --- DISPLAY MANAGER (SDDM) ---
-  services.displayManager.sddm = {
+  # --- DISPLAY MANAGER (GDM) ---
+  services.displayManager.gdm = {
     enable = true;
-    wayland.enable = true;
+    wayland = true;
   };
   
-  # Auto-unlock KWallet on login
-  security.pam.services.sddm.enableKwallet = true;
-  security.pam.services.sddm.gnupg.enable = true;
+  security.pam.services.gdm.enableGnomeKeyring = true;
+  security.pam.services.login.enableGnomeKeyring = true;
 
   # XServer is required for SDDM and XWayland
   services.xserver = {
@@ -37,35 +35,32 @@
     };
   };
 
-  # SSH Integration (KDE Wallet & Askpass)
-  programs.ssh.askPassword = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
-  environment.sessionVariables = {
-    SSH_ASKPASS = "${pkgs.kdePackages.ksshaskpass}/bin/ksshaskpass";
+  # Portals (Essential for Screen Sharing / File Dialogs)
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    config = {
+      common.default = [ "gnome" ];
+      gnome.default = [ "gnome" ];
+    };
   };
 
-  # Essential KDE Packages & Integration
+
+
+  # Essential GNOME Packages
   environment.systemPackages = with pkgs; [
-    kdePackages.ksshaskpass
-    kdePackages.sddm-kcm       # SDDM Config Module for Plasma Settings
-    kdePackages.partitionmanager
-    kdePackages.filelight      # Disk usage
-    kdePackages.kcalc          # Calculator
-    kdePackages.spectacle      # Screenshot tool
-    kdePackages.gwenview       # Image viewer
-    kdePackages.ark            # Archive manager
-    kdePackages.dolphin        # File manager
-    kdePackages.dolphin-plugins # Extra context menu options (Git, SVN, etc.)
-    kdePackages.konsole        # Terminal
-    kdePackages.okular         # Document viewer
-    kdePackages.kdenlive       # Video Editor (Optional but native)
-    kdePackages.kio-fuse       # FUSE interface for KIO
-    kdePackages.kio-extras     # Extra protocols for KIO
-
-    # Secret Management (Seahorse Replacement)
-    kdePackages.kwalletmanager # Manage KWallet secrets GUI
-    kdePackages.kleopatra      # Certificate Manager (GPG/S/MIME)
-
-    # Bluetooth
-    kdePackages.bluedevil
+    nautilus
+    gnome-screenshot
+    gnome-calculator
+    evince
+    gnome-system-monitor
+    gnome-text-editor
+    gnome-control-center
+    gnome-tweaks
+    adwaita-icon-theme
+    gnome-themes-extra
+    pkgs.gnome-shell-extensions
+    libgnome-keyring # For compatibility with older applications
+    seahorse # For managing GPG keys and SSH keys in Gnome Keyring
   ];
 }
