@@ -16,6 +16,7 @@
     ./qt.nix
     ./chromium.nix
     ./lazyvim.nix
+    ./theme.nix
   ];
 
   home.username = userConfig.username;
@@ -37,11 +38,6 @@
     };
     "org/gnome/shell" = {
       disable-user-extensions = false;
-      enabled-extensions = [
-        "appindicatorsupport@rgcjonas.gmail.com"
-        "blur-my-shell@aunetx"
-        "just-perfection-desktop@just-perfection"
-      ];
     };
     "org/gnome/shell/app-switcher" = {
       current-workspace-only = true;
@@ -50,9 +46,6 @@
 
   home.packages = with pkgs; [
     ventoy-full-gtk
-    gnomeExtensions.appindicator
-    gnomeExtensions.blur-my-shell
-    gnomeExtensions.just-perfection
   ];
 
 

@@ -47,20 +47,39 @@
     };
   };
 
-  # Portals (Essential for Screen Sharing / File Dialogs)
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
-    config = {
-      common.default = [ "gnome" ];
-      gnome.default = [ "gnome" ];
+    # Portals (Essential for Screen Sharing / File Dialogs)
+
+    xdg.portal = {
+
+      enable = true;
+
+      extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+
+      config = {
+
+        common.default = [ "gnome" ];
+
+        gnome.default = [ "gnome" ];
+
+      };
+
     };
-  };
 
+  
 
+    # Remove Bloat
 
-  # Essential GNOME Packages
-  environment.systemPackages = with pkgs; [
+    environment.gnome.excludePackages = (with pkgs; [
+
+      rhythmbox
+
+    ]);
+
+  
+
+    # Essential GNOME Packages
+
+    environment.systemPackages = with pkgs; [
     nautilus
     gnome-screenshot
     gnome-calculator
