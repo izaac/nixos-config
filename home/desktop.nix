@@ -16,16 +16,15 @@
     pulsemixer
 
     # General Software
-    qbittorrent
-    kdePackages.elisa  # Simple Music Player
-    kdePackages.k3b    # CD/DVD/Blu-ray Burning & Ripping
-    kdePackages.kamoso # Camera App
+    fragments       # GTK Torrent Client
+    amberol         # GTK Music Player
+    brasero         # GTK CD/DVD Burning
+    snapshot        # GTK Camera App
     sparrow
-    # filezilla       # Removed (not KDE/Qt)
-    vlc
+    mpv             # CLI Media Player
+    celluloid       # GTK Frontend for MPV
     zathura         # Minimalist PDF viewer
     ffmpeg-full
-    jellyfin-desktop
 
     # CD/DVD Backup & Cloning
     cdrtools        # CLI: readcd, etc.
@@ -36,12 +35,9 @@
     # Virtualization (Distrobox Management)
     boxbuddy
 
-    # Core KDE Apps (Ensured in system config, managed here for user context)
-    kdePackages.kate      # Advanced Text Editor (Includes KWrite)
-    kdePackages.gwenview  # Image Viewer
-    kdePackages.ark       # Archive Manager
-    kdePackages.dolphin   # File Manager
-    kdePackages.okular    # Document Viewer
+    # GTK Alternatives for Core Apps
+    loupe           # GNOME Image Viewer
+    file-roller     # GNOME Archive Manager
   ];
 
   xdg.userDirs = {
@@ -60,43 +56,43 @@
       "x-scheme-handler/unknown" = [ "firefox.desktop" ];
       
       # Text
-      "text/plain" = [ "org.kde.kate.desktop" ];
-      "text/markdown" = [ "org.kde.kate.desktop" ];
-      "text/x-log" = [ "org.kde.kate.desktop" ];
+      "text/plain" = [ "org.gnome.TextEditor.desktop" ];
+      "text/markdown" = [ "org.gnome.TextEditor.desktop" ];
+      "text/x-log" = [ "org.gnome.TextEditor.desktop" ];
 
       # Archives
-      "application/zip" = [ "org.kde.ark.desktop" ];
-      "application/x-tar" = [ "org.kde.ark.desktop" ];
-      "application/x-7z-compressed" = [ "org.kde.ark.desktop" ];
-      "application/x-rar" = [ "org.kde.ark.desktop" ];
-      "application/gzip" = [ "org.kde.ark.desktop" ];
-      "application/x-bzip2" = [ "org.kde.ark.desktop" ];
-      "application/x-xz" = [ "org.kde.ark.desktop" ];
+      "application/zip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-tar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-7z-compressed" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-rar" = [ "org.gnome.FileRoller.desktop" ];
+      "application/gzip" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-bzip2" = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-xz" = [ "org.gnome.FileRoller.desktop" ];
       
       # Video
-      "video/mp4" = [ "vlc.desktop" ];
-      "video/x-matroska" = [ "vlc.desktop" ];
-      "video/webm" = [ "vlc.desktop" ];
-      "video/quicktime" = [ "vlc.desktop" ];
+      "video/mp4" = [ "io.github.celluloid_player.Celluloid.desktop" ];
+      "video/x-matroska" = [ "io.github.celluloid_player.Celluloid.desktop" ];
+      "video/webm" = [ "io.github.celluloid_player.Celluloid.desktop" ];
+      "video/quicktime" = [ "io.github.celluloid_player.Celluloid.desktop" ];
       
       # Audio
-      "audio/mpeg" = [ "org.kde.elisa.desktop" ];
-      "audio/flac" = [ "org.kde.elisa.desktop" ];
-      "audio/x-wav" = [ "org.kde.elisa.desktop" ];
+      "audio/mpeg" = [ "io.bassi.Amberol.desktop" ];
+      "audio/flac" = [ "io.bassi.Amberol.desktop" ];
+      "audio/x-wav" = [ "io.bassi.Amberol.desktop" ];
       
       # Documents / Images
       "application/pdf" = [ "org.pwmt.zathura.desktop" ];
       "application/epub+zip" = [ "org.pwmt.zathura.desktop" ];
-      "image/png" = [ "org.kde.gwenview.desktop" ];
-      "image/jpeg" = [ "org.kde.gwenview.desktop" ];
-      "image/webp" = [ "org.kde.gwenview.desktop" ];
-      "image/gif" = [ "org.kde.gwenview.desktop" ];
-      "image/svg+xml" = [ "org.kde.gwenview.desktop" ];
-      "image/bmp" = [ "org.kde.gwenview.desktop" ];
-      "image/tiff" = [ "org.kde.gwenview.desktop" ];
+      "image/png" = [ "org.gnome.Loupe.desktop" ];
+      "image/jpeg" = [ "org.gnome.Loupe.desktop" ];
+      "image/webp" = [ "org.gnome.Loupe.desktop" ];
+      "image/gif" = [ "org.gnome.Loupe.desktop" ];
+      "image/svg+xml" = [ "org.gnome.Loupe.desktop" ];
+      "image/bmp" = [ "org.gnome.Loupe.desktop" ];
+      "image/tiff" = [ "org.gnome.Loupe.desktop" ];
       
       # Directories
-      "inode/directory" = [ "org.kde.dolphin.desktop" ];
+      "inode/directory" = [ "org.gnome.Nautilus.desktop" ];
 
       # AppImages / Executables
       "application/vnd.appimage" = [ "steam-runner.desktop" ];

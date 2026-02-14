@@ -2,7 +2,19 @@
 
 {
   # --- GNOME ---
-  services.xserver.desktopManager.gnome.enable = true;
+  services.desktopManager.gnome.enable = true;
+
+  # Performance Tweaks for GNOME
+  services.gnome.core-shell.enable = true;
+  services.gnome.core-apps.enable = true; # Renamed from core-utilities
+  services.gnome.glib-networking.enable = true;
+
+  # Experimental features (VRR, etc.)
+  services.desktopManager.gnome.extraGSettingsOverridePackages = [ pkgs.mutter ];
+  services.desktopManager.gnome.extraGSettingsOverrides = ''
+    [org.gnome.mutter]
+    experimental-features=['variable-refresh-rate']
+  '';
 
   # --- KDE PLASMA 6 ---
   services.desktopManager.plasma6.enable = false;

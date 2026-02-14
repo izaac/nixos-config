@@ -5,7 +5,7 @@
     nh
     nvd
     nix-output-monitor # Used by nh for the pretty graphs
-    kdePackages.partitionmanager
+    gparted
     exfatprogs
     atop # For historical system monitoring
   ];

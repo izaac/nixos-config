@@ -16,7 +16,7 @@
       libvdpau
       libva
       mangohud
-      protonup-qt
+      protonplus
     ];
   };
 

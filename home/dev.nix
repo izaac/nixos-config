@@ -115,7 +115,7 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = false;
-    pinentry.package = pkgs.pinentry-qt;
+    pinentry.package = pkgs.pinentry-gnome3;
     defaultCacheTtl = 3600;
     extraConfig = ''
       allow-preset-passphrase

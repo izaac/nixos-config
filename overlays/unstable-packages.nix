@@ -11,7 +11,7 @@ unstable: final: prev: {
   # Gaming tools - better compatibility with latest games
   heroic = unstable.heroic;           # Updated game compatibility
   lutris = unstable.lutris;           # Better game installer support
-  protonup-qt = unstable.protonup-qt; # Latest Proton versions for Steam
+  protonplus = unstable.protonplus;   # GTK Proton manager
   bottles = unstable.bottles;         # Updated Windows app compatibility
   
   # Communication - latest features and security updates
@@ -22,5 +22,5 @@ unstable: final: prev: {
   goverlay = unstable.goverlay;                 # GPU monitoring overlay
   
   # Media - latest codecs and playback features
-  vlc = unstable.vlc;                           # Updated codecs and playback
+  amberol = unstable.amberol;                   # GTK Music Player
 }

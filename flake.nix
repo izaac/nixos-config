@@ -8,14 +8,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-unstable, plasma-manager, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-unstable, ... }@inputs:
     let
       userConfig = import ./secrets.nix;
       system = "x86_64-linux";
@@ -36,7 +31,6 @@
             nixpkgs.overlays = [ 
               (import ./overlays/sparrow-temurin-fix.nix)
               (import ./overlays/unstable-packages.nix pkgs-unstable)
-              (import ./overlays/kde-unstable.nix)
             ];
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
@@ -45,7 +39,6 @@
             home-manager.users.${userConfig.username} = {
               imports = [ 
                 ./home/default.nix
-                plasma-manager.homeModules.plasma-manager
               ];
             };
           }

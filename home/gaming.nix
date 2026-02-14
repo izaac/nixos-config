@@ -12,7 +12,6 @@ in
     heroic
     lutris
     samrewritten
-    protonup-qt
     cartridges
     piper
     openrgb
