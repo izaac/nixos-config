@@ -11,6 +11,8 @@ in
     # Gaming Tools
     heroic
     lutris
+    protonplus
+    protonup-rs
     samrewritten
     cartridges
     piper

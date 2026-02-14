@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   # --- GNOME ---
@@ -6,8 +6,14 @@
 
   # Performance Tweaks for GNOME
   services.gnome.core-shell.enable = true;
-  services.gnome.core-apps.enable = true; # Renamed from core-utilities
+  services.gnome.core-apps.enable = true;
   services.gnome.glib-networking.enable = true;
+  services.gnome.evolution-data-server.enable = lib.mkForce false;
+  services.gnome.gnome-online-accounts.enable = lib.mkForce false;
+  services.gnome.gnome-browser-connector.enable = lib.mkForce false;
+  services.gnome.gnome-initial-setup.enable = lib.mkForce false;
+  services.gnome.gnome-user-share.enable = lib.mkForce false;
+  services.gnome.rygel.enable = lib.mkForce false;
 
   # Experimental features (VRR, etc.)
   services.desktopManager.gnome.extraGSettingsOverridePackages = [ pkgs.mutter ];
@@ -32,6 +38,7 @@
   services.displayManager.gdm = {
     enable = true;
     wayland = true;
+    autoSuspend = false;
   };
   
   security.pam.services.gdm.enableGnomeKeyring = true;
@@ -68,11 +75,22 @@
   
 
     # Remove Bloat
-
     environment.gnome.excludePackages = (with pkgs; [
-
+      gnome-photos
+      gnome-tour
+      gnome-contacts
+      gnome-maps
+      gnome-music
+      gnome-weather
+      gnome-software
+      geary
+      epiphany
       rhythmbox
-
+      totem
+      tali
+      iagno
+      hitori
+      atomix
     ]);
 
   

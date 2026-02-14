@@ -12,6 +12,7 @@ unstable: final: prev: {
   heroic = unstable.heroic;           # Updated game compatibility
   lutris = unstable.lutris;           # Better game installer support
   protonplus = unstable.protonplus;   # GTK Proton manager
+  protonup-rs = unstable.protonup-rs; # CLI Proton manager
   bottles = unstable.bottles;         # Updated Windows app compatibility
   
   # Communication - latest features and security updates

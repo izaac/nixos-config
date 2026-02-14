@@ -27,7 +27,7 @@
 
   # 3. Kernel Modules & Wayland Environment
   boot.initrd.kernelModules = [ ];
-  boot.kernelParams = [ ]; 
+  boot.kernelParams = [ "nvidia_drm.fbdev=1" ]; 
   
   environment.sessionVariables = {
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";

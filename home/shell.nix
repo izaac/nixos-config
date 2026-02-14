@@ -6,13 +6,16 @@
   catppuccin.fzf.enable = true;
   catppuccin.lsd.enable = true;
   catppuccin.bottom.enable = true;
+  catppuccin.lazygit.enable = true;
+  catppuccin.yazi.enable = true;
 
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    lsd bat fzf fd ripgrep yazi
-    duf dust btop bottom fastfetch
+    lsd bat fzf fd ripgrep
+    duf dust btop bottom fastfetch gdu
     tldr jq rsync pv
     ncdu lazydocker
+    ticker tenki viddy
     lftp
     khal
     khard
@@ -58,6 +61,7 @@
       nvim = "TERM=xterm-256color nvim";
       cpv = "rsync -ahP";
       sysls = "systemctl --type=service --state=running";
+      lg = "lazygit";
       # Cache clearing alias
       ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
       # Rebuild the system and home-manager in one go
@@ -224,4 +228,7 @@ EOF
       format = "$directory$git_branch$git_status$container$character";
     };
   };
+
+  programs.lazygit.enable = true;
+  programs.yazi.enable = true;
 }

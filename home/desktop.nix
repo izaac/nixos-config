@@ -21,7 +21,6 @@
     brasero         # GTK CD/DVD Burning
     snapshot        # GTK Camera App
     sparrow
-    mpv             # CLI Media Player
     celluloid       # GTK Frontend for MPV
     zathura         # Minimalist PDF viewer
     ffmpeg-full

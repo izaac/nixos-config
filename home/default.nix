@@ -1,4 +1,4 @@
-{ config, pkgs, userConfig, ... }:
+{ config, pkgs, lib, userConfig, ... }:
 
 {
   imports = [
@@ -13,10 +13,12 @@
     ./tmux.nix
     ./kitty.nix
     ./cava.nix
+    ./cmus.nix
     ./qt.nix
     ./chromium.nix
     ./lazyvim.nix
     ./theme.nix
+    ./mpv.nix
   ];
 
   home.username = userConfig.username;
@@ -41,6 +43,17 @@
     };
     "org/gnome/shell/app-switcher" = {
       current-workspace-only = true;
+    };
+    "org/gnome/settings-daemon/plugins/power" = {
+      sleep-inactive-ac-type = "nothing";
+      sleep-inactive-battery-type = "nothing";
+      idle-dim = false;
+    };
+    "org/gnome/desktop/session" = {
+      idle-delay = lib.hm.gvariant.mkUint32 0;
+    };
+    "org/gnome/desktop/screensaver" = {
+      lock-enabled = false;
     };
   };
 
