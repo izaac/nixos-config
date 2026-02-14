@@ -8,9 +8,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    catppuccin.url = "github:catppuccin/nix";
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-unstable, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-unstable, catppuccin, ... }@inputs:
     let
       userConfig = import ./secrets.nix;
       system = "x86_64-linux";
@@ -39,6 +40,7 @@
             home-manager.users.${userConfig.username} = {
               imports = [ 
                 ./home/default.nix
+                catppuccin.homeModules.catppuccin
               ];
             };
           }

@@ -1,13 +1,21 @@
-{ pkgs, ... }:
-
-
+{ pkgs, lib, ... }:
 
 {
-
+  catppuccin.firefox.enable = true;
+  catppuccin.firefox.profiles.default.enable = true;
 
   # Configure the standard firefox package (home-manager's module will handle it)
   programs.firefox = {
     enable = true;
+    profiles.default = {
+      id = 0;
+      name = "default";
+      isDefault = true;
+      extensions.force = true;
+      settings = {
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+      };
+    };
     # Policies apply globally to all profiles and won't delete your history/extensions
     policies = {
       DisableTelemetry = true;
@@ -30,6 +38,7 @@
       HardwareAcceleration = true;
       # Preferences allow setting any about:config value
       Preferences = {
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = { Value = true; Status = "locked"; };
         "gfx.webrender.all" = { Value = true; Status = "locked"; };
         "layers.acceleration.force-enabled" = { Value = true; Status = "locked"; };
         "media.ffmpeg.vaapi.enabled" = { Value = true; Status = "locked"; };

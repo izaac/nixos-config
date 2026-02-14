@@ -7,17 +7,7 @@
     style.name = "kvantum";
   };
 
-  home.packages = with pkgs; [
-    (catppuccin-kvantum.override {
-      accent = "mauve";
-      variant = "mocha";
-    })
-  ];
-
-  xdg.configFile."Kvantum/kvantum.kvconfig".text = ''
-    [General]
-    theme=Catppuccin-Mocha-Mauve
-  '';
+  catppuccin.kvantum.enable = true;
 
   # Ensure GTK apps (Libadwaita, etc.) use dark theme
   dconf.settings = {

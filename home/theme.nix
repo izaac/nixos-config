@@ -13,6 +13,13 @@ let
   };
 in
 {
+  catppuccin.enable = true;
+  catppuccin.flavor = "mocha";
+  catppuccin.accent = "mauve";
+
+  # Enable specific integrations
+  catppuccin.cursors.enable = true;
+
   home.packages = with pkgs; [
     catppuccin-papirus
     gnome-themes-extra
@@ -24,14 +31,6 @@ in
     theme = {
       name = "catppuccin-mocha-mauve-standard";
       package = catppuccin-gtk-overridden;
-    };
-    iconTheme = {
-      name = "Papirus-Dark";
-      package = catppuccin-papirus;
-    };
-    cursorTheme = {
-      name = "catppuccin-mocha-mauve-cursors";
-      package = pkgs.catppuccin-cursors.mochaMauve;
     };
   };
 
@@ -46,9 +45,6 @@ in
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
-      cursor-theme = "catppuccin-mocha-mauve-cursors";
-      gtk-theme = "catppuccin-mocha-mauve-standard";
-      icon-theme = "Papirus-Dark";
     };
     
     # GNOME Shell theme (requires User Themes extension)
@@ -65,7 +61,4 @@ in
       ];
     };
   };
-
-  # Symlink the theme to ~/.themes for GNOME Shell to pick it up
-  home.file.".themes/catppuccin-mocha-mauve-standard".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-mauve-standard";
 }

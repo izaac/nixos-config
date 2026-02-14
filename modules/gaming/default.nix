@@ -17,10 +17,14 @@
       libva
       mangohud
       protonplus
+      gamemode
     ];
   };
 
-  # 3. Ananicy-cpp (CachyOS-style auto-nice daemon)
+  # 3. GameMode (Automatic Optimizations)
+  programs.gamemode.enable = true;
+
+  # 4. Ananicy-cpp (CachyOS-style auto-nice daemon)
   services.ananicy = {
     enable = true;
     package = pkgs.ananicy-cpp;

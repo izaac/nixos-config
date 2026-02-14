@@ -1,6 +1,12 @@
 { pkgs, userConfig, ... }:
 
 {
+  catppuccin.starship.enable = true;
+  catppuccin.bat.enable = true;
+  catppuccin.fzf.enable = true;
+  catppuccin.lsd.enable = true;
+  catppuccin.bottom.enable = true;
+
   home.packages = with pkgs; [
     # --- CORE UTILS ---
     lsd bat fzf fd ripgrep yazi
@@ -79,7 +85,6 @@
     sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
-      BAT_THEME = "TwoDark";
     };
 
     initExtra = ''
@@ -217,15 +222,6 @@ EOF
       command_timeout = 1000;
       add_newline = false;
       format = "$directory$git_branch$git_status$container$character";
-      directory.style = "bold lavender";
-      container = {
-        symbol = "📦";
-        style = "bold red";
-      };
-      character = {
-        success_symbol = "[➜](bold green)";
-        error_symbol = "[✗](bold red)";
-      };
     };
   };
 }
