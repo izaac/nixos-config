@@ -1,19 +1,28 @@
 { pkgs, userConfig, ... }:
 
 {
+  catppuccin.starship.enable = true;
+  catppuccin.bat.enable = true;
+  catppuccin.fzf.enable = true;
+  catppuccin.lsd.enable = true;
+  catppuccin.bottom.enable = true;
+  catppuccin.lazygit.enable = true;
+  catppuccin.yazi.enable = true;
+  catppuccin.btop.enable = true;
+  catppuccin.k9s.enable = true;
+
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    lsd bat fzf fd ripgrep yazi
-    duf dust btop bottom fastfetch
+    lsd bat fzf fd ripgrep
+    duf dust bottom fastfetch gdu
     tldr jq rsync pv
     ncdu lazydocker
+    ticker tenki viddy
     lftp
     khal
     khard
     man-db
-    gh
     kubernetes-helm
-    k9s
     kubectl
     
     # --- COMPRESSION & ARCHIVING ---
@@ -30,10 +39,12 @@
     nvitop
     nvtopPackages.nvidia
     bluetuith
+    whosthere
   ];
 
   home.sessionVariables = {
     DIRENV_LOG_FORMAT = "";
+    TERMINAL = "kitty";
   };
 
   programs.bash = {
@@ -52,6 +63,7 @@
       nvim = "TERM=xterm-256color nvim";
       cpv = "rsync -ahP";
       sysls = "systemctl --type=service --state=running";
+      lg = "lazygit";
       # Cache clearing alias
       ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
       # Rebuild the system and home-manager in one go
@@ -79,7 +91,6 @@
     sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
-      BAT_THEME = "TwoDark";
     };
 
     initExtra = ''
@@ -181,8 +192,15 @@ EOF
         direnv allow
       }
 
+      # fnm
+      FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
+      if [ -d "$FNM_PATH" ]; then
+        export PATH="$FNM_PATH:$PATH"
+        eval "`fnm env`"
+      fi
+
       # Ensure local binaries are in PATH (at the end to avoid overrides)
-      export PATH="$PATH:$HOME/.local/bin"
+      export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
     '';
   };
 
@@ -210,6 +228,15 @@ EOF
     };
   };
 
+  programs.btop = {
+    enable = true;
+    settings = {
+      theme_background = false; # Use terminal background
+      update_ms = 500;
+      proc_sorting = "cpu lazy";
+    };
+  };
+
   programs.starship = {
     enable = true;
     package = pkgs.starship;
@@ -217,15 +244,34 @@ EOF
       command_timeout = 1000;
       add_newline = false;
       format = "$directory$git_branch$git_status$container$character";
-      directory.style = "bold lavender";
-      container = {
-        symbol = "📦";
-        style = "bold red";
-      };
-      character = {
-        success_symbol = "[➜](bold green)";
-        error_symbol = "[✗](bold red)";
-      };
+    };
+  };
+
+  programs.lazygit.enable = true;
+  programs.yazi.enable = true;
+  programs.k9s.enable = true;
+  programs.gh.enable = true;
+
+  xdg.desktopEntries.yazi = {
+    name = "Yazi";
+    exec = "kitty -e yazi %u";
+    icon = "yazi";
+    terminal = false;
+    categories = [ "Utility" "Core" "System" "FileTools" "FileManager" "ConsoleOnly" ];
+    mimeType = [ "inode/directory" ];
+    settings = {
+      Keywords = "File;Manager;Explorer;Browser;Launcher";
+    };
+  };
+
+  xdg.desktopEntries.btop = {
+    name = "btop++";
+    exec = "kitty -e btop";
+    icon = "btop";
+    terminal = false;
+    categories = [ "System" "Monitor" "ConsoleOnly" ];
+    settings = {
+      Keywords = "system;process;task";
     };
   };
 }

@@ -22,10 +22,12 @@
   '';
 
   # Ensure host directories exist for persistent RHEL subscription volumes
+  # We use UID/GID 100000 which corresponds to the container's root user
   systemd.user.tmpfiles.rules = [
-    "d %h/.local/share/distrobox/rhel10/rhsm - - - -"
-    "d %h/.local/share/distrobox/rhel10/pki-entitlement - - - -"
-    "d %h/.local/share/distrobox/rhel10/var-lib-rhsm - - - -"
+    "d %h/.local/share/distrobox/rhel10/rhsm 0755 100000 100000 - -"
+    "d %h/.local/share/distrobox/rhel10/pki-entitlement 0755 100000 100000 - -"
+    "d %h/.local/share/distrobox/rhel10/pki-consumer 0755 100000 100000 - -"
+    "d %h/.local/share/distrobox/rhel10/var-lib-rhsm 0750 100000 100000 - -"
   ];
 
   # Declarative Distrobox Configuration
@@ -62,7 +64,7 @@
     additional_packages="subscription-manager git vim"
     init=false
     nvidia=true
-    volume="/home/${userConfig.username}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement /home/${userConfig.username}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
+    volume="/home/${userConfig.username}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-consumer:/etc/pki/consumer /home/${userConfig.username}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
     init_hooks="if [ ! -f /etc/rhsm/ca/redhat-uep.pem ]; then dnf reinstall -y subscription-manager-rhsm-certificates subscription-manager; fi"
   '';
 

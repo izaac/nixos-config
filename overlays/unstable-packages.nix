@@ -11,16 +11,14 @@ unstable: final: prev: {
   # Gaming tools - better compatibility with latest games
   heroic = unstable.heroic;           # Updated game compatibility
   lutris = unstable.lutris;           # Better game installer support
-  protonup-qt = unstable.protonup-qt; # Latest Proton versions for Steam
+  protonplus = unstable.protonplus;   # GTK Proton manager
+  protonup-rs = unstable.protonup-rs; # CLI Proton manager
   bottles = unstable.bottles;         # Updated Windows app compatibility
   
   # Communication - latest features and security updates
   telegram-desktop = unstable.telegram-desktop; # Newest features and fixes
   
   # System utilities - better hardware support or features
-  mission-center = unstable.mission-center;     # System monitoring tool
   goverlay = unstable.goverlay;                 # GPU monitoring overlay
-  
-  # Media - latest codecs and playback features
-  vlc = unstable.vlc;                           # Updated codecs and playback
+  whosthere = unstable.whosthere;               # TUI network discovery tool
 }
