@@ -16,16 +16,13 @@
       libvdpau
       libva
       mangohud
-      protonup-qt
+      protonplus
+      gamemode
     ];
   };
 
-  # 3. Ananicy-cpp (CachyOS-style auto-nice daemon)
-  services.ananicy = {
-    enable = true;
-    package = pkgs.ananicy-cpp;
-    rulesProvider = pkgs.ananicy-rules-cachyos;
-  };
+  # 3. GameMode (Automatic Optimizations)
+  programs.gamemode.enable = true;
 
   # 4. Sched-ext (Dynamic Schedulers)
   # Linux 6.12+ supports this natively. scx_lavd is excellent for gaming latency.

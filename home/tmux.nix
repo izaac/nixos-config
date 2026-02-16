@@ -15,6 +15,13 @@ let
   };
 in
 {
+  catppuccin.tmux.enable = true;
+  catppuccin.tmux.extraConfig = ''
+    set -g status-left ""
+    set -g status-right '#[fg=#{@thm_crust},bg=#{@thm_teal}] session: #S '
+    set -g status-right-length 100
+  '';
+
   programs.tmux = {
     enable = true;
     package = pkgs.tmux;
@@ -36,16 +43,6 @@ in
       
       # Custom-built plugin
       tmux-menus 
-
-      {
-        plugin = catppuccin;
-        extraConfig = '' 
-          set -g @catppuccin_flavor 'mocha'
-          set -g status-left ""
-          set -g status-right '#[fg=#{@thm_crust},bg=#{@thm_teal}] session: #S '
-          set -g status-right-length 100
-        '';
-      }
     ];
 
     # --- KEYBINDS & MANUAL CONFIG ---

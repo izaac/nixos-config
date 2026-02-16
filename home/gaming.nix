@@ -1,7 +1,7 @@
 { pkgs, config, ... }:
 
 let
-  flashgbx = pkgs.unstable.callPackage ./flashgbx.nix { };
+  flashgbx = pkgs.callPackage ./flashgbx.nix { };
 in
 {
   home.packages = with pkgs; [
@@ -11,8 +11,9 @@ in
     # Gaming Tools
     heroic
     lutris
+    protonplus
+    protonup-rs
     samrewritten
-    protonup-qt
     cartridges
     piper
     openrgb

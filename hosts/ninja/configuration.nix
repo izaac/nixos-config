@@ -194,16 +194,16 @@
     p7zip
     
     # Monitoring
-    btop
     iotop
     iftop
     strace
     lsof
     lm_sensors
     ethtool
+    dnsutils
   ];
 
-  security.pam.services.login.gnupg.enable = true;
+
 
   services.openssh = {
     enable = true;
@@ -235,7 +235,8 @@
   nix.daemonIOSchedClass = "idle";
 
   nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-qt5-1.1.07"
+    "ventoy-full-gtk-1.1.07"
+    "ventoy-gtk3-1.1.07"
   ];
 
   # Limit Nix Build Resources
