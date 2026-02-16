@@ -23,7 +23,6 @@
     brasero         # GTK CD/DVD Burning
     snapshot        # GTK Camera App
     sparrow
-    celluloid       # GTK Frontend for MPV
     ffmpeg-full
 
     # CD/DVD Backup & Cloning
@@ -73,10 +72,21 @@
       "application/x-xz" = [ "org.gnome.FileRoller.desktop" ];
       
       # Video
-      "video/mp4" = [ "io.github.celluloid_player.Celluloid.desktop" ];
-      "video/x-matroska" = [ "io.github.celluloid_player.Celluloid.desktop" ];
-      "video/webm" = [ "io.github.celluloid_player.Celluloid.desktop" ];
-      "video/quicktime" = [ "io.github.celluloid_player.Celluloid.desktop" ];
+      "video/mp4" = [ "mpv.desktop" ];
+      "video/x-matroska" = [ "mpv.desktop" ];
+      "video/webm" = [ "mpv.desktop" ];
+      "video/quicktime" = [ "mpv.desktop" ];
+      "video/x-flv" = [ "mpv.desktop" ];
+      "video/x-msvideo" = [ "mpv.desktop" ];
+      "video/mpeg" = [ "mpv.desktop" ];
+      "video/ogg" = [ "mpv.desktop" ];
+      "video/x-ogm+xml" = [ "mpv.desktop" ];
+      "video/3gpp" = [ "mpv.desktop" ];
+      "video/3gpp2" = [ "mpv.desktop" ];
+      "video/h264" = [ "mpv.desktop" ];
+      "video/mp2t" = [ "mpv.desktop" ];
+      "video/vnd.rn-realvideo" = [ "mpv.desktop" ];
+      "video/x-ms-wmv" = [ "mpv.desktop" ];
       
       # Audio
       "audio/mpeg" = [ "io.bassi.Amberol.desktop" ];
