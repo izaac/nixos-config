@@ -10,7 +10,7 @@
   services.gnome.glib-networking.enable = true;
   services.gnome.evolution-data-server.enable = lib.mkForce false;
   services.gnome.gnome-online-accounts.enable = lib.mkForce false;
-  services.gnome.gnome-browser-connector.enable = lib.mkForce false;
+  services.gnome.gnome-browser-connector.enable = true;
   services.gnome.gnome-initial-setup.enable = lib.mkForce false;
   services.gnome.gnome-user-share.enable = lib.mkForce false;
   services.gnome.rygel.enable = lib.mkForce false;

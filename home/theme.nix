@@ -27,6 +27,7 @@ in
     gnomeExtensions.appindicator
     gnomeExtensions.blur-my-shell
     gnomeExtensions.just-perfection
+    gnomeExtensions.dash-to-dock
   ];
 
   gtk = {
