@@ -6,8 +6,8 @@
   # This version is a C++ rewrite for much better performance.
   services.ananicy = {
     enable = true;
-    package = pkgs.ananicy-cpp;
-    rulesProvider = pkgs.ananicy-rules-cachyos;
+    package = pkgs.unstable.ananicy-cpp;
+    rulesProvider = pkgs.unstable.ananicy-rules-cachyos;
   };
 
   # Irqbalance for better interrupt distribution across cores

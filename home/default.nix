@@ -19,6 +19,7 @@
     ./lazyvim.nix
     ./theme.nix
     ./mpv.nix
+    ./whosthere.nix
   ];
 
   home.username = userConfig.username;

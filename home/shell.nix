@@ -39,7 +39,6 @@
     nvitop
     nvtopPackages.nvidia
     bluetuith
-    whosthere
   ];
 
   home.sessionVariables = {

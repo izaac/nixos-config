@@ -6,7 +6,7 @@
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "uas" "usb_storage" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" "nct6775" ];
+  boot.kernelModules = [ "kvm-amd" "nct6775" "ntsync" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =

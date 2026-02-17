@@ -137,12 +137,6 @@
     };
   };
 
-  # Disable audio power saving & optimized USB audio for DJI/Razer/Pro devices
-  boot.extraModprobeConfig = ''
-    options snd_hda_intel power_save=0
-    options snd_usb_audio skip_validation=1 ignore_ctl_error=1 device_setup=1
-  '';
-
   # User Account
     users.users.${userConfig.username} = {
       isNormalUser = true;

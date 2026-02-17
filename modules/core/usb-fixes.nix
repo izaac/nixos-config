@@ -17,9 +17,10 @@
   # 3. Audio Driver Options
   # skip_validation=1 : Fixes DJI "cannot find UAC_HEADER" (Error -22).
   # ignore_ctl_error=1: Prevents mixer crashes on non-standard devices.
-  # device_setup=1    : Forces initialization (Essential for DJI Receiver).
+  # Note: device_setup=1 is omitted as it breaks standard UAC devices (Blue Mic/Audioengine).
   boot.extraModprobeConfig = ''
-    options snd-usb-audio skip_validation=1 ignore_ctl_error=1 device_setup=1
+    options snd-usb-audio skip_validation=1 ignore_ctl_error=1
+    options snd_hda_intel power_save=0
   '';
 
   # 4. Force DJI Mic Binding (Auto-Bind)
