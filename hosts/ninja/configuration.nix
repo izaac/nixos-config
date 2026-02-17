@@ -12,6 +12,7 @@
       ../../modules/core/virtualization.nix
       ../../modules/core/usb-fixes.nix
       ../../modules/core/maintenance.nix
+      ../../modules/core/performance.nix
       ../../modules/core/sshfs.nix
       ../../modules/gaming/default.nix
       ../../modules/desktop/default.nix
@@ -67,9 +68,6 @@
     memoryPercent = 100;
   };
   boot.tmp.useTmpfs = true;
-
-  # Irqbalance for better interrupt distribution across cores
-  services.irqbalance.enable = true;
 
   # --- KERNEL MODULES ---
   boot.blacklistedKernelModules = [
