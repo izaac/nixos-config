@@ -3,11 +3,11 @@
 ## Overview
 
 - **OS:** NixOS (Branch: 25.11)
-- **DE:** KDE Plasma 6 (Wayland)
+- **DE:** GNOME 47 (Wayland)
 - **Shell:** Bash + Starship + FNM (Node) + Rustup
 - **Terminal:** Kitty + Tmux
 - **Editor:** Neovim (LazyVim)
-- **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles
+- **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, Conty
 
 ## Quick Start
 

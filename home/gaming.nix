@@ -23,6 +23,7 @@ in
     umu-launcher
     steamtinkerlaunch
     gamescope
+    bottles
     
     # Wine / Windows Compatibility
     wineWowPackages.waylandFull # 32-bit + 64-bit Wine with Wayland support

@@ -1,6 +1,6 @@
 # Hardware Configuration - ninja
 
-> **Last Updated**: 2026-02-11
+> **Last Updated**: 2026-02-16
 > **System**: ASUS ROG STRIX X670E-F GAMING WIFI
 > **OS**: NixOS 25.11
 
@@ -50,9 +50,15 @@
 | **M.2_1** | Crucial T705 | 1TB | PCIe 5.0 x4 | ~14 GB/s | Root filesystem (encrypted) | `0000:02:00.0` |
 | **M.2_2** | **Empty** | - | PCIe 5.0 x4 | - |  **Keep empty for GPU x16** | - |
 | **M.2_3** | Empty | - | PCIe 4.0 x4 | - | From chipset | - |
-| **M.2_4** | **WD Black SN850X** | **4TB** | **PCIe 4.0 x4** | **~7 GB/s** | **/mnt/storage (unencrypted)** | **`0000:08:00.0`** |
+| **M.2_4** | **WD Black SN850X** | **4TB** | **PCIe 4.0 x4** | **~7 GB/s** | **/mnt/data (unencrypted)** | **`0000:08:00.0`** |
 
 > **Important**: M.2_2 slot shares PCIe lanes with PCIEX16_1 via bifurcation. When populated, GPU drops from x16 to x8 mode. **Currently M.2_2 is empty, so GPU runs at full x16 speed.**
+
+### Network Storage
+
+| Name | Protocol | Usage | Notes |
+|------|----------|-------|-------|
+| **/mnt/storage** | CIFS | General Storage | Network share with automount |
 
 ### Current Configuration (Optimized)
 
@@ -68,7 +74,7 @@
 - `/dev/nvme0n1p2` (930GB) - LUKS encrypted root
 
 **WD Black SN850X (nvme1n1):**
-- `/dev/nvme1n1p1` (3.6TB) - Data storage
+- `/dev/nvme1n1p1` (3.6TB) - Data storage (/mnt/data)
 
 ---
 
