@@ -23,7 +23,7 @@ in
     umu-launcher
     steamtinkerlaunch
     gamescope
-    bottles
+    (bottles.override { removeWarningPopup = true; })
     
     # Wine / Windows Compatibility
     wineWowPackages.waylandFull # 32-bit + 64-bit Wine with Wayland support
