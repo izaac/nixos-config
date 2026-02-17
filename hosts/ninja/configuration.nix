@@ -92,8 +92,8 @@
   ];
 
   # CPU Power Management
-  # "powersave" governor with amd_pstate=active intelligently scales clocks based on load for efficiency.
-  powerManagement.cpuFreqGovernor = "powersave";
+  # Use 'performance' for better gaming stability, especially during intense combat.
+  powerManagement.cpuFreqGovernor = "performance";
 
   # --- DISABLE SUSPEND/HIBERNATE ---
   # Prevent accidental suspend which causes black screen freezes

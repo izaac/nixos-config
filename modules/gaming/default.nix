@@ -60,6 +60,13 @@
     WINE_NTSYNC = "1";
     WINE_FSYNC = "1";
 
+    # NVIDIA & DX12 Performance Fixes
+    # - no_upload_hlist: Fixes 'Invalid resource alignment' stutters in Elden Ring
+    # - Shader Cache: Increased to 10GB to prevent re-compilation hitches
+    VKD3D_CONFIG = "no_upload_hlist";
+    __GL_SHADER_DISK_CACHE_SKIP_CLEANUP = "1";
+    __GL_SHADER_DISK_CACHE_SIZE = "10737418240";
+    
     # Wayland Fixes for NVIDIA
     DISABLE_RT_CHECK = "1"; # Helps with some Raytracing titles on Wayland
     
