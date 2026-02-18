@@ -16,6 +16,8 @@
 
     # Audio Tools
     pulsemixer
+    gnome-sound-recorder
+    easyeffects
 
     # General Software
     fragments       # GTK Torrent Client

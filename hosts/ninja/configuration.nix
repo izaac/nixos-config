@@ -129,10 +129,10 @@
     extraConfig.pipewire."92-high-quality" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
-        "default.clock.allowed-rates" = [ 44100 48000 88200 96000 176400 192000 32000 24000 16000 ];
-        "default.clock.quantum" = 512;
-        "default.clock.min-quantum" = 32;
-        "default.clock.max-quantum" = 1024;
+        "default.clock.allowed-rates" = [ 44100 48000 96000 ];
+        "default.clock.quantum" = 1024;
+        "default.clock.min-quantum" = 1024;
+        "default.clock.max-quantum" = 2048;
       };
     };
   };

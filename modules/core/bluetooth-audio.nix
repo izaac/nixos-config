@@ -21,6 +21,10 @@
           
           # Priority: LDAC > AptX HD > AptX > AAC > SBC
           "bluez5.codecs" = [ "ldac" "aptx_hd" "aptx" "aac" "sbc_xq" "sbc" ];
+          "bluez5.a2dp.ldac.quality" = "hq";
+          "bluez5.a2dp.aac.bitratemode" = 0;
+          "bluez5.a2dp.sbc.min-bitpool" = 40;
+          "bluez5.a2dp.sbc.max-bitpool" = 64;
         };
       };
       
