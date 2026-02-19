@@ -249,7 +249,7 @@ EOF
         ssh_only = true;
         format = "on [$hostname]($style) ";
         style = "bold dimmed white";
-        hosts_alias = {
+        ssh_hosts_alias = {
           "windy" = "󰌢 windy";
           "ninja" = "󰟀 ninja";
         };
