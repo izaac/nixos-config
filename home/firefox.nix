@@ -40,6 +40,7 @@
       Preferences = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = { Value = true; Status = "locked"; };
         "gfx.webrender.all" = { Value = true; Status = "locked"; };
+        "media.cubeb.backend" = { Value = "pulse"; Status = "locked"; };
         "layers.acceleration.force-enabled" = { Value = true; Status = "locked"; };
         "media.ffmpeg.vaapi.enabled" = { Value = true; Status = "locked"; };
         "media.rdd-ffmpeg.enabled" = { Value = true; Status = "locked"; };
