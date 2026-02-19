@@ -60,15 +60,17 @@
     "boot.shell_on_fail"
     "iommu=pt"
     "usbcore.autosuspend=-1"
-    # Fix for some Intel/NVIDIA laptop backlight issues
-    "acpi_backlight=vendor" 
   ];
+
+  programs.light.enable = true;
 
   time.timeZone = "America/Phoenix";
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Audio (Pipewire)
   services.pulseaudio.enable = false;
+  # This is often needed for Fn keys to be recognized as audio controls
+  sound.enable = true; 
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -106,6 +108,7 @@
     powertop     # Monitor laptop power usage
     brightnessctl # Control screen brightness
     acpi          # Battery/Thermal info
+    libnotify     # For OSD notifications
   ];
 
   services.openssh = {
