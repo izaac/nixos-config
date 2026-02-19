@@ -39,6 +39,17 @@
     };
   };
 
+  # CPU Undervolting (i9-11980HK)
+  # Note: If this doesn't apply (shows 0mV in logs), you may need to find the 
+  # "Hidden BIOS" on your AERO (usually R-Ctrl + R-Shift + L-Alt + F2).
+  services.undervolt = {
+    enable = true;
+    coreOffset = -50;
+    gpuOffset = -50;
+    uncoreOffset = -50;
+    analogioOffset = -50;
+  };
+
   # File Systems
   boot.supportedFilesystems = [ "exfat" ];
 

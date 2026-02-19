@@ -35,6 +35,11 @@
     };
   };
 
+  # Enable advanced tuning (Clock offsets / Fan control)
+  services.xserver.deviceSection = ''
+    Option "Coolbits" "28"
+  '';
+
   environment.systemPackages = with pkgs; [
     nvtopPackages.full
   ];
