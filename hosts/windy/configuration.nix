@@ -60,6 +60,8 @@
     "boot.shell_on_fail"
     "iommu=pt"
     "usbcore.autosuspend=-1"
+    # Fix for some Intel/NVIDIA laptop backlight issues
+    "acpi_backlight=vendor" 
   ];
 
   programs.light.enable = true;
