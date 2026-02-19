@@ -108,7 +108,14 @@
     acpi          # Battery/Thermal info
   ];
 
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = true;
+      KbdInteractiveAuthentication = true;
+    };
+  };
+  
   services.fstrim.enable = true;
   services.power-profiles-daemon.enable = false;
 
