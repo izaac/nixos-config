@@ -55,9 +55,7 @@
       l = "ls -alh";
       ll = "ls -l";
       cat = "bat";
-      grep = "rg";
       top = "btop";
-      find = "fd";
       vim = "TERM=xterm-256color nvim";
       nvim = "TERM=xterm-256color nvim";
       cpv = "rsync -ahP";
@@ -85,6 +83,9 @@
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
       ssh = "TERM=xterm-256color ssh";
       ask = "npx @google/gemini-cli@latest chat";
+      
+      # Per-App Audio Overrides (Anticipation Strategy)
+      pw-lowlat = "PIPEWIRE_LATENCY='1024/48000'";
     };
 
     sessionVariables = {

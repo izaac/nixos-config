@@ -14,6 +14,8 @@
   services.gnome.gnome-initial-setup.enable = lib.mkForce false;
   services.gnome.gnome-user-share.enable = lib.mkForce false;
   services.gnome.rygel.enable = lib.mkForce false;
+  services.gnome.localsearch.enable = false;
+  services.gnome.tinysparql.enable = false;
 
   # Experimental features (VRR, etc.)
   services.desktopManager.gnome.extraGSettingsOverridePackages = [ pkgs.mutter ];

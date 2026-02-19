@@ -43,13 +43,12 @@
     "net.ipv4.tcp_fastopen" = 3;      # Enable TCP Fast Open for better connection times
     "net.ipv4.tcp_slow_start_after_idle" = 0; # Keep TCP connection "hot"
     
-    # Virtual Memory & Latency
-    "vm.swappiness" = 180;            # Aggressively use ZRAM
-    "vm.watermark_boost_factor" = 0;  # Reduce latency spikes
+    # Virtual Memory & Latency (Optimized for ZRAM)
+    # 180 is the standard recommendation for ZRAM to prioritize compressed RAM over disk/cache eviction.
+    "vm.swappiness" = 180;
     "vm.vfs_cache_pressure" = 50;     # Keep inode/dentry caches longer
     "vm.dirty_ratio" = 10;
     "vm.dirty_background_ratio" = 5;
-    "vm.compaction_proactiveness" = 0; # Reduce background jitter
 
     # MGLRU (Multi-Gen LRU) Optimizations
     # Helps with system responsiveness under high memory pressure.
@@ -62,10 +61,12 @@
   };
 
   # ZRAM (Compressed RAM Swap)
+  # High priority ensures it's used before any other swap (if added later).
   zramSwap = {
     enable = true;
     algorithm = "zstd";
     memoryPercent = 100;
+    priority = 100;
   };
   boot.tmp.useTmpfs = true;
 
@@ -130,10 +131,22 @@
       "context.properties" = {
         "default.clock.rate" = 48000;
         "default.clock.allowed-rates" = [ 44100 48000 96000 ];
-        "default.clock.quantum" = 1024;
-        "default.clock.min-quantum" = 1024;
-        "default.clock.max-quantum" = 2048;
       };
+    };
+
+    # Per-App Overrides (Anticipation Strategy)
+    # Automatically apply low-latency to gaming applications
+    extraConfig.pipewire."93-per-app-overrides" = {
+      "pulse.rules" = [
+        {
+          matches = [ { "application.process.binary" = "steam"; } { "application.name" = "~.*wine.*"; } { "application.name" = "~.*bottles.*"; } ];
+          actions = {
+            update-props = {
+              "pulse.min.quantum" = "1024/48000";
+            };
+          } ;
+        }
+      ];
     };
   };
 

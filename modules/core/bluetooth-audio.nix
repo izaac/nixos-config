@@ -19,8 +19,8 @@
           "bluez5.roles" = [ "a2dp_sink" "a2dp_source" "hfp_hf" "hfp_ag" "hsp_hs" "hsp_ag" ];
           "bluez5.hfphsp-backend" = "native";
           
-          # Priority: LDAC > AptX HD > AptX > AAC > SBC
-          "bluez5.codecs" = [ "ldac" "aptx_hd" "aptx" "aac" "sbc_xq" "sbc" ];
+          # Priority: LDAC > AAC > SBC
+          "bluez5.codecs" = [ "ldac" "aac" "sbc_xq" "sbc" ];
           "bluez5.a2dp.ldac.quality" = "hq";
           "bluez5.a2dp.aac.bitratemode" = 0;
           "bluez5.a2dp.sbc.min-bitpool" = 40;
