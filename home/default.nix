@@ -9,7 +9,7 @@
     ./gaming.nix
     ./dev.nix
     ./ssh.nix
-    ./sshfs.nix
+    # ./sshfs.nix
     ./tmux.nix
     ./kitty.nix
     ./cava.nix
