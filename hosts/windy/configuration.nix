@@ -133,6 +133,10 @@
   services.fstrim.enable = true;
   services.power-profiles-daemon.enable = false;
 
+  # Disable unnecessary services
+  services.colord.enable = false;
+  systemd.services.ModemManager.enable = false;
+
   # Nix Maintenance
   nix.gc = {
     automatic = true;
