@@ -111,8 +111,8 @@
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = true;
-      KbdInteractiveAuthentication = true;
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
     };
   };
   
