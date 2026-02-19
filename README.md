@@ -3,7 +3,9 @@
 ## Overview
 
 - **OS:** NixOS (Branch: 25.11)
-- **DE:** GNOME 47 (Wayland)
+- **DM:** GDM (Wayland)
+- **DE:** GNOME 49
+- **Theme:** Catppuccin Mocha (Mauve Accent)
 - **Shell:** Bash + Starship + FNM (Node) + Rustup
 - **Terminal:** Kitty + Tmux
 - **Editor:** Neovim (LazyVim)
