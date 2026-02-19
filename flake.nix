@@ -47,5 +47,33 @@
           }
         ];
       };
+
+      nixosConfigurations.windy = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs userConfig; };
+        
+        modules = [
+          ./hosts/windy/configuration.nix
+          catppuccin.nixosModules.catppuccin
+          home-manager.nixosModules.home-manager
+          {
+            nixpkgs.config.allowUnfree = true;
+            nixpkgs.overlays = [ 
+              (import ./overlays/sparrow-temurin-fix.nix)
+              (import ./overlays/unstable-packages.nix pkgs-unstable)
+            ];
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "hm-backup";
+            home-manager.extraSpecialArgs = { inherit inputs userConfig; };
+            home-manager.users.${userConfig.username} = {
+              imports = [ 
+                ./home/default.nix
+                catppuccin.homeModules.catppuccin
+              ];
+            };
+          }
+        ];
+      };
     };
 }

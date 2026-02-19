@@ -15,4 +15,9 @@
     # Path sourced from git config in home/dev.nix
     NH_FLAKE = "${userConfig.dotfilesDir}";
   };
+
+  nixpkgs.config.permittedInsecurePackages = [
+    "ventoy-full-gtk-1.1.07"
+    "ventoy-gtk3-1.1.07"
+  ];
 }

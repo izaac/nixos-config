@@ -239,11 +239,6 @@
   nix.daemonCPUSchedPolicy = "idle";
   nix.daemonIOSchedClass = "idle";
 
-  nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-full-gtk-1.1.07"
-    "ventoy-gtk3-1.1.07"
-  ];
-
   # Limit Nix Build Resources
   systemd.services.nix-daemon.serviceConfig = lib.mkForce {
     Nice = 19;
