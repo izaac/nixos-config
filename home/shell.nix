@@ -16,7 +16,7 @@
     lsd bat fzf fd ripgrep
     duf dust bottom fastfetch gdu
     tldr jq rsync pv
-    ncdu lazydocker
+    ncdu lazydocker rclone
     ticker tenki viddy
     lftp
     khal

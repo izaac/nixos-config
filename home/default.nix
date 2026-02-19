@@ -10,6 +10,7 @@
     ./dev.nix
     ./ssh.nix
     ./sshfs.nix
+    ./rclone-gdrive.nix
     ./tmux.nix
     ./kitty.nix
     ./cava.nix
