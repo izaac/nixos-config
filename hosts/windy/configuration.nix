@@ -69,11 +69,9 @@
 
   # Audio (Pipewire)
   services.pulseaudio.enable = false;
-  # This is needed for Fn keys to be recognized as audio controls
-  hardware.alsa.enable = true; 
   security.rtkit.enable = true;
   services.pipewire = {
-    enable = true;
+    enable = lib.mkForce true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
