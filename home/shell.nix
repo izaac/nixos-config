@@ -243,7 +243,20 @@ EOF
     settings = {
       command_timeout = 1000;
       add_newline = false;
-      format = "$directory$git_branch$git_status$container$character";
+      format = "$directory$hostname$git_branch$git_status$container$character";
+      
+      hostname = {
+        ssh_only = true;
+        format = "on [$hostname]($style) ";
+        style = "bold dimmed white";
+        hosts_alias = {
+          "windy" = "󰌢 windy";
+          "ninja" = "󰟀 ninja";
+        };
+      };
+
+      # Custom icons/styles for specific hosts
+      # Note: This is evaluated based on the current hostname
     };
   };
 
