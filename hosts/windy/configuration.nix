@@ -69,8 +69,8 @@
 
   # Audio (Pipewire)
   services.pulseaudio.enable = false;
-  # This is often needed for Fn keys to be recognized as audio controls
-  sound.enable = true; 
+  # This is needed for Fn keys to be recognized as audio controls
+  hardware.alsa.enable = true; 
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
