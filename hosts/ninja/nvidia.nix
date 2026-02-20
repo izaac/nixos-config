@@ -45,15 +45,16 @@
     nvtopPackages.nvidia
   ];
 
-  # 5. The Undervolt Service (Clock Locking)
+  # 5. The Undervolt Service (Clock Locking & Power Limit)
   systemd.services.nvidia-lock-clocks = {
     enable = true; 
-    description = "Lock NVIDIA GPU Clocks for stability and undervolting";
+    description = "Lock NVIDIA GPU Clocks and Power Limit for stability and undervolting";
     after = [ "display-manager.service" "nvidia-persistenced.service" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2700";
+      # Set Power Limit to 250W (Safe undervolt) and Lock Clocks to 210-2475MHz
+      ExecStart = "${pkgs.bash}/bin/bash -c '${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -pl 250 && ${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2475'";
       RemainAfterExit = true;
     };
   };
