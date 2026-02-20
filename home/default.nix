@@ -64,7 +64,9 @@
       exec-arg = "-e";
     };
     "org/gnome/settings-daemon/plugins/media-keys" = {
-      custom-keybindings = [ "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/" ];
+      custom-keybindings = [ 
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/" 
+      ];
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
       binding = "<Control><Alt>t";
@@ -78,6 +80,8 @@
       new-window = false;
     };
   };
+
+
 
   home.packages = with pkgs; [
     ventoy-full-gtk
