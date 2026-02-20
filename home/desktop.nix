@@ -38,6 +38,7 @@
 
     # GNOME Extensions & Integration
     nautilus-open-any-terminal
+    gnomeExtensions.tiling-assistant
 
     # GTK Alternatives for Core Apps
     loupe           # GNOME Image Viewer

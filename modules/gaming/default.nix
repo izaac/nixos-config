@@ -29,6 +29,7 @@
   services.scx = {
     enable = true;
     scheduler = "scx_lavd";
+    extraArgs = [ "--autopilot" ];
   };
 
   # 5. Controller & Hardware Support (The "Maximized" List)

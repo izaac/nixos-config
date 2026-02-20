@@ -28,6 +28,7 @@ in
     gnomeExtensions.blur-my-shell
     gnomeExtensions.just-perfection
     gnomeExtensions.dash-to-dock
+    gnomeExtensions.paperwm
   ];
 
   gtk = {
@@ -62,6 +63,7 @@ in
         "blur-my-shell@aunetx"
         "just-perfection-desktop@just-perfection"
         "user-theme@gnome-shell-extensions.gcampax.github.com"
+        "paperwm@paperwm.github.com"
       ];
     };
   };

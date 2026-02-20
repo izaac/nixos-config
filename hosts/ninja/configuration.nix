@@ -29,11 +29,15 @@
 
   # --- KERNEL & PERFORMANCE ---
   # Pin to Linux 6.18 to avoid NVIDIA build failures on latest (6.19)
-  boot.kernelPackages = pkgs.linuxPackages_6_18;
+  # boot.kernelPackages = pkgs.linuxPackages_6_18;
+  # Switch to Zen Kernel (optimized for desktop/gaming latency)
+  # Matches version 6.18 so it should remain compatible with NVIDIA drivers.
+  boot.kernelPackages = pkgs.linuxPackages_zen;
   
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
     "vm.max_map_count" = 2147483642; # Star Citizen / Hogwarts Legacy / Steam Deck parity
+    "kernel.split_lock_mitigate" = 0; # Disable split lock mitigation for better gaming performance
     
     # Network Optimizations
     "net.ipv4.tcp_congestion_control" = "bbr";
@@ -81,7 +85,6 @@
   # --- CORE HARDWARE TWEAKS ---
   boot.kernelParams = [
     "boot.shell_on_fail"
-    "split_lock_detect=off"    # Improves Elden Ring latency / removes bus lock warning
     "pci=realloc,pcie_bus_safe" # Resolves the 'can't claim bridge window' conflict in logs & ensures MPS stability
     "pcie_aspm=off"            # Disables Active State Power Management
     "iommu=pt"                 # Reduces NVMe/CPU latency
