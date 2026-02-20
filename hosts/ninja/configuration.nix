@@ -40,20 +40,11 @@
     "kernel.split_lock_mitigate" = 0; # Disable split lock mitigation for better gaming performance
     
     # Network Optimizations
-    "net.ipv4.tcp_congestion_control" = "bbr";
-    "net.core.default_qdisc" = "fq";
     "net.core.wmem_max" = 67108864;    # 64 MiB - Optimized for high speed without bufferbloat
     "net.core.rmem_max" = 67108864;    # 64 MiB
     "net.ipv4.tcp_fastopen" = 3;      # Enable TCP Fast Open for better connection times
     "net.ipv4.tcp_slow_start_after_idle" = 0; # Keep TCP connection "hot"
     
-    # Virtual Memory & Latency (Optimized for ZRAM)
-    # 180 is the standard recommendation for ZRAM to prioritize compressed RAM over disk/cache eviction.
-    "vm.swappiness" = 180;
-    "vm.vfs_cache_pressure" = 50;     # Keep inode/dentry caches longer
-    "vm.dirty_ratio" = 10;
-    "vm.dirty_background_ratio" = 5;
-
     # MGLRU (Multi-Gen LRU) Optimizations
     # Helps with system responsiveness under high memory pressure.
     "vm.lr_gen_stats" = 1;
@@ -64,14 +55,6 @@
     "net.ipv4.tcp_max_syn_backlog" = 8192;
   };
 
-  # ZRAM (Compressed RAM Swap)
-  # High priority ensures it's used before any other swap (if added later).
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-    memoryPercent = 100;
-    priority = 100;
-  };
   boot.tmp.useTmpfs = true;
 
   # --- KERNEL MODULES ---

@@ -57,13 +57,6 @@
   # Pin to Linux 6.18 for stability/compatibility parity
   boot.kernelPackages = pkgs.linuxPackages_6_18;
   
-  # ZRAM (Compressed RAM Swap) - Essential for laptops to reduce SSD wear
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-    memoryPercent = 100;
-    priority = 100;
-  };
   boot.tmp.useTmpfs = true;
 
   # --- CORE HARDWARE TWEAKS ---

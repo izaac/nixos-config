@@ -27,13 +27,24 @@
 
   # 3. Kernel Modules & Wayland Environment
   boot.initrd.kernelModules = [ ];
-  boot.kernelParams = [ "nvidia_drm.fbdev=1" ]; 
+  boot.kernelParams = [ 
+    "nvidia_drm.fbdev=1" 
+    # High-performance PowerMizer (avoid clock dips during presentation)
+    "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1\""
+  ]; 
   
   environment.sessionVariables = {
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     LIBVA_DRIVER_NAME = "nvidia";
     NVD_BACKEND = "direct";
     GBM_BACKEND = "nvidia-drm";
+
+    # Enable G-Sync/VRR (for GNOME/KDE Wayland)
+    __GL_GSYNC_ALLOWED = "1";
+    __GL_VRR_ALLOWED = "1";
+
+    # Native Wayland for Electron apps (Discord, VSCode, etc.)
+    NIXOS_OZONE_WL = "1";
   };
 
   # 4. Unlock Overclocking/Undervolting (Coolbits)
