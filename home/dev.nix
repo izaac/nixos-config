@@ -29,7 +29,6 @@
     })
     
     # --- UTILS ---
-    tldr
     unstable.gemini-cli
   ];
 

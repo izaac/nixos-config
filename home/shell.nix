@@ -4,24 +4,42 @@
   catppuccin.starship.enable = true;
   catppuccin.bat.enable = true;
   catppuccin.fzf.enable = true;
-  catppuccin.lsd.enable = true;
   catppuccin.bottom.enable = true;
   catppuccin.lazygit.enable = true;
   catppuccin.yazi.enable = true;
   catppuccin.btop.enable = true;
   catppuccin.k9s.enable = true;
+  catppuccin.atuin.enable = true;
+
+  programs.atuin = {
+    enable = true;
+    enableBashIntegration = true;
+    settings = {
+      auto_sync = false;
+      style = "compact";
+      inline_height = 20;
+    };
+  };
+
+  programs.eza = {
+    enable = true;
+    enableBashIntegration = true;
+    icons = "auto";
+    git = true;
+  };
 
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    lsd bat fzf fd ripgrep
+    bat fzf fd ripgrep
     duf dust bottom fastfetch gdu
-    tldr jq rsync pv
+    jq rsync pv
     ncdu lazydocker rclone
     ticker tenki viddy
     lftp
     man-db
     kubernetes-helm
     kubectl
+    procs just nix-tree comma
     
     # --- COMPRESSION & ARCHIVING ---
     zip unzip 
@@ -42,6 +60,7 @@
   home.sessionVariables = {
     DIRENV_LOG_FORMAT = "";
     TERMINAL = "kitty";
+    MANPAGER = "sh -c 'col -bx | bat -l man -p'";
   };
 
   programs.bash = {
@@ -49,9 +68,11 @@
     enableCompletion = true;
     
     shellAliases = {
-      ls = "lsd";
-      l = "ls -alh";
-      ll = "ls -l";
+      ls = "eza --icons";
+      l = "eza -lh --icons --git -a";
+      ll = "eza -l --icons --git -a";
+      lt = "eza --tree --level=2 --icons";
+      cd = "z";
       cat = "bat";
       top = "btop";
       vim = "TERM=xterm-256color nvim";
@@ -220,6 +241,29 @@ EOF
   };
 
   programs.zoxide = {
+    enable = true;
+    enableBashIntegration = true;
+  };
+
+  programs.pay-respects = {
+    enable = true;
+    enableBashIntegration = true;
+  };
+
+  programs.tealdeer = {
+    enable = true;
+    settings = {
+      display = {
+        compact = true;
+        use_pager = true;
+      };
+      updates = {
+        auto_update = true;
+      };
+    };
+  };
+
+  programs.nix-index = {
     enable = true;
     enableBashIntegration = true;
   };
