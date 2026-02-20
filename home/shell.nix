@@ -19,8 +19,6 @@
     ncdu lazydocker rclone
     ticker tenki viddy
     lftp
-    khal
-    khard
     man-db
     kubernetes-helm
     kubectl
@@ -211,6 +209,14 @@ EOF
     # Creates GC roots in ~/.local/share/direnv/allow/ so your cached
     # environments persist across 'nh clean' and 'nix-collect-garbage'
     nix-direnv.enable = true;
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableBashIntegration = true;
+    defaultCommand = "fd --type f";
+    fileWidgetCommand = "fd --type f";
+    changeDirWidgetCommand = "fd --type d";
   };
 
   programs.zoxide = {
