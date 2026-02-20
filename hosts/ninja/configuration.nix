@@ -136,16 +136,23 @@
         "default.clock.allowed-rates" = [ 44100 48000 96000 ];
       };
     };
-
-    # Per-App Overrides (Anticipation Strategy)
-    # Automatically apply low-latency to gaming applications
-    extraConfig.pipewire."93-per-app-overrides" = {
+    
+    # Per-App Overrides (Stability Strategy)
+    # Automatically apply large stable buffers to gaming applications
+    extraConfig.pipewire-pulse."93-per-app-overrides" = {
       "pulse.rules" = [
         {
-          matches = [ { "application.process.binary" = "steam"; } { "application.name" = "~.*wine.*"; } { "application.name" = "~.*bottles.*"; } ];
+          matches = [ 
+            { "application.process.binary" = "steam"; } 
+            { "application.name" = "~.*wine.*"; } 
+            { "application.name" = "~.*bottles.*"; } 
+            { "application.name" = "~.*Elden Ring.*"; }
+          ];
           actions = {
             update-props = {
-              "pulse.min.quantum" = "1024/48000";
+              "pulse.min.quantum" = 2048;
+              "pulse.max.quantum" = 8192;
+              "pulse.idle.timeout" = 0;
             };
           } ;
         }
