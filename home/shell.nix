@@ -70,7 +70,7 @@
     shellAliases = {
       # Use the smart eza wrapper defined in initExtra
       ls = "_smart_eza --group-directories-first";
-      l = "_smart_eza -lbF --git --group-directories-first";
+      l = "_smart_eza -lb --git --group-directories-first";
       ll = "_smart_eza -l --group-directories-first";
       la = "_smart_eza -la --group-directories-first";
       lt = "_smart_eza --tree --level=2";
@@ -124,9 +124,9 @@
           for arg in "$@"; do
             [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
           done
-          eza --icons=never --color=never "''${args[@]}"
+          command eza --icons=never --color=never "''${args[@]}"
         else
-          eza --icons=auto "$@"
+          command eza --icons=auto "$@"
         fi
       }
 
