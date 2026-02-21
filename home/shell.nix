@@ -68,10 +68,12 @@
     enableCompletion = true;
     
     shellAliases = {
-      ls = "eza --icons";
-      l = "eza -lh --icons --git -a";
-      ll = "eza -l --icons --git -a";
-      lt = "eza --tree --level=2 --icons";
+      # Use the smart eza wrapper defined in initExtra
+      ls = "_smart_eza --group-directories-first";
+      l = "_smart_eza -lbF --git --group-directories-first";
+      ll = "_smart_eza -l --group-directories-first";
+      la = "_smart_eza -la --group-directories-first";
+      lt = "_smart_eza --tree --level=2";
       cd = "z";
       cat = "bat";
       top = "btop";
@@ -113,6 +115,21 @@
     };
 
     initExtra = ''
+      # --- Smart eza Wrapper ---
+      # Prevents hangs on network mounts like SSHFS (Jellyfin)
+      function _smart_eza() {
+        if [[ "$PWD" == *"/Jellyfin"* ]] || [[ "$*" == *"/Jellyfin"* ]]; then
+          # Strip --git and -g flags for Jellyfin to avoid hangs
+          local args=()
+          for arg in "$@"; do
+            [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
+          done
+          eza --icons=never --color=never "''${args[@]}"
+        else
+          eza --icons=auto "$@"
+        fi
+      }
+
       # --- GPG TTY FIX ---
       # Critical for GPG password prompts to appear in the terminal
       export GPG_TTY=$(tty)
@@ -291,7 +308,7 @@ EOF
     enable = true;
     package = pkgs.starship;
     settings = {
-      command_timeout = 1000;
+      command_timeout = 5000;
       add_newline = false;
       format = "$directory$hostname$git_branch$git_status$container$character";
       
