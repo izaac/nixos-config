@@ -64,8 +64,8 @@
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "oneshot";
-      # Set Power Limit to 250W (Safe undervolt) and Lock Clocks to 210-2475MHz
-      ExecStart = "${pkgs.bash}/bin/bash -c '${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -pl 250 && ${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2475'";
+      # Set Power Limit to 250W (Safe undervolt) and Lock Clocks to 210-2575MHz
+      ExecStart = "${pkgs.bash}/bin/bash -c '${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -pl 250 && ${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2575'";
       RemainAfterExit = true;
     };
   };
