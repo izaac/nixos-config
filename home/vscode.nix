@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, userConfig, ... }:
 
 {
   programs.vscode = {
@@ -105,11 +105,17 @@
         "[github-actions-workflow]" = {
           "editor.defaultFormatter" = "redhat.vscode-yaml";
         };
-        "[markdown]" = {
-          "editor.defaultFormatter" = "DavidAnson.vscode-markdownlint";
-        };
-        "files.associations" = {
-          "*.yaml" = "yaml";
+                "[markdown]" = {
+                  "editor.defaultFormatter" = "DavidAnson.vscode-markdownlint";
+                };
+                "github.copilot.nextEditSuggestions.enabled" = true;
+        
+                # --- Cloud & AI ---
+                "geminicodeassist.project" = userConfig.geminiProject or "";
+                "cloudcode.project" = userConfig.cloudCodeProject or "";
+        
+                "files.associations" = {
+                  "*.yaml" = "yaml";
           "*.sh" = "shellscript";
           "*.tf" = "terraform";
           "*.ipynb" = "jupyter-notebook";

@@ -47,6 +47,14 @@ in
   xdg.configFile."gtk-4.0/gtk-dark.css".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-mauve-standard/gtk-4.0/gtk-dark.css";
   xdg.configFile."gtk-4.0/assets".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-mauve-standard/gtk-4.0/assets";
 
+  xdg.configFile."paperwm/user.css".text = ''
+    .paperwm-selection,
+    .tile-preview {
+        background-color: rgba(203, 166, 247, 0.2) !important;
+        border-color: #cba6f7 !important;
+    }
+  '';
+
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
