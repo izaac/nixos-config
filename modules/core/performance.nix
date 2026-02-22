@@ -23,6 +23,16 @@
     "net.ipv4.tcp_congestion_control" = "bbr"; # Google BBR congestion control
   };
 
+  # --- GAMING & INPUT LATENCY ---
+  boot.kernelParams = [
+    # Transparent Hugepages (THP) - 'madvise' allows apps (like Steam/Proton) 
+    # to opt-in, reducing TLB misses without the overhead of 'always'.
+    "transparent_hugepage=madvise"
+    
+    # Disable USB autosuspend to eliminate tiny wake-up delays for mice/keyboards.
+    "usbcore.autosuspend=-1"
+  ];
+
   # Ananicy-cpp (Auto-nice daemon) - Disabled per Anticipation Strategy
   services.ananicy.enable = false;
 

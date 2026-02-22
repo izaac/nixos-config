@@ -18,6 +18,7 @@
     ./qt.nix
     ./chromium.nix
     ./lazyvim.nix
+    ./vscode.nix
     ./theme.nix
     ./mpv.nix
     ./whosthere.nix
