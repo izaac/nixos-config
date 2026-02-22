@@ -13,26 +13,24 @@
     profiles.default = {
       # Enable the specific extension update checks
       enableExtensionUpdateCheck = true;
-      enableUpdateCheck = false; # VSCodium manages its own updates or via Nix
+      enableUpdateCheck = false; # VSCodium manages its own updates via Nix
       
       # Immutable extensions (declarative)
       extensions = with pkgs.vscode-extensions; [
         catppuccin.catppuccin-vsc
         golang.go
         ms-python.python
-        ms-kubernetes-tools.vscode-kubernetes-tools
+        ms-python.vscode-pylance
+        ms-python.debugpy
         redhat.vscode-yaml
         davidanson.vscode-markdownlint
         ms-azuretools.vscode-docker
-        hashicorp.terraform
         github.copilot
         esbenp.prettier-vscode
         dbaeumer.vscode-eslint
         donjayamanne.githistory
         codezombiech.gitignore
         ms-vscode-remote.remote-containers
-        # Cypress isn't in nixpkgs extensions yet; install manually or use marketplace builder
-        # TypeScript is built-in.
       ];
 
       userSettings = {
@@ -81,11 +79,6 @@
           "editor.wordBasedSuggestions" = "off";
         };
 
-        # --- Kubernetes ---
-        "vs-kubernetes" = {
-           "vs-kubernetes.minikube-show-information-expiration" = "2024-06-11T16:31:33.895Z";
-        };
-
         # --- Formatter & Languages ---
         "[typescript]" = {
           "editor.defaultFormatter" = "esbenp.prettier-vscode";
@@ -105,23 +98,19 @@
         "[github-actions-workflow]" = {
           "editor.defaultFormatter" = "redhat.vscode-yaml";
         };
-                "[markdown]" = {
-                  "editor.defaultFormatter" = "DavidAnson.vscode-markdownlint";
-                };
-                "github.copilot.nextEditSuggestions.enabled" = true;
-        
-                # --- Cloud & AI ---
-                "geminicodeassist.project" = userConfig.geminiProject or "";
-                "cloudcode.project" = userConfig.cloudCodeProject or "";
-        
-                "files.associations" = {
-                  "*.yaml" = "yaml";
-          "*.sh" = "shellscript";
-          "*.tf" = "terraform";
-          "*.ipynb" = "jupyter-notebook";
+        "[markdown]" = {
+          "editor.defaultFormatter" = "davidanson.vscode-markdownlint";
         };
+        "github.copilot.nextEditSuggestions.enabled" = true;
 
-        # --- Telemetry ---
+        # --- Cloud & AI ---
+        "geminicodeassist.project" = userConfig.geminiProject or "";
+        "cloudcode.project" = userConfig.cloudCodeProject or "";
+
+                    "files.associations" = {
+                      "*.yaml" = "yaml";
+                      "*.sh" = "shellscript";
+                    };                # --- Telemetry ---
         "telemetry.telemetryLevel" = "off";
         "redhat.telemetry.enabled" = false;
         "geminicodeassist.enableTelemetry" = false;
