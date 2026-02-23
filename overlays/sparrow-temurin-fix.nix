@@ -86,6 +86,7 @@ final: prev: {
           --add-reads=com.sparrowwallet.merged.module=com.fasterxml.jackson.annotation
           --add-reads=com.sparrowwallet.merged.module=com.fasterxml.jackson.core
           --add-reads=com.sparrowwallet.merged.module=co.nstant.in.cbor
+          --add-reads=com.sparrowwallet.merged.module=jdk.jfr
           --add-reads=kotlin.stdlib=kotlinx.coroutines.core
           -m com.sparrowwallet.sparrow
         )
@@ -225,6 +226,7 @@ final: prev: {
       };
 
       installPhase = ''
+        runHook preInstall
         mkdir -p $out/bin $out
         ln -s ${sparrow-modules}/modules $out/lib
         install -D -m 777 ${launcher} $out/bin/sparrow-desktop
@@ -234,6 +236,7 @@ final: prev: {
         ln -s ${sparrow-icons}/hicolor $out/share/icons
         mkdir -p $out/etc/udev/
         ln -s ${sparrow-modules}/modules/com.sparrowwallet.lark/udev $out/etc/udev/rules.d
+        runHook postInstall
       '';
 
       meta = with lib; {
