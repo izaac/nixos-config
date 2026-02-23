@@ -60,7 +60,7 @@
         [ "profile chromium /usr/lib/@{chromium}/@{chromium} flags=(unconfined) {" ]
         [ 
           ''
-          profile chromium /nix/store/*/libexec/chromium/chromium {
+          profile chromium ${pkgs.chromium}/bin/chromium {
             # Default allow all (Blacklist mode)
             file,
             network,
@@ -89,7 +89,7 @@
         [ "profile firefox /{usr/lib/firefox{,-esr,-beta,-devedition,-nightly},opt/firefox}/firefox{,-esr,-bin} flags=(unconfined) {" ]
         [ 
           ''
-          profile firefox /nix/store/*/lib/firefox/firefox {
+          profile firefox ${pkgs.firefox}/bin/firefox {
             # Default allow all (Blacklist mode)
             file,
             network,

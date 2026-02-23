@@ -45,6 +45,7 @@
 
     # Native Wayland for Electron apps (Discord, VSCode, etc.)
     NIXOS_OZONE_WL = "1";
+    ELECTRON_OZONE_PLATFORM_HINT = "auto";
   };
 
   # 4. Unlock Overclocking/Undervolting (Coolbits)

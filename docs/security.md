@@ -19,7 +19,7 @@ We use AppArmor in a **Blacklist Mode** for primary web browsers to protect sens
     - `~/.aws/`
     - `~/.kube/`
   - **Audit Logging**: Any attempt to access these directories is logged for security monitoring.
-  - **NixOS Compatibility**: Profiles are dynamically patched to match Nix store paths for browser binaries.
+  - **NixOS Compatibility**: Profiles are dynamically patched using direct Nix store paths (e.g., `${pkgs.chromium}/bin/chromium`) for browser binaries, ensuring the profile stays locked to the correct version.
 
 ### Commands
 

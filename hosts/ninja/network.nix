@@ -20,12 +20,33 @@
   # --- SYSTEMD-NETWORKD CONFIGURATION ---
   systemd.network = {
     enable = true;
+    
+    # Link-level hardware optimizations (Queues)
+    links."10-eno1" = {
+      matchConfig.Name = "eno1";
+      linkConfig = {
+        TransmitQueues = 8;
+        ReceiveQueues = 8;
+      };
+    };
+
     networks."40-eno1" = {
       matchConfig.Name = "eno1";
+      
+      # Modern 25.11 Simplified Syntax
       address = [ "192.168.0.230/24" ];
-      routes = [{ Gateway = "192.168.0.1"; }];
-      networkConfig.DNS = [ "192.168.0.96" ];
-      linkConfig.RequiredForOnline = "routable";
+      gateway = [ "192.168.0.1" ];
+      dns = [ "192.168.0.96" ];
+
+      # Link settings (Interface level)
+      linkConfig = {
+        RequiredForOnline = "routable";
+      };
+
+      # Network section settings (Protocol level)
+      networkConfig = {
+        IPv6PrivacyExtensions = "kernel";
+      };
     };
   };
 

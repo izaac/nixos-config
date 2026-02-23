@@ -47,7 +47,7 @@
     [ubu]
     image=ubuntu:24.04
     pull=true
-    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools"
+    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
     init=false
     nvidia=true
     init_hooks="sh ~/.config/distrobox/nvidia-setup.sh"

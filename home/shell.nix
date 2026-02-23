@@ -148,7 +148,7 @@
       # Optimized with ripgrep for speed
       function catr() {
         local target="''${1:-.}"
-        rg --files --hidden --glob '!.git' "$target" | xargs -I {} sh -c '
+        rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
           if file -b --mime-type "{}" | grep -q "^text/"; then
             echo "================================================================================"
             echo "FILE: {}"

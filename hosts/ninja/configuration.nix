@@ -35,6 +35,18 @@
   # Matches version 6.18 so it should remain compatible with NVIDIA drivers.
   boot.kernelPackages = pkgs.linuxPackages_zen;
   
+  # --- HARDWARE OPTIMIZATIONS (Ryzen 9 9950X3D) ---
+  # Modern way to set X3D Cache preference on boot.
+  # This is safer and more reliable than postBootCommands.
+  systemd.tmpfiles.rules = [ "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache" ];
+
+  # --- EXPERIMENTAL FEATURES (REMOVED FOR STABILITY) ---
+  # We are NOT enabling system.nixos-init, services.userborn, or system.etc.overlay
+  # as these caused the login failure.
+
+  # Enable systemd-based initrd
+  boot.initrd.systemd.enable = true;
+  
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
     "vm.max_map_count" = 2147483642; # Star Citizen / Hogwarts Legacy / Steam Deck parity
