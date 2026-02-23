@@ -92,8 +92,8 @@
   ];
 
   # CPU Power Management
-  # Use 'performance' for better gaming stability, especially during intense combat.
-  powerManagement.cpuFreqGovernor = "performance";
+  # Use 'powersave' for better power efficiency and lower temperatures.
+  powerManagement.cpuFreqGovernor = "powersave";
 
   # --- DISABLE SUSPEND/HIBERNATE ---
   # Prevent accidental suspend which causes black screen freezes
