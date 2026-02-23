@@ -16,6 +16,7 @@
 
 - [Hardware Configuration](docs/hardware.md)
 - [Security & Hardening](docs/security.md)
+- [Secret Management](docs/secrets.md)
 
 ## Quick Start
 
