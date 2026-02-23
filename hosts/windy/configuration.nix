@@ -6,15 +6,9 @@
       ./hardware.nix
       ./nvidia.nix
       ./network.nix
-      ../../modules/core/nix-ld.nix
-      ../../modules/core/codecs.nix
-      ../../modules/core/bluetooth-audio.nix
-      ../../modules/core/virtualization.nix
-      ../../modules/core/usb-fixes.nix
-      ../../modules/core/maintenance.nix
-      ../../modules/core/performance.nix
-      ../../modules/gaming/default.nix
-      ../../modules/desktop/default.nix
+      ../../modules/core
+      ../../modules/gaming
+      ../../modules/desktop
     ];
 
   # Bootloader

@@ -6,16 +6,10 @@
       ./hardware.nix
       ./nvidia.nix
       ./network.nix
-      ../../modules/core/nix-ld.nix
-      ../../modules/core/codecs.nix
-      ../../modules/core/bluetooth-audio.nix
-      ../../modules/core/virtualization.nix
-      ../../modules/core/usb-fixes.nix
-      ../../modules/core/maintenance.nix
-      ../../modules/core/performance.nix
+      ../../modules/core
       ../../modules/core/sshfs.nix
-      ../../modules/gaming/default.nix
-      ../../modules/desktop/default.nix
+      ../../modules/gaming
+      ../../modules/desktop
     ];
 
   # Bootloader
@@ -124,6 +118,42 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
+
+    wireplumber.extraConfig."95-alsa-soft-fixes" = {
+      "monitor.alsa.rules" = [
+        {
+          matches = [
+            {
+              "node.name" = "~alsa_input.usb-Blue_Microphones_Blue_Yeti.*";
+            }
+          ];
+          actions = {
+            update-props = {
+              "session.suspend-on-idle" = false;
+              "node.pause-on-idle" = false;
+              "priority.driver" = 1050;
+              "priority.session" = 1050;
+              "audio.channels" = 2;
+            };
+          };
+        }
+        {
+          matches = [
+            {
+              "node.name" = "~alsa_input.*";
+            }
+            {
+              "node.name" = "~alsa_output.*";
+            }
+          ];
+          actions = {
+            update-props = {
+              "session.suspend-on-idle" = false;
+            };
+          };
+        }
+      ];
+    };
     
     # High Fidelity & Stability Configuration
     extraConfig.pipewire."92-high-quality" = {
