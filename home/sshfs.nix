@@ -20,8 +20,11 @@ in
       Type = "forking";
       # Wait 10 seconds after the session starts to avoid blocking login UI
       ExecStartPre = "${pkgs.coreutils}/bin/sleep 10";
-      ExecStart = ''
-        ${pkgs.sshfs}/bin/sshfs ${userConfig.username}@${userConfig.sshHost}:/home/${userConfig.username} ${mountPoint} \
+      
+      # Use bash wrapper to read the secret host at runtime
+      ExecStart = pkgs.writeShellScript "mount-jellyfin-sshfs" ''
+        HOST=$(cat /run/secrets/sshHost)
+        ${pkgs.sshfs}/bin/sshfs ${userConfig.username}@$HOST:/home/${userConfig.username} ${mountPoint} \
           -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 \
           -o StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null \
           -o IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin \

@@ -9,11 +9,15 @@
     };
     nixos-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     catppuccin.url = "github:catppuccin/nix/release-25.11";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-unstable, catppuccin, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, nixos-unstable, catppuccin, sops-nix, ... }@inputs:
     let
-      userConfig = import ./secrets.nix;
+      userConfig = import ./lib/user.nix;
       
       # Helper function to generate a host configuration
       mkSystem = hostname: system: nixpkgs.lib.nixosSystem {
@@ -23,6 +27,8 @@
         modules = [
           ./hosts/${hostname}/configuration.nix
           catppuccin.nixosModules.catppuccin
+          sops-nix.nixosModules.sops
+          ./modules/core/sops.nix
           {
             nixpkgs.config.allowUnfree = true;
             nixpkgs.overlays = [ 

@@ -67,5 +67,4 @@ bin/
 # NOTE: Usually you COMMIT .envrc, but IGNORE the .env file it loads.
 
 # Centralized user info
-secrets.nix
 .envrc
