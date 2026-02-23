@@ -17,6 +17,16 @@
       # --- Wayland/Video/Compatibility ---
       "--ozone-platform=x11"
       "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
+
+      # --- Security & Debloat ---
+      "--disable-sync"
+      "--disable-signin"
+      "--no-first-run"
+      "--no-pings"
+      "--no-default-browser-check"
+      "--disable-breakpad" # Disable crash reporting
+      "--disable-component-update" # Don't update components in background
+      "--disable-domain-reliability"
     ];
   };
 
@@ -36,6 +46,16 @@
       # --- Wayland/Video/Compatibility ---
       "--ozone-platform=x11"
       "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
+
+      # --- Security & Debloat ---
+      "--disable-sync"
+      "--disable-signin"
+      "--no-first-run"
+      "--no-pings"
+      "--no-default-browser-check"
+      "--disable-breakpad"
+      "--disable-component-update"
+      "--disable-domain-reliability"
     ];
   };
 }

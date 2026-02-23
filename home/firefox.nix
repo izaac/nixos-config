@@ -38,6 +38,38 @@
       HardwareAcceleration = true;
       # Preferences allow setting any about:config value
       Preferences = {
+        # --- PRIVACY & SECURITY ---
+        "privacy.resistFingerprinting" = false; # Set to false to prevent breaking Google Meet/Layouts
+        "privacy.trackingprotection.enabled" = true;
+        "privacy.trackingprotection.socialtracking.enabled" = true;
+        "privacy.partition.network_state.ocsp_cache" = true;
+        "dom.security.https_only_mode" = true;
+        "browser.contentblocking.category" = "strict";
+        
+        # --- DEBLOAT & PERFORMANCE ---
+        "browser.newtabpage.activity-stream.feeds.telemetry" = false;
+        "browser.newtabpage.activity-stream.telemetry" = false;
+        "browser.ping-centre.telemetry" = false;
+        "datareporting.healthreport.uploadEnabled" = false;
+        "datareporting.policy.dataSubmissionEnabled" = false;
+        "toolkit.telemetry.unified" = false;
+        "toolkit.telemetry.enabled" = false;
+        "toolkit.telemetry.server" = "data:,";
+        "toolkit.telemetry.archive.enabled" = false;
+        "toolkit.telemetry.newProfilePreclockSample" = false;
+        "toolkit.telemetry.shutdownPingSender.enabled" = false;
+        "toolkit.telemetry.updatePing.enabled" = false;
+        "toolkit.telemetry.bhrPing.enabled" = false;
+        "toolkit.telemetry.firstShutdownPing.enabled" = false;
+
+        # --- VIDEO CALLS & MEDIA ---
+        "media.peerconnection.enabled" = true; # Essential for Google Meet/WebRTC
+        "media.navigator.enabled" = true;
+        "media.getusermedia.screensharing.enabled" = true;
+        "media.autoplay.default" = 5; # Block audio and video autoplay
+        "media.autoplay.blocking_policy" = 2;
+
+        # --- EXISTING HARDWARE ACCEL ---
         "toolkit.legacyUserProfileCustomizations.stylesheets" = { Value = true; Status = "locked"; };
         "gfx.webrender.all" = { Value = true; Status = "locked"; };
         "media.cubeb.backend" = { Value = "pulse"; Status = "locked"; };
