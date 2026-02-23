@@ -85,11 +85,7 @@
       # Cache clearing alias
       ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
       # Rebuild the system and home-manager in one go
-      # OLD: nrb = "sudo nixos-rebuild switch --flake .#ninja";
-      # NEW (using nh):
-      st = "git -C $NH_FLAKE add -f -N secrets.nix";
-      forget = "git -C $NH_FLAKE rm --cached --ignore-unmatch secrets.nix";
-      g-push = "forget && git -C $NH_FLAKE push";
+      st = "git -C $NH_FLAKE add .";
       gco = "git checkout";
       nrb = "st && nh os switch";
       ndr = "st && nh os build"; # Dry-run: build without switching (no sudo needed)
