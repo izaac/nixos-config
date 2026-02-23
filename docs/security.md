@@ -2,35 +2,6 @@
 
 This document outlines the security measures and system hardening techniques implemented in this NixOS configuration.
 
-## AppArmor
-
-AppArmor is a Linux kernel security module that allows the system administrator to restrict programs' capabilities with per-program profiles.
-
-### Implementation
-
-We use AppArmor in a **Blacklist Mode** for primary web browsers to protect sensitive user data while maintaining full application functionality.
-
-- **File**: `modules/core/performance.nix`
-- **Browsers Covered**: Chromium, Firefox
-- **Protection**:
-  - Denies access (including directory listings) to:
-    - `~/.ssh/`
-    - `~/.gnupg/`
-    - `~/.aws/`
-    - `~/.kube/`
-  - **Audit Logging**: Any attempt to access these directories is logged for security monitoring.
-  - **NixOS Compatibility**: Profiles are dynamically patched using direct Nix store paths (e.g., `${pkgs.chromium}/bin/chromium`) for browser binaries, ensuring the profile stays locked to the correct version.
-
-### Commands
-
-```bash
-# Check AppArmor status
-sudo aa-status
-
-# View AppArmor logs
-sudo journalctl -ke -g apparmor
-```
-
 ## D-Bus Broker
 
 We have replaced the traditional `dbus-daemon` with `dbus-broker`, the high-performance D-Bus message broker implementation used by Fedora and GNOME.

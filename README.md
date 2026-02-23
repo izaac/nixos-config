@@ -9,7 +9,7 @@
 - **Shell:** Bash + Starship + FNM (Node) + Rustup
 - **Terminal:** Kitty + Tmux
 - **Editor:** Neovim (LazyVim)
-- **Security:** AppArmor (Browser Hardening), dbus-broker
+- **Security:** dbus-broker
 - **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, Conty
 
 ## Documentation
