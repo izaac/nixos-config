@@ -1,8 +1,14 @@
 # Hardware Configuration - ninja
 
-> **Last Updated**: 2026-02-16
+> **Last Updated**: 2026-02-22
 > **System**: ASUS ROG STRIX X670E-F GAMING WIFI
 > **OS**: NixOS 25.11
+
+---
+
+## Documentation Links
+- [Security & Hardening](security.md)
+- [Software Overview](../README.md)
 
 ---
 
