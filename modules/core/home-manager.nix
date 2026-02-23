@@ -9,7 +9,7 @@
     extraSpecialArgs = { inherit inputs userConfig; };
     users.${userConfig.username} = {
       imports = [
-        ../../home/default.nix
+        ../../home/core.nix
         inputs.catppuccin.homeModules.catppuccin
       ];
     };

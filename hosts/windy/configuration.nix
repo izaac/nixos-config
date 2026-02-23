@@ -33,22 +33,10 @@
     };
   };
 
-  # CPU Undervolting (i9-11980HK)
-  # Note: If this doesn't apply (shows 0mV in logs), you may need to find the 
-  # "Hidden BIOS" on your AERO (usually R-Ctrl + R-Shift + L-Alt + F2).
-  # services.undervolt = {
-  #   enable = true;
-  #   coreOffset = -50;
-  #   gpuOffset = -50;
-  #   uncoreOffset = -50;
-  #   analogioOffset = -50;
-  # };
-
   # File Systems
   boot.supportedFilesystems = [ "exfat" ];
 
   # --- KERNEL ---
-  # Pin to Linux 6.18 for stability/compatibility parity
   boot.kernelPackages = pkgs.linuxPackages_6_18;
   
   boot.tmp.useTmpfs = true;
@@ -64,75 +52,26 @@
 
   programs.light.enable = true;
 
-  time.timeZone = "America/Phoenix";
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  # Audio (Pipewire)
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = lib.mkForce true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
-
-  # User Account
-  users.users.${userConfig.username} = {
-    isNormalUser = true;
-    description = userConfig.name;
-    extraGroups = [ "wheel" "input" "video" "render" "dialout" "podman" "audio" "networkmanager" ];
-  };
-
-  # Sudo Config
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = true;
-  };
-
   # Hardware Firmware
   hardware.enableAllFirmware = true;
 
   # System Packages
   environment.systemPackages = with pkgs; [
-    vim
-    wget
-    curl
-    file
-    tree
-    pciutils
-    usbutils
     powertop     # Monitor laptop power usage
     brightnessctl # Control screen brightness
     acpi          # Battery/Thermal info
     libnotify     # For OSD notifications
   ];
 
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = true;
-      KbdInteractiveAuthentication = true;
-    };
+  # Windy-specific SSH overrides (Password Auth allowed for easier remote setup)
+  services.openssh.settings = {
+    PasswordAuthentication = lib.mkForce true;
+    KbdInteractiveAuthentication = lib.mkForce true;
   };
   
-  services.fstrim.enable = true;
-  services.power-profiles-daemon.enable = false;
-
   # Disable unnecessary services
   services.colord.enable = false;
   systemd.services.ModemManager.enable = false;
-
-  # Nix Maintenance
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
-  nix.settings.auto-optimise-store = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings.trusted-users = [ "root" "@wheel" ];
 
   system.stateVersion = "25.11";
 }

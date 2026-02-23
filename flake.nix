@@ -23,7 +23,6 @@
         modules = [
           ./hosts/${hostname}/configuration.nix
           catppuccin.nixosModules.catppuccin
-          ./modules/core/home-manager.nix
           {
             nixpkgs.config.allowUnfree = true;
             nixpkgs.overlays = [ 

@@ -23,37 +23,26 @@
   programs.fuse.enable = true;
 
   # --- KERNEL & PERFORMANCE ---
-  # Pin to Linux 6.18 to avoid NVIDIA build failures on latest (6.19)
-  # boot.kernelPackages = pkgs.linuxPackages_6_18;
-  # Switch to Zen Kernel (optimized for desktop/gaming latency)
-  # Matches version 6.18 so it should remain compatible with NVIDIA drivers.
   boot.kernelPackages = pkgs.linuxPackages_zen;
   
   # --- HARDWARE OPTIMIZATIONS (Ryzen 9 9950X3D) ---
-  # Modern way to set X3D Cache preference on boot.
-  # This is safer and more reliable than postBootCommands.
   systemd.tmpfiles.rules = [ "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache" ];
-
-  # --- EXPERIMENTAL FEATURES (REMOVED FOR STABILITY) ---
-  # We are NOT enabling system.nixos-init, services.userborn, or system.etc.overlay
-  # as these caused the login failure.
 
   # Enable systemd-based initrd
   boot.initrd.systemd.enable = true;
   
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
-    "vm.max_map_count" = 2147483642; # Star Citizen / Hogwarts Legacy / Steam Deck parity
-    "kernel.split_lock_mitigate" = 0; # Disable split lock mitigation for better gaming performance
+    "vm.max_map_count" = 2147483642; 
+    "kernel.split_lock_mitigate" = 0; 
     
     # Network Optimizations
-    "net.core.wmem_max" = 67108864;    # 64 MiB - Optimized for high speed without bufferbloat
-    "net.core.rmem_max" = 67108864;    # 64 MiB
-    "net.ipv4.tcp_fastopen" = 3;      # Enable TCP Fast Open for better connection times
-    "net.ipv4.tcp_slow_start_after_idle" = 0; # Keep TCP connection "hot"
+    "net.core.wmem_max" = 67108864;    
+    "net.core.rmem_max" = 67108864;    
+    "net.ipv4.tcp_fastopen" = 3;      
+    "net.ipv4.tcp_slow_start_after_idle" = 0; 
     
     # MGLRU (Multi-Gen LRU) Optimizations
-    # Helps with system responsiveness under high memory pressure.
     "vm.lr_gen_stats" = 1;
     "vm.lr_gen_active" = 1;
 
@@ -66,31 +55,29 @@
 
   # --- KERNEL MODULES ---
   boot.blacklistedKernelModules = [
-    "sp5100_tco" # AMD Watchdog (can cause freezes)
-    "eeepc_wmi"  # Legacy ASUS laptop driver
-    "joydev"     # Legacy joystick API
-    "pcspkr"     # Motherboard beep
+    "sp5100_tco" 
+    "eeepc_wmi"  
+    "joydev"     
+    "pcspkr"     
   ];
 
   # --- CORE HARDWARE TWEAKS ---
   boot.kernelParams = [
     "boot.shell_on_fail"
-    "pci=realloc,pcie_bus_safe" # Resolves the 'can't claim bridge window' conflict in logs & ensures MPS stability
-    "pcie_aspm=off"            # Disables Active State Power Management
-    "iommu=pt"                 # Reduces NVMe/CPU latency
-    "pcie_ports=native"        # Fixes ASUS 'bridge window' conflicts
-    "usbcore.autosuspend=-1"   # Fixes Bluetooth/USB device disconnects
-    "amd_pstate=active"        # Enables the modern AMD P-State driver for Ryzen 9 9950X3D
-    "preempt=full"             # Request full preemption for lower latency
-    "transparent_hugepage=madvise" # Latency-friendly THP
+    "pci=realloc,pcie_bus_safe" 
+    "pcie_aspm=off"            
+    "iommu=pt"                 
+    "pcie_ports=native"        
+    "usbcore.autosuspend=-1"   
+    "amd_pstate=active"        
+    "preempt=full"             
+    "transparent_hugepage=madvise" 
   ];
 
   # CPU Power Management
-  # Use 'powersave' for better power efficiency and lower temperatures.
   powerManagement.cpuFreqGovernor = "powersave";
 
   # --- DISABLE SUSPEND/HIBERNATE ---
-  # Prevent accidental suspend which causes black screen freezes
   systemd.targets.sleep.enable = false;
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
@@ -106,19 +93,8 @@
   # Enable systemd-oomd for better memory pressure management
   systemd.oomd.enable = true;
 
-  time.timeZone = "America/Phoenix";
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  # Audio (Pipewire)
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
+  # Host-specific Audio Overrides
   services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-
     wireplumber.extraConfig."95-alsa-soft-fixes" = {
       "monitor.alsa.rules" = [
         {
@@ -176,7 +152,6 @@
     };
     
     # Per-App Overrides (Stability Strategy)
-    # Automatically apply large stable buffers to gaming applications
     extraConfig.pipewire-pulse."93-per-app-overrides" = {
       "pulse.rules" = [
         {
@@ -198,22 +173,6 @@
     };
   };
 
-  # User Account
-    users.users.${userConfig.username} = {
-      isNormalUser = true;
-      description = userConfig.name;
-      extraGroups = [ "wheel" "input" "video" "render" "dialout" "podman" "audio" ];
-    };
-
-  # Sudo Config
-  security.sudo = {
-    enable = true;
-    wheelNeedsPassword = true;
-    extraConfig = ''
-      Defaults editor=${pkgs.vim}/bin/vim
-    '';
-  };
-
   # Hardware Firmware
   hardware.enableAllFirmware = true;
 
@@ -222,30 +181,14 @@
 
   # System Packages (Essentials Only)
   environment.systemPackages = with pkgs; [
-    vim
-    wget
-    curl
-    file
     libglvnd
-    tree
-    pciutils
-    usbutils
     parted
-    sshfs
-    fuse
-    psmisc
     # pavucontrol # Graphical audio control (Removed per user request)
     zathura # TUI-like PDF viewer
     alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
     gcr # Required for graphical prompts (GPG, etc.)
     pam_gnupg # Required for GPG unlocking
-    
-    # Archives
-    zip
-    xz
-    unzip
-    p7zip
     
     # Monitoring
     iotop
@@ -257,36 +200,12 @@
     dnsutils
   ];
 
-
-
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = false;
-      KbdInteractiveAuthentication = false;
-    };
-  };
-  services.fstrim.enable = true;
   services.flatpak.enable = false;
   services.fwupd.enable = false;
-  services.power-profiles-daemon.enable = false;
   services.acpid.enable = lib.mkForce false;
 
-  # Nix Maintenance
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 7d";
-  };
   nix.settings.max-jobs = 16;
-  nix.settings.cores = 8; # Limit each job to 8 cores to leave room for the system
-  nix.settings.auto-optimise-store = true;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings.trusted-users = [ "root" "@wheel" ];
-
-  # Lower nix-daemon priority
-  nix.daemonCPUSchedPolicy = "idle";
-  nix.daemonIOSchedClass = "idle";
+  nix.settings.cores = 8; 
 
   # Limit Nix Build Resources
   systemd.services.nix-daemon.serviceConfig = lib.mkForce {
@@ -298,7 +217,6 @@
   };
 
   # --- DOCUMENTATION ---
-  # Disable documentation to save space and reduce small file overhead.
   documentation = {
     enable = false;
     doc.enable = false;
