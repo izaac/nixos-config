@@ -26,6 +26,7 @@
 
   # File Systems
   boot.supportedFilesystems = [ "exfat" ];
+  programs.fuse.enable = true;
 
   # --- KERNEL & PERFORMANCE ---
   # Pin to Linux 6.18 to avoid NVIDIA build failures on latest (6.19)
@@ -189,6 +190,7 @@
     usbutils
     parted
     sshfs
+    fuse
     psmisc
     # pavucontrol # Graphical audio control (Removed per user request)
     zathura # TUI-like PDF viewer
