@@ -28,11 +28,12 @@ in
           -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 \
           -o StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null \
           -o IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin \
+          -o BatchMode=yes \
           -o nodev,nosuid,allow_other,auto_unmount,idmap=user \
-          -o kernel_cache,auto_cache \
+          -o kernel_cache,auto_cache,max_read=1048576 \
           -o entry_timeout=3600,attr_timeout=3600,negative_timeout=3600 \
           -o dir_cache=yes,dcache_timeout=3600 \
-          -o compression=no,Ciphers=aes128-gcm@openssh.com \
+          -o Compression=no,Ciphers=aes128-gcm@openssh.com \
           -o max_conns=4
       '';
       

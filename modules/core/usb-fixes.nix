@@ -23,11 +23,12 @@
     options snd_hda_intel power_save=0
   '';
 
-  # 4. Force DJI Mic Binding (Auto-Bind)
-  # The DJI Mic reports a Vendor-Specific Class (0xff), so the driver ignores it
-  # by default. This rule forces the bind immediately upon connection.
+  # 4. Udev Rules
+  # Force DJI Mic Binding: The DJI Mic reports a Vendor-Specific Class (0xff), so the driver ignores it.
+  # Blue Yeti: Disable USB auto-suspend to prevent disconnection when physically muted for long periods.
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ACTION=="add", ATTRS{idVendor}=="2ca3", ATTRS{idProduct}=="4011", RUN+="/bin/sh -c '/run/current-system/sw/bin/modprobe snd-usb-audio; echo 2ca3 4011 > /sys/bus/usb/drivers/snd-usb-audio/new_id'"
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="046d", ATTR{idProduct}=="0ab7", TEST=="power/control", ATTR{power/control}="on"
   '';
 
   # 5. Ensure Audio Module Availability

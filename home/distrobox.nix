@@ -36,7 +36,7 @@
     [archy]
     image=archlinux:latest
     pull=true
-    additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
+    additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3 atuin"
     init=false
     nvidia=true
     # Export apps to host automatically
@@ -47,14 +47,14 @@
     [ubu]
     image=ubuntu:24.04
     pull=true
-    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
+    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1 atuin"
     init=false
     nvidia=true
     init_hooks="sh ~/.config/distrobox/nvidia-setup.sh"
 
     [debi]
     pull=true
-    additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch"
+    additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch atuin"
     init=false
     nvidia=true
 
