@@ -19,6 +19,13 @@
   
   catppuccin.zathura.enable = true;
 
+  services.easyeffects = {
+    enable = true;
+    preset = "nixos_audio";
+  };
+  
+  xdg.dataFile."easyeffects/output/nixos_audio.json".source = ./audio-preset.json;
+
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.symbols-only
