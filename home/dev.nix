@@ -54,6 +54,7 @@
   };
 
   # --- DELTA (Diff Tool) ---
+  catppuccin.delta.enable = true;
   programs.delta = {
     enable = true;
     package = pkgs.delta;

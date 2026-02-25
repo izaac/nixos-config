@@ -108,5 +108,7 @@
     gnome-shell-extensions
     libgnome-keyring # For compatibility with older applications
     seahorse # For managing GPG keys and SSH keys in Gnome Keyring
+    gcr # Required for graphical prompts (GPG, etc.)
+    pam_gnupg # Required for GPG unlocking
   ];
 }

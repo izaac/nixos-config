@@ -13,7 +13,7 @@
     enable = true;
     wheelNeedsPassword = true;
     extraConfig = ''
-      Defaults editor=${pkgs.vim}/bin/vim
+      Defaults editor=${pkgs.neovim}/bin/nvim
     '';
   };
 }

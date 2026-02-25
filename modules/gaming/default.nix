@@ -26,6 +26,9 @@
   # 3. GameMode (Automatic Optimizations)
   programs.gamemode.enable = true;
 
+  # Required for modern Windows games (e.g., Hogwarts Legacy, Cyberpunk)
+  boot.kernel.sysctl."vm.max_map_count" = 2147483642;
+
   # 4. Sched-ext (Dynamic Schedulers)
   # Linux 6.12+ supports this natively. scx_lavd is excellent for gaming latency.
   services.scx = {

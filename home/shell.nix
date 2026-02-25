@@ -21,6 +21,11 @@
     };
   };
 
+  programs.broot = {
+    enable = true;
+    enableBashIntegration = true;
+  };
+
   programs.eza = {
     enable = true;
     enableBashIntegration = true;
@@ -28,9 +33,11 @@
     git = true;
   };
 
+  programs.bat.enable = true;
+
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    bat fzf fd ripgrep
+    fzf fd ripgrep
     duf dust bottom fastfetch gdu
     jq rsync pv
     ncdu lazydocker rclone
@@ -165,7 +172,7 @@
         if [ -n "$ver" ]; then target="node_$ver"; fi
 
         cat <<EOF > .envrc
-use flake ~/nixos-config/templates#$target
+use flake ${userConfig.dotfilesDir}/templates#$target
 watch_file package.json
 watch_file yarn.lock
 watch_file pnpm-lock.yaml
@@ -186,7 +193,7 @@ EOF
         if [ -n "$ver" ]; then target="python_$ver"; fi
 
         cat <<EOF > .envrc
-use flake ~/nixos-config/templates#$target
+use flake ${userConfig.dotfilesDir}/templates#$target
 watch_file requirements.txt
 watch_file pyproject.toml
 
@@ -202,7 +209,7 @@ EOF
 
       function rinit() {
         cat <<EOF > .envrc
-use flake ~/nixos-config/templates#rust
+use flake ${userConfig.dotfilesDir}/templates#rust
 watch_file Cargo.toml
 watch_file Cargo.lock
 EOF
@@ -211,7 +218,7 @@ EOF
 
       function cinit() {
         cat <<EOF > .envrc
-use flake ~/nixos-config/templates#c
+use flake ${userConfig.dotfilesDir}/templates#c
 watch_file CMakeLists.txt
 watch_file Makefile
 EOF
@@ -220,7 +227,7 @@ EOF
 
       function cppinit() {
         cat <<EOF > .envrc
-use flake ~/nixos-config/templates#cpp
+use flake ${userConfig.dotfilesDir}/templates#cpp
 watch_file CMakeLists.txt
 watch_file Makefile
 EOF

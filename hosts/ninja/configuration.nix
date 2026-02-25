@@ -33,7 +33,6 @@
   
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
-    "vm.max_map_count" = 2147483642; 
     "kernel.split_lock_mitigate" = 0; 
     
     # Network Optimizations
@@ -183,21 +182,8 @@
   environment.systemPackages = with pkgs; [
     libglvnd
     parted
-    # pavucontrol # Graphical audio control (Removed per user request)
-    zathura # TUI-like PDF viewer
     alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
-    gcr # Required for graphical prompts (GPG, etc.)
-    pam_gnupg # Required for GPG unlocking
-    
-    # Monitoring
-    iotop
-    iftop
-    strace
-    lsof
-    lm_sensors
-    ethtool
-    dnsutils
   ];
 
   services.flatpak.enable = false;
