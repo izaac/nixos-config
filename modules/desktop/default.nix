@@ -16,14 +16,16 @@
   services.gnome.gnome-initial-setup.enable = lib.mkForce false;
   services.gnome.gnome-user-share.enable = lib.mkForce false;
   services.gnome.rygel.enable = lib.mkForce false;
-  services.gnome.localsearch.enable = false;
-  services.gnome.tinysparql.enable = false;
 
-  # Experimental features (VRR, etc.)
+  # Re-enabled for Nautilus Search (Configured via dconf to limit battery drain)
+  services.gnome.localsearch.enable = true;
+  services.gnome.tinysparql.enable = true;
+
+  # Experimental features (VRR, Fractional Scaling)
   services.desktopManager.gnome.extraGSettingsOverridePackages = [ pkgs.mutter ];
   services.desktopManager.gnome.extraGSettingsOverrides = ''
     [org.gnome.mutter]
-    experimental-features=['variable-refresh-rate']
+    experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer']
   '';
 
   # --- KDE PLASMA 6 ---

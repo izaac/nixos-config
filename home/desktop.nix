@@ -38,7 +38,6 @@
     # Audio Tools
     pulsemixer
     gnome-sound-recorder
-    easyeffects
 
     # General Software
     fragments       # GTK Torrent Client
@@ -59,7 +58,6 @@
 
     # GNOME Extensions & Integration
     nautilus-open-any-terminal
-    gnomeExtensions.tiling-assistant
 
     # GTK Alternatives for Core Apps
     loupe           # GNOME Image Viewer
@@ -162,7 +160,12 @@
       edge-tiling = true;
       dynamic-workspaces = true;
       workspaces-only-on-primary = true;
-      experimental-features = [ "variable-refresh-rate" ];
+      experimental-features = [ "variable-refresh-rate" "scale-monitor-framebuffer" ];
+    };
+    "org/freedesktop/Tracker3/Miner/Files" = {
+      index-recursive-directories = [];
+      index-single-directories = [];
+      ignored-directories = [ "&DESKTOP" "&DOCUMENTS" "&DOWNLOAD" "&MUSIC" "&PICTURES" "&PUBLIC_SHARE" "&TEMPLATES" "&VIDEOS" ];
     };
     "org/gnome/shell" = {
       disable-user-extensions = false;
