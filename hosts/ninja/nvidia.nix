@@ -21,7 +21,14 @@
     powerManagement.finegrained = false;
     open = true; # Open modules required for RTX 50-series (Blackwell)
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+      version = "590.44.01";
+      sha256_64bit = "sha256-VbkVaKwElaazojfxkHnz/nN/5olk13ezkw/EQjhKPms=";
+      sha256_aarch64 = "sha256-gpqz07aFx+lBBOGPMCkbl5X8KBMPwDqsS+knPHpL/5g=";
+      openSha256 = "sha256-ft8FEnBotC9Bl+o4vQA1rWFuRe7gviD/j1B8t0MRL/o=";
+      settingsSha256 = "sha256-wVf1hku1l5OACiBeIePUMeZTWDQ4ueNvIk6BsW/RmF4=";
+      persistencedSha256 = "sha256-nHzD32EN77PG75hH9W8ArjKNY/7KY6kPKSAhxAWcuS4=";
+    };
     nvidiaPersistenced = true;
   };
 
@@ -30,7 +37,7 @@
   boot.kernelParams = [ 
     "nvidia_drm.fbdev=1" 
     # High-performance PowerMizer (avoid clock dips during presentation)
-    "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1\""
+    "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1; RMIntrLockingMode=1\""
   ]; 
   
   environment.sessionVariables = {
@@ -67,7 +74,7 @@
     serviceConfig = {
       Type = "oneshot";
       # Set Power Limit to 250W (Safe undervolt) and Lock Clocks to 210-2475MHz
-      ExecStart = "${pkgs.bash}/bin/bash -c '${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -pl 250 && ${config.boot.kernelPackages.nvidiaPackages.beta.bin}/bin/nvidia-smi -lgc 210,2475'";
+      ExecStart = "${pkgs.bash}/bin/bash -c '${config.hardware.nvidia.package.bin}/bin/nvidia-smi -pl 250 && ${config.hardware.nvidia.package.bin}/bin/nvidia-smi -lgc 210,2475'";
       RemainAfterExit = true;
     };
   };
