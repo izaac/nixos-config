@@ -15,6 +15,7 @@
 ## Documentation
 
 - [Hardware Configuration](docs/hardware.md)
+- [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
 - [Security & Hardening](docs/security.md)
 - [Secret Management](docs/secrets.md)
 

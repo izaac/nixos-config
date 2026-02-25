@@ -8,6 +8,7 @@
 
 ## Documentation Links
 - [Security & Hardening](security.md)
+- [NVIDIA Driver Updates](nvidia-driver-updates.md)
 - [Software Overview](../README.md)
 
 ---
