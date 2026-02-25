@@ -38,6 +38,7 @@
     LIBVA_DRIVER_NAME = "nvidia";
     NVD_BACKEND = "direct";
     GBM_BACKEND = "nvidia-drm";
+    MOZ_DISABLE_RDD_SANDBOX = "1"; # Fixes Firefox slow-motion video stutter at start on NVIDIA Wayland
 
     # Enable G-Sync/VRR (for GNOME/KDE Wayland)
     __GL_GSYNC_ALLOWED = "1";

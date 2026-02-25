@@ -62,6 +62,30 @@
         "toolkit.telemetry.bhrPing.enabled" = false;
         "toolkit.telemetry.firstShutdownPing.enabled" = false;
 
+        # --- FASTFOX / ZEN BROWSER OPTIMIZATIONS ---
+        # 1. Memory Cache Aggressiveness (Disables disk cache, forces RAM)
+        "browser.cache.memory.max_entry_size" = 51200; # 50 MB max entry (up from 5MB)
+        "image.mem.decode_bytes_at_a_time" = 65536; # Chunk size for image decoders
+        "image.cache.size" = 10485760; # Cache images up to 10MiB
+        "media.memory_cache_max_size" = 262144; # 256 MB for media cache
+        "media.memory_caches_combined_limit_kb" = 1048576; # 1GB combined media limit
+
+        # 2. Network & DNS Tuning (Parallelism)
+        "network.http.max-connections" = 1800; # Default is 900
+        "network.http.max-persistent-connections-per-server" = 10;
+        "network.http.pacing.requests.enabled" = false;
+        "network.dnsCacheEntries" = 10000;
+        "network.dnsCacheExpiration" = 3600;
+        "network.ssl_tokens_cache_capacity" = 10240; # Faster TLS reconnects
+        
+        # 3. Graphics & UI Responsiveness (Skia/Canvas acceleration)
+        "gfx.content.skia-font-cache-size" = 32; # Font rendering cache (32MB)
+        "gfx.canvas.accelerated.cache-items" = 32768;
+        "gfx.canvas.accelerated.cache-size" = 4096;
+        "nglayout.initialpaint.delay" = 5; # How long FF waits before rendering the page (ms)
+        "content.notify.interval" = 100000;
+        "browser.sessionhistory.max_total_viewers" = 4; # Keep up to 4 pages in memory for instant back/forward
+
         # --- VIDEO CALLS & MEDIA ---
         "media.peerconnection.enabled" = true; # Essential for Google Meet/WebRTC
         "media.navigator.enabled" = true;
@@ -75,6 +99,7 @@
         "media.cubeb.backend" = { Value = "pulse"; Status = "locked"; };
         "layers.acceleration.force-enabled" = { Value = true; Status = "locked"; };
         "media.ffmpeg.vaapi.enabled" = { Value = true; Status = "locked"; };
+        "media.hardware-video-decoding.force-enabled" = { Value = true; Status = "locked"; }; # Forces NVDEC/VAAPI on newer FF versions
         "media.rdd-ffmpeg.enabled" = { Value = true; Status = "locked"; };
         "media.av1.enabled" = { Value = true; Status = "locked"; };
         "gfx.x11-egl.force-enabled" = { Value = true; Status = "locked"; };
