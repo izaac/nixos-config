@@ -136,6 +136,9 @@
       "context.properties" = {
         "default.clock.rate" = 48000;
         "default.clock.allowed-rates" = [ 44100 48000 96000 ];
+        "default.clock.quantum" = 2048; # Buffer size for stability
+        "default.clock.min-quantum" = 2048; # Enforce minimum buffer for all apps
+        "default.clock.max-quantum" = 2048; # Explicitly set max buffer
       };
       "context.modules" = [
         {
@@ -149,8 +152,21 @@
           flags = [ "ifexists" "nofail" ];
         }
       ];
+      "context.rules" = [
+        {
+          matches = [
+            { "application.name" = "ELDEN RING™"; }
+            { "application.name" = "cava"; }
+          ];
+          actions = {
+            update-properties = {
+              "node.latency" = "2048/48000"; # Corresponds to 2048 samples at 48kHz
+            };
+          };
+        }
+      ];
     };
-    
+        
     # Per-App Overrides (Stability Strategy)
     extraConfig.pipewire-pulse."93-per-app-overrides" = {
       "pulse.rules" = [
