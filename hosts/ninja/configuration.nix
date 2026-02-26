@@ -6,6 +6,7 @@
       ./hardware.nix
       ./nvidia.nix
       ./network.nix
+      ./udev-igc-fix.nix
       ../../modules/core
       ../../modules/core/sshfs.nix
       ../../modules/gaming
@@ -182,6 +183,7 @@
   environment.systemPackages = with pkgs; [
     libglvnd
     parted
+    nmap
     alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
   ];

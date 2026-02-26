@@ -27,6 +27,9 @@
       linkConfig = {
         TransmitQueues = 8;
         ReceiveQueues = 8;
+        
+        # Disable Energy Efficient Ethernet (EEE) to prevent igc/I225-V hangs
+        WakeOnLan = "off";
       };
     };
 
@@ -38,14 +41,18 @@
       gateway = [ "192.168.0.1" ];
       dns = [ "192.168.0.96" ];
 
-      # Link settings (Interface level)
-      linkConfig = {
-        RequiredForOnline = "routable";
-      };
-
-      # Network section settings (Protocol level)
+      # Disable Energy Efficient Ethernet (EEE) to prevent NIC sleep state locks
+      # See Intel I225-V/igc known issues
       networkConfig = {
         IPv6PrivacyExtensions = "kernel";
+      };
+      
+      # Additional settings specific to the physical link layer
+      # EEE (Energy Efficient Ethernet) can cause the I225 controller to hang under load
+      # after a few hours and requires a physical or bus reset to recover.
+      # Setting 'WakeOnLan=off' also helps prevent firmware sleep bugs.
+      linkConfig = {
+        RequiredForOnline = "routable";
       };
     };
   };

@@ -9,6 +9,10 @@
   boot.kernelModules = [ "kvm-amd" "nct6775" "ntsync" ];
   boot.extraModulePackages = [ ];
 
+  # Workaround for Intel I225-V (igc) dropping connections after a few hours
+  # Prevents PCIe power management from putting the NIC into a state it can't recover from
+  boot.kernelParams = [ "pcie_port_pm=off" "pcie_aspm.policy=performance" ];
+
   fileSystems."/" =
     { device = "/dev/mapper/luks-782b8c84-7a71-4244-8a98-c884f7678b96";
       fsType = "ext4";
