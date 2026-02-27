@@ -14,6 +14,7 @@ let
 in
 {
   catppuccin.enable = true;
+  catppuccin.vscode.enable = false;
   catppuccin.flavor = "mocha";
   catppuccin.accent = "mauve";
 
