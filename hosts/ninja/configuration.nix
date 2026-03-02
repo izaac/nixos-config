@@ -27,7 +27,11 @@
   boot.kernelPackages = pkgs.linuxPackages_zen;
   
   # --- HARDWARE OPTIMIZATIONS (Ryzen 9 9950X3D) ---
-  systemd.tmpfiles.rules = [ "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache" ];
+  systemd.tmpfiles.rules = [ 
+    "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache" 
+    # Set Energy Performance Preference to performance
+    "w /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference - - - - performance"
+  ];
 
   # Enable systemd-based initrd
   boot.initrd.systemd.enable = true;
@@ -36,11 +40,20 @@
   boot.kernel.sysctl = {
     "kernel.split_lock_mitigate" = 0; 
     
+    # Disk Writeback Tuning (Reduce wakeups)
+    "vm.dirty_writeback_centisecs" = 1500;
+    "vm.dirty_expire_centisecs" = 3000;
+    
     # Network Optimizations
     "net.core.wmem_max" = 67108864;    
     "net.core.rmem_max" = 67108864;    
+    "net.core.optmem_max" = 65536;
     "net.ipv4.tcp_fastopen" = 3;      
     "net.ipv4.tcp_slow_start_after_idle" = 0; 
+
+    # Low Latency Network Polling
+    "net.core.busy_poll" = 50;
+    "net.core.busy_read" = 50;
     
     # MGLRU (Multi-Gen LRU) Optimizations
     "vm.lr_gen_stats" = 1;
@@ -48,6 +61,8 @@
 
     # Network Throughput (Max Backlog for 2.5G+ NICs)
     "net.core.netdev_max_backlog" = 16384;
+    "net.core.netdev_budget" = 600;
+    "net.core.netdev_budget_usecs" = 4000;
     "net.ipv4.tcp_max_syn_backlog" = 8192;
   };
 

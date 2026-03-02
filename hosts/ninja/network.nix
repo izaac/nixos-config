@@ -40,11 +40,19 @@
       address = [ "192.168.0.230/24" ];
       gateway = [ "192.168.0.1" ];
       dns = [ "192.168.0.96" ];
+      domains = [ "~." ]; # Route ALL DNS traffic through this interface (Pi-hole)
+
+      # Ignore DNS from the router to prevent bypassing Pi-hole
+      dhcpV4Config.UseDNS = false;
+      dhcpV6Config.UseDNS = false;
+      ipv6AcceptRAConfig.UseDNS = false;
 
       # Disable Energy Efficient Ethernet (EEE) to prevent NIC sleep state locks
       # See Intel I225-V/igc known issues
       networkConfig = {
         IPv6PrivacyExtensions = "kernel";
+        MulticastDNS = false;
+        LLMNR = false;
       };
       
       # Additional settings specific to the physical link layer
@@ -61,4 +69,20 @@
   systemd.services.wpa_supplicant.enable = false;
   systemd.services.ModemManager.enable = false;
   programs.nm-applet.enable = false;
+
+  # Intel I225-V/I226-V (igc) Latency Optimization
+  # InterruptThrottleRate=0 disables throttling, ensuring the NIC interrupts the CPU immediately.
+  boot.extraModprobeConfig = ''
+    options igc InterruptThrottleRate=0,0,0,0
+  '';
+
+  # DNS Hardening & Fallback removal
+  services.resolved = {
+    fallbackDns = [ ];
+    dnssec = "allow-downgrade";
+    extraConfig = ''
+      LLMNR=no
+      MulticastDNS=no
+    '';
+  };
 }

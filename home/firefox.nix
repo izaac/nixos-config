@@ -75,7 +75,8 @@
         "network.http.max-persistent-connections-per-server" = 10;
         "network.http.pacing.requests.enabled" = false;
         "network.dnsCacheEntries" = 10000;
-        "network.dnsCacheExpiration" = 3600;
+        "network.dnsCacheExpiration" = 60; # Reduced from 3600 so DNS changes take effect faster
+        "network.trr.mode" = 5; # Explicitly disable DNS-over-HTTPS (DoH) and use system DNS
         "network.ssl_tokens_cache_capacity" = 10240; # Faster TLS reconnects
         
         # 3. Graphics & UI Responsiveness (Skia/Canvas acceleration)
