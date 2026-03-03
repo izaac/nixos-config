@@ -83,14 +83,9 @@
     "pcie_aspm=off"            
     "iommu=pt"                 
     "pcie_ports=native"        
-    "usbcore.autosuspend=-1"   
     "amd_pstate=active"        
     "preempt=full"             
-    "transparent_hugepage=madvise" 
   ];
-
-  # CPU Power Management
-  powerManagement.cpuFreqGovernor = "powersave";
 
   # --- DISABLE SUSPEND/HIBERNATE ---
   systemd.targets.sleep.enable = false;
@@ -151,9 +146,9 @@
       "context.properties" = {
         "default.clock.rate" = 48000;
         "default.clock.allowed-rates" = [ 44100 48000 96000 ];
-        "default.clock.quantum" = 2048; # Buffer size for stability
-        "default.clock.min-quantum" = 2048; # Enforce minimum buffer for all apps
-        "default.clock.max-quantum" = 2048; # Explicitly set max buffer
+        "default.clock.quantum" = 1024;
+        "default.clock.min-quantum" = 1024;
+        "default.clock.max-quantum" = 2048;
       };
       "context.modules" = [
         {
@@ -166,6 +161,108 @@
           };
           flags = [ "ifexists" "nofail" ];
         }
+        {
+          name = "libpipewire-module-filter-chain";
+          args = {
+            "node.description" = "Hifi EQ (Motherboard)";
+            "media.name" = "Hifi EQ (Motherboard)";
+            "filter.graph" = {
+              nodes = [
+                # --- LEFT CHANNEL ---
+                { type = "builtin"; name = "mix_l"; label = "mixer"; control = { "Gain 1" = 0.631; }; } # -4.0 dB
+                { type = "builtin"; name = "eq1_l"; label = "bq_lowshelf"; control = { "Freq" = 32.0; "Q" = 1.0; "Gain" = 8.0; }; }
+                { type = "builtin"; name = "eq2_l"; label = "bq_peaking"; control = { "Freq" = 64.0; "Q" = 1.5; "Gain" = 8.0; }; }
+                { type = "builtin"; name = "eq3_l"; label = "bq_peaking"; control = { "Freq" = 125.0; "Q" = 1.5; "Gain" = 2.0; }; }
+                { type = "builtin"; name = "eq3b_l"; label = "bq_peaking"; control = { "Freq" = 250.0; "Q" = 1.5; "Gain" = 3.0; }; } # Vocal Warmth
+                { type = "builtin"; name = "eq4_l"; label = "bq_peaking"; control = { "Freq" = 500.0; "Q" = 1.5; "Gain" = 0.0; }; }
+                { type = "builtin"; name = "eq5_l"; label = "bq_peaking"; control = { "Freq" = 1000.0; "Q" = 1.5; "Gain" = -3.0; }; }
+                { type = "builtin"; name = "eq6_l"; label = "bq_peaking"; control = { "Freq" = 2000.0; "Q" = 1.5; "Gain" = -4.0; }; } # Remove digital edge
+                { type = "builtin"; name = "eq7_l"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 0.0; }; } # Smoothness
+                { type = "builtin"; name = "eq8_l"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
+                { type = "builtin"; name = "eq9_l"; label = "bq_highshelf"; control = { "Freq" = 16000.0; "Q" = 1.0; "Gain" = 2.0; }; }
+                # --- RIGHT CHANNEL ---
+                { type = "builtin"; name = "mix_r"; label = "mixer"; control = { "Gain 1" = 0.631; }; }
+                { type = "builtin"; name = "eq1_r"; label = "bq_lowshelf"; control = { "Freq" = 32.0; "Q" = 1.0; "Gain" = 8.0; }; }
+                { type = "builtin"; name = "eq2_r"; label = "bq_peaking"; control = { "Freq" = 64.0; "Q" = 1.5; "Gain" = 8.0; }; }
+                { type = "builtin"; name = "eq3_r"; label = "bq_peaking"; control = { "Freq" = 125.0; "Q" = 1.5; "Gain" = 2.0; }; }
+                { type = "builtin"; name = "eq3b_r"; label = "bq_peaking"; control = { "Freq" = 250.0; "Q" = 1.5; "Gain" = 3.0; }; } # Vocal Warmth
+                { type = "builtin"; name = "eq4_r"; label = "bq_peaking"; control = { "Freq" = 500.0; "Q" = 1.5; "Gain" = 0.0; }; }
+                { type = "builtin"; name = "eq5_r"; label = "bq_peaking"; control = { "Freq" = 1000.0; "Q" = 1.5; "Gain" = -3.0; }; }
+                { type = "builtin"; name = "eq6_r"; label = "bq_peaking"; control = { "Freq" = 2000.0; "Q" = 1.5; "Gain" = -4.0; }; }
+                { type = "builtin"; name = "eq7_r"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 0.0; }; }
+                { type = "builtin"; name = "eq8_r"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
+                { type = "builtin"; name = "eq9_r"; label = "bq_highshelf"; control = { "Freq" = 16000.0; "Q" = 1.0; "Gain" = 2.0; }; }
+              ];
+              links = [
+                { output = "mix_l:Out"; input = "eq1_l:In"; } { output = "eq1_l:Out"; input = "eq2_l:In"; }
+                { output = "eq2_l:Out"; input = "eq3_l:In"; } { output = "eq3_l:Out"; input = "eq3b_l:In"; }
+                { output = "eq3b_l:Out"; input = "eq4_l:In"; } { output = "eq4_l:Out"; input = "eq5_l:In"; }
+                { output = "eq5_l:Out"; input = "eq6_l:In"; } { output = "eq6_l:Out"; input = "eq7_l:In"; }
+                { output = "eq7_l:Out"; input = "eq8_l:In"; } { output = "eq8_l:Out"; input = "eq9_l:In"; }
+                { output = "mix_r:Out"; input = "eq1_r:In"; } { output = "eq1_r:Out"; input = "eq2_r:In"; }
+                { output = "eq2_r:Out"; input = "eq3_r:In"; } { output = "eq3_r:Out"; input = "eq3b_r:In"; }
+                { output = "eq3b_r:Out"; input = "eq4_r:In"; } { output = "eq4_r:Out"; input = "eq5_r:In"; }
+                { output = "eq5_r:Out"; input = "eq6_r:In"; } { output = "eq6_r:Out"; input = "eq7_r:In"; }
+                { output = "eq7_r:Out"; input = "eq8_r:In"; } { output = "eq8_r:Out"; input = "eq9_r:In"; }
+              ];
+              inputs = [ "mix_l:In 1" "mix_r:In 1" ];
+              outputs = [ "eq9_l:Out" "eq9_r:Out" ];
+            };
+            "capture.props" = {
+              "node.name" = "hifi_eq_input";
+              "media.class" = "Audio/Sink";
+              "audio.channels" = 2;
+              "audio.position" = [ "FL" "FR" ];
+            };
+            "playback.props" = {
+              "node.name" = "hifi_eq_output";
+              "node.passive" = true;
+              "audio.channels" = 2;
+              "audio.position" = [ "FL" "FR" ];
+              "node.target" = "alsa_output.usb-Generic_USB_Audio-00.HiFi__Speaker__sink";
+            };
+          };
+        }
+        {
+          name = "libpipewire-module-filter-chain";
+          args = {
+            "node.description" = "Hifi EQ (Sony XM5)";
+            "media.name" = "Hifi EQ (Sony XM5)";
+            "filter.graph" = {
+              nodes = [
+                # --- LEFT CHANNEL ---
+                { type = "builtin"; name = "mix_l"; label = "mixer"; control = { "Gain 1" = 0.794; }; } # -2.0 dB for XM5
+                { type = "builtin"; name = "eq1_l"; label = "bq_lowshelf"; control = { "Freq" = 64.0; "Q" = 1.0; "Gain" = 4.0; }; } # More bass for XM5
+                { type = "builtin"; name = "eq2_l"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 4.0; }; }
+                { type = "builtin"; name = "eq3_l"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
+                # --- RIGHT CHANNEL ---
+                { type = "builtin"; name = "mix_r"; label = "mixer"; control = { "Gain 1" = 0.794; }; }
+                { type = "builtin"; name = "eq1_r"; label = "bq_lowshelf"; control = { "Freq" = 64.0; "Q" = 1.0; "Gain" = 4.0; }; }
+                { type = "builtin"; name = "eq2_r"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 4.0; }; }
+                { type = "builtin"; name = "eq3_r"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
+              ];
+              links = [
+                { output = "mix_l:Out"; input = "eq1_l:In"; } { output = "eq1_l:Out"; input = "eq2_l:In"; } { output = "eq2_l:Out"; input = "eq3_l:In"; }
+                { output = "mix_r:Out"; input = "eq1_r:In"; } { output = "eq1_r:Out"; input = "eq2_r:In"; } { output = "eq2_r:Out"; input = "eq3_r:In"; }
+              ];
+              inputs = [ "mix_l:In 1" "mix_r:In 1" ];
+              outputs = [ "eq3_l:Out" "eq3_r:Out" ];
+            };
+            "capture.props" = {
+              "node.name" = "sony_eq_input";
+              "media.class" = "Audio/Sink";
+              "audio.channels" = 2;
+              "audio.position" = [ "FL" "FR" ];
+            };
+            "playback.props" = {
+              "node.name" = "sony_eq_output";
+              "node.passive" = true;
+              "audio.channels" = 2;
+              "audio.position" = [ "FL" "FR" ];
+              "node.target" = "bluez_output.88_C9_E8_7D_B7_53.1";
+            };
+          };
+        }
       ];
       "context.rules" = [
         {
@@ -175,7 +272,7 @@
           ];
           actions = {
             update-properties = {
-              "node.latency" = "2048/48000"; # Corresponds to 2048 samples at 48kHz
+              "node.latency" = "1024/48000"; 
             };
           };
         }
@@ -194,8 +291,8 @@
           ];
           actions = {
             update-props = {
-              "pulse.min.quantum" = 2048;
-              "pulse.max.quantum" = 8192;
+              "pulse.min.quantum" = 1024;
+              "pulse.max.quantum" = 4096;
               "pulse.idle.timeout" = 0;
             };
           } ;

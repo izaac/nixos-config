@@ -112,7 +112,7 @@
       ask = "npx @google/gemini-cli@latest chat";
       
       # Per-App Audio Overrides (Anticipation Strategy)
-      pw-lowlat = "PIPEWIRE_LATENCY='1024/48000'";
+      pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";
     };
 
     sessionVariables = {

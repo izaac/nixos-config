@@ -34,7 +34,8 @@
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
-    "ventoy-full-gtk-1.1.07"
-    "ventoy-gtk3-1.1.07"
+    "ventoy-full-gtk-1.1.10"
+    "ventoy-gtk3-1.1.10"
+    "ventoy-bin-1.1.10"
   ];
 }
