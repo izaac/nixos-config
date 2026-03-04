@@ -20,7 +20,6 @@
     nil
     
     # --- UTILS ---
-    gemini-cli
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---

@@ -81,6 +81,19 @@
         "toolkit.telemetry.bhrPing.enabled" = false;
         "toolkit.telemetry.firstShutdownPing.enabled" = false;
 
+        # --- AI & DEBLOAT (NEW) ---
+        "browser.ml.enable" = false; # Disable internal AI/ML model loading
+        "browser.ml.chat.enabled" = false; # Disable Firefox Chat/AI Sidebar
+        "browser.tabs.tab-grouping.enabled" = false; # Disable AI-assisted tab grouping
+        "browser.urlbar.suggest.quicksuggest.nonsponsored" = false;
+        "browser.urlbar.suggest.quicksuggest.sponsored" = false;
+        "browser.urlbar.trending.featureGate" = false;
+        "browser.newtabpage.activity-stream.showSponsored" = false;
+        "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+        "browser.newtabpage.activity-stream.feeds.section.topstories" = false; # Pocket/Top Stories
+        "extensions.htmlaboutaddons.recommendations.enabled" = false;
+        "services.sync.telemetry" = false;
+
         # --- FASTFOX / ZEN BROWSER OPTIMIZATIONS ---
         # 1. Memory Cache Aggressiveness (Disables disk cache, forces RAM)
         "browser.cache.memory.max_entry_size" = 51200; # 50 MB max entry (up from 5MB)

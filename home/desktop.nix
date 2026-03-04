@@ -31,6 +31,7 @@
     # Audio Tools
     pulsemixer
     gnome-sound-recorder
+    monophony
 
     # General Software
     fragments       # GTK Torrent Client

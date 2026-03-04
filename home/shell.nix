@@ -109,8 +109,7 @@
       gpu = "nvitop";
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
       ssh = "TERM=xterm-256color ssh";
-      ask = "npx @google/gemini-cli@latest chat";
-      
+
       # Per-App Audio Overrides (Anticipation Strategy)
       pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";
     };
@@ -121,8 +120,18 @@
     };
 
     initExtra = ''
-      # --- Smart eza Wrapper ---
-      # Prevents hangs on network mounts like SSHFS (Jellyfin)
+      # --- Gemini CLI Wrapper ---
+      # Automatically uses -p (non-interactive) if arguments are provided
+      # to avoid the "Positional arguments now default to interactive mode" notice.
+      function ask() {
+        if [[ $# -eq 0 ]]; then
+          npx --yes @google/gemini-cli@latest
+        else
+          npx --yes @google/gemini-cli@latest -p "$*"
+        fi
+      }
+
+      # --- Smart eza Wrapper ---      # Prevents hangs on network mounts like SSHFS (Jellyfin)
       function _smart_eza() {
         if [[ "$PWD" == *"/Jellyfin"* ]] || [[ "$*" == *"/Jellyfin"* ]]; then
           # Strip --git and -g flags for Jellyfin to avoid hangs
