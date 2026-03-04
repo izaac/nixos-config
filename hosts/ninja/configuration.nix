@@ -126,6 +126,23 @@
         {
           matches = [
             {
+              "node.name" = "alsa_output.usb-Generic_USB_Audio-00.HiFi__Speaker__sink";
+            }
+          ];
+          actions = {
+            update-props = {
+              "session.suspend-on-idle" = false;
+              "node.pause-on-idle" = false;
+              "audio.format" = "S32_LE";
+              "audio.rate" = 48000;
+              "api.alsa.period-size" = 1024;
+              "api.alsa.headroom" = 1024;
+            };
+          };
+        }
+        {
+          matches = [
+            {
               "node.name" = "~alsa_input.*";
             }
             {
