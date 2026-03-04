@@ -39,7 +39,7 @@
     # --- CORE UTILS ---
     fzf fd ripgrep
     duf dust bottom fastfetch gdu
-    jq rsync pv
+    jq rsync pv bc
     ncdu lazydocker rclone
     ticker tenki viddy
     lftp
