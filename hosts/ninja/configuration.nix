@@ -337,7 +337,7 @@
   services.fwupd.enable = false;
   services.acpid.enable = lib.mkForce false;
 
-  nix.settings.max-jobs = 16;
+  nix.settings.max-jobs = 4;
   nix.settings.cores = 8; 
 
   # Limit Nix Build Resources
@@ -345,8 +345,15 @@
     Nice = 19;
     CPUWeight = 1;
     IOWeight = 1;
-    MemoryMax = "16G";
-    MemoryHigh = "20G";
+    MemoryMax = "24G";
+    MemoryHigh = "30G";
+    # Isolation: Keep builds on CCD1 (cores 8-15 and their SMT siblings 24-31)
+    AllowedCPUs = "8-15,24-31";
+    # Latency: Use IDLE scheduling for CPU and IO
+    CPUSchedulingPolicy = "idle";
+    IOSchedulingClass = "idle";
+    # Safety: Ensure nix-daemon is killed before the desktop if OOM occurs
+    OOMScoreAdjust = 1000;
   };
 
   # --- DOCUMENTATION ---

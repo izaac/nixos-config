@@ -20,7 +20,7 @@
     nil
     
     # --- UTILS ---
-    unstable.gemini-cli
+    gemini-cli
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---

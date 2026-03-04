@@ -30,7 +30,7 @@ in
     winetricks
     
     # Emulation
-    unstable.dolphin-emu
+    dolphin-emu
     
     # Custom Script to fetch latest Conty
     (pkgs.writeShellScriptBin "update-conty" ''

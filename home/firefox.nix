@@ -7,6 +7,25 @@
   # Configure the standard firefox package (home-manager's module will handle it)
   programs.firefox = {
     enable = true;
+    package = lib.makeOverridable (args: pkgs.symlinkJoin {
+      name = "firefox-vip";
+      paths = [ pkgs.firefox ];
+      postBuild = ''
+        # Replace the desktop file with a patched version
+        rm -rf $out/share/applications
+        mkdir -p $out/share/applications
+        cp ${pkgs.firefox}/share/applications/firefox.desktop $out/share/applications/firefox.desktop
+        substituteInPlace $out/share/applications/firefox.desktop \
+          --replace "Exec=firefox" "Exec=/run/wrappers/bin/firefox-vip"
+
+        # Also provide a 'firefox' binary that calls the wrapper
+        # This fixes terminal launches as well
+        rm $out/bin/firefox
+        echo "#!/bin/sh" > $out/bin/firefox
+        echo "exec /run/wrappers/bin/firefox-vip \"\$@\"" >> $out/bin/firefox
+        chmod +x $out/bin/firefox
+      '';
+    }) {};
     profiles.default = {
       id = 0;
       name = "default";

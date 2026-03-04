@@ -1,5 +1,22 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
+let
+  firefox-vip-src = pkgs.writeText "firefox-vip.c" ''
+    #include <sys/time.h>
+    #include <sys/resource.h>
+    #include <unistd.h>
+    #include <stdio.h>
+
+    int main(int argc, char *argv[]) {
+        setpriority(PRIO_PROCESS, 0, -10);
+        execv("${pkgs.firefox}/bin/firefox", argv);
+        return 1;
+    }
+  '';
+  firefox-vip-bin = pkgs.runCommand "firefox-vip" { nativeBuildInputs = [ pkgs.stdenv.cc ]; } ''
+    $CC ${firefox-vip-src} -o $out
+  '';
+in
 {
   # --- MEMORY MANAGEMENT (ZRAM) ---
   # Highly recommended for NVMe & high-core systems to prevent disk-thrashing
@@ -42,4 +59,12 @@
 
   # Irqbalance - Disabled per Anticipation Strategy
   services.irqbalance.enable = false;
+
+  # --- FIREFOX VIP WRAPPER ---
+  security.wrappers.firefox-vip = {
+    source = "${firefox-vip-bin}";
+    capabilities = "cap_sys_nice+ep";
+    owner = "root";
+    group = "root";
+  };
 }

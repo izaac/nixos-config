@@ -8,7 +8,7 @@
     ./rclone-gdrive.nix
     ./tmux.nix
     ./theme.nix
-    ./whosthere.nix
+    # ./whosthere.nix
     ./dev.nix
   ];
 

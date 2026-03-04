@@ -336,7 +336,6 @@ EOF
   programs.lazygit.enable = true;
   programs.yazi.enable = true;
   programs.k9s.enable = true;
-  programs.gh.enable = true;
 
   xdg.desktopEntries.yazi = {
     name = "Yazi";
