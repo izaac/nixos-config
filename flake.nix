@@ -2,12 +2,12 @@
   description = "Izaac NVIDIA NixOS Configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    catppuccin.url = "github:catppuccin/nix/release-25.11";
+    catppuccin.url = "github:catppuccin/nix";
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,8 +32,6 @@
             nixpkgs.config.allowUnfree = true;
             nixpkgs.overlays = [ 
               (import ./overlays/sparrow-temurin-fix.nix)
-              # Standard stable-only overlay
-              (import ./overlays/unstable-packages.nix)
             ];
           }
         ];

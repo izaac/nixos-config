@@ -24,10 +24,11 @@ final: prev: {
       glib,
       cairo,
       pango,
-      xorg,
+      libXxf86vm,
+      libXtst,
+      libX11,
       libglvnd,
-    }:
-
+      }:
     let
       pname = "sparrow";
       version = "2.3.1";
@@ -123,9 +124,8 @@ final: prev: {
         nativeBuildInputs = [
           makeWrapper gzip openjdk autoPatchelfHook
           (lib.getLib stdenv.cc.cc) zlib libusb1 gtk3 glib cairo pango
-          xorg.libXxf86vm xorg.libXtst libglvnd xorg.libX11
+          libXxf86vm libXtst libglvnd libX11
         ];
-
         buildPhase = ''
           mkdir modules
           pushd modules

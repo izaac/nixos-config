@@ -78,11 +78,13 @@
 
   # DNS Hardening & Fallback removal
   services.resolved = {
-    fallbackDns = [ ];
-    dnssec = "allow-downgrade";
-    extraConfig = ''
-      LLMNR=no
-      MulticastDNS=no
-    '';
+    settings = {
+      Resolve = {
+        DNSSEC = "allow-downgrade";
+        FallbackDNS = "";
+        LLMNR = "no";
+        MulticastDNS = "no";
+      };
+    };
   };
 }

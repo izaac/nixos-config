@@ -24,7 +24,9 @@
   programs.fuse.enable = true;
 
   # --- KERNEL & PERFORMANCE ---
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  # We pin to 6.18 because NVIDIA 590.48.01 is currently incompatible with Kernel 6.19+
+  # Using standard linuxPackages_6_18 for maximum binary cache hits
+  boot.kernelPackages = pkgs.linuxPackages_6_18;
   
   # --- HARDWARE OPTIMIZATIONS (Ryzen 9 9950X3D) ---
   systemd.tmpfiles.rules = [ 

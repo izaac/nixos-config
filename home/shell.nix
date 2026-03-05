@@ -58,7 +58,8 @@
     # --- SYSTEM TOOLS ---
     appimage-run
     wl-clipboard
-    dwarfs fuse3
+    # dwarfs 
+    fuse3
     nvitop
     nvtopPackages.nvidia
     bluetuith
@@ -110,12 +111,12 @@
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
       ssh = "TERM=xterm-256color ssh";
 
-      # Query the latest versions and CACHE status on nixos-unstable (Prevents unexpected compilation)
-      unstable-status = ''
-        echo "--- nixos-unstable status ---"
+      # Canary: Query the latest versions and CACHE status on nixos-unstable
+      canary = ''
+        echo "--- [ CANARY ] nixos-unstable status ---"
         # Fetching version numbers using the tarball URL (still efficient for this)
-        nix-instantiate --eval --json --strict -E "let pkgs = import (builtins.fetchTarball \"https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz\") {}; in { gnome = pkgs.gnome-shell.version; kernel = pkgs.linuxPackages.kernel.version; nvidia = pkgs.linuxPackages.nvidia_x11.version; }" | jq
-        
+        nix-instantiate --eval --json --strict -E "let pkgs = import (builtins.fetchTarball \"https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz\") {}; in { gnome = pkgs.gnome-shell.version; kernel = pkgs.linuxPackages_zen.kernel.version; nvidia = pkgs.linuxPackages.nvidia_x11.version; }" | jq
+
         echo -e "\n--- Cache Check (Binary Availability) ---"
         function _check() {
           local name=$1
@@ -140,7 +141,7 @@
         }
         
         _check "GNOME Shell " "gnome-shell"
-        _check "Linux Kernel" "linuxPackages.kernel"
+        _check "Linux Kernel" "linuxPackages_6_18.kernel"
         _check "GCC Compiler " "gcc"
         _check "Glibc Library" "glibc"
         _check "Systemd Core " "systemd"
@@ -382,8 +383,11 @@ EOF
   };
 
   programs.lazygit.enable = true;
-  programs.yazi.enable = true;
-  programs.k9s.enable = true;
+  programs.yazi = {
+    enable = true;
+    enableBashIntegration = true;
+    shellWrapperName = "y";
+  };
 
   xdg.desktopEntries.yazi = {
     name = "Yazi";

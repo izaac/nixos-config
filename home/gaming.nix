@@ -26,30 +26,11 @@ in
     (bottles.override { removeWarningPopup = true; })
     
     # Wine / Windows Compatibility
-    wineWowPackages.waylandFull # 32-bit + 64-bit Wine with Wayland support
+    wineWow64Packages.waylandFull # 32-bit + 64-bit Wine with Wayland support
     winetricks
     
     # Emulation
     dolphin-emu
-    
-    # Custom Script to fetch latest Conty
-    (pkgs.writeShellScriptBin "update-conty" ''
-      mkdir -p $HOME/.local/bin
-      echo "Fetching latest Conty (Lite DwarFS) release URL..."
-      LATEST_URL=$(curl -s https://api.github.com/repos/Kron4ek/Conty/releases/latest | ${pkgs.jq}/bin/jq -r '.assets[] | select(.name == "conty_lite_dwarfs.sh") | .browser_download_url')
-      
-      if [ -z "$LATEST_URL" ] || [ "$LATEST_URL" == "null" ]; then
-        echo "Error: Could not find conty_lite_dwarfs.sh in the latest release."
-        exit 1
-      fi
-
-      echo "Downloading from $LATEST_URL..."
-      curl -L -o $HOME/.local/bin/conty "$LATEST_URL"
-      chmod +x $HOME/.local/bin/conty
-      
-      echo "Successfully installed to $HOME/.local/bin/conty"
-      echo "Run it with: conty"
-    '')
   ];
 
   # Custom Desktop Entry for SAM Rewritten
