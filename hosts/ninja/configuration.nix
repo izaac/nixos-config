@@ -110,22 +110,6 @@
         {
           matches = [
             {
-              "node.name" = "~alsa_input.usb-Blue_Microphones_Blue_Yeti.*";
-            }
-          ];
-          actions = {
-            update-props = {
-              "session.suspend-on-idle" = false;
-              "node.pause-on-idle" = false;
-              "priority.driver" = 1050;
-              "priority.session" = 1050;
-              "audio.channels" = 2;
-            };
-          };
-        }
-        {
-          matches = [
-            {
               "node.name" = "alsa_output.usb-Generic_USB_Audio-00.HiFi__Speaker__sink";
             }
           ];
