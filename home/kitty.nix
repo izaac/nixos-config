@@ -26,8 +26,9 @@
 
     settings = {
       enabled_layouts = "splits,stack";
-      background_opacity = "0.85";
-      background_opacity_unfocused = "0.7";
+      background = "#11111b";
+      background_opacity = "1.0";
+      background_opacity_unfocused = "1.0";
       window_padding_width = 10;
       enable_audio_bell = false;
       hide_window_decorations = "no";

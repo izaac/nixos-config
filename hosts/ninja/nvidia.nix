@@ -37,7 +37,7 @@
   boot.kernelParams = [ 
     "nvidia_drm.fbdev=1" 
     # High-performance PowerMizer (avoid clock dips during presentation)
-    "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1; RMIntrLockingMode=1\""
+    "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1; RMIntrLockingMode=1; RMConnectToDevice=0\""
   ]; 
   
   environment.sessionVariables = {
