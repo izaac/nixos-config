@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, latestPkgs, ... }:
 
 {
   catppuccin.firefox.enable = true;
@@ -9,12 +9,12 @@
     enable = true;
     package = lib.makeOverridable (args: pkgs.symlinkJoin {
       name = "firefox-vip";
-      paths = [ pkgs.firefox ];
+      paths = [ latestPkgs.firefox ];
       postBuild = ''
         # Replace the desktop file with a patched version
         rm -rf $out/share/applications
         mkdir -p $out/share/applications
-        cp ${pkgs.firefox}/share/applications/firefox.desktop $out/share/applications/firefox.desktop
+        cp ${latestPkgs.firefox}/share/applications/firefox.desktop $out/share/applications/firefox.desktop
         substituteInPlace $out/share/applications/firefox.desktop \
           --replace "Exec=firefox" "Exec=/run/wrappers/bin/firefox-vip"
 

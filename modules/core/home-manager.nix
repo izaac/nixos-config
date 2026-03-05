@@ -1,4 +1,4 @@
-{ inputs, userConfig, ... }:
+{ inputs, userConfig, latestPkgs, ... }:
 {
   imports = [ inputs.home-manager.nixosModules.home-manager ];
 
@@ -6,7 +6,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     backupFileExtension = "hm-backup";
-    extraSpecialArgs = { inherit inputs userConfig; };
+    extraSpecialArgs = { inherit inputs userConfig latestPkgs; };
     users.${userConfig.username} = {
       imports = [
         ../../home/core.nix

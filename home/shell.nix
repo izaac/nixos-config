@@ -46,7 +46,7 @@
     man-db
     kubernetes-helm
     kubectl
-    procs just nix-tree comma
+    procs just nix-tree comma nvd
     
     # --- COMPRESSION & ARCHIVING ---
     zip unzip 
@@ -106,6 +106,7 @@
       nv-sys = "nvd diff $(command ls -vd /nix/var/nix/profiles/system-*-link | tail -2)";
       nv-boot = "nvd diff /run/booted-system /run/current-system";
       up = "st && nh os switch --update"; # Update flake inputs AND switch
+      up-browsers = "st && nix flake update nixpkgs-latest && nh os switch"; # Update ONLY browsers and switch
       ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
       # --- NVIDIA TWEAKS ---
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
@@ -242,7 +243,7 @@ EOF
         if [ -n "$ver" ]; then target="python_$ver"; fi
 
         cat <<EOF > .envrc
-use flake ${userConfig.dotfilesDir}/templates#$target
+use flake ${userConfig.dotfilesDir}/templates#python
 watch_file requirements.txt
 watch_file pyproject.toml
 

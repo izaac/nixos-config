@@ -1,9 +1,10 @@
-{ pkgs, ... }:
+{ latestPkgs, ... }:
 
 {
   # Chromium Configuration
   programs.chromium = {
     enable = true;
+    package = latestPkgs.chromium;
     commandLineArgs = [
       # --- Dark Mode ---
       "--force-dark-mode"
@@ -33,6 +34,7 @@
   # Google Chrome Configuration
   programs.google-chrome = {
     enable = true;
+    package = latestPkgs.google-chrome;
     commandLineArgs = [
       # --- Dark Mode ---
       "--force-dark-mode"

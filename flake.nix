@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-latest.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,7 +22,13 @@
       # Helper function to generate a host configuration
       mkSystem = hostname: system: nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit inputs userConfig; };
+        specialArgs = { 
+          inherit inputs userConfig; 
+          latestPkgs = import inputs.nixpkgs-latest {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        };
         
         modules = [
           ./hosts/${hostname}/configuration.nix
