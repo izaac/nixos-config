@@ -300,6 +300,71 @@
     OOMScoreAdjust = 1000;
   };
 
+  # --- SYSTEM-WIDE FIREFOX POLICIES ---
+  # Ensures policies apply even to custom VIP wrappers
+  programs.firefox = {
+    enable = true;
+    policies = {
+      DisableTelemetry = true;
+      DisableFirefoxStudies = true;
+      EnableTrackingProtection = {
+        Value = true;
+        Locked = false;
+        Cryptomining = true;
+        Fingerprinting = true;
+      };
+      DisablePocket = true;
+      OverrideFirstRunPage = "";
+      OverridePostUpdatePage = "";
+      DontCheckDefaultBrowser = true;
+      DisplayBookmarksToolbar = "never";
+      DisplayMenuBar = "default-off";
+      SearchBar = "unified";
+      HardwareAcceleration = true;
+      Preferences = {
+        "privacy.resistFingerprinting" = false;
+        "privacy.trackingprotection.enabled" = true;
+        "privacy.trackingprotection.socialtracking.enabled" = true;
+        "dom.security.https_only_mode" = true;
+        "browser.contentblocking.category" = "strict";
+        "browser.ping-centre.telemetry" = false;
+        "datareporting.healthreport.uploadEnabled" = false;
+        "datareporting.policy.dataSubmissionEnabled" = false;
+        "toolkit.telemetry.unified" = false;
+        "toolkit.telemetry.enabled" = false;
+        "toolkit.telemetry.server" = "data:,";
+        "toolkit.telemetry.archive.enabled" = false;
+        "app.normandy.enabled" = false;
+        "app.normandy.api_url" = "";
+        "browser.discovery.enabled" = false;
+        "browser.healthreport.uploadEnabled" = false;
+        "datareporting.policy.dataSubmissionPolicyAccepted" = false;
+        "datareporting.policy.dataSubmissionPolicyBypassNotification" = true;
+        "beacon.enabled" = false;
+        "network.http.max-connections" = 1800;
+        "network.http.max-persistent-connections-per-server" = 10;
+        "network.trr.mode" = 5;
+        "network.captive-portal-service.enabled" = false;
+        "browser.cache.disk.enable" = false;
+        "browser.cache.memory.capacity" = 1048576;
+        "browser.sessionstore.interval" = 600000;
+        "ui.systemUsesDarkTheme" = 1;
+
+        # --- HIGH QUALITY AUDIO & STREAMING ---
+        "media.resampling.enabled" = false; # Avoid browser-level downsampling
+        "media.audio_max_channels" = 8; # Support up to 7.1 surround sound
+        "media.mediasource.webm.enabled" = true; # High quality YT Music audio (Opus)
+        "media.mediasource.webm.audio.enabled" = true; # Force WebM for audio-only
+        "media.webm.enabled" = true; # Ensure WebM is globally enabled
+        "media.opus.enabled" = true; # Ensure Opus is globally enabled
+        "media.setsinkid.enabled" = true; # Allow manual output device selection
+        "media.track.enabled" = true; # Enable multi-track audio selection
+        "media.getusermedia.audio.processing.agc.enabled" = false; # Disable Auto-Gain (flattens music)
+        "media.getusermedia.audio.processing.noise_suppression" = false; # Disable noise filtering for high-fidelity
+      };
+    };
+  };
+
   # --- DOCUMENTATION ---
   documentation = {
     enable = false;
