@@ -1,8 +1,8 @@
 { pkgs, lib, latestPkgs, ... }:
 
 {
-  catppuccin.firefox.enable = true;
-  catppuccin.firefox.profiles.default.enable = true;
+  catppuccin.firefox.enable = false;
+  catppuccin.firefox.profiles.default.enable = false;
 
   # Configure the standard firefox package (home-manager's module will handle it)
   programs.firefox = {
@@ -30,7 +30,6 @@
       id = 0;
       name = "default";
       isDefault = true;
-      extensions.force = true;
       settings = {
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
       };
@@ -148,6 +147,4 @@
       };
     };
   };
-
-
 }

@@ -1,7 +1,7 @@
 { pkgs, userConfig, ... }:
 
 {
-  catppuccin.starship.enable = true;
+  # catppuccin.starship.enable = true;
   catppuccin.bat.enable = true;
   catppuccin.fzf.enable = true;
   catppuccin.bottom.enable = true;
@@ -13,7 +13,7 @@
 
   programs.atuin = {
     enable = true;
-    enableBashIntegration = true;
+    enableBashIntegration = false;
     settings = {
       auto_sync = false;
       style = "compact";
@@ -56,6 +56,7 @@
     libarchive
     
     # --- SYSTEM TOOLS ---
+    bash-preexec
     appimage-run
     wl-clipboard
     # dwarfs 
@@ -291,8 +292,18 @@ EOF
         eval "`fnm env`"
       fi
 
-      # Ensure local binaries are in PATH (at the end to avoid overrides)
+      # Ensure local binaries are in PATH
       export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
+
+      # --- Atuin Initialization (Manual) ---
+      # Force initialization even if line editing is not detected in SHELLOPTS.
+      # This ensures Atuin records history in all interactive sessions.
+      if [ -f "${pkgs.bash-preexec}/share/bash/bash-preexec.sh" ]; then
+        source "${pkgs.bash-preexec}/share/bash/bash-preexec.sh"
+      fi
+      if command -v atuin >/dev/null; then
+        eval "$(atuin init bash)"
+      fi
     '';
   };
 

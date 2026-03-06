@@ -26,9 +26,13 @@
 
     settings = {
       enabled_layouts = "splits,stack";
-      background = "#11111b";
+      background = "#030305";
       background_opacity = "1.0";
       background_opacity_unfocused = "1.0";
+      cursor = "#f5e0dc";
+      cursor_text_color = "#1e1e2e";
+      selection_foreground = "#1e1e2e";
+      selection_background = "#f5e0dc";
       window_padding_width = 10;
       enable_audio_bell = false;
       hide_window_decorations = "no";

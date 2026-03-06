@@ -226,46 +226,7 @@
             };
           };
         }
-        {
-          name = "libpipewire-module-filter-chain";
-          args = {
-            "node.description" = "Hifi EQ (Sony XM5)";
-            "media.name" = "Hifi EQ (Sony XM5)";
-            "filter.graph" = {
-              nodes = [
-                # --- LEFT CHANNEL ---
-                { type = "builtin"; name = "mix_l"; label = "mixer"; control = { "Gain 1" = 0.794; }; } # -2.0 dB for XM5
-                { type = "builtin"; name = "eq1_l"; label = "bq_lowshelf"; control = { "Freq" = 64.0; "Q" = 1.0; "Gain" = 4.0; }; } # More bass for XM5
-                { type = "builtin"; name = "eq2_l"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 4.0; }; }
-                { type = "builtin"; name = "eq3_l"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
-                # --- RIGHT CHANNEL ---
-                { type = "builtin"; name = "mix_r"; label = "mixer"; control = { "Gain 1" = 0.794; }; }
-                { type = "builtin"; name = "eq1_r"; label = "bq_lowshelf"; control = { "Freq" = 64.0; "Q" = 1.0; "Gain" = 4.0; }; }
-                { type = "builtin"; name = "eq2_r"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 4.0; }; }
-                { type = "builtin"; name = "eq3_r"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
-              ];
-              links = [
-                { output = "mix_l:Out"; input = "eq1_l:In"; } { output = "eq1_l:Out"; input = "eq2_l:In"; } { output = "eq2_l:Out"; input = "eq3_l:In"; }
-                { output = "mix_r:Out"; input = "eq1_r:In"; } { output = "eq1_r:Out"; input = "eq2_r:In"; } { output = "eq2_r:Out"; input = "eq3_r:In"; }
-              ];
-              inputs = [ "mix_l:In 1" "mix_r:In 1" ];
-              outputs = [ "eq3_l:Out" "eq3_r:Out" ];
-            };
-            "capture.props" = {
-              "node.name" = "sony_eq_input";
-              "media.class" = "Audio/Sink";
-              "audio.channels" = 2;
-              "audio.position" = [ "FL" "FR" ];
-            };
-            "playback.props" = {
-              "node.name" = "sony_eq_output";
-              "node.passive" = true;
-              "audio.channels" = 2;
-              "audio.position" = [ "FL" "FR" ];
-              "node.target" = "bluez_output.88_C9_E8_7D_B7_53.1";
-            };
-          };
-        }
+
       ];
       "context.rules" = [
         {
@@ -306,9 +267,6 @@
 
   # Hardware Firmware
   hardware.enableAllFirmware = true;
-
-  # Optical Drive Support
-  programs.k3b.enable = true;
 
   # System Packages (Essentials Only)
   environment.systemPackages = with pkgs; [

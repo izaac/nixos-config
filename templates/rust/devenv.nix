@@ -4,6 +4,8 @@
   # https://devenv.sh/languages/
   languages.rust = {
     enable = true;
+    # Devenv 2.0: Enable out-of-the-box language server
+    lsp.enable = true;
     channel = "stable";  # or "nightly", "beta"
 
     # Automatically sets up:

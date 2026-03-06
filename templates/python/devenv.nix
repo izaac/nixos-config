@@ -4,6 +4,8 @@
   # https://devenv.sh/languages/
   languages.python = {
     enable = true;
+    # Devenv 2.0: Enable out-of-the-box language server
+    lsp.enable = true;
     # version = "3.12";  # Specify version if needed
 
     # Use uv for fast package management

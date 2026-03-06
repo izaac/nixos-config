@@ -4,6 +4,8 @@
   # https://devenv.sh/languages/
   languages.cplusplus = {
     enable = true;
+    # Devenv 2.0: Enable out-of-the-box language server
+    lsp.enable = true;
   };
 
   # https://devenv.sh/packages/

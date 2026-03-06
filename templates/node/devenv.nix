@@ -4,6 +4,8 @@
   # https://devenv.sh/languages/
   languages.javascript = {
     enable = true;
+    # Devenv 2.0: Enable out-of-the-box language server
+    lsp.enable = true;
     # package = pkgs.nodejs_22;  # Specify Node version if needed
 
     # Package manager options
