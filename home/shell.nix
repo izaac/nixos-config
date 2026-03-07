@@ -51,6 +51,9 @@
     kubectl
     procs just nix-tree comma nvd
     
+    # --- MEDIA & ENCODING ---
+    (callPackage ../pkgs/vcrunch { })
+    
     # --- COMPRESSION & ARCHIVING ---
     zip unzip 
     p7zip

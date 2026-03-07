@@ -47,14 +47,11 @@
     "iommu=pt"
     "usbcore.autosuspend=-1"
     # Fix for some Intel/NVIDIA laptop backlight issues
-    "acpi_backlight=vendor" 
+    "acpi_backlight=vendor"
   ];
-
-  programs.light.enable = true;
 
   # Hardware Firmware
   hardware.enableAllFirmware = true;
-
   # System Packages
   environment.systemPackages = with pkgs; [
     powertop     # Monitor laptop power usage
