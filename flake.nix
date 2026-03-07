@@ -39,6 +39,7 @@
             nixpkgs.config.allowUnfree = true;
             nixpkgs.overlays = [ 
               (import ./overlays/sparrow-temurin-fix.nix)
+              (import ./overlays/dwarfs-fix.nix)
             ];
           }
         ];

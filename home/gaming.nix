@@ -15,7 +15,6 @@ in
     protonup-rs
     samrewritten
     cartridges
-    piper
     openrgb
     goverlay
     vkbasalt
@@ -44,26 +43,8 @@ in
     comment = "Unlock Steam Achievements on Linux";
   };
 
-  # Fetch the Eden Launcher icon
-  home.file.".local/share/icons/hicolor/256x256/apps/eden-launcher.png".source = pkgs.fetchurl {
-    url = "https://avatars.githubusercontent.com/u/205540286";
-    hash = "sha256-9hzv7rKI4MSLp5icMB24AN6y5x4xzp/UTekkgsuoOoo=";
-  };
-
-  # Custom Desktop Entry for Eden Launcher (AppImage)
-  xdg.desktopEntries.eden = {
-    name = "Eden Launcher";
-    genericName = "Game Launcher";
-    exec = "steam-run ${config.home.homeDirectory}/.local/bin/Eden.AppImage";
-    terminal = false;
-    categories = [ "Game" ];
-    icon = "eden-launcher"; 
-    comment = "Modern open source game launcher";
-  };
-
   # MangoHud Config
-  programs.mangohud = {
-    enable = true;
+  programs.mangohud = {    enable = true;
     settings = {
       # Visual Style (Catppuccin Mocha)
       text_color = "cdd6f4";

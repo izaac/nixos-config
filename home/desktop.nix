@@ -49,6 +49,7 @@
 
     # Virtualization (Distrobox Management)
     boxbuddy
+    gearlever
 
     # GNOME Extensions & Integration
     nautilus-open-any-terminal
@@ -61,16 +62,6 @@
   xdg.userDirs = {
     enable = true;
     createDirectories = true; 
-  };
-
-  xdg.desktopEntries.playback = {
-    name = "Playback";
-    genericName = "GB Operator App";
-    comment = "Play and manage Game Boy cartridges with Epilogue GB Operator (Gameboy, Epilogue, Operator, Nintendo)";
-    exec = "appimage-run /home/${userConfig.username}/bin/playback";
-    icon = "playback";
-    terminal = false;
-    categories = [ "Game" "Utility" ];
   };
 
   xdg.desktopEntries.ventoy = {

@@ -10,16 +10,30 @@
     stdenv.cc.cc.lib
     zlib
     fuse3
+    fuse # Legacy FUSE v2 for libfuse.so.2 (Required by many AppImages)
     icu
     nss
     openssl
     curl
     expat
+    fontconfig
+    freetype
     libGL
     glibc
     libusb1
     glib
     dbus
+    pipewire
+    alsa-lib
+    libpulseaudio
+    libX11
+    libXcursor
+    libXdamage
+    libXext
+    libXfixes
+    libXi
+    libXrender
+    libXtst
     libxkbcommon
     mesa
     wayland
