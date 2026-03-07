@@ -30,10 +30,10 @@
 
     # Audio Tools
     pulsemixer
-    gnome-sound-recorder
     monophony
 
     # General Software
+    abiword         # Lightweight GTK Word Processor
     fragments       # GTK Torrent Client
     amberol         # GTK Music Player
     brasero         # GTK CD/DVD Burning
