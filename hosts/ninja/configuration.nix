@@ -8,7 +8,6 @@
       ./network.nix
       ./udev-igc-fix.nix
       ../../modules/core
-      ../../modules/core/sshfs.nix
       ../../modules/gaming
       ../../modules/desktop
     ];

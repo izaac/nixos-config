@@ -18,6 +18,9 @@
       auto_sync = false;
       style = "compact";
       inline_height = 20;
+      filter_mode = "global";
+      filter_mode_shell_up = "global";
+      search_mode = "fuzzy";
     };
   };
 
@@ -175,10 +178,11 @@
         fi
       }
 
-      # --- Smart eza Wrapper ---      # Prevents hangs on network mounts like SSHFS (Jellyfin)
+      # --- Smart eza Wrapper ---
+      # Prevents hangs on network mounts
       function _smart_eza() {
-        if [[ "$PWD" == *"/Jellyfin"* ]] || [[ "$*" == *"/Jellyfin"* ]]; then
-          # Strip --git and -g flags for Jellyfin to avoid hangs
+        if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
+          # Strip --git and -g flags for network shares to avoid hangs
           local args=()
           for arg in "$@"; do
             [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
@@ -305,6 +309,11 @@ EOF
       fi
       if command -v atuin >/dev/null; then
         eval "$(atuin init bash)"
+        
+        # Override the Up Arrow keybinding to use the full interactive search 
+        # (exactly like Ctrl+R) instead of the inline shell-up behavior.
+        bind -x '"\e[A": __atuin_history'
+        bind -x '"\eOA": __atuin_history'
       fi
     '';
   };

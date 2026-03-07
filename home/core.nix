@@ -4,7 +4,6 @@
   imports = [
     ./shell.nix
     ./ssh.nix
-    ./sshfs.nix
     ./rclone-gdrive.nix
     ./tmux.nix
     ./theme.nix
