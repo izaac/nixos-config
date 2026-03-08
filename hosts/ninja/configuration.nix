@@ -359,6 +359,12 @@
         "media.track.enabled" = true; # Enable multi-track audio selection
         "media.getusermedia.audio.processing.agc.enabled" = false; # Disable Auto-Gain (flattens music)
         "media.getusermedia.audio.processing.noise_suppression" = false; # Disable noise filtering for high-fidelity
+
+        # --- GPU HARDWARE ACCELERATION ---
+        "media.ffmpeg.vaapi.enabled" = true; # Enable Hardware Video Decoding
+        "media.rdd-ffmpeg.enabled" = false; # Disable RDD sandbox for NVIDIA VA-API
+        "gfx.webrender.all" = true; # Force GPU Page Rendering
+        "widget.dmabuf.force-enabled" = true; # Zero-copy buffer sharing for Wayland
       };
     };
   };
