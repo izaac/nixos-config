@@ -42,49 +42,45 @@
       dns = [ "192.168.0.96" ];
       domains = [ "~." ]; # Route ALL DNS traffic through this interface (Pi-hole)
 
-      # Ignore DNS from the router to prevent bypassing Pi-hole
-      dhcpV4Config.UseDNS = false;
-      dhcpV6Config.UseDNS = false;
-      ipv6AcceptRAConfig.UseDNS = false;
+    # Ignore DNS from the router to prevent bypassing Pi-hole
+    dhcpV4Config.UseDNS = false;
+    dhcpV6Config.UseDNS = false;
+    ipv6AcceptRAConfig.UseDNS = false;
 
-      # Disable Energy Efficient Ethernet (EEE) to prevent NIC sleep state locks
-      # See Intel I225-V/igc known issues
-      networkConfig = {
-        IPv6PrivacyExtensions = "kernel";
-        MulticastDNS = false;
-        LLMNR = false;
-      };
-      
-      # Additional settings specific to the physical link layer
-      # EEE (Energy Efficient Ethernet) can cause the I225 controller to hang under load
-      # after a few hours and requires a physical or bus reset to recover.
-      # Setting 'WakeOnLan=off' also helps prevent firmware sleep bugs.
-      linkConfig = {
-        RequiredForOnline = "routable";
-      };
+    # Disable Energy Efficient Ethernet (EEE) to prevent NIC sleep state locks
+    # See Intel I225-V/igc known issues
+    networkConfig = {
+      IPv6PrivacyExtensions = "kernel";
+      MulticastDNS = false;
+      LLMNR = false;
+    };
+
+    # Additional settings specific to the physical link layer
+    # EEE (Energy Efficient Ethernet) can cause the I225 controller to hang under load
+    # after a few hours and requires a physical or bus reset to recover.
+    # Setting 'WakeOnLan=off' also helps prevent firmware sleep bugs.
+    linkConfig = {
+      RequiredForOnline = "routable";
     };
   };
+};
 
-  # Stop wpa_supplicant and ModemManager from running
-  systemd.services.wpa_supplicant.enable = false;
-  systemd.services.ModemManager.enable = false;
-  programs.nm-applet.enable = false;
+# Stop wpa_supplicant and ModemManager from running
+systemd.services.wpa_supplicant.enable = false;
+systemd.services.ModemManager.enable = false;
+programs.nm-applet.enable = false;
 
-  # Intel I225-V/I226-V (igc) Latency Optimization
-  # InterruptThrottleRate=0 disables throttling, ensuring the NIC interrupts the CPU immediately.
-  boot.extraModprobeConfig = ''
-    options igc InterruptThrottleRate=0,0,0,0
-  '';
+# Intel I225-V/I226-V (igc) Latency Optimization
+# InterruptThrottleRate=0 disables throttling, ensuring the NIC interrupts the CPU immediately.
+boot.extraModprobeConfig = ''
+  options igc InterruptThrottleRate=0,0,0,0
+'' ;
 
-  # DNS Hardening & Fallback removal
-  services.resolved = {
-    settings = {
-      Resolve = {
-        DNSSEC = "allow-downgrade";
-        FallbackDNS = "";
-        LLMNR = "no";
-        MulticastDNS = "no";
-      };
-    };
-  };
+# --- DNS CONFIGURATION ---
+# Using systemd-resolved but DISABLING DNSSEC.
+# Local DNS (Pi-hole) often strips signatures, causing validation hangs.
+services.resolved = {
+  enable = true;
+  settings.Resolve.DNSSEC = "no";
+};
 }
