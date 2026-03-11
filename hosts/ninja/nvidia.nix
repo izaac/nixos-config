@@ -17,7 +17,10 @@
 
   hardware.nvidia = {
     modesetting.enable = true;
-    powerManagement.enable = false; # Disabled to fix slow wake-up/EGL context loss on DPMS
+    # Note: On 595+ with open modules, NixOS automatically enables 'kernelSuspendNotifier'.
+    # We must explicitly disable NixOS powerManagement to prevent the creation of legacy 
+    # nvidia-suspend/resume systemd services which conflict with the kernel notifiers.
+    powerManagement.enable = false; 
     powerManagement.finegrained = false;
     open = true; # Open modules required for RTX 50-series (Blackwell)
     nvidiaSettings = true;
@@ -35,7 +38,8 @@
   # 3. Kernel Modules & Wayland Environment
   boot.initrd.kernelModules = [ ];
   boot.kernelParams = [ 
-    "nvidia_drm.fbdev=1" 
+    "nvidia.NVreg_PreserveVideoMemoryAllocations=1" # Explicitly added since powerManagement is disabled
+    "nvidia.NVreg_UseKernelSuspendNotifiers=1" # Required for improved memory preservation on Open Modules
     # High-performance PowerMizer (avoid clock dips during presentation)
     "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1; RMIntrLockingMode=1; RMConnectToDevice=0\""
   ]; 

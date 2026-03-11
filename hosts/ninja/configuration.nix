@@ -75,28 +75,33 @@
     "joydev"     
     "pcspkr"     
   ];
+# --- CORE HARDWARE TWEAKS ---
+boot.kernelParams = [
+  "boot.shell_on_fail"
+  "pci=realloc,pcie_bus_safe" 
+  "pcie_aspm=off"            
+  "iommu=pt"                 
+  "pcie_ports=native"        
+  "amd_pstate=active"        
+  "preempt=full"             
+];
 
-  # --- CORE HARDWARE TWEAKS ---
-  boot.kernelParams = [
-    "boot.shell_on_fail"
-    "pci=realloc,pcie_bus_safe" 
-    "pcie_aspm=off"            
-    "iommu=pt"                 
-    "pcie_ports=native"        
-    "amd_pstate=active"        
-    "preempt=full"             
-  ];
+# --- SCHED-EXT (SCX) FOR 9950X3D GAMING ---
+services.scx = {
+  enable = true;
+  scheduler = "scx_lavd"; # Latency-aware scheduler for improved 1% lows and desktop snappiness
+};
 
-  # --- DISABLE SUSPEND/HIBERNATE ---
-  systemd.targets.sleep.enable = false;
-  systemd.targets.suspend.enable = false;
-  systemd.targets.hibernate.enable = false;
-  systemd.targets.hybrid-sleep.enable = false;
+# --- ENABLE SUSPEND/HIBERNATE (NVIDIA 595+ STABLE) ---
+  systemd.targets.sleep.enable = true;
+  systemd.targets.suspend.enable = true;
+  systemd.targets.hibernate.enable = true;
+  systemd.targets.hybrid-sleep.enable = true;
   services.logind = {
     settings.Login = {
-      HandleSuspendKey = "ignore";
-      HandleHibernateKey = "ignore";
-      HandleLidSwitch = "ignore";
+      HandleSuspendKey = "suspend";
+      HandleHibernateKey = "hibernate";
+      HandleLidSwitch = "ignore"; # Desktop: No lid
     };
   };
 

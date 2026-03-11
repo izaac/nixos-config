@@ -34,6 +34,8 @@
 
     # General Software
     abiword         # Lightweight GTK Word Processor
+    gophertube      # TUI YouTube Client
+    chafa           # Terminal Graphics for gophertube
     fragments       # GTK Torrent Client
     amberol         # GTK Music Player
     brasero         # GTK CD/DVD Burning

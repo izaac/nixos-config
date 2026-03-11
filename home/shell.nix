@@ -65,7 +65,7 @@
     bash-preexec
     appimage-run
     wl-clipboard
-    # dwarfs 
+    dwarfs
     fuse3
     nvitop
     nvtopPackages.nvidia
