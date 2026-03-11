@@ -103,8 +103,8 @@
       st = "git -C $NH_FLAKE add .";
       gco = "git checkout";
       nrb = "st && nh os switch";
-      ndr = "st && nh os build"; # Dry-run: build without switching (no sudo needed)
-      ndry = "nix build .#nixosConfigurations.ninja.config.system.build.toplevel --dry-run"; # Old dry-run
+      ndr = "st && nh os build"; # Build without switching (no sudo needed)
+      ndry = "st && nh os build --update --dry"; # Check what would be built/downloaded on update
       # Nix cleanup: keep last 10 generations, preserve dev environments
       ncl = "nh clean all --keep 10 --nogc";
       # Full cleanup: prune stale direnvs, then garbage collect everything
@@ -121,44 +121,6 @@
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
       ssh = "TERM=xterm-256color ssh";
 
-      # Canary: Query the latest versions and CACHE status on nixos-unstable
-      canary = ''
-        echo "--- [ CANARY ] nixos-unstable status ---"
-        # Fetching version numbers using the tarball URL (still efficient for this)
-        nix-instantiate --eval --json --strict -E "let pkgs = import (builtins.fetchTarball \"https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz\") {}; in { gnome = pkgs.gnome-shell.version; kernel = pkgs.linuxPackages_zen.kernel.version; nvidia = pkgs.linuxPackages.nvidia_x11.version; }" | jq
-
-        echo -e "\n--- Cache Check (Binary Availability) ---"
-        function _check() {
-          local name=$1
-          local attr=$2
-          local res
-          # Use github:nixos/nixpkgs/nixos-unstable for clean flake attribute access
-          # NIXPKGS_ALLOW_UNFREE is required for NVIDIA
-          res=$(NIXPKGS_ALLOW_UNFREE=1 nix build --dry-run "github:nixos/nixpkgs/nixos-unstable#$attr" --impure --no-link 2>&1)
-          
-          if echo "$res" | grep -q "will be built"; then
-            echo -e "$name: \033[0;31mBUILD REQUIRED\033[0m (Wait for hydra!)"
-          elif echo "$res" | grep -q "will be fetched"; then
-            echo -e "$name: \033[0;32mCACHE HIT\033[0m (Binary available)"
-          elif [ -z "$res" ] || echo "$res" | grep -q "already exists"; then
-            # Empty output often means it's already in the store and nothing needs to be done
-            echo -e "$name: \033[0;32mCACHE HIT\033[0m (Already present)"
-          else
-            echo -e "$name: \033[0;33mERROR\033[0m (Nix failed to evaluate)"
-            # For debugging
-            # echo "$res"
-          fi
-        }
-        
-        _check "GNOME Shell " "gnome-shell"
-        _check "Linux Kernel" "linuxPackages_6_18.kernel"
-        _check "GCC Compiler " "gcc"
-        _check "Glibc Library" "glibc"
-        _check "Systemd Core " "systemd"
-        _check "Wine Wayland " "wineWow64Packages.waylandFull"
-        _check "Firefox Browser" "firefox"
-        _check "Chromium Web " "chromium"
-      '';
 
       # Per-App Audio Overrides (Anticipation Strategy)
       pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-vcrunch: A consolidated video re-encoding tool suite.
+vcrunch: A video re-encoding tool suite.
 """
 
 import argparse
@@ -16,12 +16,13 @@ from pathlib import Path
 
 # --- GLOBAL UTILS ---
 
+
 def run_cmd(cmd, check=True, capture_output=False):
     """Run a shell command."""
     try:
         result = subprocess.run(
             cmd,
-            shell=True,
+            shell=False,
             check=check,
             capture_output=capture_output,
             text=True,
@@ -30,39 +31,201 @@ def run_cmd(cmd, check=True, capture_output=False):
     except subprocess.CalledProcessError as e:
         if not check:
             return e
-        print(f"\n[Error] Command failed: {cmd}")
+        cmd_str = " ".join(cmd) if isinstance(cmd, list) else cmd
+        print(f"\n[Error] Command failed: {cmd_str}")
         sys.exit(1)
 
 
 def get_duration(file_path):
     """Get the duration of a video file in seconds."""
-    cmd = (
-        f'ffprobe -v error -show_entries format=duration '
-        f'-of default=noprint_wrappers=1:nokey=1 "{file_path}"'
-    )
+    cmd = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        str(file_path),
+    ]
     res = run_cmd(cmd, capture_output=True)
     return float(res.stdout.strip())
+
+
+def get_audio_codec(file_path):
+    """Probe the first audio stream to determine its codec."""
+    cmd = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-select_streams",
+        "a:0",
+        "-show_entries",
+        "stream=codec_name",
+        "-of",
+        "default=noprint_wrappers=1:nokey=1",
+        str(file_path),
+    ]
+    res = run_cmd(cmd, capture_output=True, check=False)
+    if res.returncode == 0:
+        return res.stdout.strip().lower()
+    return None
 
 
 def send_notification(title, message):
     """Send a desktop notification if possible."""
     if shutil.which("notify-send"):
-        run_cmd(f'notify-send "{title}" "{message}" --icon=video-x-generic')
+        run_cmd(["notify-send", title, message, "--icon=video-x-generic"])
+
+
+def build_ffmpeg_cmd(in_file, out_file, args):
+    """Build the FFmpeg command."""
+    ext = Path(out_file).suffix.lower()
+
+    # Video Logic
+    vcodec = "hevc_nvenc" if getattr(args, "gpu", False) else args.vcodec
+    # hevc_nvenc uses -cq (Constant Quantization) instead of -crf
+    if vcodec == "hevc_nvenc":
+        video_args = [
+            "-c:v",
+            vcodec,
+            "-rc",
+            "vbr",
+            "-cq",
+            str(args.crf),
+            "-preset",
+            "p6" if args.preset == "slow" else "p4",  # approximate preset map
+        ]
+        # For MP4 container, Apple devices prefer hvc1
+        tag_args = ["-tag:v", "hvc1"] if ext == ".mp4" else []
+    else:
+        video_args = [
+            "-c:v",
+            vcodec,
+            "-crf",
+            str(args.crf),
+            "-preset",
+            args.preset,
+        ]
+        tag_args = (
+            ["-tag:v", "hvc1"] if ext == ".mp4" and vcodec == "libx265" else []
+        )
+
+    # Audio Logic
+    audio_args = []
+    if args.acodec == "auto":
+        acodec_actual = get_audio_codec(in_file)
+        if acodec_actual in ["aac", "opus"]:
+            audio_args = ["-c:a", "copy"]
+        else:
+            audio_args = [
+                "-c:a",
+                "aac",
+                "-b:a",
+                args.abitrate,
+                "-af",
+                "aresample=async=1",
+            ]
+    elif args.acodec == "copy":
+        audio_args = ["-c:a", "copy"]
+    else:
+        audio_args = [
+            "-c:a",
+            args.acodec,
+            "-b:a",
+            args.abitrate,
+            "-af",
+            "aresample=async=1",
+        ]
+
+    cmd = (
+        [
+            "ffmpeg",
+            "-nostdin",
+            "-v",
+            "warning",
+            "-stats",
+            "-i",
+            str(in_file),
+            "-map",
+            "0",
+        ]
+        + video_args
+        + [
+            "-c:s",
+            "copy",
+        ]
+        + audio_args
+        + tag_args
+        + [str(out_file)]
+    )
+
+    return cmd
+
+
+def add_encoding_args(parser):
+    """Add encoding parameters to a parser."""
+    parser.add_argument(
+        "--gpu",
+        action="store_true",
+        help="Use NVIDIA NVENC for hardware accelerated encoding",
+    )
+    parser.add_argument(
+        "--crf",
+        type=int,
+        default=26,
+        help="Constant Rate Factor (default: 26)",
+    )
+    parser.add_argument(
+        "--preset",
+        type=str,
+        default="slow",
+        help="Encoder preset (default: slow)",
+    )
+    parser.add_argument(
+        "--vcodec",
+        type=str,
+        default="libx265",
+        help="Video codec (default: libx265)",
+    )
+    parser.add_argument(
+        "--acodec",
+        type=str,
+        default="auto",
+        help=(
+            "Audio codec: 'auto' (copies aac/opus, otherwise aac), "
+            "'copy', or specific codec like 'aac' (default: auto)"
+        ),
+    )
+    parser.add_argument(
+        "--abitrate",
+        type=str,
+        default="128k",
+        help="Audio bitrate if transcoding (default: 128k)",
+    )
 
 
 # --- ANALYZE MODE ---
 
+
 def mode_analyze(args):
-    """Analyze a file to find the best encoding settings."""
+    """Analyze a file to find encoding settings."""
     file = args.file
     filename = os.path.basename(file)
     print(f"--- Original Analysis: {filename} ---")
 
-    probe_cmd = (
-        f'ffprobe -v error -select_streams v:0 '
-        f'-show_entries stream=codec_name,bit_rate,width,height,'
-        f'avg_frame_rate -of default=noprint_wrappers=1 "{file}"'
-    )
+    probe_cmd = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-select_streams",
+        "v:0",
+        "-show_entries",
+        "stream=codec_name,bit_rate,width,height,avg_frame_rate",
+        "-of",
+        "default=noprint_wrappers=1",
+        file,
+    ]
     run_cmd(probe_cmd)
 
     duration = get_duration(file)
@@ -79,9 +242,22 @@ def mode_analyze(args):
         print(f"Testing {name}... ", end="", flush=True)
 
         cmd = (
-            f'ffmpeg -nostdin -y -ss {start_time} -t {test_len} '
-            f'-i "{file}" -c:v {codec} {quality} {extra} '
-            f'-c:a copy -an "{out}"'
+            [
+                "ffmpeg",
+                "-nostdin",
+                "-y",
+                "-ss",
+                start_time,
+                "-t",
+                str(test_len),
+                "-i",
+                file,
+                "-c:v",
+                codec,
+            ]
+            + quality.split()
+            + extra.split()
+            + ["-c:a", "copy", "-an", out]
         )
 
         if run_cmd(cmd, check=False, capture_output=True).returncode != 0:
@@ -91,9 +267,13 @@ def mode_analyze(args):
         test_size = os.path.getsize(out)
         est_size = (test_size / test_len) * duration / (1024 * 1024)
         savings = 100 - (est_size * 100 / orig_mb)
-        print(f"Done. Est. Final Size: {est_size:.1f} MB "
-              f"(~{savings:.1f}% smaller)")
-        os.remove(out)
+        print(
+            f"Done. Est. Final Size: {est_size:.1f} MB "
+            f"(~{savings:.1f}% smaller)"
+        )
+
+        if os.path.exists(out):
+            os.remove(out)
 
     run_test("x265_CRF24", "libx265", "-crf 24", "-preset medium")
     run_test("x265_CRF28", "libx265", "-crf 28", "-preset medium")
@@ -102,52 +282,70 @@ def mode_analyze(args):
 
 # --- BATCH MODE ---
 
+
 def mode_batch(args):
     """Batch encode local files."""
+    work_dir = Path(args.path).resolve()
+    os.chdir(work_dir)
+
     target_dir = Path("crunch")
     scratch_dir = Path(".vcrunch_tmp")
     target_dir.mkdir(exist_ok=True)
     scratch_dir.mkdir(exist_ok=True)
 
-    files = sorted(glob.glob("*.mp4"))
+    files = sorted([f for ext in ("*.mp4", "*.mkv") for f in glob.glob(ext)])
     total = len(files)
 
     if total == 0:
-        print("No .mp4 files found.")
+        print("No .mp4 or .mkv files found.")
         return
 
     print(f"--- VCRUNCH LOCAL BATCH ---\nTotal: {total} files\n" + "-" * 27)
 
     for i, f in enumerate(files, 1):
-        if (target_dir / f).exists():
-            print(f"[{i}/{total}] Skipping (exists): {f}")
+        out_name = Path(f).name
+        if (target_dir / out_name).exists():
+            print(f"[{i}/{total}] Skipping (exists): {out_name}")
             continue
 
         print(f"[{i}/{total}] PROCESSING: {f}")
 
-        cmd = (
-            f'ffmpeg -nostdin -v warning -stats -i "{f}" '
-            f'-c:v libx265 -crf 28 -preset slow -c:a copy '
-            f'-tag:v hvc1 "{scratch_dir}/{f}"'
-        )
+        cmd = build_ffmpeg_cmd(f, scratch_dir / out_name, args)
 
         if run_cmd(cmd, check=False).returncode == 0:
-            shutil.move(scratch_dir / f, target_dir / f)
-            print(f"  DONE: {f}\n")
+            shutil.move(scratch_dir / out_name, target_dir / out_name)
+            print(f"  DONE: {out_name}\n")
         else:
             print(f"  FAILED: {f}")
             sys.exit(1)
 
     send_notification(
-        "Video Crunch Complete",
-        f"Finished {total} files in {os.getcwd()}"
+        "Video Crunch Complete", f"Finished {total} files in {os.getcwd()}"
     )
 
 
 # --- SHARE MODE ---
 
+
+def keep_alive_loop(mount_path):
+    """Background keep-alive loop replacing bash 'while true'."""
+    while True:
+        try:
+            # Wake mount by listing the directory
+            subprocess.run(
+                ["ls", mount_path],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except Exception:
+            pass
+        time.sleep(30)
+
+
 def mode_share(args):
-    """Robust network-to-local batch encoding."""
+    """Network-to-local batch encoding."""
+    import multiprocessing
+
     source_dir = Path(args.source).resolve()
     basename = source_dir.name
     scratch_dir = Path.home() / ".cache" / "vcrunch"
@@ -159,7 +357,9 @@ def mode_share(args):
     # Detach from network share CWD
     os.chdir(scratch_dir)
 
-    files = sorted(list(source_dir.glob("*.mp4")))
+    files = sorted(
+        list(source_dir.glob("*.mp4")) + list(source_dir.glob("*.mkv"))
+    )
     total = len(files)
 
     print(
@@ -171,14 +371,13 @@ def mode_share(args):
 
     keep_alive_proc = None
     if str(source_dir).startswith("/mnt/"):
-        keep_cmd = (
-            f'while true; do ls "{source_dir}" >/dev/null 2>&1; '
-            f'sleep 30; done'
+        keep_alive_proc = multiprocessing.Process(
+            target=keep_alive_loop, args=(str(source_dir),), daemon=True
         )
-        keep_alive_proc = subprocess.Popen(keep_cmd, shell=True)
+        keep_alive_proc.start()
 
     def cleanup(signum, frame):
-        if keep_alive_proc:
+        if keep_alive_proc and keep_alive_proc.is_alive():
             keep_alive_proc.terminate()
         sys.exit(1)
 
@@ -188,8 +387,10 @@ def mode_share(args):
     try:
         for i, f_path in enumerate(files, 1):
             fname = f_path.name
-            if (local_target / fname).exists():
-                print(f"[{i}/{total}] Skipping: {fname}")
+            out_fname = f_path.name
+
+            if (local_target / out_fname).exists():
+                print(f"[{i}/{total}] Skipping: {out_fname}")
                 continue
 
             print(f"[{i}/{total}] PROCESSING: {fname}")
@@ -200,14 +401,21 @@ def mode_share(args):
             for attempt in range(5):
                 # Wake mount
                 run_cmd(
-                    f'ls "{source_dir.parent}" >/dev/null 2>&1',
-                    check=False
+                    ["ls", str(source_dir.parent)],
+                    check=False,
+                    capture_output=True,
                 )
 
-                pv_cmd = f'pv "{f_path}" > "{scratch_dir}/{fname}"'
-                if run_cmd(pv_cmd, check=False).returncode == 0:
-                    success = True
-                    break
+                # Instead of pv ... > ..., use Python to handle the redirect
+                pv_cmd = ["pv", str(f_path)]
+                try:
+                    with open(scratch_dir / fname, "wb") as out_f:
+                        res = subprocess.run(pv_cmd, stdout=out_f)
+                        if res.returncode == 0:
+                            success = True
+                            break
+                except Exception:
+                    pass
 
                 print(f"  [Wait] Retrying copy... ({attempt+1}/5)")
                 time.sleep(2)
@@ -218,61 +426,61 @@ def mode_share(args):
 
             # Encode
             print("  -> Encoding...")
-            cmd = (
-                f'ffmpeg -nostdin -v warning -stats '
-                f'-i "{scratch_dir}/{fname}" '
-                f'-c:v libx265 -crf 26 -preset slow -pix_fmt yuv420p10le '
-                f'-maxrate 1500k -bufsize 3000k -c:a copy -tag:v hvc1 '
-                f'"{scratch_dir}/out_{fname}"'
+            cmd = build_ffmpeg_cmd(
+                scratch_dir / fname, scratch_dir / f"out_{out_fname}", args
             )
 
             if run_cmd(cmd, check=False).returncode == 0:
                 shutil.move(
-                    scratch_dir / f"out_{fname}",
-                    local_target / fname
+                    scratch_dir / f"out_{out_fname}", local_target / out_fname
                 )
-                os.remove(scratch_dir / fname)
-                print(f"  DONE: {fname}\n")
+                if os.path.exists(scratch_dir / fname):
+                    os.remove(scratch_dir / fname)
+                print(f"  DONE: {out_fname}\n")
             else:
                 print("  FAILED: Encoding error.")
                 break
     finally:
-        if keep_alive_proc:
+        if keep_alive_proc and keep_alive_proc.is_alive():
             keep_alive_proc.terminate()
 
     send_notification(
         "Video Crunch Complete",
-        f"Finished {total} files. Check {local_target}"
+        f"Finished {total} files. Check {local_target}",
     )
 
 
 # --- MAIN CLI ---
 
+
 def main():
     parser = argparse.ArgumentParser(
-        description="vcrunch: High-performance video re-encoding suite"
+        description="vcrunch: Video re-encoding suite"
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Analyze
     p_analyze = subparsers.add_parser(
-        "analyze",
-        help="Find best settings for a file"
+        "analyze", help="Find encoding settings for a file"
     )
     p_analyze.add_argument("file", help="Video file to analyze")
 
     # Batch
-    subparsers.add_parser(
-        "batch",
-        help="Encode all .mp4 in CWD to crunch/"
+    p_batch = subparsers.add_parser(
+        "batch", help="Encode all .mp4 and .mkv in a folder to crunch/"
     )
+    p_batch.add_argument(
+        "path",
+        nargs="?",
+        default=".",
+        help="Folder containing videos (default: current directory)",
+    )
+    add_encoding_args(p_batch)
 
     # Share
-    p_share = subparsers.add_parser(
-        "share",
-        help="Robust network-to-local encoding"
-    )
+    p_share = subparsers.add_parser("share", help="Network-to-local encoding")
     p_share.add_argument("source", help="Path to network share folder")
+    add_encoding_args(p_share)
 
     args = parser.parse_args()
 
