@@ -8,6 +8,11 @@ in
     # Custom
     flashgbx
 
+    # Repack Support Tools
+    fuse-overlayfs
+    psmisc          # Provides 'fuser'
+    bubblewrap      # Provides 'bwrap'
+
     # Gaming Tools
     heroic
     lutris
