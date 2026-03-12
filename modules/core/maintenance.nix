@@ -33,6 +33,15 @@
     lm_sensors
     ethtool
     dnsutils
+
+    # Emergency TTY Rescue Tools (Root accessible)
+    neovim
+    git
+    tmux
+    ripgrep
+    fd
+    htop
+    btop
   ];
 
   nixpkgs.config.permittedInsecurePackages = [

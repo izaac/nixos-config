@@ -70,6 +70,11 @@
     comma
     nvd
 
+    # --- NIX DEVELOPMENT TOOLS ---
+    alejandra
+    deadnix
+    statix
+
     # --- MEDIA & ENCODING ---
     (callPackage ../pkgs/vcrunch {})
 
