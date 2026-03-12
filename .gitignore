@@ -69,3 +69,4 @@ bin/
 # Centralized user info
 .envrc
 GEMINI.md
+docs/architecture-refactor.md
