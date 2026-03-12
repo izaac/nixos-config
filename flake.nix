@@ -24,31 +24,9 @@
     userConfig = import ./lib/user.nix;
 
     # Helper function to generate a host configuration
-    mkSystem = hostname: system:
-      nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit inputs userConfig;
-          latestPkgs = import inputs.nixpkgs-latest {
-            inherit system;
-            config.allowUnfree = true;
-          };
-        };
-
-        modules = [
-          ./hosts/${hostname}/configuration.nix
-          catppuccin.nixosModules.catppuccin
-          sops-nix.nixosModules.sops
-          ./modules/core/sops.nix
-          {
-            nixpkgs.config.allowUnfree = true;
-            nixpkgs.overlays = [
-              (import ./overlays/sparrow-temurin-fix.nix)
-              (import ./overlays/dwarfs-fix.nix)
-            ];
-          }
-        ];
-      };
+    mkSystem = import ./lib/mkSystem.nix {
+      inherit inputs nixpkgs catppuccin sops-nix userConfig;
+    };
   in {
     nixosConfigurations = {
       ninja = mkSystem "ninja" "x86_64-linux";
