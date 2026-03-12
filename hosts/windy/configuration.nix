@@ -10,6 +10,7 @@
     ../../modules/core
     ../../modules/gaming
     ../../modules/desktop
+    ../../users/izaac
   ];
 
   # Bootloader

@@ -4,8 +4,6 @@
   userConfig,
   ...
 }: {
-  home-manager.users.${userConfig.username}.imports = [../../home/desktop.nix];
-
   # --- GNOME ---
   services.desktopManager.gnome.enable = true;
 

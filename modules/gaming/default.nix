@@ -3,8 +3,6 @@
   userConfig,
   ...
 }: {
-  home-manager.users.${userConfig.username}.imports = [../../home/gaming.nix];
-
   # 1. Controller & Hardware Support
   # Provides udev rules for Steam Deck, DualSense, and other controllers.
   hardware.steam-hardware.enable = true;
