@@ -13,5 +13,6 @@
     ./home-manager.nix
     ./sshfs.nix
     ./sops.nix
+    ./nfs.nix
   ];
 }

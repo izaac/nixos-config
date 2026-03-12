@@ -17,6 +17,11 @@
   # Custom Feature Flags
   mySystem.gaming.enable = true;
   mySystem.desktop.enable = true;
+  mySystem.core.audio.enable = true;
+  mySystem.core.bluetooth.enable = true;
+  mySystem.core.codecs.enable = true;
+  mySystem.core.virtualization.enable = true;
+  mySystem.core.nfs.enable = false;
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;

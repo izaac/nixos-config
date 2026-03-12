@@ -1,64 +1,78 @@
-{pkgs, ...}: {
-  # Enable high-quality Bluetooth codecs
-  environment.systemPackages = with pkgs; [
-    bluez
-    bluez-tools
-  ];
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.mySystem.core.bluetooth;
+in {
+  options.mySystem.core.bluetooth = {
+    enable = mkEnableOption "High-fidelity Bluetooth Audio configuration";
+  };
 
-  services.pipewire = {
-    wireplumber.enable = true;
-    wireplumber.extraConfig = {
-      "10-bluez" = {
-        "monitor.bluez.properties" = {
-          "bluez5.enable-sbc-xq" = true;
-          "bluez5.enable-msbc" = true;
-          "bluez5.enable-hw-volume" = true;
-          "bluez5.headset-roles" = ["hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag"];
-          "bluez5.roles" = ["a2dp_sink" "a2dp_source" "hfp_hf" "hfp_ag" "hsp_hs" "hsp_ag"];
-          "bluez5.hfphsp-backend" = "native";
+  config = mkIf cfg.enable {
+    # Enable high-quality Bluetooth codecs
+    environment.systemPackages = with pkgs; [
+      bluez
+      bluez-tools
+    ];
 
-          # Priority: LDAC > AAC > SBC
-          "bluez5.codecs" = ["ldac" "aac" "sbc_xq" "sbc"];
-          "bluez5.a2dp.ldac.quality" = "hq";
-          "bluez5.a2dp.aac.bitratemode" = 0;
-          "bluez5.a2dp.sbc.min-bitpool" = 40;
-          "bluez5.a2dp.sbc.max-bitpool" = 64;
+    services.pipewire = {
+      wireplumber.enable = true;
+      wireplumber.extraConfig = {
+        "10-bluez" = {
+          "monitor.bluez.properties" = {
+            "bluez5.enable-sbc-xq" = true;
+            "bluez5.enable-msbc" = true;
+            "bluez5.enable-hw-volume" = true;
+            "bluez5.headset-roles" = ["hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag"];
+            "bluez5.roles" = ["a2dp_sink" "a2dp_source" "hfp_hf" "hfp_ag" "hsp_hs" "hsp_ag"];
+            "bluez5.hfphsp-backend" = "native";
+
+            # Priority: LDAC > AAC > SBC
+            "bluez5.codecs" = ["ldac" "aac" "sbc_xq" "sbc"];
+            "bluez5.a2dp.ldac.quality" = "hq";
+            "bluez5.a2dp.aac.bitratemode" = 0;
+            "bluez5.a2dp.sbc.min-bitpool" = 40;
+            "bluez5.a2dp.sbc.max-bitpool" = 64;
+          };
         };
-      };
 
-      # Disable auto-switching to headset profile (HSP/HFP) for microphone use
-      # Prevents audio quality degradation (fallback to low-bandwidth profiles) when applications access the microphone
-      "11-bluetooth-policy" = {
-        "wireplumber.settings" = {
-          "bluetooth.autoswitch-to-headset-profile" = false;
+        # Disable auto-switching to headset profile (HSP/HFP) for microphone use
+        # Prevents audio quality degradation (fallback to low-bandwidth profiles) when applications access the microphone
+        "11-bluetooth-policy" = {
+          "wireplumber.settings" = {
+            "bluetooth.autoswitch-to-headset-profile" = false;
+          };
         };
       };
     };
-  };
 
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    disabledPlugins = ["bap" "sap"];
-    settings = {
-      General = {
-        Enable = "Source,Sink,Media";
-        # MultiProfile ensures simultaneous support for multiple Bluetooth profiles (e.g. A2DP + HFP)
-        MultiProfile = "multiple";
-        # Force dual mode to ensure compatibility with both LE and Classic devices
-        ControllerMode = "dual";
-        # Faster connection/pairing for desktops (slightly more power, but better UX)
-        FastConnectable = true;
-        # Better handling of repairing for some headsets
-        JustWorksRepairing = "always";
-        # Enables battery reporting and other experimental features
-        Experimental = true;
-        # Prevents the adapter from powering down too quickly
-        IdleTimeout = 0;
-        # Reconnection timeout
-        AutoConnectTimeout = 180;
-        # Better HID support for modern headsets (e.g. Sony WH series)
-        UserspaceHID = true;
+    hardware.bluetooth = {
+      enable = true;
+      powerOnBoot = true;
+      disabledPlugins = ["bap" "sap"];
+      settings = {
+        General = {
+          Enable = "Source,Sink,Media";
+          # MultiProfile ensures simultaneous support for multiple Bluetooth profiles (e.g. A2DP + HFP)
+          MultiProfile = "multiple";
+          # Force dual mode to ensure compatibility with both LE and Classic devices
+          ControllerMode = "dual";
+          # Faster connection/pairing for desktops (slightly more power, but better UX)
+          FastConnectable = true;
+          # Better handling of repairing for some headsets
+          JustWorksRepairing = "always";
+          # Enables battery reporting and other experimental features
+          Experimental = true;
+          # Prevents the adapter from powering down too quickly
+          IdleTimeout = 0;
+          # Reconnection timeout
+          AutoConnectTimeout = 180;
+          # Better HID support for modern headsets (e.g. Sony WH series)
+          UserspaceHID = true;
+        };
       };
     };
   };

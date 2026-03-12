@@ -1,21 +1,35 @@
-{pkgs, ...}: {
-  environment.systemPackages = with pkgs; [
-    ffmpeg
-    ffmpegthumbnailer # For video miniatures in Nautilus
-    libdvdcss
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.mySystem.core.codecs;
+in {
+  options.mySystem.core.codecs = {
+    enable = mkEnableOption "Core system video and audio codecs";
+  };
 
-    # GStreamer (The "Good, Bad, and Ugly")
-    gst_all_1.gstreamer
-    gst_all_1.gst-plugins-base
-    gst_all_1.gst-plugins-good
-    gst_all_1.gst-plugins-bad
-    gst_all_1.gst-plugins-ugly
-    gst_all_1.gst-libav
-    gst_all_1.gst-vaapi
-  ];
+  config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      ffmpeg
+      ffmpegthumbnailer # For video miniatures in Nautilus
+      libdvdcss
 
-  # Browser Acceleration Hints
-  environment.sessionVariables = {
-    MOZ_DISABLE_RDD_SANDBOX = "1";
+      # GStreamer (The "Good, Bad, and Ugly")
+      gst_all_1.gstreamer
+      gst_all_1.gst-plugins-base
+      gst_all_1.gst-plugins-good
+      gst_all_1.gst-plugins-bad
+      gst_all_1.gst-plugins-ugly
+      gst_all_1.gst-libav
+      gst_all_1.gst-vaapi
+    ];
+
+    # Browser Acceleration Hints
+    environment.sessionVariables = {
+      MOZ_DISABLE_RDD_SANDBOX = "1";
+    };
   };
 }
