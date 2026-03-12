@@ -55,6 +55,7 @@
 
   # Enable systemd-based initrd
   boot.initrd.systemd.enable = true;
+  boot.initrd.systemd.tpm2.enable = false;
 
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
