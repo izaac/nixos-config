@@ -1,32 +1,31 @@
 #!/usr/bin/env bash
 
-# Fail immediately if any command returns a non-zero exit status.
-# This prevents the hook from failing silently and allowing a bad commit.
+# Stop on errors
 set -e 
 
-# Redirect output to stderr so it shows up in git console output properly.
+# Show output in git console
 exec 1>&2
 
 echo "Running Pre-Commit Hooks..."
 
-# Get staged nix files. '|| true' prevents set -e from killing the script if grep finds nothing.
+# Get staged nix files
 STAGED_NIX_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.nix$' || true)
 
 if [ -n "$STAGED_NIX_FILES" ]; then
-    echo "Formatting with alejandra..."
+    echo "Formatting..."
     nix run nixpkgs#alejandra -- -q $STAGED_NIX_FILES
     
     echo "Checking for dead code..."
     nix run nixpkgs#deadnix -- -e $STAGED_NIX_FILES
     
-    echo "Running statix checks..."
-    # Iterate through files individually for statix
+    echo "Running statix..."
+    # Statix requires single files
     for file in $STAGED_NIX_FILES; do
-        echo " -> statix fix $file"
+        echo " -> $file"
         nix run nixpkgs#statix -- fix "$file"
     done
 
-    # Re-stage files because the tools above modify them in place
+    # Re-stage formatted files
     git add $STAGED_NIX_FILES
 fi
 
