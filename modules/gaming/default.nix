@@ -46,7 +46,7 @@ in {
       extraArgs = ["--autopilot"];
     };
 
-    # 5. Controller & Hardware Support (The "Maximized" List)
+    # 5. Controller & Hardware Support
     hardware.xpadneo.enable = true; # Xbox Bluetooth
     services.joycond.enable = false; # Nintendo Switch JoyCons (Merge L+R)
     hardware.uinput.enable = true; # Virtual Input (Critical for remapping tools)

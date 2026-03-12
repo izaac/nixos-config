@@ -49,7 +49,7 @@
     cdrtools # CLI: readcd, etc.
     cdrdao # CLI: Disc-at-once cloning
     dvdisaster # Error correction/data preservation
-    ddrescue # Robust data recovery
+    ddrescue # Data recovery
 
     # Virtualization (Distrobox Management)
     boxbuddy

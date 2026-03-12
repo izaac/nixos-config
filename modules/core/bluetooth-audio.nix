@@ -8,7 +8,7 @@ with lib; let
   cfg = config.mySystem.core.bluetooth;
 in {
   options.mySystem.core.bluetooth = {
-    enable = mkEnableOption "High-fidelity Bluetooth Audio configuration";
+    enable = mkEnableOption "Bluetooth audio configuration";
   };
 
   config = mkIf cfg.enable {

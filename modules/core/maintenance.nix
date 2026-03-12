@@ -44,7 +44,7 @@ in {
       ethtool
       dnsutils
 
-      # Emergency TTY Rescue Tools (Root accessible)
+      # TTY rescue tools (root accessible)
       neovim
       git
       tmux

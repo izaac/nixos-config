@@ -25,7 +25,7 @@ pkgs.stdenv.mkDerivation {
   '';
 
   meta = {
-    description = "Consolidated video re-encoding tool suite";
+    description = "Video re-encoding tool";
     platforms = pkgs.lib.platforms.linux;
   };
 }
