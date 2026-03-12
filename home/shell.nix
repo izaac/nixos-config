@@ -72,6 +72,17 @@
     bluetuith
   ];
 
+  home.file.".lftprc".text = ''
+    set sftp:max-packets-in-flight 32
+    set net:socket-buffer 2097152
+    set net:socket-maxseg 1440
+    set mirror:parallel-directories yes
+    set mirror:parallel-transfer-count 2
+    set pget:default-n 5
+    set net:connection-limit 10
+    set net:connection-takeover yes
+  '';
+
   home.sessionVariables = {
     DIRENV_LOG_FORMAT = "";
     TERMINAL = "kitty";
