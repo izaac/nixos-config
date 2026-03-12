@@ -12,5 +12,7 @@
     ./maintenance.nix
     ./performance.nix
     ./home-manager.nix
+    ./sshfs.nix
+    ./sops.nix
   ];
 }

@@ -1,12 +1,14 @@
-{ pkgs, config, ... }:
+{ pkgs, config, userConfig, ... }:
 
 let
   flashgbx = pkgs.callPackage ./flashgbx.nix { };
+  zelda-oot-launcher = pkgs.callPackage ../pkgs/zelda-oot { };
 in
 {
   home.packages = with pkgs; [
     # Custom
     flashgbx
+    zelda-oot-launcher
 
     # Repack Support Tools
     fuse-overlayfs
@@ -46,6 +48,17 @@ in
     categories = [ "Game" "Utility" ];
     icon = "samrewritten";
     comment = "Unlock Steam Achievements on Linux";
+  };
+
+  # Custom Desktop Entry for Ocarina of Time (Native Port)
+  xdg.desktopEntries.zelda-oot = {
+    name = "The Legend of Zelda: Ocarina of Time";
+    genericName = "Zelda: Ocarina of Time (Native Port)";
+    exec = "launch-zelda-oot";
+    terminal = false;
+    categories = [ "Game" ];
+    icon = "/home/${userConfig.username}/Games/ZeldaOOT/icon.png";
+    comment = "Native Linux port of Ocarina of Time (Ship of Harkinian)";
   };
 
   # MangoHud Config
