@@ -22,6 +22,15 @@
   mySystem.core.codecs.enable = true;
   mySystem.core.virtualization.enable = true;
   mySystem.core.nfs.enable = false;
+  mySystem.core.maintenance.enable = true;
+  mySystem.core.performance.enable = true;
+  mySystem.core.sops.enable = true;
+  mySystem.core.sshfs.enable = true;
+  mySystem.core.system.enable = true;
+  mySystem.core.usb-fixes.enable = true;
+  mySystem.core.user.enable = true;
+  mySystem.core.home-manager.enable = true;
+  mySystem.core.nix-ld.enable = true;
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;

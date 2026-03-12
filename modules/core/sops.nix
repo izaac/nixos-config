@@ -1,23 +1,34 @@
 {
+  config,
   inputs,
+  lib,
   userConfig,
   ...
-}: {
+}:
+with lib; let
+  cfg = config.mySystem.core.sops;
+in {
+  options.mySystem.core.sops = {
+    enable = mkEnableOption "SOPS secrets management";
+  };
+
   imports = [inputs.sops-nix.nixosModules.sops];
 
-  sops = {
-    defaultSopsFile = ../../secrets.yaml;
-    defaultSopsFormat = "yaml";
-    age.keyFile = "/home/izaac/.config/sops/age/keys.txt";
+  config = mkIf cfg.enable {
+    sops = {
+      defaultSopsFile = ../../secrets.yaml;
+      defaultSopsFormat = "yaml";
+      age.keyFile = "/home/izaac/.config/sops/age/keys.txt";
 
-    secrets.sshHost = {
-      owner = userConfig.username;
-    };
-    secrets.geminiProject = {
-      owner = userConfig.username;
-    };
-    secrets.cloudCodeProject = {
-      owner = userConfig.username;
+      secrets.sshHost = {
+        owner = userConfig.username;
+      };
+      secrets.geminiProject = {
+        owner = userConfig.username;
+      };
+      secrets.cloudCodeProject = {
+        owner = userConfig.username;
+      };
     };
   };
 }
