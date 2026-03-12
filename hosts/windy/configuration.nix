@@ -15,6 +15,7 @@
 
   # Custom Feature Flags
   mySystem.gaming.enable = true;
+  mySystem.desktop.enable = true;
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;
