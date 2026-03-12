@@ -1,6 +1,4 @@
-{ pkgs, lib, ... }:
-
-let
+{pkgs, ...}: let
   firefox-vip-src = pkgs.writeText "firefox-vip.c" ''
     #include <sys/time.h>
     #include <sys/resource.h>
@@ -13,11 +11,10 @@ let
         return 1;
     }
   '';
-  firefox-vip-bin = pkgs.runCommand "firefox-vip" { nativeBuildInputs = [ pkgs.stdenv.cc ]; } ''
+  firefox-vip-bin = pkgs.runCommand "firefox-vip" {nativeBuildInputs = [pkgs.stdenv.cc];} ''
     $CC ${firefox-vip-src} -o $out
   '';
-in
-{
+in {
   # --- MEMORY MANAGEMENT (ZRAM) ---
   # Highly recommended for NVMe & high-core systems to prevent disk-thrashing
   zramSwap = {
@@ -42,10 +39,10 @@ in
 
   # --- GAMING & INPUT LATENCY ---
   boot.kernelParams = [
-    # Transparent Hugepages (THP) - 'madvise' allows apps (like Steam/Proton) 
+    # Transparent Hugepages (THP) - 'madvise' allows apps (like Steam/Proton)
     # to opt-in, reducing TLB misses without the overhead of 'always'.
     "transparent_hugepage=madvise"
-    
+
     # Disable USB autosuspend to eliminate tiny wake-up delays for mice/keyboards.
     "usbcore.autosuspend=-1"
   ];

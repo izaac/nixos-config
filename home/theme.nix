@@ -1,18 +1,15 @@
-{ pkgs, ... }:
-
-let
+{pkgs, ...}: let
   catppuccin-papirus = pkgs.catppuccin-papirus-folders.override {
     flavor = "mocha";
     accent = "mauve";
   };
   catppuccin-gtk-overridden = pkgs.catppuccin-gtk.override {
-    accents = [ "mauve" ];
+    accents = ["mauve"];
     size = "standard";
-    tweaks = [ "rimless" ];
+    tweaks = ["rimless"];
     variant = "mocha";
   };
-in
-{
+in {
   catppuccin.enable = true;
   catppuccin.vscode.profiles.default.enable = false;
   catppuccin.flavor = "mocha";
@@ -60,7 +57,7 @@ in
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";
     };
-    
+
     # GNOME Shell theme (requires User Themes extension)
     "org/gnome/shell/extensions/user-theme" = {
       name = "catppuccin-mocha-mauve-standard";

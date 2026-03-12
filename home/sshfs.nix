@@ -1,9 +1,12 @@
-{ pkgs, config, userConfig, lib, ... }:
-
-let
-  mountPoint = "${config.home.homeDirectory}/Jellyfin";
-in
 {
+  pkgs,
+  config,
+  userConfig,
+  lib,
+  ...
+}: let
+  mountPoint = "${config.home.homeDirectory}/Jellyfin";
+in {
   # Ensure the mount point exists
   home.activation.createJellyfinMountPoint = lib.hm.dag.entryAfter ["writeBoundary"] ''
     mkdir -p ${mountPoint}
@@ -12,15 +15,15 @@ in
   systemd.user.services.jellyfin-mount = {
     Unit = {
       Description = "Mount Jellyfin SSHFS (Delayed to avoid login freeze)";
-      After = [ "network-online.target" "graphical-session.target" ];
-      Wants = [ "network-online.target" ];
+      After = ["network-online.target" "graphical-session.target"];
+      Wants = ["network-online.target"];
     };
 
     Service = {
       Type = "forking";
       # Wait 10 seconds after the session starts to avoid blocking login UI
       ExecStartPre = "${pkgs.coreutils}/bin/sleep 10";
-      
+
       # Use bash wrapper to read the secret host at runtime
       ExecStart = pkgs.writeShellScript "mount-jellyfin-sshfs" ''
         HOST=$(cat /run/secrets/sshHost)
@@ -36,7 +39,7 @@ in
           -o Compression=no,Ciphers=aes128-gcm@openssh.com \
           -o max_conns=4
       '';
-      
+
       ExecStop = "/run/current-system/sw/bin/fusermount -uz ${mountPoint}";
       TimeoutStopSec = 5;
       Restart = "on-failure";
@@ -44,7 +47,7 @@ in
     };
 
     Install = {
-      WantedBy = [ "default.target" ];
+      WantedBy = ["default.target"];
     };
   };
 }

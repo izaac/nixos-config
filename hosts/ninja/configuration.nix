@@ -1,16 +1,17 @@
-{ config, pkgs, inputs, lib, userConfig, ... }:
-
 {
-  imports =
-    [ 
-      ./hardware.nix
-      ./nvidia.nix
-      ./network.nix
-      ./udev-igc-fix.nix
-      ../../modules/core
-      ../../modules/gaming
-      ../../modules/desktop
-    ];
+  pkgs,
+  lib,
+  ...
+}: {
+  imports = [
+    ./hardware.nix
+    ./nvidia.nix
+    ./network.nix
+    ./udev-igc-fix.nix
+    ../../modules/core
+    ../../modules/gaming
+    ../../modules/desktop
+  ];
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;
@@ -19,42 +20,42 @@
   boot.loader.systemd-boot.editor = false;
 
   # File Systems
-  boot.supportedFilesystems = [ "exfat" ];
+  boot.supportedFilesystems = ["exfat"];
   programs.fuse.enable = true;
 
   # --- KERNEL & PERFORMANCE ---
   # Switching to latest (6.19+) now that NVIDIA 595 beta provides compatibility
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  
+
   # --- HARDWARE OPTIMIZATIONS (Ryzen 9 9950X3D) ---
-  systemd.tmpfiles.rules = [ 
-    "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache" 
+  systemd.tmpfiles.rules = [
+    "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache"
     # Set Energy Performance Preference to performance
     "w /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference - - - - performance"
   ];
 
   # Enable systemd-based initrd
   boot.initrd.systemd.enable = true;
-  
+
   # TCP BBR (Congestion Control) & System Latency Tweaks
   boot.kernel.sysctl = {
-    "kernel.split_lock_mitigate" = 0; 
-    
+    "kernel.split_lock_mitigate" = 0;
+
     # Disk Writeback Tuning (Reduce wakeups)
     "vm.dirty_writeback_centisecs" = 1500;
     "vm.dirty_expire_centisecs" = 3000;
-    
+
     # Network Optimizations
-    "net.core.wmem_max" = 67108864;    
-    "net.core.rmem_max" = 67108864;    
+    "net.core.wmem_max" = 67108864;
+    "net.core.rmem_max" = 67108864;
     "net.core.optmem_max" = 65536;
-    "net.ipv4.tcp_fastopen" = 3;      
-    "net.ipv4.tcp_slow_start_after_idle" = 0; 
+    "net.ipv4.tcp_fastopen" = 3;
+    "net.ipv4.tcp_slow_start_after_idle" = 0;
 
     # Low Latency Network Polling
     "net.core.busy_poll" = 50;
     "net.core.busy_read" = 50;
-    
+
     # MGLRU (Multi-Gen LRU) Optimizations
     "vm.lr_gen_stats" = 1;
     "vm.lr_gen_active" = 1;
@@ -70,29 +71,29 @@
 
   # --- KERNEL MODULES ---
   boot.blacklistedKernelModules = [
-    "sp5100_tco" 
-    "eeepc_wmi"  
-    "joydev"     
-    "pcspkr"     
+    "sp5100_tco"
+    "eeepc_wmi"
+    "joydev"
+    "pcspkr"
   ];
-# --- CORE HARDWARE TWEAKS ---
-boot.kernelParams = [
-  "boot.shell_on_fail"
-  "pci=realloc,pcie_bus_safe" 
-  "pcie_aspm=off"            
-  "iommu=pt"                 
-  "pcie_ports=native"        
-  "amd_pstate=active"        
-  "preempt=full"             
-];
+  # --- CORE HARDWARE TWEAKS ---
+  boot.kernelParams = [
+    "boot.shell_on_fail"
+    "pci=realloc,pcie_bus_safe"
+    "pcie_aspm=off"
+    "iommu=pt"
+    "pcie_ports=native"
+    "amd_pstate=active"
+    "preempt=full"
+  ];
 
-# --- SCHED-EXT (SCX) FOR 9950X3D GAMING ---
-services.scx = {
-  enable = true;
-  scheduler = "scx_lavd"; # Latency-aware scheduler for improved 1% lows and desktop snappiness
-};
+  # --- SCHED-EXT (SCX) FOR 9950X3D GAMING ---
+  services.scx = {
+    enable = true;
+    scheduler = "scx_lavd"; # Latency-aware scheduler for improved 1% lows and desktop snappiness
+  };
 
-# --- ENABLE SUSPEND/HIBERNATE (NVIDIA 595+ STABLE) ---
+  # --- ENABLE SUSPEND/HIBERNATE (NVIDIA 595+ STABLE) ---
   systemd.targets.sleep.enable = true;
   systemd.targets.suspend.enable = true;
   systemd.targets.hibernate.enable = true;
@@ -146,12 +147,12 @@ services.scx = {
         }
       ];
     };
-    
+
     # High Fidelity & Stability Configuration
     extraConfig.pipewire."92-high-quality" = {
       "context.properties" = {
         "default.clock.rate" = 48000;
-        "default.clock.allowed-rates" = [ 44100 48000 96000 ];
+        "default.clock.allowed-rates" = [44100 48000 96000];
         "default.clock.quantum" = 1024;
         "default.clock.min-quantum" = 1024;
         "default.clock.max-quantum" = 2048;
@@ -165,7 +166,7 @@ services.scx = {
             "rt.time.soft" = 200000;
             "rt.time.hard" = 200000;
           };
-          flags = [ "ifexists" "nofail" ];
+          flags = ["ifexists" "nofail"];
         }
         {
           name = "libpipewire-module-filter-chain";
@@ -175,86 +176,345 @@ services.scx = {
             "filter.graph" = {
               nodes = [
                 # --- LEFT CHANNEL ---
-                { type = "builtin"; name = "mix_l"; label = "mixer"; control = { "Gain 1" = 0.631; }; } # -4.0 dB
-                { type = "builtin"; name = "eq1_l"; label = "bq_lowshelf"; control = { "Freq" = 32.0; "Q" = 1.0; "Gain" = 8.0; }; }
-                { type = "builtin"; name = "eq2_l"; label = "bq_peaking"; control = { "Freq" = 64.0; "Q" = 1.5; "Gain" = 8.0; }; }
-                { type = "builtin"; name = "eq3_l"; label = "bq_peaking"; control = { "Freq" = 125.0; "Q" = 1.5; "Gain" = 2.0; }; }
-                { type = "builtin"; name = "eq3b_l"; label = "bq_peaking"; control = { "Freq" = 250.0; "Q" = 1.5; "Gain" = 3.0; }; } # Vocal Warmth
-                { type = "builtin"; name = "eq4_l"; label = "bq_peaking"; control = { "Freq" = 500.0; "Q" = 1.5; "Gain" = 0.0; }; }
-                { type = "builtin"; name = "eq5_l"; label = "bq_peaking"; control = { "Freq" = 1000.0; "Q" = 1.5; "Gain" = -3.0; }; }
-                { type = "builtin"; name = "eq6_l"; label = "bq_peaking"; control = { "Freq" = 2000.0; "Q" = 1.5; "Gain" = -4.0; }; } # Remove digital edge
-                { type = "builtin"; name = "eq7_l"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 0.0; }; } # Smoothness
-                { type = "builtin"; name = "eq8_l"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
-                { type = "builtin"; name = "eq9_l"; label = "bq_highshelf"; control = { "Freq" = 16000.0; "Q" = 1.0; "Gain" = 2.0; }; }
+                {
+                  type = "builtin";
+                  name = "mix_l";
+                  label = "mixer";
+                  control = {"Gain 1" = 0.631;};
+                } # -4.0 dB
+                {
+                  type = "builtin";
+                  name = "eq1_l";
+                  label = "bq_lowshelf";
+                  control = {
+                    "Freq" = 32.0;
+                    "Q" = 1.0;
+                    "Gain" = 8.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq2_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 64.0;
+                    "Q" = 1.5;
+                    "Gain" = 8.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq3_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 125.0;
+                    "Q" = 1.5;
+                    "Gain" = 2.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq3b_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 250.0;
+                    "Q" = 1.5;
+                    "Gain" = 3.0;
+                  };
+                } # Vocal Warmth
+                {
+                  type = "builtin";
+                  name = "eq4_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 500.0;
+                    "Q" = 1.5;
+                    "Gain" = 0.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq5_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 1000.0;
+                    "Q" = 1.5;
+                    "Gain" = -3.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq6_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 2000.0;
+                    "Q" = 1.5;
+                    "Gain" = -4.0;
+                  };
+                } # Remove digital edge
+                {
+                  type = "builtin";
+                  name = "eq7_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 4000.0;
+                    "Q" = 1.5;
+                    "Gain" = 0.0;
+                  };
+                } # Smoothness
+                {
+                  type = "builtin";
+                  name = "eq8_l";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 8000.0;
+                    "Q" = 1.5;
+                    "Gain" = 3.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq9_l";
+                  label = "bq_highshelf";
+                  control = {
+                    "Freq" = 16000.0;
+                    "Q" = 1.0;
+                    "Gain" = 2.0;
+                  };
+                }
                 # --- RIGHT CHANNEL ---
-                { type = "builtin"; name = "mix_r"; label = "mixer"; control = { "Gain 1" = 0.631; }; }
-                { type = "builtin"; name = "eq1_r"; label = "bq_lowshelf"; control = { "Freq" = 32.0; "Q" = 1.0; "Gain" = 8.0; }; }
-                { type = "builtin"; name = "eq2_r"; label = "bq_peaking"; control = { "Freq" = 64.0; "Q" = 1.5; "Gain" = 8.0; }; }
-                { type = "builtin"; name = "eq3_r"; label = "bq_peaking"; control = { "Freq" = 125.0; "Q" = 1.5; "Gain" = 2.0; }; }
-                { type = "builtin"; name = "eq3b_r"; label = "bq_peaking"; control = { "Freq" = 250.0; "Q" = 1.5; "Gain" = 3.0; }; } # Vocal Warmth
-                { type = "builtin"; name = "eq4_r"; label = "bq_peaking"; control = { "Freq" = 500.0; "Q" = 1.5; "Gain" = 0.0; }; }
-                { type = "builtin"; name = "eq5_r"; label = "bq_peaking"; control = { "Freq" = 1000.0; "Q" = 1.5; "Gain" = -3.0; }; }
-                { type = "builtin"; name = "eq6_r"; label = "bq_peaking"; control = { "Freq" = 2000.0; "Q" = 1.5; "Gain" = -4.0; }; }
-                { type = "builtin"; name = "eq7_r"; label = "bq_peaking"; control = { "Freq" = 4000.0; "Q" = 1.5; "Gain" = 0.0; }; }
-                { type = "builtin"; name = "eq8_r"; label = "bq_peaking"; control = { "Freq" = 8000.0; "Q" = 1.5; "Gain" = 3.0; }; }
-                { type = "builtin"; name = "eq9_r"; label = "bq_highshelf"; control = { "Freq" = 16000.0; "Q" = 1.0; "Gain" = 2.0; }; }
+                {
+                  type = "builtin";
+                  name = "mix_r";
+                  label = "mixer";
+                  control = {"Gain 1" = 0.631;};
+                }
+                {
+                  type = "builtin";
+                  name = "eq1_r";
+                  label = "bq_lowshelf";
+                  control = {
+                    "Freq" = 32.0;
+                    "Q" = 1.0;
+                    "Gain" = 8.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq2_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 64.0;
+                    "Q" = 1.5;
+                    "Gain" = 8.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq3_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 125.0;
+                    "Q" = 1.5;
+                    "Gain" = 2.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq3b_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 250.0;
+                    "Q" = 1.5;
+                    "Gain" = 3.0;
+                  };
+                } # Vocal Warmth
+                {
+                  type = "builtin";
+                  name = "eq4_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 500.0;
+                    "Q" = 1.5;
+                    "Gain" = 0.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq5_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 1000.0;
+                    "Q" = 1.5;
+                    "Gain" = -3.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq6_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 2000.0;
+                    "Q" = 1.5;
+                    "Gain" = -4.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq7_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 4000.0;
+                    "Q" = 1.5;
+                    "Gain" = 0.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq8_r";
+                  label = "bq_peaking";
+                  control = {
+                    "Freq" = 8000.0;
+                    "Q" = 1.5;
+                    "Gain" = 3.0;
+                  };
+                }
+                {
+                  type = "builtin";
+                  name = "eq9_r";
+                  label = "bq_highshelf";
+                  control = {
+                    "Freq" = 16000.0;
+                    "Q" = 1.0;
+                    "Gain" = 2.0;
+                  };
+                }
               ];
               links = [
-                { output = "mix_l:Out"; input = "eq1_l:In"; } { output = "eq1_l:Out"; input = "eq2_l:In"; }
-                { output = "eq2_l:Out"; input = "eq3_l:In"; } { output = "eq3_l:Out"; input = "eq3b_l:In"; }
-                { output = "eq3b_l:Out"; input = "eq4_l:In"; } { output = "eq4_l:Out"; input = "eq5_l:In"; }
-                { output = "eq5_l:Out"; input = "eq6_l:In"; } { output = "eq6_l:Out"; input = "eq7_l:In"; }
-                { output = "eq7_l:Out"; input = "eq8_l:In"; } { output = "eq8_l:Out"; input = "eq9_l:In"; }
-                { output = "mix_r:Out"; input = "eq1_r:In"; } { output = "eq1_r:Out"; input = "eq2_r:In"; }
-                { output = "eq2_r:Out"; input = "eq3_r:In"; } { output = "eq3_r:Out"; input = "eq3b_r:In"; }
-                { output = "eq3b_r:Out"; input = "eq4_r:In"; } { output = "eq4_r:Out"; input = "eq5_r:In"; }
-                { output = "eq5_r:Out"; input = "eq6_r:In"; } { output = "eq6_r:Out"; input = "eq7_r:In"; }
-                { output = "eq7_r:Out"; input = "eq8_r:In"; } { output = "eq8_r:Out"; input = "eq9_r:In"; }
+                {
+                  output = "mix_l:Out";
+                  input = "eq1_l:In";
+                }
+                {
+                  output = "eq1_l:Out";
+                  input = "eq2_l:In";
+                }
+                {
+                  output = "eq2_l:Out";
+                  input = "eq3_l:In";
+                }
+                {
+                  output = "eq3_l:Out";
+                  input = "eq3b_l:In";
+                }
+                {
+                  output = "eq3b_l:Out";
+                  input = "eq4_l:In";
+                }
+                {
+                  output = "eq4_l:Out";
+                  input = "eq5_l:In";
+                }
+                {
+                  output = "eq5_l:Out";
+                  input = "eq6_l:In";
+                }
+                {
+                  output = "eq6_l:Out";
+                  input = "eq7_l:In";
+                }
+                {
+                  output = "eq7_l:Out";
+                  input = "eq8_l:In";
+                }
+                {
+                  output = "eq8_l:Out";
+                  input = "eq9_l:In";
+                }
+                {
+                  output = "mix_r:Out";
+                  input = "eq1_r:In";
+                }
+                {
+                  output = "eq1_r:Out";
+                  input = "eq2_r:In";
+                }
+                {
+                  output = "eq2_r:Out";
+                  input = "eq3_r:In";
+                }
+                {
+                  output = "eq3_r:Out";
+                  input = "eq3b_r:In";
+                }
+                {
+                  output = "eq3b_r:Out";
+                  input = "eq4_r:In";
+                }
+                {
+                  output = "eq4_r:Out";
+                  input = "eq5_r:In";
+                }
+                {
+                  output = "eq5_r:Out";
+                  input = "eq6_r:In";
+                }
+                {
+                  output = "eq6_r:Out";
+                  input = "eq7_r:In";
+                }
+                {
+                  output = "eq7_r:Out";
+                  input = "eq8_r:In";
+                }
+                {
+                  output = "eq8_r:Out";
+                  input = "eq9_r:In";
+                }
               ];
-              inputs = [ "mix_l:In 1" "mix_r:In 1" ];
-              outputs = [ "eq9_l:Out" "eq9_r:Out" ];
+              inputs = ["mix_l:In 1" "mix_r:In 1"];
+              outputs = ["eq9_l:Out" "eq9_r:Out"];
             };
             "capture.props" = {
               "node.name" = "hifi_eq_input";
               "media.class" = "Audio/Sink";
               "audio.channels" = 2;
-              "audio.position" = [ "FL" "FR" ];
+              "audio.position" = ["FL" "FR"];
             };
             "playback.props" = {
               "node.name" = "hifi_eq_output";
               "node.passive" = true;
               "audio.channels" = 2;
-              "audio.position" = [ "FL" "FR" ];
+              "audio.position" = ["FL" "FR"];
               "node.target" = "alsa_output.usb-Generic_USB_Audio-00.HiFi__Speaker__sink";
             };
           };
         }
-
       ];
       "context.rules" = [
         {
           matches = [
-            { "application.name" = "ELDEN RING™"; }
-            { "application.name" = "cava"; }
+            {"application.name" = "ELDEN RING™";}
+            {"application.name" = "cava";}
           ];
           actions = {
             update-properties = {
-              "node.latency" = "1024/48000"; 
+              "node.latency" = "1024/48000";
             };
           };
         }
       ];
     };
-        
+
     # Per-App Overrides (Stability Strategy)
     extraConfig.pipewire-pulse."93-per-app-overrides" = {
       "pulse.rules" = [
         {
-          matches = [ 
-            { "application.process.binary" = "steam"; } 
-            { "application.name" = "~.*wine.*"; } 
-            { "application.name" = "~.*bottles.*"; } 
-            { "application.name" = "~.*Elden Ring.*"; }
+          matches = [
+            {"application.process.binary" = "steam";}
+            {"application.name" = "~.*wine.*";}
+            {"application.name" = "~.*bottles.*";}
+            {"application.name" = "~.*Elden Ring.*";}
           ];
           actions = {
             update-props = {
@@ -262,7 +522,7 @@ services.scx = {
               "pulse.max.quantum" = 4096;
               "pulse.idle.timeout" = 0;
             };
-          } ;
+          };
         }
       ];
     };
@@ -285,7 +545,7 @@ services.scx = {
   services.acpid.enable = lib.mkForce false;
 
   nix.settings.max-jobs = 4;
-  nix.settings.cores = 8; 
+  nix.settings.cores = 8;
 
   # Limit Nix Build Resources
   systemd.services.nix-daemon.serviceConfig = lib.mkForce {

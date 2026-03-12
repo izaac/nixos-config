@@ -1,6 +1,4 @@
-{ config, pkgs, ... }:
-
-{
+{pkgs, ...}: {
   # Fix for Intel I225-V (igc) networking lockups
   # This uses ethtool to explicitly turn off Energy Efficient Ethernet (EEE)
   # which frequently crashes the I225-V controller under load.

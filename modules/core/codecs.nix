@@ -1,11 +1,9 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     ffmpeg
     ffmpegthumbnailer # For video miniatures in Nautilus
     libdvdcss
-    
+
     # GStreamer (The "Good, Bad, and Ugly")
     gst_all_1.gstreamer
     gst_all_1.gst-plugins-base
@@ -15,7 +13,7 @@
     gst_all_1.gst-libav
     gst_all_1.gst-vaapi
   ];
-  
+
   # Browser Acceleration Hints
   environment.sessionVariables = {
     MOZ_DISABLE_RDD_SANDBOX = "1";

@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   # Enable high-quality Bluetooth codecs
   environment.systemPackages = with pkgs; [
     bluez
@@ -15,19 +13,19 @@
           "bluez5.enable-sbc-xq" = true;
           "bluez5.enable-msbc" = true;
           "bluez5.enable-hw-volume" = true;
-          "bluez5.headset-roles" = [ "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag" ];
-          "bluez5.roles" = [ "a2dp_sink" "a2dp_source" "hfp_hf" "hfp_ag" "hsp_hs" "hsp_ag" ];
+          "bluez5.headset-roles" = ["hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag"];
+          "bluez5.roles" = ["a2dp_sink" "a2dp_source" "hfp_hf" "hfp_ag" "hsp_hs" "hsp_ag"];
           "bluez5.hfphsp-backend" = "native";
-          
+
           # Priority: LDAC > AAC > SBC
-          "bluez5.codecs" = [ "ldac" "aac" "sbc_xq" "sbc" ];
+          "bluez5.codecs" = ["ldac" "aac" "sbc_xq" "sbc"];
           "bluez5.a2dp.ldac.quality" = "hq";
           "bluez5.a2dp.aac.bitratemode" = 0;
           "bluez5.a2dp.sbc.min-bitpool" = 40;
           "bluez5.a2dp.sbc.max-bitpool" = 64;
         };
       };
-      
+
       # Disable auto-switching to headset profile (HSP/HFP) for microphone use
       # Prevents audio quality degradation (fallback to low-bandwidth profiles) when applications access the microphone
       "11-bluetooth-policy" = {
@@ -37,11 +35,11 @@
       };
     };
   };
-  
+
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
-    disabledPlugins = [ "bap" "sap" ];
+    disabledPlugins = ["bap" "sap"];
     settings = {
       General = {
         Enable = "Source,Sink,Media";

@@ -1,6 +1,4 @@
-{ lib, ... }:
-
-{
+_: {
   # Audio (Pipewire)
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;

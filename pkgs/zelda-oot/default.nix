@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-
+{pkgs, ...}:
 pkgs.writeShellScriptBin "launch-zelda-oot" ''
   GAME_DIR="$HOME/Games/ZeldaOOT"
   DWARFS_IMG="$GAME_DIR/files/game-root.dwarfs"

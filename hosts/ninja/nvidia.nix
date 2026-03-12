@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   # 1. Graphics / OpenGL
   hardware.graphics = {
     enable = true;
@@ -18,9 +20,9 @@
   hardware.nvidia = {
     modesetting.enable = true;
     # Note: On 595+ with open modules, NixOS automatically enables 'kernelSuspendNotifier'.
-    # We must explicitly disable NixOS powerManagement to prevent the creation of legacy 
+    # We must explicitly disable NixOS powerManagement to prevent the creation of legacy
     # nvidia-suspend/resume systemd services which conflict with the kernel notifiers.
-    powerManagement.enable = false; 
+    powerManagement.enable = false;
     powerManagement.finegrained = false;
     open = true; # Open modules required for RTX 50-series (Blackwell)
     nvidiaSettings = true;
@@ -36,14 +38,14 @@
   };
 
   # 3. Kernel Modules & Wayland Environment
-  boot.initrd.kernelModules = [ ];
-  boot.kernelParams = [ 
+  boot.initrd.kernelModules = [];
+  boot.kernelParams = [
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1" # Explicitly added since powerManagement is disabled
     "nvidia.NVreg_UseKernelSuspendNotifiers=1" # Required for improved memory preservation on Open Modules
     # High-performance PowerMizer (avoid clock dips during presentation)
     "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x1; RMIntrLockingMode=1; RMConnectToDevice=0\""
-  ]; 
-  
+  ];
+
   environment.sessionVariables = {
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     LIBVA_DRIVER_NAME = "nvidia";
@@ -71,10 +73,10 @@
 
   # 5. The Undervolt Service (Clock Locking & Power Limit)
   systemd.services.nvidia-lock-clocks = {
-    enable = true; 
+    enable = true;
     description = "Lock NVIDIA GPU Clocks and Power Limit for stability and undervolting";
-    after = [ "display-manager.service" "nvidia-persistenced.service" ];
-    wantedBy = [ "multi-user.target" ];
+    after = ["display-manager.service" "nvidia-persistenced.service"];
+    wantedBy = ["multi-user.target"];
     serviceConfig = {
       Type = "oneshot";
       # Set Power Limit to 250W (Safe undervolt) and Lock Clocks to 210-2475MHz

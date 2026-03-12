@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-let
+{pkgs, ...}: let
   # --- CUSTOM PLUGIN DEFINITION ---
   # Build tmux-menus locally as it is not available in nixpkgs.
   tmux-menus = pkgs.tmuxPlugins.mkTmuxPlugin {
@@ -9,12 +7,11 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "jaclu";
       repo = "tmux-menus";
-      rev = "main"; 
-      sha256 = "sha256-UPWsa7sFy6P3Jo3KFEvZrz4M4IVDhKI7T1LNAtWqTT4="; 
+      rev = "main";
+      sha256 = "sha256-UPWsa7sFy6P3Jo3KFEvZrz4M4IVDhKI7T1LNAtWqTT4=";
     };
   };
-in
-{
+in {
   catppuccin.tmux.enable = true;
   catppuccin.tmux.extraConfig = ''
     set -g status-left ""
@@ -25,24 +22,24 @@ in
   programs.tmux = {
     enable = true;
     package = pkgs.tmux;
-    
+
     # --- CORE BEHAVIOR ---
-    shortcut = "a";          # Replaces C-b with C-a
-    baseIndex = 1;           # Start windows at 1
-    escapeTime = 0;          # Zero delay for VIM
+    shortcut = "a"; # Replaces C-b with C-a
+    baseIndex = 1; # Start windows at 1
+    escapeTime = 0; # Zero delay for VIM
     aggressiveResize = true; # Better resizing for multi-monitor
-    keyMode = "vi";          # Standard VI keys
-    mouse = true;            # Enable mouse support (Scrolling/Clicking)
+    keyMode = "vi"; # Standard VI keys
+    mouse = true; # Enable mouse support (Scrolling/Clicking)
 
     # --- TERMINAL & SHELL ---
-    terminal = "screen-256color"; 
-    
+    terminal = "screen-256color";
+
     # --- PLUGINS ---
     plugins = with pkgs.tmuxPlugins; [
       sensible
-      
+
       # Custom-built plugin
-      tmux-menus 
+      tmux-menus
     ];
 
     # --- KEYBINDS & MANUAL CONFIG ---

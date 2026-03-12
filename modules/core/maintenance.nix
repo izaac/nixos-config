@@ -1,6 +1,8 @@
-{ pkgs, userConfig, config, ... }:
-
 {
+  pkgs,
+  userConfig,
+  ...
+}: {
   programs.nh = {
     enable = true;
     clean.enable = true;
@@ -12,7 +14,7 @@
     gparted
     exfatprogs
     atop # For historical system monitoring
-    
+
     # System Diagnostics & Hardware Probes
     usbutils
     pciutils

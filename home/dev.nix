@@ -1,24 +1,26 @@
-{ pkgs, userConfig, ... }:
-
 {
+  pkgs,
+  userConfig,
+  ...
+}: {
   home.packages = with pkgs; [
     # --- LAZYVIM DEPENDENCIES ---
     gcc
     gnumake
     tree-sitter
-    
+
     # --- LANGUAGES & TOOLCHAINS ---
     docker-compose
-    
+
     # --- DATA & FORMATTING ---
     sqlite
-    
+
     # --- LSPs & LINTERS ---
     nodePackages.bash-language-server
     shellcheck
     luajitPackages.lua-lsp
     nil
-    
+
     # --- UTILS ---
   ];
 
@@ -26,7 +28,7 @@
   programs.git = {
     enable = true;
     package = pkgs.git;
-    
+
     # Signing remains a top-level attribute in Home Manager for now
     signing = {
       key = userConfig.gitKey;
@@ -36,8 +38,8 @@
     # Everything else moves into 'settings'
     settings = {
       user = {
-        name = userConfig.name;
-        email = userConfig.email;
+        inherit (userConfig) name;
+        inherit (userConfig) email;
       };
 
       init.defaultBranch = "main";
@@ -57,7 +59,7 @@
   programs.delta = {
     enable = true;
     package = pkgs.delta;
-    enableGitIntegration = true; 
+    enableGitIntegration = true;
     options = {
       navigate = true;
       side-by-side = true;
@@ -72,15 +74,15 @@
     settings = {
       gui = {
         theme = {
-          activeBorderColor = [ "#a6e3a1" "bold" ];
-          inactiveBorderColor = [ "#a6adc8" ];
-          optionsTextColor = [ "#89b4fa" ];
-          selectedLineBgColor = [ "#313244" ];
-          selectedRangeBgColor = [ "#313244" ];
-          cherryPickedCommitBgColor = [ "#45475a" ];
-          cherryPickedCommitFgColor = [ "#a6e3a1" ];
-          uploadDownloadArrowColor = [ "#f2cdcd" ];
-          warningColor = [ "#fab387" ];
+          activeBorderColor = ["#a6e3a1" "bold"];
+          inactiveBorderColor = ["#a6adc8"];
+          optionsTextColor = ["#89b4fa"];
+          selectedLineBgColor = ["#313244"];
+          selectedRangeBgColor = ["#313244"];
+          cherryPickedCommitBgColor = ["#45475a"];
+          cherryPickedCommitFgColor = ["#a6e3a1"];
+          uploadDownloadArrowColor = ["#f2cdcd"];
+          warningColor = ["#fab387"];
         };
       };
     };
@@ -93,14 +95,14 @@
     mutableKeys = true;
     mutableTrust = true;
   };
-  
+
   home.file.".gnupg/common.conf".text = "use-keyboxd";
   home.file.".pam-gnupg".text = ''
     558F90AD0CFA39DB14CF2E9370073BF860AE0A2A
     9FE9496B3FF98EED829F2FD4BE0A07C5C64AA998
     841969EBFACD2E9E45FF7349BE991D37D7079FBF
   '';
-  
+
   services.gpg-agent = {
     enable = true;
     enableSshSupport = false;
@@ -117,13 +119,12 @@
     package = pkgs.direnv;
     nix-direnv.enable = true;
     enableBashIntegration = true;
-    
+
     # TOML configuration to surgically silence the export list.
     config = {
       global = {
-        hide_env_diff = true; 
+        hide_env_diff = true;
       };
     };
   };
-
 }

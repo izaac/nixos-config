@@ -1,15 +1,16 @@
-{ config, pkgs, inputs, lib, userConfig, ... }:
-
 {
-  imports =
-    [ 
-      ./hardware.nix
-      ./nvidia.nix
-      ./network.nix
-      ../../modules/core
-      ../../modules/gaming
-      ../../modules/desktop
-    ];
+  pkgs,
+  lib,
+  ...
+}: {
+  imports = [
+    ./hardware.nix
+    ./nvidia.nix
+    ./network.nix
+    ../../modules/core
+    ../../modules/gaming
+    ../../modules/desktop
+  ];
 
   # Bootloader
   boot.loader.systemd-boot.enable = true;
@@ -34,11 +35,11 @@
   };
 
   # File Systems
-  boot.supportedFilesystems = [ "exfat" ];
+  boot.supportedFilesystems = ["exfat"];
 
   # --- KERNEL ---
   boot.kernelPackages = pkgs.linuxPackages_6_18;
-  
+
   boot.tmp.useTmpfs = true;
 
   # --- CORE HARDWARE TWEAKS ---
@@ -54,10 +55,10 @@
   hardware.enableAllFirmware = true;
   # System Packages
   environment.systemPackages = with pkgs; [
-    powertop     # Monitor laptop power usage
+    powertop # Monitor laptop power usage
     brightnessctl # Control screen brightness
-    acpi          # Battery/Thermal info
-    libnotify     # For OSD notifications
+    acpi # Battery/Thermal info
+    libnotify # For OSD notifications
   ];
 
   # Windy-specific SSH overrides (Password Auth allowed for easier remote setup)
@@ -65,7 +66,7 @@
     PasswordAuthentication = lib.mkForce true;
     KbdInteractiveAuthentication = lib.mkForce true;
   };
-  
+
   # Disable unnecessary services
   services.colord.enable = false;
   systemd.services.ModemManager.enable = false;

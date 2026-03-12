@@ -1,14 +1,15 @@
-{ pkgs, config, lib, ... }:
-
-let
-  mountPoint = "${config.home.homeDirectory}/PrivateGDrive";
-in
 {
+  pkgs,
+  config,
+  ...
+}: let
+  mountPoint = "${config.home.homeDirectory}/PrivateGDrive";
+in {
   systemd.user.services.rclone-gdrive = {
     Unit = {
       Description = "RClone Mount for Encrypted Google Drive (Zero-Knowledge)";
-      After = [ "network-online.target" "graphical-session.target" ];
-      Wants = [ "network-online.target" ];
+      After = ["network-online.target" "graphical-session.target"];
+      Wants = ["network-online.target"];
     };
 
     Service = {
@@ -35,7 +36,7 @@ in
     };
 
     Install = {
-      WantedBy = [ "default.target" ];
+      WantedBy = ["default.target"];
     };
   };
 }

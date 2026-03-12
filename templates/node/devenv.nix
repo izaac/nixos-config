@@ -1,6 +1,4 @@
-{ pkgs, lib, config, ... }:
-
-{
+{pkgs, ...}: {
   # https://devenv.sh/languages/
   languages.javascript = {
     enable = true;

@@ -1,6 +1,8 @@
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   # 1. Graphics / OpenGL
   hardware.graphics = {
     enable = true;
@@ -20,7 +22,7 @@
     modesetting.enable = true;
     powerManagement.enable = true; # Recommended for laptops to help with battery
     powerManagement.finegrained = true; # Better power savings for hybrid
-    open = true; 
+    open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 

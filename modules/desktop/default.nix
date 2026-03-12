@@ -1,7 +1,10 @@
-{ pkgs, lib, userConfig, ... }:
-
 {
-  home-manager.users.${userConfig.username}.imports = [ ../../home/desktop.nix ];
+  pkgs,
+  lib,
+  userConfig,
+  ...
+}: {
+  home-manager.users.${userConfig.username}.imports = [../../home/desktop.nix];
 
   # --- GNOME ---
   services.desktopManager.gnome.enable = true;
@@ -22,7 +25,7 @@
   services.gnome.tinysparql.enable = true;
 
   # Experimental features (VRR, Fractional Scaling)
-  services.desktopManager.gnome.extraGSettingsOverridePackages = [ pkgs.mutter ];
+  services.desktopManager.gnome.extraGSettingsOverridePackages = [pkgs.mutter];
   services.desktopManager.gnome.extraGSettingsOverrides = ''
     [org.gnome.mutter]
     experimental-features=['variable-refresh-rate', 'scale-monitor-framebuffer']
@@ -51,7 +54,7 @@
     wayland = true;
     autoSuspend = false;
   };
-  
+
   security.pam.services.gdm.enableGnomeKeyring = true;
   security.pam.services.login.enableGnomeKeyring = true;
 
@@ -68,15 +71,15 @@
   # Portals (Essential for Screen Sharing / File Dialogs)
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
+    extraPortals = [pkgs.xdg-desktop-portal-gnome];
     config = {
-      common.default = [ "gnome" ];
-      gnome.default = [ "gnome" ];
+      common.default = ["gnome"];
+      gnome.default = ["gnome"];
     };
   };
 
   # Remove Bloat
-  environment.gnome.excludePackages = (with pkgs; [
+  environment.gnome.excludePackages = with pkgs; [
     gnome-photos
     gnome-tour
     gnome-contacts
@@ -93,7 +96,7 @@
     hitori
     atomix
     sushi
-  ]);
+  ];
 
   # Essential GNOME Packages
   environment.systemPackages = with pkgs; [

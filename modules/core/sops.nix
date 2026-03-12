@@ -1,13 +1,15 @@
-{ inputs, config, userConfig, ... }:
-
 {
-  imports = [ inputs.sops-nix.nixosModules.sops ];
+  inputs,
+  userConfig,
+  ...
+}: {
+  imports = [inputs.sops-nix.nixosModules.sops];
 
   sops = {
     defaultSopsFile = ../../secrets.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/home/izaac/.config/sops/age/keys.txt";
-    
+
     secrets.sshHost = {
       owner = userConfig.username;
     };

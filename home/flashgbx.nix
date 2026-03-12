@@ -1,16 +1,15 @@
-{ lib
-, python3Packages
-, fetchFromGitHub
-, qt6
-, copyDesktopItems
-, makeDesktopItem
+{
+  python3Packages,
+  fetchFromGitHub,
+  qt6,
+  copyDesktopItems,
+  makeDesktopItem,
 }:
-
 python3Packages.buildPythonApplication {
   pname = "FlashGBX";
   version = "master";
   pyproject = true;
-  
+
   src = fetchFromGitHub {
     owner = "lesserkuma";
     repo = "FlashGBX";
@@ -18,7 +17,7 @@ python3Packages.buildPythonApplication {
     hash = "sha256-rxeIGs8Afm2VSVMRd4a84ujkuiV56Q5jwj+5zXtNitk=";
   };
 
-  nativeBuildInputs = [ 
+  nativeBuildInputs = [
     python3Packages.setuptools
     qt6.wrapQtAppsHook
     copyDesktopItems
@@ -49,7 +48,7 @@ python3Packages.buildPythonApplication {
       icon = "media-flash";
       desktopName = "FlashGBX";
       genericName = "GameBoy Flasher";
-      categories = [ "Game" ];
+      categories = ["Game"];
     })
   ];
 

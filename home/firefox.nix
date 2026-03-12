@@ -1,6 +1,4 @@
-{ latestPkgs, ... }:
-
-{
+{latestPkgs, ...}: {
   catppuccin.firefox.enable = false;
   catppuccin.firefox.profiles.default.enable = false;
 
@@ -9,7 +7,7 @@
   programs.firefox = {
     enable = true;
     package = latestPkgs.firefox;
-    
+
     profiles.default = {
       id = 0;
       name = "default";
@@ -28,8 +26,8 @@
     genericName = "Web Browser";
     exec = "/run/wrappers/bin/firefox-vip %U";
     terminal = false;
-    categories = [ "Network" "WebBrowser" ];
-    mimeType = [ "text/html" "text/xml" "application/xhtml+xml" "application/xml" "application/rss+xml" "application/rdf+xml" "image/gif" "image/jpeg" "image/png" "x-scheme-handler/http" "x-scheme-handler/https" ];
+    categories = ["Network" "WebBrowser"];
+    mimeType = ["text/html" "text/xml" "application/xhtml+xml" "application/xml" "application/rss+xml" "application/rdf+xml" "image/gif" "image/jpeg" "image/png" "x-scheme-handler/http" "x-scheme-handler/https"];
     icon = "firefox";
   };
 }

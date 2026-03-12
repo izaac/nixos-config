@@ -1,7 +1,9 @@
-{ pkgs, userConfig, ... }:
-
 {
-  home.packages = [ pkgs.distrobox ];
+  pkgs,
+  userConfig,
+  ...
+}: {
+  home.packages = [pkgs.distrobox];
 
   # Script to automate NVIDIA driver linking in Ubuntu containers
   xdg.configFile."distrobox/nvidia-setup.sh".text = ''
@@ -14,7 +16,7 @@
     # 2. Link Host NVIDIA Drivers (Vulkan/OpenGL)
     sudo mkdir -p /usr/share/vulkan/icd.d
     printf '{"file_format_version" : "1.0.0","ICD": {"library_path": "/run/host/run/opengl-driver/lib/libGLX_nvidia.so.0","api_version" : "1.3.260"}}' | sudo tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null
-    
+
     # 3. Configure Linker
     echo '/run/host/run/opengl-driver/lib' | sudo tee /etc/ld.so.conf.d/nvidia.conf > /dev/null
     echo '/run/host/run/opengl-driver-32/lib' | sudo tee -a /etc/ld.so.conf.d/nvidia.conf > /dev/null

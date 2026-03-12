@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+_: {
   # 1. Hardware Quirks
   # DJI Mic Mini (g) & Razer Kiyo Pro (k)
   boot.kernelParams = [
@@ -32,5 +30,5 @@
   '';
 
   # 5. Ensure Audio Module Availability
-  boot.kernelModules = [ ];
+  boot.kernelModules = [];
 }

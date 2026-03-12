@@ -15,21 +15,26 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, catppuccin, sops-nix, ... }@inputs:
-    let
-      userConfig = import ./lib/user.nix;
-      
-      # Helper function to generate a host configuration
-      mkSystem = hostname: system: nixpkgs.lib.nixosSystem {
+  outputs = {
+    nixpkgs,
+    catppuccin,
+    sops-nix,
+    ...
+  } @ inputs: let
+    userConfig = import ./lib/user.nix;
+
+    # Helper function to generate a host configuration
+    mkSystem = hostname: system:
+      nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { 
-          inherit inputs userConfig; 
+        specialArgs = {
+          inherit inputs userConfig;
           latestPkgs = import inputs.nixpkgs-latest {
             inherit system;
             config.allowUnfree = true;
           };
         };
-        
+
         modules = [
           ./hosts/${hostname}/configuration.nix
           catppuccin.nixosModules.catppuccin
@@ -37,17 +42,17 @@
           ./modules/core/sops.nix
           {
             nixpkgs.config.allowUnfree = true;
-            nixpkgs.overlays = [ 
+            nixpkgs.overlays = [
               (import ./overlays/sparrow-temurin-fix.nix)
               (import ./overlays/dwarfs-fix.nix)
             ];
           }
         ];
       };
-    in {
-      nixosConfigurations = {
-        ninja = mkSystem "ninja" "x86_64-linux";
-        windy = mkSystem "windy" "x86_64-linux";
-      };
+  in {
+    nixosConfigurations = {
+      ninja = mkSystem "ninja" "x86_64-linux";
+      windy = mkSystem "windy" "x86_64-linux";
     };
+  };
 }

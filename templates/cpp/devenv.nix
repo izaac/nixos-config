@@ -1,6 +1,9 @@
-{ pkgs, lib, config, ... }:
-
 {
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
   # https://devenv.sh/languages/
   languages.cplusplus = {
     enable = true;
@@ -18,7 +21,7 @@
 
     # Clang toolchain (preferred for modern C++)
     clang
-    clang-tools  # clangd (LSP), clang-format, clang-tidy
+    clang-tools # clangd (LSP), clang-format, clang-tidy
     lldb
 
     # Alternative: GCC toolchain

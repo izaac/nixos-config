@@ -1,6 +1,4 @@
-{ lib, ... }:
-
-{
+{lib, ...}: {
   time.timeZone = "America/Phoenix";
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -8,8 +6,8 @@
   nix = {
     settings = {
       auto-optimise-store = true;
-      experimental-features = [ "nix-command" "flakes" ];
-      trusted-users = [ "root" "@wheel" ];
+      experimental-features = ["nix-command" "flakes"];
+      trusted-users = ["root" "@wheel"];
     };
   };
 
@@ -21,7 +19,7 @@
       KbdInteractiveAuthentication = lib.mkDefault false;
     };
   };
-  
+
   services.fstrim.enable = true;
   services.power-profiles-daemon.enable = lib.mkForce false;
 }

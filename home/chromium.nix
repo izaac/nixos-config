@@ -1,6 +1,4 @@
-{ latestPkgs, ... }:
-
-{
+{latestPkgs, ...}: {
   # Chromium Configuration
   programs.chromium = {
     enable = true;
@@ -14,7 +12,7 @@
       "--ignore-gpu-blocklist"
       "--enable-gpu-rasterization"
       "--enable-zero-copy"
-      
+
       # --- Wayland/Video/Compatibility ---
       "--ozone-platform=x11"
       "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"

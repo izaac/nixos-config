@@ -1,6 +1,4 @@
-{ lib, ... }:
-
-{
+{lib, ...}: {
   networking.hostName = "windy";
   networking.networkmanager.enable = true;
 

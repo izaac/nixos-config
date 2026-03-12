@@ -1,7 +1,9 @@
-{ pkgs, userConfig, ... }:
-
 {
-  home-manager.users.${userConfig.username}.imports = [ ../../home/gaming.nix ];
+  pkgs,
+  userConfig,
+  ...
+}: {
+  home-manager.users.${userConfig.username}.imports = [../../home/gaming.nix];
 
   # 1. Controller & Hardware Support
   # Provides udev rules for Steam Deck, DualSense, and other controllers.
@@ -13,7 +15,7 @@
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
-    extraCompatPackages = [ pkgs.steamtinkerlaunch ];
+    extraCompatPackages = [pkgs.steamtinkerlaunch];
     extraPackages = with pkgs; [
       libvdpau
       libva
@@ -34,19 +36,19 @@
   services.scx = {
     enable = true;
     scheduler = "scx_lavd";
-    extraArgs = [ "--autopilot" ];
+    extraArgs = ["--autopilot"];
   };
 
   # 5. Controller & Hardware Support (The "Maximized" List)
   hardware.xpadneo.enable = true; # Xbox Bluetooth
   services.joycond.enable = false; # Nintendo Switch JoyCons (Merge L+R)
-  hardware.uinput.enable = true;  # Virtual Input (Critical for remapping tools)
+  hardware.uinput.enable = true; # Virtual Input (Critical for remapping tools)
   services.input-remapper.enable = true; # Easy input remapping daemon
-  
+
   services.udev.packages = with pkgs; [
     game-devices-udev-rules # The big community list
     logitech-udev-rules
-    openrgb                 # RGB Control access
+    openrgb # RGB Control access
   ];
 
   # 6. Environment Tweaks
@@ -72,16 +74,16 @@
     VKD3D_CONFIG = "no_upload_hlist";
     __GL_SHADER_DISK_CACHE_SKIP_CLEANUP = "1";
     __GL_SHADER_DISK_CACHE_SIZE = "10737418240";
-    
+
     # Wayland Fixes for NVIDIA
     DISABLE_RT_CHECK = "1"; # Helps with some Raytracing titles on Wayland
-    
+
     # Steam UI Performance & Stability Fixes
     # -no-cef-sandbox: Fixes web helper crashes
     # -disable-gpu-compositing: Prevents UI flickering/lag
     # -disable-smooth-scrolling: Reduces rendering load
     STEAM_EXTRA_ARGS = "-no-cef-sandbox -disable-gpu-compositing -disable-smooth-scrolling";
-    
+
     # Fix for X11 BadWindow errors on NVIDIA
     STEAM_DISABLE_PH_CLIPPED_VIDEO = "1";
   };

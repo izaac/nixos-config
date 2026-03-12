@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+_: {
   qt = {
     enable = true;
     platformTheme.name = "kvantum";

@@ -1,6 +1,4 @@
-{ config, pkgs, userConfig, ... }:
-
-{
+{userConfig, ...}: {
   imports = [
     ./shell.nix
     ./ssh.nix

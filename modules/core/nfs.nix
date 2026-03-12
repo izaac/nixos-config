@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   # Enable NFS client support
   services.rpcbind.enable = true; # Required for NFSv3
 
@@ -9,5 +7,5 @@
   ];
 
   # Kernel modules for NFS support
-  boot.supportedFilesystems = [ "nfs" "nfs4" ];
+  boot.supportedFilesystems = ["nfs" "nfs4"];
 }

@@ -1,6 +1,8 @@
-{ pkgs, userConfig, ... }:
-
 {
+  pkgs,
+  userConfig,
+  ...
+}: {
   # catppuccin.starship.enable = true;
   catppuccin.bat.enable = true;
   catppuccin.fzf.enable = true;
@@ -40,27 +42,49 @@
 
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    fzf fd ripgrep
-    duf dust bottom fastfetch gdu
-    jq rsync pv bc
-    ncdu lazydocker rclone
-    ticker tenki viddy
+    fzf
+    fd
+    ripgrep
+    duf
+    dust
+    bottom
+    fastfetch
+    gdu
+    jq
+    rsync
+    pv
+    bc
+    ncdu
+    lazydocker
+    rclone
+    ticker
+    tenki
+    viddy
     lftp
     man-db
     kubernetes-helm
     kubectl
-    procs just nix-tree comma nvd
-    
+    procs
+    just
+    nix-tree
+    comma
+    nvd
+
     # --- MEDIA & ENCODING ---
-    (callPackage ../pkgs/vcrunch { })
-    
+    (callPackage ../pkgs/vcrunch {})
+
     # --- COMPRESSION & ARCHIVING ---
-    zip unzip 
+    zip
+    unzip
     p7zip
-    xz zstd lz4 
-    gnutar gzip bzip2
+    xz
+    zstd
+    lz4
+    gnutar
+    gzip
+    bzip2
     libarchive
-    
+
     # --- SYSTEM TOOLS ---
     bash-preexec
     appimage-run
@@ -92,7 +116,7 @@
   programs.bash = {
     enable = true;
     enableCompletion = true;
-    
+
     shellAliases = {
       # Use the smart eza wrapper defined in initExtra
       ls = "_smart_eza --group-directories-first";
@@ -132,7 +156,6 @@
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
       ssh = "TERM=xterm-256color ssh";
 
-
       # Per-App Audio Overrides (Anticipation Strategy)
       pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";
     };
@@ -143,154 +166,154 @@
     };
 
     initExtra = ''
-      # --- Gemini CLI Wrapper ---
-      # Automatically uses -p (non-interactive) if arguments are provided
-      # to avoid the "Positional arguments now default to interactive mode" notice.
-      function ask() {
-        if [[ $# -eq 0 ]]; then
-          npx --yes @google/gemini-cli@latest
-        else
-          npx --yes @google/gemini-cli@latest -p "$*"
-        fi
-      }
+            # --- Gemini CLI Wrapper ---
+            # Automatically uses -p (non-interactive) if arguments are provided
+            # to avoid the "Positional arguments now default to interactive mode" notice.
+            function ask() {
+              if [[ $# -eq 0 ]]; then
+                npx --yes @google/gemini-cli@latest
+              else
+                npx --yes @google/gemini-cli@latest -p "$*"
+              fi
+            }
 
-      # --- Smart eza Wrapper ---
-      # Prevents hangs on network mounts
-      function _smart_eza() {
-        if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
-          # Strip --git and -g flags for network shares to avoid hangs
-          local args=()
-          for arg in "$@"; do
-            [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
-          done
-          command eza --icons=never --color=never "''${args[@]}"
-        else
-          command eza --icons=auto "$@"
-        fi
-      }
+            # --- Smart eza Wrapper ---
+            # Prevents hangs on network mounts
+            function _smart_eza() {
+              if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
+                # Strip --git and -g flags for network shares to avoid hangs
+                local args=()
+                for arg in "$@"; do
+                  [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
+                done
+                command eza --icons=never --color=never "''${args[@]}"
+              else
+                command eza --icons=auto "$@"
+              fi
+            }
 
-      # --- GPG TTY FIX ---
-      # Critical for GPG password prompts to appear in the terminal
-      export GPG_TTY=$(tty)
+            # --- GPG TTY FIX ---
+            # Critical for GPG password prompts to appear in the terminal
+            export GPG_TTY=$(tty)
 
-      # --- Yazi Wrapper (CD on exit) ---
-      function y() {
-        local tmp="''$(mktemp -t "yazi-cwd.XXXXXX")"
-        yazi "$@" --cwd-file="$tmp"
-        if cwd="''$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-          builtin cd -- "$cwd"
-        fi
-        rm -f -- "$tmp"
-      }
+            # --- Yazi Wrapper (CD on exit) ---
+            function y() {
+              local tmp="''$(mktemp -t "yazi-cwd.XXXXXX")"
+              yazi "$@" --cwd-file="$tmp"
+              if cwd="''$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+                builtin cd -- "$cwd"
+              fi
+              rm -f -- "$tmp"
+            }
 
-      # --- Recursive Cat (The "Dump" Tool) ---
-      # Optimized with ripgrep for speed
-      function catr() {
-        local target="''${1:-.}"
-        rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
-          if file -b --mime-type "{}" | grep -q "^text/"; then
-            echo "================================================================================"
-            echo "FILE: {}"
-            echo "================================================================================"
-            cat "{}"
-            echo -e "\n"
-          fi
-        '
-      }
+            # --- Recursive Cat (The "Dump" Tool) ---
+            # Optimized with ripgrep for speed
+            function catr() {
+              local target="''${1:-.}"
+              rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
+                if file -b --mime-type "{}" | grep -q "^text/"; then
+                  echo "================================================================================"
+                  echo "FILE: {}"
+                  echo "================================================================================"
+                  cat "{}"
+                  echo -e "\n"
+                fi
+              '
+            }
 
-      # --- Project Initializers (Golden Master) ---
-      function ninit() {
-        local ver="''${1:-}"
-        local target="node"
-        if [ -n "$ver" ]; then target="node_$ver"; fi
+            # --- Project Initializers (Golden Master) ---
+            function ninit() {
+              local ver="''${1:-}"
+              local target="node"
+              if [ -n "$ver" ]; then target="node_$ver"; fi
 
-        cat <<EOF > .envrc
-use flake ${userConfig.dotfilesDir}/templates#$target
-watch_file package.json
-watch_file yarn.lock
-watch_file pnpm-lock.yaml
+              cat <<EOF > .envrc
+      use flake ${userConfig.dotfilesDir}/templates#$target
+      watch_file package.json
+      watch_file yarn.lock
+      watch_file pnpm-lock.yaml
 
-if [ -f "package.json" ] && [ ! -d "node_modules" ]; then
-  echo "📦 node_modules missing. Attempting install..."
-  if [ -f "pnpm-lock.yaml" ]; then pnpm install;
-  elif [ -f "yarn.lock" ]; then yarn install;
-  else npm install; fi
-fi
-EOF
-        direnv allow
-      }
-
-      function pinit() {
-        local ver="''${1:-}"
-        local target="python"
-        if [ -n "$ver" ]; then target="python_$ver"; fi
-
-        cat <<EOF > .envrc
-use flake ${userConfig.dotfilesDir}/templates#python
-watch_file requirements.txt
-watch_file pyproject.toml
-
-if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
-  if [ ! -d ".venv" ] && [ -f "requirements.txt" ]; then
-    echo "📦 Creating virtual environment and installing dependencies..."
-    uv venv && uv pip install -r requirements.txt
-  fi
-fi
-EOF
-        direnv allow
-      }
-
-      function rinit() {
-        cat <<EOF > .envrc
-use flake ${userConfig.dotfilesDir}/templates#rust
-watch_file Cargo.toml
-watch_file Cargo.lock
-EOF
-        direnv allow
-      }
-
-      function cinit() {
-        cat <<EOF > .envrc
-use flake ${userConfig.dotfilesDir}/templates#c
-watch_file CMakeLists.txt
-watch_file Makefile
-EOF
-        direnv allow
-      }
-
-      function cppinit() {
-        cat <<EOF > .envrc
-use flake ${userConfig.dotfilesDir}/templates#cpp
-watch_file CMakeLists.txt
-watch_file Makefile
-EOF
-        direnv allow
-      }
-
-      # fnm
-      FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
-      if [ -d "$FNM_PATH" ]; then
-        export PATH="$FNM_PATH:$PATH"
-        eval "`fnm env`"
+      if [ -f "package.json" ] && [ ! -d "node_modules" ]; then
+        echo "📦 node_modules missing. Attempting install..."
+        if [ -f "pnpm-lock.yaml" ]; then pnpm install;
+        elif [ -f "yarn.lock" ]; then yarn install;
+        else npm install; fi
       fi
+      EOF
+              direnv allow
+            }
 
-      # Ensure local binaries are in PATH
-      export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
+            function pinit() {
+              local ver="''${1:-}"
+              local target="python"
+              if [ -n "$ver" ]; then target="python_$ver"; fi
 
-      # --- Atuin Initialization (Manual) ---
-      # Force initialization even if line editing is not detected in SHELLOPTS.
-      # This ensures Atuin records history in all interactive sessions.
-      if [ -f "${pkgs.bash-preexec}/share/bash/bash-preexec.sh" ]; then
-        source "${pkgs.bash-preexec}/share/bash/bash-preexec.sh"
+              cat <<EOF > .envrc
+      use flake ${userConfig.dotfilesDir}/templates#python
+      watch_file requirements.txt
+      watch_file pyproject.toml
+
+      if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
+        if [ ! -d ".venv" ] && [ -f "requirements.txt" ]; then
+          echo "📦 Creating virtual environment and installing dependencies..."
+          uv venv && uv pip install -r requirements.txt
+        fi
       fi
-      if command -v atuin >/dev/null; then
-        eval "$(atuin init bash)"
-        
-        # Override the Up Arrow keybinding to use the full interactive search 
-        # (exactly like Ctrl+R) instead of the inline shell-up behavior.
-        bind -x '"\e[A": __atuin_history'
-        bind -x '"\eOA": __atuin_history'
-      fi
+      EOF
+              direnv allow
+            }
+
+            function rinit() {
+              cat <<EOF > .envrc
+      use flake ${userConfig.dotfilesDir}/templates#rust
+      watch_file Cargo.toml
+      watch_file Cargo.lock
+      EOF
+              direnv allow
+            }
+
+            function cinit() {
+              cat <<EOF > .envrc
+      use flake ${userConfig.dotfilesDir}/templates#c
+      watch_file CMakeLists.txt
+      watch_file Makefile
+      EOF
+              direnv allow
+            }
+
+            function cppinit() {
+              cat <<EOF > .envrc
+      use flake ${userConfig.dotfilesDir}/templates#cpp
+      watch_file CMakeLists.txt
+      watch_file Makefile
+      EOF
+              direnv allow
+            }
+
+            # fnm
+            FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
+            if [ -d "$FNM_PATH" ]; then
+              export PATH="$FNM_PATH:$PATH"
+              eval "`fnm env`"
+            fi
+
+            # Ensure local binaries are in PATH
+            export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
+
+            # --- Atuin Initialization (Manual) ---
+            # Force initialization even if line editing is not detected in SHELLOPTS.
+            # This ensures Atuin records history in all interactive sessions.
+            if [ -f "${pkgs.bash-preexec}/share/bash/bash-preexec.sh" ]; then
+              source "${pkgs.bash-preexec}/share/bash/bash-preexec.sh"
+            fi
+            if command -v atuin >/dev/null; then
+              eval "$(atuin init bash)"
+
+              # Override the Up Arrow keybinding to use the full interactive search
+              # (exactly like Ctrl+R) instead of the inline shell-up behavior.
+              bind -x '"\e[A": __atuin_history'
+              bind -x '"\eOA": __atuin_history'
+            fi
     '';
   };
 
@@ -365,7 +388,7 @@ EOF
       command_timeout = 5000;
       add_newline = false;
       format = "$directory$hostname$git_branch$git_status$container$character";
-      
+
       hostname = {
         ssh_only = true;
         format = "on [$hostname]($style) ";
@@ -393,8 +416,8 @@ EOF
     exec = "kitty -e yazi %u";
     icon = "yazi";
     terminal = false;
-    categories = [ "Utility" "Core" "System" "FileTools" "FileManager" "ConsoleOnly" ];
-    mimeType = [ "inode/directory" ];
+    categories = ["Utility" "Core" "System" "FileTools" "FileManager" "ConsoleOnly"];
+    mimeType = ["inode/directory"];
     settings = {
       Keywords = "File;Manager;Explorer;Browser;Launcher";
     };
@@ -405,7 +428,7 @@ EOF
     exec = "kitty -e btop";
     icon = "btop";
     terminal = false;
-    categories = [ "System" "Monitor" "ConsoleOnly" ];
+    categories = ["System" "Monitor" "ConsoleOnly"];
     settings = {
       Keywords = "system;process;task";
     };

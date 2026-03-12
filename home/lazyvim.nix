@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   programs.neovim = {
     enable = true;
     package = pkgs.neovim-unwrapped;
@@ -13,7 +11,7 @@
       lazygit
       ripgrep
       fd
-      
+
       # Build tools often needed by Mason/Lazy
       gnumake
       gcc

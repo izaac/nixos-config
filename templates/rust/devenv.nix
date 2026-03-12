@@ -1,12 +1,10 @@
-{ pkgs, lib, config, ... }:
-
-{
+{pkgs, ...}: {
   # https://devenv.sh/languages/
   languages.rust = {
     enable = true;
     # Devenv 2.0: Enable out-of-the-box language server
     lsp.enable = true;
-    channel = "stable";  # or "nightly", "beta"
+    channel = "stable"; # or "nightly", "beta"
 
     # Automatically sets up:
     # - rustc, cargo
@@ -17,11 +15,11 @@
 
   # https://devenv.sh/packages/
   packages = with pkgs; [
-    cargo-watch      # Auto-rebuild on file changes
-    cargo-edit       # cargo add/rm/upgrade commands
-    cargo-audit      # Security vulnerability scanner
-    cargo-outdated   # Check for outdated dependencies
-    bacon            # Background code checker
+    cargo-watch # Auto-rebuild on file changes
+    cargo-edit # cargo add/rm/upgrade commands
+    cargo-audit # Security vulnerability scanner
+    cargo-outdated # Check for outdated dependencies
+    bacon # Background code checker
   ];
 
   # https://devenv.sh/scripts/

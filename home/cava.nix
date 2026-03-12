@@ -1,15 +1,13 @@
-{ pkgs, ... }:
-
-{
-    catppuccin.cava.enable = true;
-    programs.cava = {
-      enable = true;
-      package = pkgs.cava;
-      settings = {
+{pkgs, ...}: {
+  catppuccin.cava.enable = true;
+  programs.cava = {
+    enable = true;
+    package = pkgs.cava;
+    settings = {
       general = {
-        # 0 = Auto-fill terminal width. 
+        # 0 = Auto-fill terminal width.
         # Change to a specific number (e.g. 100) for specific window sizes.
-        bars = 0; 
+        bars = 0;
         framerate = 60;
         sensitivity = 100;
       };
