@@ -13,6 +13,9 @@
     ../../users/izaac
   ];
 
+  # Custom Feature Flags
+  mySystem.gaming.enable = true;
+
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
