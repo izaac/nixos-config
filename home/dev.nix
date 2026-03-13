@@ -4,6 +4,8 @@
   ...
 }: {
   home.packages = with pkgs; [
+    antigravity
+
     # --- LAZYVIM DEPENDENCIES ---
     gcc
     gnumake
