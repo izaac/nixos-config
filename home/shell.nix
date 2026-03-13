@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   userConfig,
   ...
@@ -15,7 +16,7 @@
 
   programs.atuin = {
     enable = true;
-    enableBashIntegration = false;
+    enableZshIntegration = true;
     settings = {
       auto_sync = false;
       style = "compact";
@@ -28,12 +29,12 @@
 
   programs.broot = {
     enable = true;
-    enableBashIntegration = true;
+    enableZshIntegration = true;
   };
 
   programs.eza = {
     enable = true;
-    enableBashIntegration = true;
+    enableZshIntegration = true;
     icons = "auto";
     git = true;
   };
@@ -45,6 +46,8 @@
     fzf
     fd
     ripgrep
+    uutils-coreutils
+    ouch
     duf
     dust
     bottom
@@ -91,7 +94,6 @@
     libarchive
 
     # --- SYSTEM TOOLS ---
-    bash-preexec
     appimage-run
     wl-clipboard
     dwarfs
@@ -118,13 +120,19 @@
     MANPAGER = "sh -c 'col -bx | bat -l man -p'";
   };
 
-  programs.bash = {
+  programs.zsh = {
     enable = true;
     enableCompletion = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    autocd = true;
+    historySubstringSearch.enable = true;
+    dotDir = "${config.xdg.configHome}/zsh";
 
     shellAliases = {
-      # Use the smart eza wrapper defined in initExtra
-      ls = "_smart_eza --group-directories-first";
+      # Use uutils-ls for basic listing, keep eza for detailed/smart views
+      ls = "uutils-ls --group-directories-first --color=auto";
+      uls = "uutils-ls --group-directories-first --color=auto";
       l = "_smart_eza -lb --git --group-directories-first";
       ll = "_smart_eza -l --group-directories-first";
       la = "_smart_eza -la --group-directories-first";
@@ -170,11 +178,10 @@
       VISUAL = "nvim";
     };
 
-    initExtra = ''
-            # --- Gemini CLI Wrapper ---
-            # Automatically uses -p (non-interactive) if arguments are provided
-            # to avoid the "Positional arguments now default to interactive mode" notice.
-            function ask() {
+    initContent = ''
+            # --- Gemini CLI ---
+            # -p for non-interactive if args present
+            ask() {
               if [[ $# -eq 0 ]]; then
                 npx --yes @google/gemini-cli@latest
               else
@@ -182,9 +189,9 @@
               fi
             }
 
-            # --- Smart eza Wrapper ---
-            # Prevents hangs on network mounts
-            function _smart_eza() {
+            # --- Smart Eza ---
+            # No icons/git on network shares to prevent hangs
+            _smart_eza() {
               if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
                 # Strip --git and -g flags for network shares to avoid hangs
                 local args=()
@@ -202,7 +209,7 @@
             export GPG_TTY=$(tty)
 
             # --- Yazi Wrapper (CD on exit) ---
-            function y() {
+            y() {
               local tmp="''$(mktemp -t "yazi-cwd.XXXXXX")"
               yazi "$@" --cwd-file="$tmp"
               if cwd="''$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
@@ -213,7 +220,7 @@
 
             # --- Recursive Cat (The "Dump" Tool) ---
             # Optimized with ripgrep for speed
-            function catr() {
+            catr() {
               local target="''${1:-.}"
               rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
                 if file -b --mime-type "{}" | grep -q "^text/"; then
@@ -227,7 +234,7 @@
             }
 
             # --- Project Initializers (Golden Master) ---
-            function ninit() {
+            ninit() {
               local ver="''${1:-}"
               local target="node"
               if [ -n "$ver" ]; then target="node_$ver"; fi
@@ -248,7 +255,7 @@
               direnv allow
             }
 
-            function pinit() {
+            pinit() {
               local ver="''${1:-}"
               local target="python"
               if [ -n "$ver" ]; then target="python_$ver"; fi
@@ -268,7 +275,7 @@
               direnv allow
             }
 
-            function rinit() {
+            rinit() {
               cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#rust
       watch_file Cargo.toml
@@ -277,7 +284,7 @@
               direnv allow
             }
 
-            function cinit() {
+            cinit() {
               cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#c
       watch_file CMakeLists.txt
@@ -286,7 +293,7 @@
               direnv allow
             }
 
-            function cppinit() {
+            cppinit() {
               cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#cpp
       watch_file CMakeLists.txt
@@ -305,19 +312,22 @@
             # Ensure local binaries are in PATH
             export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
 
-            # --- Atuin Initialization (Manual) ---
-            # Force initialization even if line editing is not detected in SHELLOPTS.
-            # This ensures Atuin records history in all interactive sessions.
-            if [ -f "${pkgs.bash-preexec}/share/bash/bash-preexec.sh" ]; then
-              source "${pkgs.bash-preexec}/share/bash/bash-preexec.sh"
-            fi
-            if command -v atuin >/dev/null; then
-              eval "$(atuin init bash)"
+            # --- Distrobox: Host Tool Injection ---
+            # Map host Nix tools into containers
+            if [ -d "/run/host/nix/store" ]; then
+              # Find the current system and user profile in the store
+              local host_sys=$(readlink /run/host/run/current-system)
+              local host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
 
-              # Override the Up Arrow keybinding to use the full interactive search
-              # (exactly like Ctrl+R) instead of the inline shell-up behavior.
-              bind -x '"\e[A": __atuin_history'
-              bind -x '"\eOA": __atuin_history'
+              if [ -n "$host_sys" ]; then
+                export PATH="$PATH:/run/host$host_sys/sw/bin"
+              fi
+              if [ -n "$host_user" ]; then
+                # User profile might link to /etc/static, resolve one more level
+                local host_user_resolved=$(readlink "/run/host$host_user")
+                [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
+                export PATH="$PATH:/run/host$host_user_resolved/bin"
+              fi
             fi
     '';
   };
@@ -333,7 +343,7 @@
 
   programs.fzf = {
     enable = true;
-    enableBashIntegration = true;
+    enableZshIntegration = true;
     defaultCommand = "fd --type f";
     fileWidgetCommand = "fd --type f";
     changeDirWidgetCommand = "fd --type d";
@@ -341,12 +351,12 @@
 
   programs.zoxide = {
     enable = true;
-    enableBashIntegration = true;
+    enableZshIntegration = true;
   };
 
   programs.pay-respects = {
     enable = true;
-    enableBashIntegration = true;
+    enableZshIntegration = true;
   };
 
   programs.tealdeer = {
@@ -364,7 +374,7 @@
 
   programs.nix-index = {
     enable = true;
-    enableBashIntegration = true;
+    enableZshIntegration = true;
   };
 
   programs.bottom = {
@@ -412,7 +422,7 @@
   programs.lazygit.enable = true;
   programs.yazi = {
     enable = true;
-    enableBashIntegration = true;
+    enableZshIntegration = true;
     shellWrapperName = "y";
   };
 

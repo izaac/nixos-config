@@ -5,6 +5,28 @@
 }: {
   home.packages = [pkgs.distrobox];
 
+  # --- Distrobox: GC Survival ---
+  # Link stable paths to prevent breakage when /nix/store is cleaned.
+  home.sessionVariables = {
+    DBX_CONTAINER_ALWAYS_PULL = "1";
+    # Force Distrobox to mount the stable symlink instead of the raw /nix/store path
+    DBX_NON_INTERACTIVE = "1";
+  };
+
+  # Provide a stable wrapper so the container always finds the current binary
+  home.file.".local/bin/distrobox-init" = {
+    source = "${pkgs.distrobox}/bin/distrobox-init";
+    executable = true;
+  };
+  home.file.".local/bin/distrobox-export" = {
+    source = "${pkgs.distrobox}/bin/distrobox-export";
+    executable = true;
+  };
+  home.file.".local/bin/distrobox-host-exec" = {
+    source = "${pkgs.distrobox}/bin/distrobox-host-exec";
+    executable = true;
+  };
+
   # Script to automate NVIDIA driver linking in Ubuntu containers
   xdg.configFile."distrobox/nvidia-setup.sh".text = ''
     #!/bin/sh
@@ -38,7 +60,7 @@
     [archy]
     image=archlinux:latest
     pull=true
-    additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3 atuin"
+    additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
     init=false
     nvidia=true
     # Export apps to host automatically
@@ -49,14 +71,14 @@
     [ubu]
     image=ubuntu:24.04
     pull=true
-    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1 atuin"
+    additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
     init=false
     nvidia=true
     init_hooks="sh ~/.config/distrobox/nvidia-setup.sh"
 
     [debi]
     pull=true
-    additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch atuin"
+    additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch"
     init=false
     nvidia=true
 
@@ -71,7 +93,7 @@
   '';
 
   # Alias to easily create/update these containers
-  programs.bash.shellAliases = {
+  programs.zsh.shellAliases = {
     db-up = "distrobox assemble create --file ~/.config/distrobox/distrobox.ini";
     db-rm = "distrobox assemble rm --file ~/.config/distrobox/distrobox.ini";
     db-arch = "distrobox enter archy";

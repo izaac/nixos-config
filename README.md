@@ -6,7 +6,7 @@
 - **DM:** GDM (Wayland)
 - **DE:** GNOME 49
 - **Theme:** Catppuccin Mocha (Mauve Accent)
-- **Shell:** Bash + Starship + FNM (Node) + Rustup
+- **Shell:** Zsh + Starship + Atuin + Rust Coreutils
 - **Terminal:** Kitty + Tmux
 - **Editor:** Neovim (LazyVim)
 - **Security:** dbus-broker
