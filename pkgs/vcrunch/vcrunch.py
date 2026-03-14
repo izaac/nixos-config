@@ -52,6 +52,15 @@ def get_duration(file_path):
     return float(res.stdout.strip())
 
 
+def format_size(size_bytes):
+    """Format bytes to human readable string."""
+    for unit in ["B", "KB", "MB", "GB", "TB"]:
+        if size_bytes < 1024.0:
+            return f"{size_bytes:.2f} {unit}"
+        size_bytes /= 1024.0
+    return f"{size_bytes:.2f} PB"
+
+
 def get_audio_codec(file_path):
     """Probe the first audio stream to determine its codec."""
     cmd = [
@@ -314,7 +323,22 @@ def mode_batch(args):
 
         if run_cmd(cmd, check=False).returncode == 0:
             shutil.move(scratch_dir / out_name, target_dir / out_name)
-            print(f"  DONE: {out_name}\n")
+            
+            # --- Validation & Stats ---
+            orig_dur = get_duration(f)
+            orig_size = os.path.getsize(f)
+            
+            final_path = target_dir / out_name
+            new_dur = get_duration(final_path)
+            new_size = os.path.getsize(final_path)
+            
+            diff_dur = abs(orig_dur - new_dur)
+            savings = 100 - (new_size * 100 / orig_size)
+            
+            status = "Verified" if diff_dur < 0.5 else f"MISMATCH ({diff_dur:.2f}s)"
+            
+            print(f"  DONE: {out_name}")
+            print(f"  STATS: {format_size(new_size)} ({savings:.1f}% smaller) | Duration: {status}\n")
         else:
             print(f"  FAILED: {f}")
             sys.exit(1)
@@ -434,9 +458,24 @@ def mode_share(args):
                 shutil.move(
                     scratch_dir / f"out_{out_fname}", local_target / out_fname
                 )
+                
+                # --- Validation & Stats ---
+                final_path = local_target / out_fname
+                orig_dur = get_duration(scratch_dir / fname)
+                orig_size = os.path.getsize(scratch_dir / fname)
+                new_dur = get_duration(final_path)
+                new_size = os.path.getsize(final_path)
+                
+                diff_dur = abs(orig_dur - new_dur)
+                savings = 100 - (new_size * 100 / orig_size)
+                
                 if os.path.exists(scratch_dir / fname):
                     os.remove(scratch_dir / fname)
-                print(f"  DONE: {out_fname}\n")
+                
+                status = "Verified" if diff_dur < 0.5 else f"MISMATCH ({diff_dur:.2f}s)"
+                
+                print(f"  DONE: {out_fname}")
+                print(f"  STATS: {format_size(new_size)} ({savings:.1f}% smaller) | Duration: {status}\n")
             else:
                 print("  FAILED: Encoding error.")
                 break
@@ -455,9 +494,17 @@ def mode_share(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="vcrunch: Video re-encoding suite"
+        description="vcrunch: Video re-encoding suite",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Quick Examples:
+  vcrunch analyze movie.mkv          # Check potential savings
+  vcrunch batch                      # Crunch all videos in current folder
+  vcrunch batch --gpu --crf 28       # Use NVIDIA GPU with specific quality
+  vcrunch share /mnt/storage/movies  # Copy from share, crunch locally, save back
+        """,
     )
-    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers = parser.add_subparsers(dest="command", required=False)
 
     # Analyze
     p_analyze = subparsers.add_parser(
@@ -482,7 +529,15 @@ def main():
     p_share.add_argument("source", help="Path to network share folder")
     add_encoding_args(p_share)
 
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(0)
+
     args = parser.parse_args()
+
+    if not args.command:
+        parser.print_help()
+        sys.exit(0)
 
     if args.command == "analyze":
         mode_analyze(args)

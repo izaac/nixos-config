@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  lib,
+  userConfig,
+  ...
+}: let
   catppuccin-papirus = pkgs.catppuccin-papirus-folders.override {
     flavor = "mocha";
     accent = "mauve";
@@ -35,6 +40,12 @@ in {
       name = "catppuccin-mocha-mauve-standard";
       package = catppuccin-gtk-overridden;
     };
+    gtk3.bookmarks = [
+      "file:///home/${userConfig.username}/repos repos"
+      "file:///home/${userConfig.username}/Games Games"
+      "file:///mnt/storage storage"
+      "file:///mnt/data data"
+    ];
   };
 
   # Theme Libadwaita
@@ -51,6 +62,11 @@ in {
         background-color: rgba(203, 166, 247, 0.2) !important;
         border-color: #cba6f7 !important;
     }
+  '';
+
+  # Set custom icon for Games folder
+  home.activation.setGamesIcon = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    $DRY_RUN_CMD ${pkgs.glib}/bin/gio set -t string /home/${userConfig.username}/Games metadata::gvfs.extra-icon folder-cat-mocha-mauve-games
   '';
 
   dconf.settings = {
