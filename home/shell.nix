@@ -152,7 +152,6 @@
       gco = "git checkout";
       nrb = "st && nh os switch";
       ndr = "st && nh os build"; # Build without switching (no sudo needed)
-      ndry = "st && nh os build --update --dry"; # Check what would be built/downloaded on update
       # Nix cleanup: keep last 10 generations, preserve dev environments
       ncl = "nh clean all --keep 10 --nogc";
       # Full cleanup: prune stale direnvs, then garbage collect everything

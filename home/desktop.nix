@@ -10,7 +10,7 @@
     ./cava.nix
     ./cmus.nix
     ./qt.nix
-    ./chromium.nix
+    ./chrome.nix
     ./lazyvim.nix
     ./vscode.nix
     ./mpv.nix
