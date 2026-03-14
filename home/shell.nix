@@ -51,6 +51,8 @@
     duf
     dust
     bottom
+    sops
+    age
     fastfetch
     gdu
     jq
@@ -152,7 +154,8 @@
       gco = "git checkout";
       nrb = "st && nh os switch";
       ndr = "st && nh os build"; # Build without switching (no sudo needed)
-      # Nix cleanup: keep last 10 generations, preserve dev environments
+      # Nix Tools
+      nqs = "nix-env -qaP | fzf --preview 'nix-env -qaP {}' --preview-window=right:70%:wrap";
       ncl = "nh clean all --keep 10 --nogc";
       # Full cleanup: prune stale direnvs, then garbage collect everything
       ncl-full = "direnv prune && nh clean all --keep 10";
