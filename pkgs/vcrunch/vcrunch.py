@@ -42,6 +42,10 @@ def get_duration(file_path):
         "ffprobe",
         "-v",
         "error",
+        "-probesize",
+        "100M",
+        "-analyzeduration",
+        "100M",
         "-show_entries",
         "format=duration",
         "-of",
@@ -67,6 +71,10 @@ def get_audio_codec(file_path):
         "ffprobe",
         "-v",
         "error",
+        "-probesize",
+        "100M",
+        "-analyzeduration",
+        "100M",
         "-select_streams",
         "a:0",
         "-show_entries",
@@ -154,6 +162,10 @@ def build_ffmpeg_cmd(in_file, out_file, args):
             "-v",
             "warning",
             "-stats",
+            "-probesize",
+            "100M",
+            "-analyzeduration",
+            "100M",
             "-i",
             str(in_file),
             "-map",
@@ -227,6 +239,10 @@ def mode_analyze(args):
         "ffprobe",
         "-v",
         "error",
+        "-probesize",
+        "100M",
+        "-analyzeduration",
+        "100M",
         "-select_streams",
         "v:0",
         "-show_entries",
@@ -259,6 +275,10 @@ def mode_analyze(args):
                 start_time,
                 "-t",
                 str(test_len),
+                "-probesize",
+                "100M",
+                "-analyzeduration",
+                "100M",
                 "-i",
                 file,
                 "-c:v",
@@ -311,37 +331,41 @@ def mode_batch(args):
 
     print(f"--- VCRUNCH LOCAL BATCH ---\nTotal: {total} files\n" + "-" * 27)
 
-    for i, f in enumerate(files, 1):
-        out_name = Path(f).name
-        if (target_dir / out_name).exists():
-            print(f"[{i}/{total}] Skipping (exists): {out_name}")
-            continue
+    try:
+        for i, f in enumerate(files, 1):
+            out_name = Path(f).name
+            if (target_dir / out_name).exists():
+                print(f"[{i}/{total}] Skipping (exists): {out_name}")
+                continue
 
-        print(f"[{i}/{total}] PROCESSING: {f}")
+            print(f"[{i}/{total}] PROCESSING: {f}")
 
-        cmd = build_ffmpeg_cmd(f, scratch_dir / out_name, args)
+            cmd = build_ffmpeg_cmd(f, scratch_dir / out_name, args)
 
-        if run_cmd(cmd, check=False).returncode == 0:
-            shutil.move(scratch_dir / out_name, target_dir / out_name)
-            
-            # --- Validation & Stats ---
-            orig_dur = get_duration(f)
-            orig_size = os.path.getsize(f)
-            
-            final_path = target_dir / out_name
-            new_dur = get_duration(final_path)
-            new_size = os.path.getsize(final_path)
-            
-            diff_dur = abs(orig_dur - new_dur)
-            savings = 100 - (new_size * 100 / orig_size)
-            
-            status = "Verified" if diff_dur < 0.5 else f"MISMATCH ({diff_dur:.2f}s)"
-            
-            print(f"  DONE: {out_name}")
-            print(f"  STATS: {format_size(new_size)} ({savings:.1f}% smaller) | Duration: {status}\n")
-        else:
-            print(f"  FAILED: {f}")
-            sys.exit(1)
+            if run_cmd(cmd, check=False).returncode == 0:
+                shutil.move(scratch_dir / out_name, target_dir / out_name)
+                
+                # --- Validation & Stats ---
+                orig_dur = get_duration(f)
+                orig_size = os.path.getsize(f)
+                
+                final_path = target_dir / out_name
+                new_dur = get_duration(final_path)
+                new_size = os.path.getsize(final_path)
+                
+                diff_dur = abs(orig_dur - new_dur)
+                savings = 100 - (new_size * 100 / orig_size)
+                
+                status = "Verified" if diff_dur < 0.5 else f"MISMATCH ({diff_dur:.2f}s)"
+                
+                print(f"  DONE: {out_name}")
+                print(f"  STATS: {format_size(new_size)} ({savings:.1f}% smaller) | Duration: {status}\n")
+            else:
+                print(f"  FAILED: {f}")
+                sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n[Interrupted] Stopping batch process...")
+        sys.exit(0)
 
     send_notification(
         "Video Crunch Complete", f"Finished {total} files in {os.getcwd()}"
@@ -479,6 +503,8 @@ def mode_share(args):
             else:
                 print("  FAILED: Encoding error.")
                 break
+    except KeyboardInterrupt:
+        print("\n[Interrupted] Stopping share process...")
     finally:
         if keep_alive_proc and keep_alive_proc.is_alive():
             keep_alive_proc.terminate()

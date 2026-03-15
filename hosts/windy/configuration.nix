@@ -57,7 +57,7 @@
   boot.supportedFilesystems = ["exfat"];
 
   # --- KERNEL ---
-  boot.kernelPackages = pkgs.linuxPackages_6_18;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   boot.tmp.useTmpfs = true;
 

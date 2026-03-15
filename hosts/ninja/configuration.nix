@@ -43,13 +43,13 @@
   programs.fuse.enable = true;
 
   # --- KERNEL & PERFORMANCE ---
-  # Switching to latest (6.19+) now that NVIDIA 595 beta provides compatibility
+  # Running the latest kernel for NVIDIA 595 beta support
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # --- HARDWARE OPTIMIZATIONS (Ryzen 9 9950X3D) ---
   systemd.tmpfiles.rules = [
     "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache"
-    # Set Energy Performance Preference to performance
+    # Energy Performance Preference: Set to performance for maximum speed
     "w /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference - - - - performance"
   ];
 
@@ -57,9 +57,19 @@
   boot.initrd.systemd.enable = true;
   boot.initrd.systemd.tpm2.enable = false;
 
-  # TCP BBR (Congestion Control) & System Latency Tweaks
+  # TCP BBR and system latency tweaks
   boot.kernel.sysctl = {
     "kernel.split_lock_mitigate" = 0;
+
+    # Snappy performance with MGLRU and aggressive ZRAM
+    "vm.swappiness" = 180;
+    "vm.lr_gen_stats" = 0;
+    "vm.lr_gen_active" = 0;
+    "vm.page_lock_unfairness" = 1;
+
+    # Zen 5 tweaks: keeping those 16 cores in sync
+    "kernel.sched_autogroup_enabled" = 0;
+    "kernel.sched_cfs_bandwidth_slice_us" = 3000;
 
     # Disk Writeback Tuning (Reduce wakeups)
     "vm.dirty_writeback_centisecs" = 1500;
@@ -75,10 +85,6 @@
     # Low Latency Network Polling
     "net.core.busy_poll" = 50;
     "net.core.busy_read" = 50;
-
-    # MGLRU (Multi-Gen LRU) Optimizations
-    "vm.lr_gen_stats" = 1;
-    "vm.lr_gen_active" = 1;
 
     # Network Throughput (Max Backlog for 2.5G+ NICs)
     "net.core.netdev_max_backlog" = 16384;
@@ -112,7 +118,8 @@
   # --- SCHED-EXT (SCX) FOR 9950X3D GAMING ---
   services.scx = {
     enable = true;
-    scheduler = "scx_lavd"; # Latency-aware scheduler for improved 1% lows and desktop snappiness
+    scheduler = "scx_rustland"; # Rust-based scheduler for improved gaming stability and multi-CCD awareness
+    extraArgs = [];
   };
 
   # --- ENABLE SUSPEND/HIBERNATE (NVIDIA 595+ STABLE) ---

@@ -39,7 +39,7 @@ in {
     # --- KERNEL TUNING ---
     boot.kernel.sysctl = {
       # ZRAM Swappiness (Aggressive swap-to-zram, avoids disk wait)
-      "vm.swappiness" = 180;
+      "vm.swappiness" = mkDefault 180;
       "vm.vfs_cache_pressure" = 50; # Keep filesystem cache longer (snappier Nautilus)
       "vm.dirty_ratio" = 10;
       "vm.dirty_background_ratio" = 5;

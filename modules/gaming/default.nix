@@ -28,22 +28,41 @@ in {
         libva
         mangohud
         protonplus
-        gamemode
+        gamemode # The daemon and binaries
       ];
     };
 
     # 3. GameMode (Automatic Optimizations)
-    programs.gamemode.enable = true;
+    programs.gamemode = {
+      enable = true;
+      enableRenice = true; # Allow gamemode to change process priority
+      settings = {
+        general = {
+          softrealtime = "auto";
+          renice = 10;
+        };
+        # Prevent "split_lock_mitigate" errors without needing root for every game
+        custom = {
+          start = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'Optimizations Active'";
+          end = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'Optimizations Disabled'";
+        };
+      };
+    };
 
-    # Required for modern Windows games (e.g., Hogwarts Legacy, Cyberpunk)
+    # Make gamemode libraries globally available for Steam and Proton
+    environment.systemPackages = with pkgs; [
+      gamemode
+    ];
+
+    # Boost memory map limits for modern titles like Cyberpunk or Hogwarts Legacy
     boot.kernel.sysctl."vm.max_map_count" = 2147483642;
 
     # 4. Sched-ext (Dynamic Schedulers)
-    # Linux 6.12+ supports this natively. scx_lavd is excellent for gaming latency.
+    # Native support in Linux 6.12+. scx_lavd is a beast for gaming latency.
     services.scx = {
       enable = true;
-      scheduler = "scx_lavd";
-      extraArgs = ["--autopilot"];
+      scheduler = mkDefault "scx_lavd";
+      extraArgs = mkDefault ["--autopilot"];
     };
 
     # 5. Controller & Hardware Support
