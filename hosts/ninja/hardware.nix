@@ -55,14 +55,14 @@
       "x-systemd.idle-timeout=900"
       "x-systemd.mount-timeout=5s"
       # NFS Performance Tweaks
-      "nconnect=4" # Open 4 TCP connections (great for multi-core/high bandwidth)
+      "nconnect=4" # Open 4 parallel pipes to the NAS (saturates the network link)
       "rsize=1048576"
       "wsize=1048576"
-      "actimeo=60" # Cache file attributes for 60s
+      "actimeo=60" # Cache file info for a minute so `ls` is instant
       "noatime"
       "nodiratime"
       "hard"
-      "timeo=14" # 1.4s timeout before retry
+      "timeo=14" # Wait 1.4s before retrying if the connection drops
     ];
   };
 
