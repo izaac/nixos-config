@@ -47,17 +47,22 @@
   };
 
   fileSystems."/mnt/storage" = {
-    device = "//192.168.0.173/storage";
-    fsType = "cifs";
+    device = "192.168.0.173:/storage";
+    fsType = "nfs4";
     options = [
-      "credentials=/etc/nixos/samba-creds"
-      "uid=1000"
-      "gid=100"
-      "vers=3.0"
       "x-systemd.automount"
       "noauto"
-      "x-systemd.idle-timeout=60"
-      "x-systemd.mount-timeout=2s"
+      "x-systemd.idle-timeout=900"
+      "x-systemd.mount-timeout=5s"
+      # NFS Performance Tweaks
+      "nconnect=4" # Open 4 TCP connections (great for multi-core/high bandwidth)
+      "rsize=1048576"
+      "wsize=1048576"
+      "actimeo=60" # Cache file attributes for 60s
+      "noatime"
+      "nodiratime"
+      "hard"
+      "timeo=14" # 1.4s timeout before retry
     ];
   };
 

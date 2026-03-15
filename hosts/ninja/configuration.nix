@@ -21,7 +21,7 @@
   mySystem.core.bluetooth.enable = true;
   mySystem.core.codecs.enable = true;
   mySystem.core.virtualization.enable = true;
-  mySystem.core.nfs.enable = false;
+  mySystem.core.nfs.enable = true;
   mySystem.core.maintenance.enable = true;
   mySystem.core.performance.enable = true;
   mySystem.core.sops.enable = true;
