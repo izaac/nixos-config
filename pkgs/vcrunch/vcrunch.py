@@ -53,7 +53,11 @@ def get_duration(file_path):
         str(file_path),
     ]
     res = run_cmd(cmd, capture_output=True)
-    return float(res.stdout.strip())
+    val = res.stdout.strip()
+    try:
+        return float(val)
+    except ValueError:
+        return 0.0
 
 
 def format_size(size_bytes):
@@ -158,6 +162,7 @@ def build_ffmpeg_cmd(in_file, out_file, args):
     cmd = (
         [
             "ffmpeg",
+            "-y",
             "-nostdin",
             "-v",
             "warning",
@@ -340,29 +345,38 @@ def mode_batch(args):
 
             print(f"[{i}/{total}] PROCESSING: {f}")
 
-            cmd = build_ffmpeg_cmd(f, scratch_dir / out_name, args)
+            temp_out = scratch_dir / out_name
+            cmd = build_ffmpeg_cmd(f, temp_out, args)
 
-            if run_cmd(cmd, check=False).returncode == 0:
-                shutil.move(scratch_dir / out_name, target_dir / out_name)
-                
-                # --- Validation & Stats ---
-                orig_dur = get_duration(f)
-                orig_size = os.path.getsize(f)
-                
-                final_path = target_dir / out_name
-                new_dur = get_duration(final_path)
-                new_size = os.path.getsize(final_path)
-                
-                diff_dur = abs(orig_dur - new_dur)
-                savings = 100 - (new_size * 100 / orig_size)
-                
-                status = "Verified" if diff_dur < 0.5 else f"MISMATCH ({diff_dur:.2f}s)"
-                
-                print(f"  DONE: {out_name}")
-                print(f"  STATS: {format_size(new_size)} ({savings:.1f}% smaller) | Duration: {status}\n")
-            else:
-                print(f"  FAILED: {f}")
-                sys.exit(1)
+            try:
+                if run_cmd(cmd, check=False).returncode == 0:
+                    shutil.move(temp_out, target_dir / out_name)
+                    
+                    # --- Validation & Stats ---
+                    orig_dur = get_duration(f)
+                    orig_size = os.path.getsize(f)
+                    
+                    final_path = target_dir / out_name
+                    new_dur = get_duration(final_path)
+                    new_size = os.path.getsize(final_path)
+                    
+                    diff_dur = abs(orig_dur - new_dur)
+                    savings = 100 - (new_size * 100 / orig_size)
+                    
+                    status = "Verified" if diff_dur < 0.5 else f"MISMATCH ({diff_dur:.2f}s)"
+                    
+                    print(f"  DONE: {out_name}")
+                    print(f"  STATS: {format_size(new_size)} ({savings:.1f}% smaller) | Duration: {status}\n")
+                else:
+                    print(f"  FAILED: {f}")
+                    if temp_out.exists():
+                        temp_out.unlink()
+                    sys.exit(1)
+            except KeyboardInterrupt:
+                if temp_out.exists():
+                    print(f"\n[Interrupted] Cleaning up incomplete file: {out_name}")
+                    temp_out.unlink()
+                raise
     except KeyboardInterrupt:
         print("\n[Interrupted] Stopping batch process...")
         sys.exit(0)

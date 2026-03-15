@@ -120,6 +120,9 @@
     DIRENV_LOG_FORMAT = "";
     TERMINAL = "kitty";
     MANPAGER = "sh -c 'col -bx | bat -l man -p'";
+    # Prevent Atuin from trying to migrate the database inside Distrobox.
+    # This keeps host Atuin versions (NixOS) safe from rolling-release containers (Arch).
+    ATUIN_NO_MODIFY_DB = "true";
   };
 
   programs.zsh = {
