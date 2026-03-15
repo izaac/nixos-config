@@ -105,6 +105,8 @@
     "pcie_ports=native"
     "amd_pstate=active"
     "preempt=full"
+    "split_lock_detect=off"
+    "mitigations=off"
   ];
 
   # --- SCHED-EXT (SCX) FOR 9950X3D GAMING ---
