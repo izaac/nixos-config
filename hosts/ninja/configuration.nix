@@ -43,7 +43,21 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.systemd-boot.editor = false;
+  # High-res crisp text menu for the ultrawide
+  boot.loader.systemd-boot.consoleMode = "max";
 
+  # --- PLYMOUTH BOOT SPLASH ---
+  # Vendor logo + spinner for a clean, seamless transition to LUKS and the desktop.
+  boot.plymouth = {
+    enable = true;
+    theme = "bgrt";
+  };
+
+  # Disable Catppuccin's automatic plymouth theming so we can use the native bgrt theme
+  catppuccin.plymouth.enable = false;
+
+  boot.consoleLogLevel = 0;
+  boot.initrd.verbose = false;
   # --- STORAGE & MOUNTS ---
   # Support for exFAT (external drives) and FUSE (SSHFS/Rclone).
   boot.supportedFilesystems = ["exfat"];
@@ -114,6 +128,12 @@
   # --- LOW-LEVEL OPTIMIZATIONS ---
   # Forcing the hardware to be its best: active pstate, full preemption, and PCI-E speedups.
   boot.kernelParams = [
+    "quiet"
+    "splash"
+    "loglevel=3"
+    "rd.systemd.show_status=false"
+    "rd.udev.log_level=3"
+    "udev.log_priority=3"
     "boot.shell_on_fail"
     "pci=realloc,pcie_bus_safe"
     "pcie_aspm=off"
@@ -127,10 +147,11 @@
 
   # --- SCHEDULING FOR PEAK PERFORMANCE ---
   # Using SCX for that sweet gaming stability and Zen 5 CCD awareness.
+  # Reverting to scx_lavd for better latency-aware scheduling.
   services.scx = {
     enable = true;
-    scheduler = "scx_rustland";
-    extraArgs = [];
+    scheduler = "scx_lavd";
+    extraArgs = ["--autopilot"];
   };
 
   # --- SYSTEM SLEEP & STABILITY ---

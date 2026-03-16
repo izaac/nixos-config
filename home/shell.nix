@@ -320,6 +320,13 @@
             # --- Distrobox: Host Tool Injection ---
             # Map host Nix tools into containers
             if [ -d "/run/host/nix/store" ]; then
+              # Scrub host variables that poison the container environment.
+              # NixOS leaks paths that confuse container tools (like dnf),
+              # making them try to load incompatible host libraries.
+              unset GI_TYPELIB_PATH
+              unset GDK_PIXBUF_MODULE_FILE
+              unset XDG_DATA_DIRS
+
               # Find the current system and user profile in the store
               local host_sys=$(readlink /run/host/run/current-system)
               local host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
