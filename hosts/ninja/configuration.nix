@@ -3,6 +3,9 @@
   lib,
   ...
 }: {
+  # This is 'ninja' — a high-performance workstation built around the Ryzen 9 9950X3D and NVIDIA.
+  # It's optimized for zero-latency desktop feel, high-fidelity audio, and maximum gaming throughput.
+
   imports = [
     ./hardware.nix
     ./nvidia.nix
@@ -14,7 +17,8 @@
     ../../users/izaac
   ];
 
-  # Custom Feature Flags
+  # --- CORE FEATURES ---
+  # Enabling the modular components that make up this system's identity.
   mySystem.gaming.enable = true;
   mySystem.desktop.enable = true;
   mySystem.core.audio.enable = true;
@@ -32,32 +36,36 @@
   mySystem.core.home-manager.enable = true;
   mySystem.core.nix-ld.enable = true;
 
-  # Bootloader
+  # --- THE BOOT PROCESS ---
+  # Using systemd-boot for modern, fast UEFI entry.
+  # Limited to 10 generations for safety without clutter.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.configurationLimit = 10;
   boot.loader.systemd-boot.editor = false;
 
-  # File Systems
+  # --- STORAGE & MOUNTS ---
+  # Support for exFAT (external drives) and FUSE (SSHFS/Rclone).
   boot.supportedFilesystems = ["exfat"];
   programs.fuse.enable = true;
 
   # --- KERNEL & PERFORMANCE ---
-  # Running the latest kernel for NVIDIA 595 beta support
+  # Tracking the latest kernel for cutting-edge hardware support (Zen 5 + NVIDIA Beta).
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # --- HARDWARE OPTIMIZATIONS (Ryzen 9 9950X3D) ---
+  # Prioritize the V-Cache and set CPU to performance mode for maximum response.
   systemd.tmpfiles.rules = [
     "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache"
-    # Energy Performance Preference: Set to performance for maximum speed
     "w /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference - - - - performance"
   ];
 
-  # Enable systemd-based initrd
+  # Using systemd in the initrd for a more robust and faster boot sequence.
   boot.initrd.systemd.enable = true;
   boot.initrd.systemd.tpm2.enable = false;
 
-  # TCP BBR and system latency tweaks
+  # --- NETWORK STACK & LATENCY ---
+  # Enabling TCP BBR for snappier web browsing and system latency tweaks for "instant" feel.
   boot.kernel.sysctl = {
     "kernel.split_lock_mitigate" = 0;
 
@@ -71,22 +79,21 @@
     "kernel.sched_autogroup_enabled" = 0;
     "kernel.sched_cfs_bandwidth_slice_us" = 3000;
 
-    # Disk Writeback Tuning (Reduce wakeups)
+    # IO Smoothness (Reduce unnecessary disk churn)
     "vm.dirty_writeback_centisecs" = 1500;
     "vm.dirty_expire_centisecs" = 3000;
 
-    # Network Optimizations
+    # Network Optimizations (Max throughput for 2.5G+ NICs)
     "net.core.wmem_max" = 67108864;
     "net.core.rmem_max" = 67108864;
     "net.core.optmem_max" = 65536;
     "net.ipv4.tcp_fastopen" = 3;
     "net.ipv4.tcp_slow_start_after_idle" = 0;
 
-    # Low Latency Network Polling
+    # Low Latency Polling for competitive gaming and high-speed networking
     "net.core.busy_poll" = 50;
     "net.core.busy_read" = 50;
 
-    # Network Throughput (Max Backlog for 2.5G+ NICs)
     "net.core.netdev_max_backlog" = 16384;
     "net.core.netdev_budget" = 600;
     "net.core.netdev_budget_usecs" = 4000;
@@ -95,14 +102,17 @@
 
   boot.tmp.useTmpfs = true;
 
-  # --- KERNEL MODULES ---
+  # --- KERNEL STRIPPING ---
+  # Blacklisting modules we don't need to keep the kernel lean and clean.
   boot.blacklistedKernelModules = [
     "sp5100_tco"
     "eeepc_wmi"
     "joydev"
     "pcspkr"
   ];
-  # --- CORE HARDWARE TWEAKS ---
+
+  # --- LOW-LEVEL OPTIMIZATIONS ---
+  # Forcing the hardware to be its best: active pstate, full preemption, and PCI-E speedups.
   boot.kernelParams = [
     "boot.shell_on_fail"
     "pci=realloc,pcie_bus_safe"
@@ -115,14 +125,16 @@
     "mitigations=off"
   ];
 
-  # --- SCHED-EXT (SCX) FOR 9950X3D GAMING ---
+  # --- SCHEDULING FOR PEAK PERFORMANCE ---
+  # Using SCX for that sweet gaming stability and Zen 5 CCD awareness.
   services.scx = {
     enable = true;
-    scheduler = "scx_rustland"; # Rust-based scheduler for improved gaming stability and multi-CCD awareness
+    scheduler = "scx_rustland";
     extraArgs = [];
   };
 
-  # --- ENABLE SUSPEND/HIBERNATE (NVIDIA 595+ STABLE) ---
+  # --- SYSTEM SLEEP & STABILITY ---
+  # Ensuring suspend/hibernate work reliably with modern NVIDIA drivers.
   systemd.targets.sleep.enable = true;
   systemd.targets.suspend.enable = true;
   systemd.targets.hibernate.enable = true;
@@ -131,14 +143,15 @@
     settings.Login = {
       HandleSuspendKey = "suspend";
       HandleHibernateKey = "hibernate";
-      HandleLidSwitch = "ignore"; # Desktop: No lid
+      HandleLidSwitch = "ignore"; # Desktop: No lid to close
     };
   };
 
-  # Enable systemd-oomd for better memory pressure management
+  # Memory Pressure Management (Preventing total system lockups)
   systemd.oomd.enable = true;
 
-  # Host-specific Audio Overrides
+  # --- HIGH-FIDELITY AUDIO ---
+  # Tailored EQ and latency strategy for the 'ninja' motherboard and DAC.
   services.pipewire = {
     wireplumber.extraConfig."95-alsa-soft-fixes" = {
       "monitor.alsa.rules" = [
@@ -557,10 +570,12 @@
     };
   };
 
-  # Hardware Firmware
+  # --- DRIVERS & FIRMWARE ---
+  # Including all firmware to ensure the 9950X3D and NVIDIA GPU have everything they need.
   hardware.enableAllFirmware = true;
 
-  # System Packages (Essentials Only)
+  # --- TOOLS OF THE TRADE ---
+  # Essential CLI utilities for system management and audio debugging.
   environment.systemPackages = with pkgs; [
     libglvnd
     parted
@@ -569,14 +584,18 @@
     libpulseaudio # Compatibility library
   ];
 
+  # Keeping the system lean by disabling unused services.
   services.flatpak.enable = false;
   services.fwupd.enable = false;
   services.acpid.enable = lib.mkForce false;
 
+  # --- NIX DAEMON & BUILD ISOLATION ---
+  # We have 16 cores (32 threads); we can afford to dedicate some to builds without
+  # impacting the desktop experience.
   nix.settings.max-jobs = 4;
   nix.settings.cores = 8;
 
-  # Limit Nix Build Resources
+  # Isolate Nix builds to CCD1 to keep CCD0 (the V-Cache cores) free for gaming and tasks.
   systemd.services.nix-daemon.serviceConfig = lib.mkForce {
     Nice = 19;
     CPUWeight = 1;
@@ -585,15 +604,16 @@
     MemoryHigh = "30G";
     # Isolation: Keep builds on CCD1 (cores 8-15 and their SMT siblings 24-31)
     AllowedCPUs = "8-15,24-31";
-    # Latency: Use IDLE scheduling for CPU and IO
+    # Latency: Use IDLE scheduling for CPU and IO to prevent build spikes from causing stutters.
     CPUSchedulingPolicy = "idle";
     IOSchedulingClass = "idle";
-    # Safety: Ensure nix-daemon is killed before the desktop if OOM occurs
+    # Safety: Ensure nix-daemon is killed before the desktop if a massive OOM event occurs.
     OOMScoreAdjust = 1000;
   };
 
-  # --- SYSTEM-WIDE FIREFOX POLICIES ---
-  # Ensures policies apply even to custom VIP wrappers
+  # --- THE BROWSER (VIP MODE) ---
+  # Enforcing privacy and high-fidelity audio policies at the system level.
+  # This ensures even custom wrappers (like Firefox VIP) are properly hardened.
   programs.firefox = {
     enable = true;
     policies = {
@@ -654,16 +674,18 @@
         "media.getusermedia.audio.processing.agc.enabled" = false; # Disable Auto-Gain (flattens music)
         "media.getusermedia.audio.processing.noise_suppression" = false; # Disable noise filtering for high-fidelity
 
-        # --- GPU HARDWARE ACCELERATION ---
+        # --- GPU HARDWARE ACCELERATION (NVIDIA Optimized) ---
         "media.ffmpeg.vaapi.enabled" = true; # Enable Hardware Video Decoding
-        "media.rdd-ffmpeg.enabled" = false; # Disable RDD sandbox for NVIDIA VA-API
+        "media.hardware-video-decoding.force-enabled" = true; # Force VA-API path
+        "media.rdd-ffmpeg.enabled" = true; # Enable RDD sandbox (NVIDIA 595+ is stable)
         "gfx.webrender.all" = true; # Force GPU Page Rendering
-        "widget.dmabuf.force-enabled" = true; # Zero-copy buffer sharing for Wayland
+        "widget.dmabuf.force-enabled" = false; # Disabled: Fixes full-screen blanking on NVIDIA/Wayland
       };
     };
   };
 
-  # --- DOCUMENTATION ---
+  # --- SLIMMING THE SYSTEM ---
+  # We don't need local documentation on this machine; keep it clean and fast to build.
   documentation = {
     enable = false;
     doc.enable = false;
