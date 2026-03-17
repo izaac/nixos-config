@@ -327,6 +327,15 @@
               unset GDK_PIXBUF_MODULE_FILE
               unset XDG_DATA_DIRS
 
+              # Fix broken SSL certs in containers.
+              # Distrobox mounts NixOS's /etc/ssl, but its symlinks point to unmounted /etc/static paths.
+              # We bypass the dead links by pointing directly to the real certs in the /nix/store.
+              if [ -L "/run/host/etc/static/ssl/certs/ca-bundle.crt" ]; then
+                export SSL_CERT_FILE=$(readlink /run/host/etc/static/ssl/certs/ca-bundle.crt)
+                export NIX_SSL_CERT_FILE=$SSL_CERT_FILE
+                export GIT_SSL_CAINFO=$SSL_CERT_FILE
+              fi
+
               # Find the current system and user profile in the store
               local host_sys=$(readlink /run/host/run/current-system)
               local host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
