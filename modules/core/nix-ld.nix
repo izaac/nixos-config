@@ -50,6 +50,20 @@ in {
       wayland
       libdrm
       libkrb5
+
+      # Cypress / Electron dependencies
+      nspr
+      atk
+      cups
+      pango
+      cairo
+      gtk3
+      libxcomposite
+      libxrandr
+      libxcb
+      at-spi2-atk
+      at-spi2-core
+      libgbm
     ];
   };
 }

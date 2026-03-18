@@ -51,15 +51,10 @@
     LIBVA_DRIVER_NAME = "nvidia";
     NVD_BACKEND = "direct";
     GBM_BACKEND = "nvidia-drm";
-    MOZ_DISABLE_RDD_SANDBOX = "1"; # Fixes Firefox slow-motion video stutter at start on NVIDIA Wayland
 
     # Enable G-Sync/VRR (for GNOME/KDE Wayland)
     __GL_GSYNC_ALLOWED = "1";
     __GL_VRR_ALLOWED = "1";
-
-    # Native Wayland for Electron apps (Discord, VSCode, etc.)
-    NIXOS_OZONE_WL = "1";
-    ELECTRON_OZONE_PLATFORM_HINT = "auto";
   };
 
   # 4. Unlock Overclocking/Undervolting (Coolbits)

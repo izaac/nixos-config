@@ -95,9 +95,9 @@ in {
       WINE_FSYNC = "1";
 
       # NVIDIA & DX12 Performance Fixes
-      # - no_upload_hlist: Fixes 'Invalid resource alignment' stutters in Elden Ring
+      # - no_upload_hvv: Fixes 'View Map Pressure' stutters in Cyberpunk 2077 and Elden Ring
       # - Shader Cache: Increased to 10GB to prevent re-compilation hitches
-      VKD3D_CONFIG = "no_upload_hlist";
+      VKD3D_CONFIG = "no_upload_hvv";
       __GL_SHADER_DISK_CACHE_SKIP_CLEANUP = "1";
       __GL_SHADER_DISK_CACHE_SIZE = "10737418240";
 

@@ -27,7 +27,7 @@
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/48E1-0BDF";
     fsType = "vfat";
-    options = ["fmask=0077" "dmask=0077"];
+    options = ["fmask=0077" "dmask=0077" "noatime"];
   };
 
   # --- GAME DRIVE (NVMe) ---
