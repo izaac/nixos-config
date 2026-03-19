@@ -41,6 +41,11 @@ in {
       package = catppuccin-gtk-overridden;
     };
     gtk3.bookmarks = [
+      "file:///home/${userConfig.username}/Documents Documents"
+      "file:///home/${userConfig.username}/Downloads Downloads"
+      "file:///home/${userConfig.username}/Music Music"
+      "file:///home/${userConfig.username}/Pictures Pictures"
+      "file:///home/${userConfig.username}/Videos Videos"
       "file:///home/${userConfig.username}/repos repos"
       "file:///home/${userConfig.username}/Games Games"
       "file:///mnt/storage storage"

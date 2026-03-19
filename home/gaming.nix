@@ -17,7 +17,7 @@ in {
     bubblewrap # Provides 'bwrap'
 
     # Gaming Tools
-    # heroic # Disabled temporarily due to electron_39 build failure on nixos-unstable
+    heroic # Disabled temporarily due to electron_39 build failure on nixos-unstable
     lutris
     protonplus
     protonup-rs

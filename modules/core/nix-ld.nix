@@ -64,6 +64,11 @@ in {
       at-spi2-atk
       at-spi2-core
       libgbm
+
+      # LaLa / Flutter AppImage dependencies
+      harfbuzz
+      gdk-pixbuf
+      libepoxy
     ];
   };
 }
