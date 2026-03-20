@@ -77,6 +77,7 @@
     init_hooks="sh ~/.config/distrobox/nvidia-setup.sh"
 
     [debi]
+    image=debian:latest
     pull=true
     additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch"
     init=false
