@@ -36,6 +36,7 @@ in {
 
   gtk = {
     enable = true;
+    gtk4.theme = null;
     theme = {
       name = "catppuccin-mocha-mauve-standard";
       package = catppuccin-gtk-overridden;

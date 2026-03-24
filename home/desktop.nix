@@ -66,8 +66,8 @@
   xdg.userDirs = {
     enable = true;
     createDirectories = true;
+    setSessionVariables = false;
   };
-
   xdg.desktopEntries.ventoy = {
     name = "Ventoy";
     exec = "sudo ventoy-full-gtk";

@@ -194,6 +194,20 @@
               fi
             }
 
+            # --- Copilot CLI ---
+            # Similar to ask, but for GitHub Copilot.
+            # Smart enough to pass subcommands (login, init) directly.
+            copilot() {
+              if [[ $# -eq 0 ]]; then
+                npx --yes @github/copilot@latest
+              elif [[ "$1" == "login" || "$1" == "init" || "$1" == "update" || "$1" == "version" || "$1" == "help" ]]; then
+                npx --yes @github/copilot@latest "$@"
+              else
+                npx --yes @github/copilot@latest -p "$*"
+              fi
+            }
+            alias ai="copilot"
+
             # --- Smart Eza ---
             # No icons/git on network shares to prevent hangs
             _smart_eza() {

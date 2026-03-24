@@ -8,7 +8,7 @@
       owner = "jaclu";
       repo = "tmux-menus";
       rev = "main";
-      sha256 = "sha256-UPWsa7sFy6P3Jo3KFEvZrz4M4IVDhKI7T1LNAtWqTT4=";
+      sha256 = "sha256-pqm2CFnaOdi9fpU85uoQoA/V3925liqwElcd/N7LAtQ=";
     };
   };
 in {

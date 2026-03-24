@@ -24,6 +24,8 @@
     nil
 
     # --- UTILS ---
+    github-copilot-cli
+    aider-chat
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---
