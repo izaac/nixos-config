@@ -4,6 +4,9 @@
   qt6,
   copyDesktopItems,
   makeDesktopItem,
+  gsettings-desktop-schemas,
+  glib,
+  wrapGAppsHook3,
 }:
 python3Packages.buildPythonApplication {
   pname = "FlashGBX";
@@ -20,7 +23,13 @@ python3Packages.buildPythonApplication {
   nativeBuildInputs = [
     python3Packages.setuptools
     qt6.wrapQtAppsHook
+    wrapGAppsHook3
     copyDesktopItems
+  ];
+
+  buildInputs = [
+    gsettings-desktop-schemas
+    glib
   ];
 
   propagatedBuildInputs = with python3Packages; [
@@ -36,9 +45,10 @@ python3Packages.buildPythonApplication {
   ];
 
   dontWrapQtApps = true;
+  dontWrapGApps = true;
 
   postFixup = ''
-    wrapQtApp $out/bin/flashgbx
+    wrapQtApp $out/bin/flashgbx "''${gappsWrapperArgs[@]}"
   '';
 
   desktopItems = [
