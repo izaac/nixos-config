@@ -606,7 +606,7 @@
   ];
 
   # Keeping the system lean by disabling unused services.
-  services.flatpak.enable = false;
+  services.flatpak.enable = true;
   services.fwupd.enable = false;
   services.acpid.enable = lib.mkForce false;
 

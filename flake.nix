@@ -2,6 +2,7 @@
   description = "Izaac NVIDIA NixOS Configuration";
 
   inputs = {
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-latest.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {

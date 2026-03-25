@@ -25,6 +25,7 @@ in {
         imports = [
           ../../home/core.nix
           inputs.catppuccin.homeModules.catppuccin
+          inputs.nix-flatpak.homeManagerModules.nix-flatpak
         ];
       };
     };

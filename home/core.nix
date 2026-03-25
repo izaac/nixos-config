@@ -2,6 +2,7 @@
   imports = [
     ./shell.nix
     ./fastfetch.nix
+    ./flatpak.nix
     ./ssh.nix
     ./rclone-gdrive.nix
     ./tmux.nix
