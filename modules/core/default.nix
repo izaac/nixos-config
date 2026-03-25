@@ -14,5 +14,6 @@
     ./sshfs.nix
     ./sops.nix
     ./nfs.nix
+    ./yubikey.nix
   ];
 }
