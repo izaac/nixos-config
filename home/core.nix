@@ -1,6 +1,7 @@
 {userConfig, ...}: {
   imports = [
     ./shell.nix
+    ./fastfetch.nix
     ./ssh.nix
     ./rclone-gdrive.nix
     ./tmux.nix

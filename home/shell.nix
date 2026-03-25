@@ -53,7 +53,6 @@
     bottom
     sops
     age
-    fastfetch
     gdu
     jq
     rsync
