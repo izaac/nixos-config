@@ -20,6 +20,8 @@ in {
         auto-optimise-store = true;
         experimental-features = ["nix-command" "flakes"];
         trusted-users = ["root" "@wheel"];
+        keep-derivations = true;
+        keep-outputs = true;
       };
     };
 
@@ -34,5 +36,16 @@ in {
 
     services.fstrim.enable = true;
     services.power-profiles-daemon.enable = lib.mkForce false;
+
+    # Limit journal size to prevent unbounded /var/log growth
+    services.journald.extraConfig = ''
+      SystemMaxUse=500M
+      MaxRetentionSec=1month
+    '';
+
+    # Auto-purge /tmp files older than 7 days
+    systemd.tmpfiles.rules = [
+      "q /tmp 1777 root root 7d"
+    ];
   };
 }

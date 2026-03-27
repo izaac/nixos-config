@@ -97,6 +97,7 @@
     # --- SYSTEM TOOLS ---
     appimage-run
     wl-clipboard
+    cliphist
     dwarfs
     fuse3
     nvitop

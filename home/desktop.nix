@@ -140,6 +140,21 @@
 
   programs.zathura.enable = true;
 
+  # Clipboard History Watcher (stores clipboard entries for recall via Super+V)
+  systemd.user.services.cliphist-watcher = {
+    Unit = {
+      Description = "Clipboard history watcher";
+      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target"];
+    };
+    Service = {
+      ExecStart = "${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store";
+      Restart = "on-failure";
+      RestartSec = 3;
+    };
+    Install.WantedBy = ["graphical-session.target"];
+  };
+
   # GNOME Performance & UX Tweaks
   dconf.settings = {
     "org/gnome/desktop/interface" = {
@@ -182,6 +197,7 @@
     "org/gnome/settings-daemon/plugins/media-keys" = {
       custom-keybindings = [
         "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
       ];
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
@@ -189,11 +205,30 @@
       command = "kitty";
       name = "Terminal";
     };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+      binding = "<Super>v";
+      command = "bash -c 'cliphist list | kitty --class clipboard-popup -o remember_window_size=no -o initial_window_width=800 -o initial_window_height=400 -e fzf --no-sort | cliphist decode | wl-copy'";
+      name = "Clipboard History";
+    };
 
     # Nautilus Open Any Terminal Configuration
     "com/github/stefonh/nautilus-open-any-terminal" = {
       terminal = "kitty";
       new-window = false;
+    };
+
+    # Privacy & Auto-Cleanup
+    "org/gnome/desktop/privacy" = {
+      remember-recent-files = true;
+      recent-files-max-age = 30;
+      remove-old-trash-files = true;
+      remove-old-temp-files = true;
+      old-files-age = lib.hm.gvariant.mkUint32 14;
+    };
+
+    # Raw mouse input (no acceleration)
+    "org/gnome/desktop/peripherals/mouse" = {
+      accel-profile = "flat";
     };
   };
 }
