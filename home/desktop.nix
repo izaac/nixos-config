@@ -206,7 +206,7 @@
       name = "Terminal";
     };
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-      binding = "<Super>v";
+      binding = "<Control><Super>v";
       command = "bash -c 'cliphist list | kitty --class clipboard-popup -o remember_window_size=no -o initial_window_width=800 -o initial_window_height=400 -e fzf --no-sort | cliphist decode | wl-copy'";
       name = "Clipboard History";
     };

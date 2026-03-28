@@ -31,7 +31,7 @@ final: _prev: {
         libglvnd,
       }: let
         pname = "sparrow";
-        version = "2.3.1";
+        version = "2.4.2";
         openjdk = temurin-bin-25;
 
         sparrowArch =
@@ -45,8 +45,8 @@ final: _prev: {
           url = "https://github.com/sparrowwallet/${pname}/releases/download/${version}/sparrowwallet-${version}-${sparrowArch}.tar.gz";
           sha256 =
             {
-              x86_64-linux = "0hjjq4bamgfwfwl4rrxvrblhl7z9pw5bi245ncbd5gv3pi4a7h81";
-              aarch64-linux = "04h3pampla6mhybdky5ihzjgi07in8rrhiz44n2n35c3n68mzdg5";
+              x86_64-linux = "08bbjgy3244mdlq6qbblv1192iv1kzr86jqpg2yky7pywrkm1yq6";
+              aarch64-linux = "0l8qzpa3227s4jfhddbmkvix2hmyrvrl3g1zgrc8skifp79lxia8";
             }
           ."${stdenvNoCC.hostPlatform.system}";
         };
