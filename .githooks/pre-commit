@@ -29,5 +29,8 @@ if [ -n "$STAGED_NIX_FILES" ]; then
     git add $STAGED_NIX_FILES
 fi
 
+echo "Scanning for AI traces..."
+ai-trace-scan --staged --quiet
+
 echo "Pre-Commit Checks Passed!"
 exit 0

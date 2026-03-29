@@ -3,11 +3,11 @@
     "ai-trace-scanner": {
       "flake": false,
       "locked": {
-        "lastModified": 1774812463,
-        "narHash": "sha256-agZfLjRbekx2D1jGjDKTrhko4qWyjhkYq9k8T6J8ZTE=",
+        "lastModified": 1774813687,
+        "narHash": "sha256-F/ai40yiQdplskudBupWQv6Dt8/ywSk4VzUjvsne3m0=",
         "owner": "izaac",
         "repo": "ai-trace-scanner",
-        "rev": "a2c3fefc819c97087915b7b822a8c91cfe2910bb",
+        "rev": "6b4856404423624d482f820d2d9b9f017024b7c4",
         "type": "github"
       },
       "original": {
