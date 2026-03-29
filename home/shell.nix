@@ -63,6 +63,7 @@
     rclone
     ticker
     tenki
+    ai-trace-scanner
     viddy
     lftp
     man-db
@@ -173,6 +174,10 @@
       # --- NVIDIA TWEAKS ---
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
       ssh = "TERM=xterm-256color ssh";
+      # AI trace scanner
+      ai-scan = "ai-trace-scan";
+      ai-scan-staged = "ai-trace-scan --staged";
+      ai-scan-wip = "ai-trace-scan --unstaged";
 
       # Per-App Audio Overrides (Anticipation Strategy)
       pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";

@@ -14,6 +14,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ai-trace-scanner = {
+      url = "github:izaac/ai-trace-scanner";
+      flake = false;
+    };
   };
 
   outputs = {
