@@ -16,14 +16,13 @@
     sqlite
 
     # --- LSPs & LINTERS ---
-    nodePackages.bash-language-server
+    bash-language-server
     shellcheck
     luajitPackages.lua-lsp
     nil
 
     # --- UTILS ---
     github-copilot-cli
-    aider-chat
   ];
 
   # --- GIT CONFIGURATION (25.11 FIXED) ---

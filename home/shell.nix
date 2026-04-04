@@ -67,6 +67,7 @@
     viddy
     lftp
     man-db
+    xxd
     kubernetes-helm
     kubectl
     procs
@@ -124,6 +125,8 @@
     # Prevent Atuin from trying to migrate the database inside Distrobox.
     # This keeps host Atuin versions (NixOS) safe from rolling-release containers (Arch).
     ATUIN_NO_MODIFY_DB = "true";
+    # qa-infra-automation repo path for dashboard-e2e CLI tool
+    QA_INFRA_DIR = "/home/${userConfig.username}/repos/qa-infra-automation";
   };
 
   programs.zsh = {
