@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./hardware.nix
     ./nvidia.nix
@@ -79,12 +75,6 @@
     acpi # Battery/Thermal info
     libnotify # For OSD notifications
   ];
-
-  # Windy-specific SSH overrides (Password Auth allowed for easier remote setup)
-  services.openssh.settings = {
-    PasswordAuthentication = lib.mkForce true;
-    KbdInteractiveAuthentication = lib.mkForce true;
-  };
 
   # Disable unnecessary services
   services.colord.enable = false;

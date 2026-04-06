@@ -18,7 +18,7 @@ in {
     sops = {
       defaultSopsFile = ../../secrets.yaml;
       defaultSopsFormat = "yaml";
-      age.keyFile = "/home/izaac/.config/sops/age/keys.txt";
+      age.keyFile = "${config.users.users.${userConfig.username}.home}/.config/sops/age/keys.txt";
 
       secrets.sshHost = {
         owner = userConfig.username;

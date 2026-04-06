@@ -29,7 +29,7 @@ in {
         HOST=$(cat /run/secrets/sshHost)
         ${pkgs.sshfs}/bin/sshfs ${userConfig.username}@$HOST:/home/${userConfig.username} ${mountPoint} \
           -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3 \
-          -o StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null \
+          -o StrictHostKeyChecking=accept-new \
           -o IdentityFile=${config.home.homeDirectory}/.ssh/id_ed25519_jellyfin \
           -o BatchMode=yes \
           -o nodev,nosuid,allow_other,auto_unmount,idmap=user \

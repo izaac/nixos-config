@@ -61,6 +61,7 @@
     # GTK Alternatives for Core Apps
     loupe # GNOME Image Viewer
     file-roller # GNOME Archive Manager
+    newsflash # GTK4/Libadwaita RSS Reader
   ];
 
   xdg.userDirs = {

@@ -9,10 +9,6 @@ nixpkgs.lib.nixosSystem {
   inherit system;
   specialArgs = {
     inherit inputs userConfig;
-    latestPkgs = import inputs.nixpkgs-latest {
-      inherit system;
-      config.allowUnfree = true;
-    };
   };
 
   modules = [

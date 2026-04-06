@@ -1,4 +1,4 @@
-{latestPkgs, ...}: {
+{pkgs, ...}: {
   catppuccin.firefox.enable = false;
   catppuccin.firefox.profiles.default.enable = false;
 
@@ -6,7 +6,7 @@
   # System-wide policies in hosts/ninja/configuration.nix will apply to this.
   programs.firefox = {
     enable = true;
-    package = latestPkgs.firefox;
+    package = pkgs.firefox;
 
     profiles.default = {
       id = 0;

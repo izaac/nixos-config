@@ -45,7 +45,7 @@
 
       init.defaultBranch = "main";
       credential.helper = "libsecret";
-      safe.directory = "*";
+      safe.directory = userConfig.dotfilesDir;
 
       # Note the singular 'alias' key under settings
       alias = {

@@ -18,6 +18,15 @@
 - [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
 - [Security & Hardening](docs/security.md)
 - [Secret Management](docs/secrets.md)
+- [Documentation Index](docs/README.md)
+
+## Structure
+
+- `hosts/`: host-specific system configuration (`ninja`, `windy`)
+- `modules/`: reusable NixOS modules behind `mySystem.*` options
+- `home/`: Home Manager modules for user-level configuration
+- `users/`: per-user profile composition
+- `pkgs/` and `overlays/`: custom packages and package overrides
 
 ## Quick Start
 
@@ -35,3 +44,4 @@ nix flake update
 
 # Clean old generations
 nh clean all
+```

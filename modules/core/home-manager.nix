@@ -3,7 +3,6 @@
   inputs,
   lib,
   userConfig,
-  latestPkgs,
   ...
 }:
 with lib; let
@@ -20,7 +19,11 @@ in {
       useGlobalPkgs = true;
       useUserPackages = true;
       backupFileExtension = "hm-backup";
-      extraSpecialArgs = {inherit inputs userConfig latestPkgs;};
+      # Base Home Manager profile:
+      # - core.nix: shared CLI/session defaults
+      # - catppuccin + nix-flatpak: framework-level HM modules
+      # User role/application modules are layered in users/<name>/default.nix
+      extraSpecialArgs = {inherit inputs userConfig;};
       users.${userConfig.username} = {
         imports = [
           ../../home/core.nix
