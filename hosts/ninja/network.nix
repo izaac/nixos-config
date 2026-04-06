@@ -22,9 +22,9 @@
           to = 1764;
         }
       ];
-      # Trust the local NAS/Plex server (NFS v3 callbacks and discovery)
-      extraCommands = ''
-        iptables -I INPUT -s 192.168.0.173 -j ACCEPT
+      # Trust the local NAS/Plex server (NFS callbacks and discovery)
+      extraInputRules = ''
+        ip saddr 192.168.0.173 accept
       '';
     };
   };
