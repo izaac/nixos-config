@@ -1,12 +1,8 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./distrobox.nix
     ./firefox.nix
-    ./kitty.nix
+    ./wezterm.nix
     ./cava.nix
     ./cmus.nix
     ./qt.nix
@@ -55,12 +51,9 @@
     boxbuddy
     gearlever
 
-    # GNOME Extensions & Integration
-    nautilus-open-any-terminal
-
-    # GTK Alternatives for Core Apps
-    loupe # GNOME Image Viewer
-    file-roller # GNOME Archive Manager
+    # GTK Apps
+    loupe # Image Viewer
+    file-roller # Archive Manager
     newsflash # GTK4/Libadwaita RSS Reader
   ];
 
@@ -88,9 +81,9 @@
       "x-scheme-handler/unknown" = ["firefox.desktop"];
 
       # Text
-      "text/plain" = ["org.gnome.TextEditor.desktop"];
-      "text/markdown" = ["org.gnome.TextEditor.desktop"];
-      "text/x-log" = ["org.gnome.TextEditor.desktop"];
+      "text/plain" = ["com.system76.CosmicEdit.desktop"];
+      "text/markdown" = ["com.system76.CosmicEdit.desktop"];
+      "text/x-log" = ["com.system76.CosmicEdit.desktop"];
 
       # Archives
       "application/zip" = ["org.gnome.FileRoller.desktop"];
@@ -134,14 +127,14 @@
       "image/bmp" = ["org.gnome.Loupe.desktop"];
       "image/tiff" = ["org.gnome.Loupe.desktop"];
 
-      # Directories
-      "inode/directory" = ["org.gnome.Nautilus.desktop"];
+      # Directories (COSMIC Files)
+      "inode/directory" = ["com.system76.CosmicFiles.desktop"];
     };
   };
 
   programs.zathura.enable = true;
 
-  # Clipboard History Watcher (stores clipboard entries for recall via Super+V)
+  # Clipboard History Watcher (stores clipboard entries for recall)
   systemd.user.services.cliphist-watcher = {
     Unit = {
       Description = "Clipboard history watcher";
@@ -156,80 +149,12 @@
     Install.WantedBy = ["graphical-session.target"];
   };
 
-  # GNOME Performance & UX Tweaks
   dconf.settings = {
-    "org/gnome/desktop/interface" = {
-      enable-animations = false;
-    };
-    "org/gnome/mutter" = {
-      edge-tiling = true;
-      dynamic-workspaces = true;
-      workspaces-only-on-primary = true;
-      experimental-features = ["variable-refresh-rate" "scale-monitor-framebuffer"];
-    };
+    # Tracker indexing limits (still used by some GTK apps)
     "org/freedesktop/Tracker3/Miner/Files" = {
       index-recursive-directories = [];
       index-single-directories = [];
       ignored-directories = ["&DESKTOP" "&DOCUMENTS" "&DOWNLOAD" "&MUSIC" "&PICTURES" "&PUBLIC_SHARE" "&TEMPLATES" "&VIDEOS"];
-    };
-    "org/gnome/shell" = {
-      disable-user-extensions = false;
-    };
-    "org/gnome/shell/app-switcher" = {
-      current-workspace-only = true;
-    };
-    "org/gnome/settings-daemon/plugins/power" = {
-      sleep-inactive-ac-type = "nothing";
-      sleep-inactive-battery-type = "nothing";
-      idle-dim = false;
-    };
-    "org/gnome/desktop/session" = {
-      idle-delay = lib.hm.gvariant.mkUint32 3600;
-    };
-    "org/gnome/desktop/screensaver" = {
-      lock-enabled = true;
-    };
-
-    # Default Terminal & Keybinding
-    "org/gnome/desktop/default-applications/terminal" = {
-      exec = "kitty";
-      exec-arg = "-e";
-    };
-    "org/gnome/settings-daemon/plugins/media-keys" = {
-      custom-keybindings = [
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
-      ];
-    };
-    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-      binding = "<Control><Alt>t";
-      command = "kitty";
-      name = "Terminal";
-    };
-    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-      binding = "<Control><Super>v";
-      command = "bash -c 'cliphist list | kitty --class clipboard-popup -o remember_window_size=no -o initial_window_width=800 -o initial_window_height=400 -e fzf --no-sort | cliphist decode | wl-copy'";
-      name = "Clipboard History";
-    };
-
-    # Nautilus Open Any Terminal Configuration
-    "com/github/stefonh/nautilus-open-any-terminal" = {
-      terminal = "kitty";
-      new-window = false;
-    };
-
-    # Privacy & Auto-Cleanup
-    "org/gnome/desktop/privacy" = {
-      remember-recent-files = true;
-      recent-files-max-age = 30;
-      remove-old-trash-files = true;
-      remove-old-temp-files = true;
-      old-files-age = lib.hm.gvariant.mkUint32 14;
-    };
-
-    # Raw mouse input (no acceleration)
-    "org/gnome/desktop/peripherals/mouse" = {
-      accel-profile = "flat";
     };
   };
 }

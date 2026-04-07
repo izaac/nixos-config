@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   # Smartcard daemon
   services.pcscd.enable = true;
 
@@ -18,8 +15,8 @@
   security.pam.services = {
     login.u2fAuth = true;
     sudo.u2fAuth = true;
-    # Enable U2F for GNOME (GDM) login
-    gdm-password.u2fAuth = true;
+    # Enable U2F for COSMIC (greetd) login
+    cosmic-greeter.u2fAuth = true;
   };
 
   # YubiKey related packages

@@ -41,7 +41,15 @@
 
   programs.bat.enable = true;
 
-  home.packages = with pkgs; [
+  home.packages = with pkgs; let
+    copilot-latest = github-copilot-cli.overrideAttrs (_old: {
+      version = "1.0.21";
+      src = fetchurl {
+        url = "https://github.com/github/copilot-cli/releases/download/v1.0.21/copilot-linux-x64.tar.gz";
+        hash = "sha256-pvxJSj3Vp2JG+zNCS68Iq7W0y2iJ//KM8pUVXCixz3c=";
+      };
+    });
+  in [
     # --- CORE UTILS ---
     fzf
     fd
@@ -86,6 +94,9 @@
     alejandra
     deadnix
     statix
+
+    # --- AI CLI TOOLS ---
+    copilot-latest
 
     # --- MEDIA & ENCODING ---
     (callPackage ../pkgs/vcrunch {})
@@ -198,6 +209,8 @@
     sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
+      # Ensure user profile tools (like Rust coreutils) take precedence over system tools
+      PATH = "$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH";
     };
 
     initContent = ''
@@ -212,18 +225,20 @@
             }
 
             # --- Copilot CLI ---
-            # Similar to ask, but for GitHub Copilot.
+            # Uses the native binary from nixpkgs (github-copilot-cli).
             # Smart enough to pass subcommands (login, init) directly.
-            copilot() {
+            function ai() {
+              # Fast-path: Prune PATH to avoid exhaustive searches in node_modules
+              # especially important on NixOS where PATH can get very long.
+              local CLEAN_PATH="/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin"
               if [[ $# -eq 0 ]]; then
-                npx --yes @github/copilot@latest
+                PATH="$CLEAN_PATH" command copilot
               elif [[ "$1" == "login" || "$1" == "init" || "$1" == "update" || "$1" == "version" || "$1" == "help" ]]; then
-                npx --yes @github/copilot@latest "$@"
+                PATH="$CLEAN_PATH" command copilot "$@"
               else
-                npx --yes @github/copilot@latest -p "$*"
+                PATH="$CLEAN_PATH" command copilot -p "$*"
               fi
             }
-            alias ai="copilot"
 
             # --- Smart Eza ---
             # No icons/git on network shares to prevent hangs
@@ -242,7 +257,11 @@
 
             # --- GPG TTY FIX ---
             # Critical for GPG password prompts to appear in the terminal
-            export GPG_TTY=$(tty)
+            # Only export if it's a real TTY to avoid hangs in headless shells
+            local current_tty=$(tty 2>/dev/null)
+            if [[ "$current_tty" != "not a typewriter" ]]; then
+              export GPG_TTY="$current_tty"
+            fi
 
             # --- Yazi Wrapper (CD on exit) ---
             y() {
@@ -492,7 +511,7 @@
 
   xdg.desktopEntries.btop = {
     name = "btop++";
-    exec = "kitty -e btop";
+    exec = "wezterm start -- btop";
     icon = "btop";
     terminal = false;
     categories = ["System" "Monitor" "ConsoleOnly"];

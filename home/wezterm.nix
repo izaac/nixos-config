@@ -1,0 +1,69 @@
+_: {
+  programs.wezterm = {
+    enable = true;
+    enableZshIntegration = true;
+
+    extraConfig = ''
+      local wezterm = require 'wezterm'
+      local act = wezterm.action
+      local config = wezterm.config_builder()
+
+      -- Font (matching Kitty: JetBrainsMono Nerd Font Mono @ 11pt)
+      config.font = wezterm.font('JetBrainsMono Nerd Font Mono')
+      config.font_size = 11.0
+
+      -- Theme: Catppuccin Mocha (built-in) with Kitty overrides
+      config.color_scheme = 'Catppuccin Mocha'
+      config.colors = {
+        background = '#030305',
+        cursor_bg = '#f5e0dc',
+        cursor_fg = '#1e1e2e',
+        selection_fg = '#1e1e2e',
+        selection_bg = '#f5e0dc',
+      }
+
+      -- Window
+      config.window_padding = {
+        left = 10,
+        right = 10,
+        top = 10,
+        bottom = 10,
+      }
+      config.window_close_confirmation = 'NeverPrompt'
+      config.audible_bell = 'Disabled'
+
+      -- Tab Bar (matching Kitty's bottom powerline style)
+      config.enable_tab_bar = true
+      config.tab_bar_at_bottom = true
+      config.use_fancy_tab_bar = false
+      config.show_tab_index_in_tab_bar = false
+
+      -- Keybindings (cloned from Kitty)
+      config.keys = {
+        -- Tabs
+        { key = 'T', mods = 'CTRL|SHIFT', action = act.SpawnTab 'CurrentPaneDomain' },
+        { key = 'PageUp', mods = 'CTRL|SHIFT', action = act.ActivateTabRelative(-1) },
+        { key = 'PageDown', mods = 'CTRL|SHIFT', action = act.ActivateTabRelative(1) },
+        { key = '1', mods = 'CTRL|SHIFT', action = act.ActivateTab(0) },
+        { key = '2', mods = 'CTRL|SHIFT', action = act.ActivateTab(1) },
+        { key = '3', mods = 'CTRL|SHIFT', action = act.ActivateTab(2) },
+        { key = '4', mods = 'CTRL|SHIFT', action = act.ActivateTab(3) },
+
+        -- Splits (Kitty hsplit = pane below, vsplit = pane right)
+        { key = 'N', mods = 'CTRL|SHIFT', action = act.SplitVertical { domain = 'CurrentPaneDomain' } },
+        { key = '|', mods = 'CTRL|SHIFT', action = act.SplitHorizontal { domain = 'CurrentPaneDomain' } },
+
+        -- Navigate Splits
+        { key = 'LeftArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Left' },
+        { key = 'RightArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Right' },
+        { key = 'UpArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Up' },
+        { key = 'DownArrow', mods = 'CTRL|SHIFT', action = act.ActivatePaneDirection 'Down' },
+
+        -- Toggle Zoom (equivalent to Kitty's stack layout toggle)
+        { key = 'F', mods = 'CTRL|SHIFT', action = act.TogglePaneZoomState },
+      }
+
+      return config
+    '';
+  };
+}

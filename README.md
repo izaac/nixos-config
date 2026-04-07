@@ -7,7 +7,7 @@
 - **DE:** GNOME 49
 - **Theme:** Catppuccin Mocha (Mauve Accent)
 - **Shell:** Zsh + Starship + Atuin + Rust Coreutils
-- **Terminal:** Kitty + Tmux
+- **Terminal:** Wezterm + Tmux
 - **Editor:** Neovim (LazyVim)
 - **Security:** dbus-broker
 - **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, Conty
