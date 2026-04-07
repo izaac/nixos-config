@@ -46,7 +46,7 @@
     fzf
     fd
     ripgrep
-    uutils-coreutils
+    uutils-coreutils-noprefix
     ouch
     duf
     dust
@@ -139,9 +139,8 @@
     dotDir = "${config.xdg.configHome}/zsh";
 
     shellAliases = {
-      # Use uutils-ls for basic listing, keep eza for detailed/smart views
-      ls = "uutils-ls --group-directories-first --color=auto";
-      uls = "uutils-ls --group-directories-first --color=auto";
+      # Use native ls (now provided by uutils-coreutils-noprefix) for basic listing, keep eza for detailed/smart views
+      ls = "ls --group-directories-first --color=auto";
       l = "_smart_eza -lb --git --group-directories-first";
       ll = "_smart_eza -l --group-directories-first";
       la = "_smart_eza -la --group-directories-first";
