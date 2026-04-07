@@ -75,6 +75,12 @@
     nix-tree
     comma
     nvd
+    sd
+    xh
+    choose
+    gping
+    rm-improved
+    doggo
 
     # --- NIX DEVELOPMENT TOOLS ---
     alejandra
@@ -148,6 +154,10 @@
       cd = "z";
       cat = "bat";
       top = "btop";
+      ping = "gping";
+      curl = "xh";
+      dig = "doggo";
+      rm = "rip";
       vim = "TERM=xterm-256color nvim";
       nvim = "TERM=xterm-256color nvim";
       cpv = "rsync -ahP";

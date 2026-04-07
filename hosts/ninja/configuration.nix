@@ -29,7 +29,6 @@
   mySystem.core.maintenance.enable = true;
   mySystem.core.performance.enable = true;
   mySystem.core.sops.enable = true;
-  mySystem.core.sshfs.enable = true;
   mySystem.core.system.enable = true;
   mySystem.core.usb-fixes.enable = true;
   mySystem.core.user.enable = true;
