@@ -50,11 +50,11 @@
   ];
 
   # --- SLIMMING THE SYSTEM ---
-  # We don't need local documentation on this machine; keep it clean and fast to build.
+  # Keep man pages for offline reference; skip NixOS module docs and info pages.
   documentation = {
-    enable = false;
+    enable = true;
     doc.enable = false;
-    man.enable = false;
+    man.enable = true;
     info.enable = false;
   };
 

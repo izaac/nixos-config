@@ -26,6 +26,9 @@
     powerManagement.finegrained = false;
     open = true; # Open modules required for RTX 50-series (Blackwell)
     nvidiaSettings = true;
+    # To update: bump version + set all sha256 fields to lib.fakeHash,
+    # then rebuild to get correct hashes from the error messages.
+    # Releases: https://www.nvidia.com/en-us/drivers/unix/
     package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
       version = "595.58.03";
       sha256_64bit = "sha256-jA1Plnt5MsSrVxQnKu6BAzkrCnAskq+lVRdtNiBYKfk=";

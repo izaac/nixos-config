@@ -29,6 +29,7 @@
   programs.git = {
     enable = true;
     package = pkgs.git;
+    lfs.enable = true;
 
     # Signing remains a top-level attribute in Home Manager for now
     signing = {
@@ -51,6 +52,11 @@
       alias = {
         quickserve = "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/";
         logline = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
+        wip = "commit -am 'WIP'";
+        rlast = "reset --hard HEAD~1";
+        incoming = "log HEAD..origin/main --oneline";
+        outgoing = "log origin/main..HEAD --oneline";
+        unstage = "reset HEAD --";
       };
     };
   };

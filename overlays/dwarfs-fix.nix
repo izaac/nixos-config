@@ -1,3 +1,6 @@
+# Pins dwarfs to a pre-built universal binary.
+# Check for updates: https://github.com/mhx/dwarfs/releases
+# To update: bump version + run `nix build` to get new hashes from errors.
 final: _prev: {
   dwarfs = final.stdenvNoCC.mkDerivation rec {
     pname = "dwarfs";

@@ -7,4 +7,6 @@
 
   # The global useDHCP flag is deprecated in favor of network-specific ontions.
   networking.useDHCP = lib.mkDefault true;
+
+  networking.firewall.enable = true;
 }

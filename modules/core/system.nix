@@ -36,6 +36,11 @@ in {
       settings = {
         PasswordAuthentication = lib.mkDefault false;
         KbdInteractiveAuthentication = lib.mkDefault false;
+        PermitRootLogin = "no";
+        MaxAuthTries = 3;
+        AllowTcpForwarding = false;
+        AllowAgentForwarding = false;
+        X11Forwarding = false;
       };
     };
 
@@ -44,7 +49,7 @@ in {
 
     # Limit journal size to prevent unbounded /var/log growth
     services.journald.extraConfig = ''
-      SystemMaxUse=500M
+      SystemMaxUse=2G
       MaxRetentionSec=1month
     '';
 

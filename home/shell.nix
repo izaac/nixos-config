@@ -19,6 +19,7 @@ in {
   catppuccin.btop.enable = true;
   catppuccin.k9s.enable = true;
   catppuccin.atuin.enable = true;
+  catppuccin.delta.enable = true;
 
   programs.atuin = {
     enable = true;
@@ -47,6 +48,16 @@ in {
 
   programs.bat.enable = true;
 
+  programs.git.delta = {
+    enable = true;
+    options = {
+      navigate = true;
+      light = false;
+      side-by-side = true;
+      line-numbers = true;
+    };
+  };
+
   home.packages = with pkgs; [
     # --- CORE UTILS ---
     fd
@@ -58,7 +69,7 @@ in {
     sops
     age
     gdu
-    jq
+    jaq # Rust-based jq replacement
     rsync
     pv
     bc
@@ -71,7 +82,9 @@ in {
     viddy
     lftp
     man-db
-    xxd
+    hexyl # Rust-based hex viewer
+    ast-grep # Rust-based structural code search (sg)
+    trippy # Rust-based mtr replacement
     kubernetes-helm
     kubectl
     procs
@@ -135,7 +148,7 @@ in {
   home.sessionVariables = {
     PAGER = "bat";
     DIRENV_LOG_FORMAT = "";
-    TERMINAL = "kitty";
+    TERMINAL = "wezterm";
     MANPAGER = "sh -c 'col -bx | bat -l man -p'";
     # Prevent Atuin from trying to migrate the database inside Distrobox.
     # This keeps host Atuin versions (NixOS) safe from rolling-release containers (Arch).
@@ -162,6 +175,10 @@ in {
       lt = "_smart_eza --tree --level=2";
       cd = "z";
       cat = "bat";
+      jq = "jaq";
+      mtr = "trip";
+      sg = "ast-grep";
+      hex = "hexyl";
       md = "glow";
       top = "btop";
       ping = "gping";
@@ -582,7 +599,7 @@ in {
 
   xdg.desktopEntries.yazi = {
     name = "Yazi";
-    exec = "kitty -e yazi %u";
+    exec = "wezterm start -- yazi %u";
     icon = "yazi";
     terminal = false;
     categories = ["Utility" "Core" "System" "FileTools" "FileManager" "ConsoleOnly"];

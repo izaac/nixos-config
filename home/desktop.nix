@@ -133,6 +133,7 @@
   };
 
   programs.zathura.enable = true;
+  services.udiskie.enable = true;
 
   # Clipboard History Watcher (stores clipboard entries for recall)
   systemd.user.services.cliphist-watcher = {

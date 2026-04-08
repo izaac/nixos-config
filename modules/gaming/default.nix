@@ -39,7 +39,7 @@ in {
       settings = {
         general = {
           softrealtime = "auto";
-          renice = 10;
+          renice = 5;
         };
         # Prevent "split_lock_mitigate" errors without needing root for every game
         custom = {

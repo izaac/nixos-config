@@ -19,7 +19,7 @@
   fileSystems."/" = {
     device = "/dev/mapper/luks-782b8c84-7a71-4244-8a98-c884f7678b96";
     fsType = "ext4";
-    options = ["noatime" "nodiratime" "lazytime" "commit=60"];
+    options = ["noatime" "nodiratime" "lazytime" "commit=60" "discard"];
   };
 
   boot.initrd.luks.devices."luks-782b8c84-7a71-4244-8a98-c884f7678b96".device = "/dev/disk/by-uuid/782b8c84-7a71-4244-8a98-c884f7678b96";
@@ -43,6 +43,7 @@
       # Removed 'users' to avoid forcing 'noexec'
       # Removed 'uid/gid' as EXT4 handles permissions on-disk
       "exec"
+      "discard"
     ];
   };
 
@@ -54,6 +55,7 @@
       "noauto"
       "x-systemd.idle-timeout=900"
       "x-systemd.mount-timeout=5s"
+      "x-systemd.device-timeout=5s"
       # NFS Performance Tweaks
       "nconnect=4" # Open 4 parallel pipes to the NAS (saturates the network link)
       "rsize=1048576"
