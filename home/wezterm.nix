@@ -42,6 +42,18 @@ _: {
       config.keys = {
         -- Tabs
         { key = 'T', mods = 'CTRL|SHIFT', action = act.SpawnTab 'CurrentPaneDomain' },
+        {
+          key = 'T',
+          mods = 'CTRL|SHIFT|ALT',
+          action = act.PromptInputLine {
+            description = 'Rename current tab (leave empty to reset)',
+            action = wezterm.action_callback(function(window, _pane, line)
+              if line ~= nil then
+                window:active_tab():set_title(line)
+              end
+            end),
+          },
+        },
         { key = 'PageUp', mods = 'CTRL|SHIFT', action = act.ActivateTabRelative(-1) },
         { key = 'PageDown', mods = 'CTRL|SHIFT', action = act.ActivateTabRelative(1) },
         { key = '1', mods = 'CTRL|SHIFT', action = act.ActivateTab(0) },

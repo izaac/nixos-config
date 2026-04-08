@@ -85,6 +85,7 @@ in {
     gping
     rm-improved
     doggo
+    glow
 
     # --- NIX DEVELOPMENT TOOLS ---
     alejandra
@@ -132,6 +133,7 @@ in {
   '';
 
   home.sessionVariables = {
+    PAGER = "bat";
     DIRENV_LOG_FORMAT = "";
     TERMINAL = "kitty";
     MANPAGER = "sh -c 'col -bx | bat -l man -p'";
@@ -160,6 +162,7 @@ in {
       lt = "_smart_eza --tree --level=2";
       cd = "z";
       cat = "bat";
+      md = "glow";
       top = "btop";
       ping = "gping";
       curl = "xh";
@@ -209,10 +212,10 @@ in {
     initContent = ''
             typeset -U path PATH
 
-            readonly CLEAN_PATH='${cleanPath}'
-            readonly COPILOT_BIN='${copilotBin}'
-            readonly GEMINI_BIN='${geminiBin}'
-            readonly NH_BIN='${nhBin}'
+            (( ''${+CLEAN_PATH} )) || readonly CLEAN_PATH='${cleanPath}'
+            (( ''${+COPILOT_BIN} )) || readonly COPILOT_BIN='${copilotBin}'
+            (( ''${+GEMINI_BIN} )) || readonly GEMINI_BIN='${geminiBin}'
+            (( ''${+NH_BIN} )) || readonly NH_BIN='${nhBin}'
 
             # --- Gemini CLI ---
             # -p for non-interactive if args are present.
@@ -255,7 +258,7 @@ in {
             }
 
             # --- Familiar Line Navigation ---
-            # Keep Home/End muscle memory while preserving vi insert/command modes.
+            # Keep Home/End and Alt+Arrow muscle memory while preserving vi insert/command modes.
             zmodload zsh/terminfo 2>/dev/null || true
             _bind_line_navigation() {
               local key
@@ -273,6 +276,18 @@ in {
                 '^[[8~'
                 '^[OF'
               )
+              local -a backward_word_keys=(
+                "$terminfo[kLFT3]"
+                '^[[1;3D'
+                '^[^[[D'
+                '^[b'
+              )
+              local -a forward_word_keys=(
+                "$terminfo[kRIT3]"
+                '^[[1;3C'
+                '^[^[[C'
+                '^[f'
+              )
 
               for key in "''${home_keys[@]}"; do
                 [[ -n "$key" ]] || continue
@@ -288,6 +303,22 @@ in {
                 bindkey -M main "$key" end-of-line
                 bindkey -M viins "$key" end-of-line
                 bindkey -M vicmd "$key" vi-end-of-line
+              done
+
+              for key in "''${backward_word_keys[@]}"; do
+                [[ -n "$key" ]] || continue
+                bindkey -M emacs "$key" backward-word
+                bindkey -M main "$key" backward-word
+                bindkey -M viins "$key" backward-word
+                bindkey -M vicmd "$key" vi-backward-word
+              done
+
+              for key in "''${forward_word_keys[@]}"; do
+                [[ -n "$key" ]] || continue
+                bindkey -M emacs "$key" forward-word
+                bindkey -M main "$key" forward-word
+                bindkey -M viins "$key" forward-word
+                bindkey -M vicmd "$key" vi-forward-word
               done
             }
             _bind_line_navigation
@@ -521,6 +552,12 @@ in {
       command_timeout = 5000;
       add_newline = false;
       format = "$directory$hostname$git_branch$git_status$container$character";
+
+      character = {
+        success_symbol = "[](bold green) ";
+        error_symbol = "[](bold red) ";
+        vimcmd_symbol = "[](bold yellow) ";
+      };
 
       hostname = {
         ssh_only = true;
