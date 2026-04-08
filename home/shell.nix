@@ -1,9 +1,15 @@
 {
   config,
+  lib,
   pkgs,
   userConfig,
   ...
-}: {
+}: let
+  cleanPath = "/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin";
+  copilotBin = lib.getExe' pkgs.github-copilot-cli "copilot";
+  geminiBin = lib.getExe' pkgs.gemini-cli-bin "gemini";
+  nhBin = lib.getExe pkgs.nh;
+in {
   # catppuccin.starship.enable = true;
   catppuccin.bat.enable = true;
   catppuccin.fzf.enable = true;
@@ -43,14 +49,12 @@
 
   home.packages = with pkgs; [
     # --- CORE UTILS ---
-    fzf
     fd
     ripgrep
     uutils-coreutils-noprefix
     ouch
     duf
     dust
-    bottom
     sops
     age
     gdu
@@ -174,7 +178,6 @@
       nrb = "st && nh os switch";
       ndr = "st && nh os build"; # Build without switching (no sudo needed)
       # Nix Tools
-      nqs = "nix-env -qaP | fzf --preview 'nix-env -qaP {}' --preview-window=right:70%:wrap";
       ncl = "nh clean all --keep 10 --nogc";
       # Full cleanup: prune stale direnvs, then garbage collect everything
       ncl-full = "direnv prune && nh clean all --keep 10";
@@ -201,34 +204,54 @@
     sessionVariables = {
       EDITOR = "nvim";
       VISUAL = "nvim";
-      # Ensure user profile tools (like Rust coreutils) take precedence over system tools
-      PATH = "$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH";
     };
 
     initContent = ''
+            typeset -U path PATH
+
+            readonly CLEAN_PATH='${cleanPath}'
+            readonly COPILOT_BIN='${copilotBin}'
+            readonly GEMINI_BIN='${geminiBin}'
+            readonly NH_BIN='${nhBin}'
+
             # --- Gemini CLI ---
-            # -p for non-interactive if args present
+            # -p for non-interactive if args are present.
+            # Use the flake-pinned nixpkgs package instead of an ad-hoc npx install.
             function ask() {
-              local CLEAN_PATH="/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin"
               if [[ $# -eq 0 ]]; then
-                PATH="$CLEAN_PATH" npx --yes @google/gemini-cli@latest
+                PATH="$CLEAN_PATH" "$GEMINI_BIN"
               else
-                PATH="$CLEAN_PATH" npx --yes @google/gemini-cli@latest -p "$*"
+                PATH="$CLEAN_PATH" "$GEMINI_BIN" -p "$*"
               fi
             }
 
             # --- Copilot CLI ---
             # Uses the native binary from nixpkgs (boosted by overlays/copilot-fix.nix).
             function ai() {
-              # Fast-path: Prune PATH to avoid exhaustive searches in node_modules
-              local CLEAN_PATH="/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin"
+              # Fast-path: prune PATH to avoid exhaustive searches in large node_modules trees.
+              case "$1" in
+                "")
+                  PATH="$CLEAN_PATH" "$COPILOT_BIN"
+                  ;;
+                login|init|update|version|help)
+                  PATH="$CLEAN_PATH" "$COPILOT_BIN" "$@"
+                  ;;
+                *)
+                  PATH="$CLEAN_PATH" "$COPILOT_BIN" -p "$*"
+                  ;;
+              esac
+            }
+
+            # --- Fast Package Search ---
+            # Search.nixos.org via nh is much faster than evaluating nix-env locally.
+            nqs() {
               if [[ $# -eq 0 ]]; then
-                PATH="$CLEAN_PATH" command copilot
-              elif [[ "$1" == "login" || "$1" == "init" || "$1" == "update" || "$1" == "version" || "$1" == "help" ]]; then
-                PATH="$CLEAN_PATH" command copilot "$@"
-              else
-                PATH="$CLEAN_PATH" command copilot -p "$*"
+                echo "Usage: nqs <query...>"
+                echo "Example: nqs neovim"
+                return 2
               fi
+
+              "$NH_BIN" search --limit 50 "$@"
             }
 
             # --- Smart Eza ---
@@ -351,16 +374,19 @@
             # fnm
             FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
             if [ -d "$FNM_PATH" ]; then
-              export PATH="$FNM_PATH:$PATH"
+              path=("$FNM_PATH" $path)
               eval "`fnm env`"
             fi
 
             # Ensure local binaries are in PATH
-            export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
+            path+=("$HOME/.local/bin" "$HOME/bin")
 
             # --- Distrobox: Host Tool Injection ---
             # Map host Nix tools into containers
             if [ -d "/run/host/nix/store" ]; then
+              # Preferred place for portable CLI overrides that should apply only inside containers.
+              path=("$HOME/.local/share/distrobox/bin" $path)
+
               # Scrub host variables that poison the container environment.
               # NixOS leaks paths that confuse container tools (like dnf),
               # making them try to load incompatible host libraries.
@@ -382,25 +408,16 @@
               local host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
 
               if [ -n "$host_sys" ]; then
-                export PATH="$PATH:/run/host$host_sys/sw/bin"
+                path+=("/run/host$host_sys/sw/bin")
               fi
               if [ -n "$host_user" ]; then
                 # User profile might link to /etc/static, resolve one more level
                 local host_user_resolved=$(readlink "/run/host$host_user")
                 [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
-                export PATH="$PATH:/run/host$host_user_resolved/bin"
+                path+=("/run/host$host_user_resolved/bin")
               fi
             fi
     '';
-  };
-
-  # direnv: Automatically load development environments when entering project directories
-  programs.direnv = {
-    enable = true;
-    # nix-direnv: Prevents dev environments from being garbage collected
-    # Creates GC roots in ~/.local/share/direnv/allow/ so your cached
-    # environments persist across 'nh clean' and 'nix-collect-garbage'
-    nix-direnv.enable = true;
   };
 
   programs.fzf = {
@@ -481,7 +498,6 @@
     };
   };
 
-  programs.lazygit.enable = true;
   programs.yazi = {
     enable = true;
     enableZshIntegration = true;

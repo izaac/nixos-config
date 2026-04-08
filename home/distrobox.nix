@@ -6,14 +6,14 @@
   home.packages = [pkgs.distrobox];
 
   # --- Distrobox: GC Survival ---
-  # Link stable paths to prevent breakage when /nix/store is cleaned.
+  # Link stable host-side paths so exported helpers survive profile updates and garbage collection.
   home.sessionVariables = {
     DBX_CONTAINER_ALWAYS_PULL = "1";
     # Force Distrobox to mount the stable symlink instead of the raw /nix/store path
     DBX_NON_INTERACTIVE = "1";
   };
 
-  # Provide a stable wrapper so the container always finds the current binary
+  # Host-visible wrappers belong in ~/.local/bin.
   home.file.".local/bin/distrobox-init" = {
     source = "${pkgs.distrobox}/bin/distrobox-init";
     executable = true;
@@ -45,9 +45,11 @@
     sudo ldconfig
   '';
 
-  # Ensure host directories exist for persistent RHEL subscription volumes
-  # We use UID/GID 100000 which corresponds to the container's root user
+  # Ensure host directories exist for shared Distrobox state.
   systemd.user.tmpfiles.rules = [
+    "d %h/.local/share/distrobox/bin 0755 - - - -"
+
+    # Persistent RHEL subscription volumes use UID/GID 100000, which maps to the container's root user.
     "d %h/.local/share/distrobox/rhel10/rhsm 0755 100000 100000 - -"
     "d %h/.local/share/distrobox/rhel10/pki-entitlement 0755 100000 100000 - -"
     "d %h/.local/share/distrobox/rhel10/pki-consumer 0755 100000 100000 - -"
