@@ -254,6 +254,45 @@ in {
               "$NH_BIN" search --limit 50 "$@"
             }
 
+            # --- Familiar Line Navigation ---
+            # Keep Home/End muscle memory while preserving vi insert/command modes.
+            zmodload zsh/terminfo 2>/dev/null || true
+            _bind_line_navigation() {
+              local key
+              local -a home_keys=(
+                "$terminfo[khome]"
+                '^[[H'
+                '^[[1~'
+                '^[[7~'
+                '^[OH'
+              )
+              local -a end_keys=(
+                "$terminfo[kend]"
+                '^[[F'
+                '^[[4~'
+                '^[[8~'
+                '^[OF'
+              )
+
+              for key in "''${home_keys[@]}"; do
+                [[ -n "$key" ]] || continue
+                bindkey -M emacs "$key" beginning-of-line
+                bindkey -M main "$key" beginning-of-line
+                bindkey -M viins "$key" beginning-of-line
+                bindkey -M vicmd "$key" vi-beginning-of-line
+              done
+
+              for key in "''${end_keys[@]}"; do
+                [[ -n "$key" ]] || continue
+                bindkey -M emacs "$key" end-of-line
+                bindkey -M main "$key" end-of-line
+                bindkey -M viins "$key" end-of-line
+                bindkey -M vicmd "$key" vi-end-of-line
+              done
+            }
+            _bind_line_navigation
+            unset -f _bind_line_navigation
+
             # --- Smart Eza ---
             # No icons/git on network shares to prevent hangs
             _smart_eza() {
