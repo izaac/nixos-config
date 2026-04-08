@@ -22,6 +22,7 @@ nixpkgs.lib.nixosSystem {
         (import ../overlays/sparrow-temurin-fix.nix)
         (import ../overlays/dwarfs-fix.nix)
         (import ../overlays/ai-trace-scanner.nix inputs)
+        (import ../overlays/copilot-fix.nix)
       ];
     }
   ];

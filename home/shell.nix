@@ -41,15 +41,7 @@
 
   programs.bat.enable = true;
 
-  home.packages = with pkgs; let
-    copilot-latest = github-copilot-cli.overrideAttrs (_old: {
-      version = "1.0.21";
-      src = fetchurl {
-        url = "https://github.com/github/copilot-cli/releases/download/v1.0.21/copilot-linux-x64.tar.gz";
-        hash = "sha256-pvxJSj3Vp2JG+zNCS68Iq7W0y2iJ//KM8pUVXCixz3c=";
-      };
-    });
-  in [
+  home.packages = with pkgs; [
     # --- CORE UTILS ---
     fzf
     fd
@@ -96,7 +88,7 @@
     statix
 
     # --- AI CLI TOOLS ---
-    copilot-latest
+    github-copilot-cli
 
     # --- MEDIA & ENCODING ---
     (callPackage ../pkgs/vcrunch {})
@@ -216,20 +208,19 @@
     initContent = ''
             # --- Gemini CLI ---
             # -p for non-interactive if args present
-            ask() {
+            function ask() {
+              local CLEAN_PATH="/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin"
               if [[ $# -eq 0 ]]; then
-                npx --yes @google/gemini-cli@latest
+                PATH="$CLEAN_PATH" npx --yes @google/gemini-cli@latest
               else
-                npx --yes @google/gemini-cli@latest -p "$*"
+                PATH="$CLEAN_PATH" npx --yes @google/gemini-cli@latest -p "$*"
               fi
             }
 
             # --- Copilot CLI ---
-            # Uses the native binary from nixpkgs (github-copilot-cli).
-            # Smart enough to pass subcommands (login, init) directly.
+            # Uses the native binary from nixpkgs (boosted by overlays/copilot-fix.nix).
             function ai() {
               # Fast-path: Prune PATH to avoid exhaustive searches in node_modules
-              # especially important on NixOS where PATH can get very long.
               local CLEAN_PATH="/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin"
               if [[ $# -eq 0 ]]; then
                 PATH="$CLEAN_PATH" command copilot

@@ -11,6 +11,7 @@
 
     # --- LANGUAGES & TOOLCHAINS ---
     docker-compose
+    nodejs
 
     # --- DATA & FORMATTING ---
     sqlite
