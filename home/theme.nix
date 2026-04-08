@@ -6,10 +6,10 @@
 }: let
   catppuccin-papirus = pkgs.catppuccin-papirus-folders.override {
     flavor = "mocha";
-    accent = "mauve";
+    accent = "blue";
   };
   catppuccin-gtk-overridden = pkgs.catppuccin-gtk.override {
-    accents = ["mauve"];
+    accents = ["blue"];
     size = "standard";
     tweaks = ["rimless"];
     variant = "mocha";
@@ -18,10 +18,19 @@ in {
   catppuccin.enable = true;
   catppuccin.vscode.profiles.default.enable = false;
   catppuccin.flavor = "mocha";
-  catppuccin.accent = "mauve";
+  catppuccin.accent = "blue";
 
-  # Enable specific integrations
-  catppuccin.cursors.enable = true;
+  # Use Bibata Modern Ice for a blue pointer matching COSMIC aesthetic
+  home.pointerCursor = {
+    name = "Bibata-Modern-Ice";
+    package = pkgs.bibata-cursors;
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
+
+  # Enable specific integrations (but disable Catppuccin cursors to use Bibata)
+  catppuccin.cursors.enable = false;
 
   home.packages = with pkgs; [
     catppuccin-papirus
@@ -31,7 +40,7 @@ in {
     enable = true;
     gtk4.theme = null;
     theme = {
-      name = "catppuccin-mocha-mauve-standard";
+      name = "catppuccin-mocha-blue-standard";
       package = catppuccin-gtk-overridden;
     };
     gtk3.bookmarks = [
@@ -48,16 +57,16 @@ in {
   };
 
   # Theme Libadwaita
-  home.sessionVariables.GTK_THEME = "catppuccin-mocha-mauve-standard";
+  home.sessionVariables.GTK_THEME = "catppuccin-mocha-blue-standard";
 
   # GTK 4 settings
-  xdg.configFile."gtk-4.0/gtk.css".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-mauve-standard/gtk-4.0/gtk.css";
-  xdg.configFile."gtk-4.0/gtk-dark.css".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-mauve-standard/gtk-4.0/gtk-dark.css";
-  xdg.configFile."gtk-4.0/assets".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-mauve-standard/gtk-4.0/assets";
+  xdg.configFile."gtk-4.0/gtk.css".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-blue-standard/gtk-4.0/gtk.css";
+  xdg.configFile."gtk-4.0/gtk-dark.css".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-blue-standard/gtk-4.0/gtk-dark.css";
+  xdg.configFile."gtk-4.0/assets".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-blue-standard/gtk-4.0/assets";
 
   # Set custom icon for Games folder
   home.activation.setGamesIcon = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    $DRY_RUN_CMD ${pkgs.glib}/bin/gio set -t string /home/${userConfig.username}/Games metadata::gvfs.extra-icon folder-cat-mocha-mauve-games
+    $DRY_RUN_CMD ${pkgs.glib}/bin/gio set -t string /home/${userConfig.username}/Games metadata::gvfs.extra-icon folder-cat-mocha-blue-games
   '';
 
   dconf.settings = {

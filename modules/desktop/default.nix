@@ -26,7 +26,7 @@ in {
 
     catppuccin.enable = true;
     catppuccin.flavor = "mocha";
-    catppuccin.accent = "mauve";
+    catppuccin.accent = "blue";
     catppuccin.tty.enable = true;
 
     security.pam.services.cosmic-greeter.enableGnomeKeyring = true;

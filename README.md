@@ -3,9 +3,9 @@
 ## Overview
 
 - **OS:** NixOS (Branch: 25.11)
-- **DM:** GDM (Wayland)
-- **DE:** GNOME 49
-- **Theme:** Catppuccin Mocha (Mauve Accent)
+- **DM:** cosmic-greeter (greetd)
+- **DE:** COSMIC (Epoch 1)
+- **Theme:** Catppuccin Mocha (Blue Accent)
 - **Shell:** Zsh + Starship + Atuin + Rust Coreutils
 - **Terminal:** Wezterm + Tmux
 - **Editor:** Neovim (LazyVim)

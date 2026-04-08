@@ -72,7 +72,8 @@ in {
       cpu_color = "89b4fa"; # Blue
       vram_color = "f38ba8"; # Red
       ram_color = "fab387"; # Orange
-      engine_color = "cba6f7"; # Mauve
+      engine_color = "89b4fa"; # Blue
+
       frametime_color = "94e2d5"; # Teal
       background_alpha = "0.4";
       font_size = 24;
