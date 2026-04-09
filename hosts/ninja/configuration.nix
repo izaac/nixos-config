@@ -11,6 +11,7 @@
     ./performance.nix
     ./audio.nix
     ./firefox.nix
+    ./chromium.nix
     ../../modules/core
     ../../modules/gaming
     ../../modules/desktop

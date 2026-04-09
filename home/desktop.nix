@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: let
+  nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
+in {
   imports = [
     ./distrobox.nix
     ./firefox.nix
@@ -9,7 +15,6 @@
     ./chrome.nix
     ./lazyvim.nix
     ./vscode.nix
-    ./mpv.nix
   ];
 
   # --- FONTS ---
@@ -29,13 +34,14 @@
     # Audio Tools
     pulsemixer
     monophony
+    nix-packages.ethereal-waves # COSMIC Music Player
 
     # General Software
     abiword # Lightweight GTK Word Processor
     gophertube # TUI YouTube Client
     chafa # Terminal Graphics for gophertube
     fragments # GTK Torrent Client
-    amberol # GTK Music Player
+    glide-media-player # GTK Video Player
     brasero # GTK CD/DVD Burning
     snapshot # GTK Camera App
     sparrow
@@ -95,26 +101,26 @@
       "application/x-xz" = ["org.gnome.FileRoller.desktop"];
 
       # Video
-      "video/mp4" = ["mpv.desktop"];
-      "video/x-matroska" = ["mpv.desktop"];
-      "video/webm" = ["mpv.desktop"];
-      "video/quicktime" = ["mpv.desktop"];
-      "video/x-flv" = ["mpv.desktop"];
-      "video/x-msvideo" = ["mpv.desktop"];
-      "video/mpeg" = ["mpv.desktop"];
-      "video/ogg" = ["mpv.desktop"];
-      "video/x-ogm+xml" = ["mpv.desktop"];
-      "video/3gpp" = ["mpv.desktop"];
-      "video/3gpp2" = ["mpv.desktop"];
-      "video/h264" = ["mpv.desktop"];
-      "video/mp2t" = ["mpv.desktop"];
-      "video/vnd.rn-realvideo" = ["mpv.desktop"];
-      "video/x-ms-wmv" = ["mpv.desktop"];
+      "video/mp4" = ["dev.philn.Glide.desktop"];
+      "video/x-matroska" = ["dev.philn.Glide.desktop"];
+      "video/webm" = ["dev.philn.Glide.desktop"];
+      "video/quicktime" = ["dev.philn.Glide.desktop"];
+      "video/x-flv" = ["dev.philn.Glide.desktop"];
+      "video/x-msvideo" = ["dev.philn.Glide.desktop"];
+      "video/mpeg" = ["dev.philn.Glide.desktop"];
+      "video/ogg" = ["dev.philn.Glide.desktop"];
+      "video/x-ogm+xml" = ["dev.philn.Glide.desktop"];
+      "video/3gpp" = ["dev.philn.Glide.desktop"];
+      "video/3gpp2" = ["dev.philn.Glide.desktop"];
+      "video/h264" = ["dev.philn.Glide.desktop"];
+      "video/mp2t" = ["dev.philn.Glide.desktop"];
+      "video/vnd.rn-realvideo" = ["dev.philn.Glide.desktop"];
+      "video/x-ms-wmv" = ["dev.philn.Glide.desktop"];
 
       # Audio
-      "audio/mpeg" = ["io.bassi.Amberol.desktop"];
-      "audio/flac" = ["io.bassi.Amberol.desktop"];
-      "audio/x-wav" = ["io.bassi.Amberol.desktop"];
+      "audio/mpeg" = ["com.galacticpirateradio.ethereal-waves.desktop"];
+      "audio/flac" = ["com.galacticpirateradio.ethereal-waves.desktop"];
+      "audio/x-wav" = ["com.galacticpirateradio.ethereal-waves.desktop"];
 
       # Documents / Images
       "application/pdf" = ["org.pwmt.zathura.desktop"];

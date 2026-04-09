@@ -43,11 +43,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775661044,
-        "narHash": "sha256-HlvLj+wE5ELaU+u2cY2nBFUJHdrob1V7qydk9lBx7oE=",
+        "lastModified": 1775683737,
+        "narHash": "sha256-oBYyowo6yfgb95Z78s3uTnAd9KkpJpwzjJbfnpLaM2Y=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "4ac0a4fd1537325d769377d574dccd10b97c28a2",
+        "rev": "7ba4ee4228ed36123c7cb75d50524b43514ef992",
         "type": "github"
       },
       "original": {
@@ -69,6 +69,26 @@
       "original": {
         "owner": "gmodena",
         "repo": "nix-flatpak",
+        "type": "github"
+      }
+    },
+    "nix-packages": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1775761086,
+        "narHash": "sha256-lwW0x71lJLXxbJuzuDMws7mi/+8Pz+7ig5JT3yPByho=",
+        "owner": "izaac",
+        "repo": "nix-packages",
+        "rev": "45cd875aa3893e96679fe363b506fed6d31c2229",
+        "type": "github"
+      },
+      "original": {
+        "owner": "izaac",
+        "repo": "nix-packages",
         "type": "github"
       }
     },
@@ -94,6 +114,7 @@
         "catppuccin": "catppuccin",
         "home-manager": "home-manager",
         "nix-flatpak": "nix-flatpak",
+        "nix-packages": "nix-packages",
         "nixpkgs": "nixpkgs",
         "sops-nix": "sops-nix"
       }
@@ -105,11 +126,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775619836,
-        "narHash": "sha256-VcC/+MMMldwQKcST2y/QTndGLusSxjeUvYwFwzZKKko=",
+        "lastModified": 1775682595,
+        "narHash": "sha256-0E9PohY/VuESLq0LR4doaH7hTag513sDDW5n5qmHd1Q=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "de5f2d596eb896a5728afcd15f823f59cb9ecfdb",
+        "rev": "d2e8438d5886e92bc5e7c40c035ab6cae0c41f76",
         "type": "github"
       },
       "original": {

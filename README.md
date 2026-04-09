@@ -26,7 +26,8 @@
 - `modules/`: reusable NixOS modules behind `mySystem.*` options
 - `home/`: Home Manager modules for user-level configuration
 - `users/`: per-user profile composition
-- `pkgs/` and `overlays/`: custom packages and package overrides
+- `overlays/`: package overrides
+- Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) and are consumed as a flake input
 
 ## Quick Start
 

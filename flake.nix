@@ -16,6 +16,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-packages = {
+      url = "github:izaac/nix-packages";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     ai-trace-scanner = {
       url = "github:izaac/ai-trace-scanner";
       flake = false;
@@ -47,13 +51,7 @@
       windy = mkSystem "windy" "x86_64-linux";
     };
 
-    packages = forEachSystem (system: let
-      pkgs = mkPkgs system;
-    in {
-      vcrunch = pkgs.callPackage ./pkgs/vcrunch {};
-      zelda-oot = pkgs.callPackage ./pkgs/zelda-oot {};
-      default = pkgs.callPackage ./pkgs/vcrunch {};
-    });
+    packages = forEachSystem (system: inputs.nix-packages.packages.${system});
 
     devShells = forEachSystem (system: let
       pkgs = mkPkgs system;
@@ -77,7 +75,8 @@
       pkgs = mkPkgs system;
     in {
       formatting =
-        pkgs.runCommand "nixpkgs-fmt-check" {
+        pkgs.runCommand "nixpkgs-fmt-check"
+        {
           src = ./.;
           nativeBuildInputs = [pkgs.nixpkgs-fmt];
         } ''

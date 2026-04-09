@@ -1,15 +1,16 @@
 {
   pkgs,
   userConfig,
+  inputs,
   ...
 }: let
   flashgbx = pkgs.callPackage ./flashgbx.nix {};
-  zelda-oot-launcher = pkgs.callPackage ../pkgs/zelda-oot {};
+  nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
 in {
   home.packages = with pkgs; [
     # Custom
     flashgbx
-    zelda-oot-launcher
+    nix-packages.zelda-oot
 
     # Repack Support Tools
     fuse-overlayfs

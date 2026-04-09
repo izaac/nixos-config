@@ -75,6 +75,18 @@ _: {
         { key = 'F', mods = 'CTRL|SHIFT', action = act.TogglePaneZoomState },
       }
 
+      -- Tab title: show process name + cwd basename
+      wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, _hover, _max_width)
+        local pane = tab.active_pane
+        local proc = pane.foreground_process_name:match('([^/]+)$') or 'zsh'
+        local cwd = pane.current_working_dir
+        local dir = '''
+        if cwd then
+          dir = ' ' .. (cwd.file_path:match('([^/]+)/?$') or cwd.file_path)
+        end
+        return proc .. dir
+      end)
+
       return config
     '';
   };

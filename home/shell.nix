@@ -3,8 +3,10 @@
   lib,
   pkgs,
   userConfig,
+  inputs,
   ...
 }: let
+  nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
   cleanPath = "/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin";
   copilotBin = lib.getExe' pkgs.github-copilot-cli "copilot";
   geminiBin = lib.getExe' pkgs.gemini-cli-bin "gemini";
@@ -48,7 +50,7 @@ in {
 
   programs.bat.enable = true;
 
-  programs.git.delta = {
+  programs.delta = {
     enable = true;
     options = {
       navigate = true;
@@ -109,7 +111,7 @@ in {
     github-copilot-cli
 
     # --- MEDIA & ENCODING ---
-    (callPackage ../pkgs/vcrunch {})
+    nix-packages.vcrunch
 
     # --- COMPRESSION & ARCHIVING ---
     zip
@@ -187,7 +189,8 @@ in {
       rm = "rip";
       vim = "TERM=xterm-256color nvim";
       nvim = "TERM=xterm-256color nvim";
-      cpv = "rsync -ahP";
+      cpv = "rsync -ahP --size-only";
+      rcp = "rclone copy --progress --fast-list --drive-chunk-size 64M --transfers 8 --checkers 16";
       sysls = "systemctl --type=service --state=running";
       lg = "lazygit";
       # Cache clearing alias

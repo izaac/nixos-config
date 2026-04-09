@@ -1,6 +1,7 @@
 final: _prev: {
   sparrow =
-    final.callPackage (
+    final.callPackage
+    (
       {
         stdenv,
         stdenvNoCC,
@@ -38,8 +39,7 @@ final: _prev: {
           {
             x86_64-linux = "x86_64";
             aarch64-linux = "aarch64";
-          }
-        ."${stdenvNoCC.hostPlatform.system}";
+          }."${stdenvNoCC.hostPlatform.system}";
 
         src = fetchurl {
           url = "https://github.com/sparrowwallet/${pname}/releases/download/${version}/sparrowwallet-${version}-${sparrowArch}.tar.gz";
@@ -47,8 +47,7 @@ final: _prev: {
             {
               x86_64-linux = "08bbjgy3244mdlq6qbblv1192iv1kzr86jqpg2yky7pywrkm1yq6";
               aarch64-linux = "0l8qzpa3227s4jfhddbmkvix2hmyrvrl3g1zgrc8skifp79lxia8";
-            }
-          ."${stdenvNoCC.hostPlatform.system}";
+            }."${stdenvNoCC.hostPlatform.system}";
         };
 
         launcher = writeScript "sparrow" ''
@@ -259,7 +258,8 @@ final: _prev: {
             mainProgram = "sparrow-desktop";
           };
         }
-    ) {
+    )
+    {
       inherit (final) temurin-bin-25;
     };
 }
