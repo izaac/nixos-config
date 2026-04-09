@@ -4,8 +4,7 @@ _: {
   programs.zellij = {
     enable = true;
     settings = {
-      # Simplified UI — hides tips and extra bars
-      simplified_ui = true;
+      # Clean UI but keep the keybinding helper bar
       pane_frames = false;
 
       # Mouse support
@@ -18,8 +17,8 @@ _: {
       session_serialization = true;
       auto_layout = true;
 
-      # Default layout
-      default_layout = "compact";
+      # Disable startup tips
+      show_startup_tips = false;
     };
   };
 }

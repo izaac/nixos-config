@@ -21,7 +21,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     ai-trace-scanner = {
-      url = "github:izaac/ai-trace-scanner";
+      url = "github:izaac/ai-trace-scanner/v0.6.0";
       flake = false;
     };
   };
