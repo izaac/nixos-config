@@ -5,7 +5,7 @@
     ./flatpak.nix
     ./ssh.nix
     ./rclone-gdrive.nix
-    ./tmux.nix
+    ./zellij.nix
     ./theme.nix
     ./whosthere.nix
     ./dev.nix
