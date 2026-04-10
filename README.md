@@ -7,7 +7,7 @@
 - **DE:** COSMIC (Epoch 1)
 - **Theme:** Catppuccin Mocha (Blue Accent)
 - **Shell:** Zsh + Starship + Atuin + Rust Coreutils
-- **Terminal:** Wezterm + Tmux
+- **Terminal:** Wezterm + Zellij
 - **Editor:** Neovim (LazyVim)
 - **Security:** dbus-broker
 - **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, Conty
@@ -18,6 +18,9 @@
 - [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
 - [Security & Hardening](docs/security.md)
 - [Secret Management](docs/secrets.md)
+- [Zellij Configuration](docs/zellij.md)
+- [Wezterm Configuration](docs/wezterm.md)
+- [Terminal Workflows & Configuration](docs/zellij-wezterm-workflow.md)
 - [Documentation Index](docs/README.md)
 
 ## Structure

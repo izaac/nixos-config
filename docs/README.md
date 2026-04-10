@@ -5,3 +5,6 @@
 - [NVIDIA Driver Updates](nvidia-driver-updates.md)
 - [Security & Hardening](security.md)
 - [Secret Management](secrets.md)
+- [Zellij Configuration](zellij.md)
+- [Wezterm Configuration](wezterm.md)
+- [Zellij + Wezterm Workflow](zellij-wezterm-workflow.md)
