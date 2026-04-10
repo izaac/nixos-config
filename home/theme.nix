@@ -31,8 +31,6 @@ in {
 
   # Enable specific integrations (but disable Catppuccin cursors to use Bibata)
   catppuccin.cursors.enable = false;
-  # LazyVim manages catppuccin-nvim itself; disable HM module injection
-  catppuccin.nvim.enable = false;
 
   home.packages = with pkgs; [
     catppuccin-papirus

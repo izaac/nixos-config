@@ -304,8 +304,6 @@ in {
       nv-boot = "nvd diff /run/booted-system /run/current-system";
 
       # --- TERMINAL FIXES & SECURITY ---
-      vim = "TERM=xterm-256color nvim";
-      nvim = "TERM=xterm-256color nvim";
       ssh = "TERM=xterm-256color ssh";
       gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
 
@@ -324,8 +322,8 @@ in {
     };
 
     sessionVariables = {
-      EDITOR = "nvim";
-      VISUAL = "nvim";
+      EDITOR = "hx";
+      VISUAL = "hx";
     };
 
     initContent = ''

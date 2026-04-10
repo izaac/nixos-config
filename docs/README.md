@@ -7,4 +7,5 @@
 - [Secret Management](secrets.md)
 - [Zellij Configuration](zellij.md)
 - [Wezterm Configuration](wezterm.md)
+- [Helix Editor](helix.md)
 - [Zellij + Wezterm Workflow](zellij-wezterm-workflow.md)

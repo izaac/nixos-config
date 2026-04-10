@@ -8,7 +8,7 @@
 - **Theme:** Catppuccin Mocha (Blue Accent)
 - **Shell:** Zsh + Starship + Atuin + Rust Coreutils
 - **Terminal:** Wezterm + Zellij
-- **Editor:** Neovim (LazyVim)
+- **Editor:** Helix
 - **Security:** dbus-broker
 - **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, Conty
 
@@ -20,6 +20,7 @@
 - [Secret Management](docs/secrets.md)
 - [Zellij Configuration](docs/zellij.md)
 - [Wezterm Configuration](docs/wezterm.md)
+- [Helix Editor](docs/helix.md)
 - [Terminal Workflows & Configuration](docs/zellij-wezterm-workflow.md)
 - [Documentation Index](docs/README.md)
 

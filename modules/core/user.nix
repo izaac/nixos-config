@@ -29,7 +29,7 @@ in {
       enable = true;
       wheelNeedsPassword = true;
       extraConfig = ''
-        Defaults editor=${pkgs.neovim}/bin/nvim
+        Defaults editor=${pkgs.helix}/bin/hx
       '';
     };
   };

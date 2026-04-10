@@ -13,7 +13,7 @@ in {
     ./cmus.nix
     ./qt.nix
     ./chrome.nix
-    ./lazyvim.nix
+    ./helix.nix
     ./vscode.nix
   ];
 
