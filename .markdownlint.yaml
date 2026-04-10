@@ -1,0 +1,7 @@
+default: true
+MD013: false # line length
+MD024: false # duplicate headings
+MD026: false # trailing punctuation in heading
+MD033: false # inline HTML
+MD036: false # emphasis used instead of a heading
+MD041: false # first line in file should be a top level heading

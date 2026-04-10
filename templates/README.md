@@ -136,11 +136,13 @@ cppinit              # Loads environment with clang, cmake, lldb, etc.
 ### Rust Template
 
 **Features:**
+
 - Rust stable toolchain (rustc, cargo, rust-analyzer, clippy, rustfmt)
 - Additional tools: cargo-watch, cargo-edit, cargo-audit, cargo-outdated, bacon
 - Pre-configured scripts: `build`, `test`, `run`, `watch`
 
 **Usage:**
+
 ```bash
 nix flake init -t github:<username>/nixos-config?dir=templates#rust
 direnv allow
@@ -150,6 +152,7 @@ watch  # Run bacon (background checker)
 
 **Customization:**
 Edit `devenv.nix` to:
+
 - Change Rust channel (stable/nightly/beta)
 - Add more cargo tools
 - Enable pre-commit hooks (rustfmt, clippy)
@@ -159,12 +162,14 @@ Edit `devenv.nix` to:
 ### C Template
 
 **Features:**
+
 - GCC compiler with cmake, ninja, pkg-config
 - Debugging: gdb, valgrind
 - Common libraries: openssl, zlib, curl, sqlite
 - Pre-configured scripts: `build`, `clean`, `test`, `debug`
 
 **Usage:**
+
 ```bash
 nix flake init -t github:<username>/nixos-config?dir=templates#c
 direnv allow
@@ -174,6 +179,7 @@ debug  # launch gdb
 
 **Customization:**
 Edit `devenv.nix` to:
+
 - Add/remove libraries in `packages = [ ... ]`
 - Modify build scripts
 - Add project-specific environment variables
@@ -185,6 +191,7 @@ Edit `devenv.nix` to:
 ### C++ Template
 
 **Features:**
+
 - Clang toolchain (clang, clangd, clang-format, clang-tidy, lldb)
 - Build tools: cmake, ninja, pkg-config
 - Common libraries: openssl, zlib, curl, sqlite, boost
@@ -192,6 +199,7 @@ Edit `devenv.nix` to:
 - Pre-configured scripts: `build`, `clean`, `test`, `debug`, `format`, `lint`
 
 **Usage:**
+
 ```bash
 nix flake init -t github:<username>/nixos-config?dir=templates#cpp
 direnv allow
@@ -202,6 +210,7 @@ lint    # clang-tidy
 
 **Customization:**
 Edit `devenv.nix` to:
+
 - Switch to GCC (uncomment gcc/gdb, comment clang/lldb)
 - Add/remove libraries
 - Modify linter rules
@@ -215,6 +224,7 @@ On NixOS, there's no `/usr/lib` or `/usr/include`. You MUST explicitly declare a
 ### Example: Adding SDL2 to a C project
 
 Edit `devenv.nix`:
+
 ```nix
 packages = with pkgs; [
   # ... existing packages ...
@@ -225,6 +235,7 @@ packages = with pkgs; [
 ```
 
 Then rebuild:
+
 ```bash
 direnv reload
 ```
@@ -234,6 +245,7 @@ Now `gcc` and `cmake` will automatically find SDL2 headers and libraries.
 ### Common Libraries
 
 Available in `pkgs`:
+
 - Graphics: `SDL2`, `SDL2_image`, `glfw`, `vulkan-loader`, `mesa`
 - Compression: `zlib`, `bzip2`, `xz`, `zstd`
 - Crypto: `openssl`, `libsodium`, `gnutls`
@@ -251,6 +263,7 @@ Search for packages: `nix search nixpkgs <package-name>`
 All project templates use [devenv.sh](https://devenv.sh), which provides:
 
 ### 1. Custom Scripts
+
 ```nix
 scripts.mycmd.exec = "echo 'Hello from mycmd'";
 ```
@@ -258,6 +271,7 @@ scripts.mycmd.exec = "echo 'Hello from mycmd'";
 Then run: `mycmd`
 
 ### 2. Background Processes
+
 ```nix
 processes.watch.exec = "cargo watch -x check";
 ```
@@ -265,6 +279,7 @@ processes.watch.exec = "cargo watch -x check";
 Runs automatically when entering the shell.
 
 ### 3. Pre-commit Hooks
+
 ```nix
 pre-commit.hooks = {
   rustfmt.enable = true;
@@ -273,6 +288,7 @@ pre-commit.hooks = {
 ```
 
 ### 4. Services (Databases, Redis, etc.)
+
 ```nix
 services.postgres = {
   enable = true;
@@ -280,7 +296,7 @@ services.postgres = {
 };
 ```
 
-See: https://devenv.sh/reference/options/
+See: <https://devenv.sh/reference/options/>
 
 ---
 
@@ -317,30 +333,38 @@ test
 ## Troubleshooting
 
 ### "direnv: error .envrc is blocked"
+
 Run: `direnv allow`
 
 ### "Cannot find library X"
+
 Add it to `devenv.nix` packages:
+
 ```nix
 packages = with pkgs; [ yourLibrary ];
 ```
 
 ### "Command not found: build/test/etc"
+
 These are custom scripts defined in `devenv.nix`. Make sure devenv loaded:
+
 ```bash
 direnv reload
 ```
 
 ### Check what's in your environment
+
 ```bash
 env | grep NIX
 pkg-config --list-all
 ```
 
 ### "npm install failed: ENOENT package.json" (or similar errors)
+
 You ran `ninit`/`pinit` in a directory without project files. The functions only work in project directories.
 
 **Fix:**
+
 ```bash
 # Remove the incorrect .envrc
 rm .envrc
@@ -354,6 +378,7 @@ cd ~/my-actual-project && ninit
 ```
 
 ### Accidentally created .envrc in the wrong place
+
 ```bash
 # Just delete it
 rm .envrc
@@ -375,18 +400,22 @@ cd .. && cd -
 ## Maintenance
 
 ### Update devenv.sh
+
 ```bash
 cd templates
 nix flake update
 ```
 
 ### Update golden master shells
+
 Edit `templates/flake.nix` devShells section.
 
 ### Add new template
+
 1. Create new directory: `mkdir templates/mylang`
 2. Add files: `flake.nix`, `devenv.nix`, `.envrc`
 3. Register in `templates/flake.nix`:
+
    ```nix
    templates.mylang = {
      path = ./mylang;

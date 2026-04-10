@@ -5,11 +5,12 @@ This guide explains how to update the NVIDIA driver version using the `mkDriver`
 ## 1. Where to Look for Updates
 
 To find new driver versions, you can check the following sources:
+
 - **NVIDIA Linux Driver Archive**: [https://www.nvidia.com/en-us/drivers/unix/](https://www.nvidia.com/en-us/drivers/unix/)
 - **Vulkan Beta Drivers** (Often used for bleeding-edge gaming): [https://developer.nvidia.com/vulkan-driver](https://developer.nvidia.com/vulkan-driver)
 - **NVIDIA Open Kernel Modules GitHub** (Important if using `open = true;`): [https://github.com/NVIDIA/open-gpu-kernel-modules/tags](https://github.com/NVIDIA/open-gpu-kernel-modules/tags)
 
-*Note: Ensure that the version you select has matching tags in the `nvidia-settings` and `nvidia-persistenced` GitHub repositories, as well as an available `.run` file on the NVIDIA CDN.*
+_Note: Ensure that the version you select has matching tags in the `nvidia-settings` and `nvidia-persistenced` GitHub repositories, as well as an available `.run` file on the NVIDIA CDN._
 
 ## 2. Locating the Configuration
 
@@ -51,50 +52,59 @@ The easiest way to update is to intentionally fail the build and let Nix tell yo
    ```
 
 3. **Rebuild the System:** Run your normal rebuild command.
+
    ```bash
    sudo nixos-rebuild switch --flake .#ninja
    ```
+
 4. **Copy the Hashes:** The build will fail with a "hash mismatch" error for the first package it tries to download. It will show you an output like:
+
    ```text
    error: hash mismatch in fixed-output derivation '/nix/store/...':
      specified: sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
      got:       sha256-ActualCorrectHashGoesHere1234567890abcdefg=
    ```
-5. **Paste and Repeat:** Paste the `got:` hash into the corresponding field in `nvidia.nix`. Run the rebuild command again. It will fail on the *next* missing hash. Repeat this process until all 5 hashes are filled in and the build succeeds.
+
+5. **Paste and Repeat:** Paste the `got:` hash into the corresponding field in `nvidia.nix`. Run the rebuild command again. It will fail on the _next_ missing hash. Repeat this process until all 5 hashes are filled in and the build succeeds.
 
 ### Method B: Pre-fetching the Hashes via CLI (Advanced)
 
 If you prefer to get all the hashes up front without failing the rebuild multiple times, you can use `nix-prefetch-url`.
 
-Replace `VERSION` in the commands below with your target version (e.g., `590.44.01`). 
-*Note: We pass `--type sha256` to ensure it outputs a standard Nix hash.*
+Replace `VERSION` in the commands below with your target version (e.g., `590.44.01`).
+_Note: We pass `--type sha256` to ensure it outputs a standard Nix hash._
 
 **1. `sha256_64bit`** (The main driver `.run` file):
+
 ```bash
 nix-prefetch-url https://download.nvidia.com/XFree86/Linux-x86_64/VERSION/NVIDIA-Linux-x86_64-VERSION.run
 ```
 
 **2. `sha256_aarch64`** (The ARM driver `.run` file):
+
 ```bash
 nix-prefetch-url https://download.nvidia.com/XFree86/Linux-aarch64/VERSION/NVIDIA-Linux-aarch64-VERSION.run
 ```
 
 **3. `openSha256`** (The Open Kernel Modules source):
+
 ```bash
 nix-prefetch-url --unpack https://github.com/NVIDIA/open-gpu-kernel-modules/archive/refs/tags/VERSION.tar.gz
 ```
 
 **4. `settingsSha256`** (The nvidia-settings utility source):
+
 ```bash
 nix-prefetch-url --unpack https://github.com/NVIDIA/nvidia-settings/archive/refs/tags/VERSION.tar.gz
 ```
 
 **5. `persistencedSha256`** (The nvidia-persistenced utility source):
+
 ```bash
 nix-prefetch-url --unpack https://github.com/NVIDIA/nvidia-persistenced/archive/refs/tags/VERSION.tar.gz
 ```
 
-*Note: For the GitHub archives (`openSha256`, `settingsSha256`, `persistencedSha256`), we use `--unpack` because Nix unpacks these repositories during the build process, and the hash represents the unpacked contents.*
+_Note: For the GitHub archives (`openSha256`, `settingsSha256`, `persistencedSha256`), we use `--unpack` because Nix unpacks these repositories during the build process, and the hash represents the unpacked contents._
 
 ## 4. Applying the Update
 
