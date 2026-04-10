@@ -21,6 +21,9 @@ in {
   fonts.fontconfig.enable = true;
 
   catppuccin.zathura.enable = true;
+  catppuccin.fuzzel.enable = true;
+
+  programs.fuzzel.enable = true;
 
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
