@@ -1,14 +1,16 @@
+# Declarative disk layout for ninja — mirrors hardware.nix
+# Not currently wired into the NixOS build (kept for disko reinstall/reference)
 {
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = "/dev/nvme0n1"; # Monko assume main drive
+        device = "/dev/disk/by-id/nvme-CT1000T705SSD3_2404E8929D13";
         content = {
           type = "gpt";
           partitions = {
             ESP = {
-              size = "512M";
+              size = "1G";
               type = "EF00";
               content = {
                 type = "filesystem";
@@ -21,8 +23,7 @@
               size = "100%";
               content = {
                 type = "luks";
-                name = "luks-main";
-                # Keep UUID for Chief's secret-box
+                name = "luks-782b8c84-7a71-4244-8a98-c884f7678b96";
                 extraOpenArgs = ["--allow-discards"];
                 content = {
                   type = "filesystem";
@@ -37,7 +38,7 @@
       };
       game = {
         type = "disk";
-        device = "/dev/nvme1n1"; # Monko assume second NVMe for games
+        device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_4000GB_24032G801549";
         content = {
           type = "gpt";
           partitions = {
