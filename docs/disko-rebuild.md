@@ -117,6 +117,47 @@ cd ~/nixos-config  # or clone: git clone git@github.com:izaac/nixos-config.git
 nrb  # nh os switch .
 ```
 
+## Testing with vmWithDisko
+
+Before touching real hardware, validate the entire disko layout in a virtual machine. This builds disk images in a VM, formats them with disko, and produces a bootable QEMU script.
+
+### Build the VM
+
+```bash
+nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko
+```
+
+This creates virtual disk images matching the disko layout (LUKS, ESP, game drive) and a runner script.
+
+### Run the VM
+
+```bash
+result/bin/run-ninja-vm
+```
+
+The VM will:
+
+1. Create virtual disks mimicking your NVMe layout.
+2. Run the full disko destroy → format → mount sequence.
+3. Boot into the resulting NixOS system.
+
+> **Note**: NVIDIA drivers are force-disabled in the VM via `virtualisation.vmVariant` in `configuration.nix`, so the VM uses software rendering. This is expected.
+
+### What to Verify
+
+- LUKS prompt appears and accepts the passphrase.
+- System boots to login.
+- `lsblk` shows the expected partition layout.
+- `mount | grep -E "/ |/boot|/mnt/data"` shows correct mount options.
+
+### Clean Up
+
+The VM creates disk images in the current directory. Remove them after testing:
+
+```bash
+rm -f ninja.qcow2
+```
+
 ## Disk Layout Reference
 
 | Disk            | Device ID                                  | Size | Partition   | Format | Mount       | Encrypted |
