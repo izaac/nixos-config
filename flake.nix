@@ -61,13 +61,25 @@
     };
 
     packages = forEachSystem (
-      system: inputs.nix-packages.packages.${system}
+      system:
+        inputs.nix-packages.packages.${system}
         // {
           iso = nixos-generators.outputs.packages.${system}.install-iso.override {
             modules = [
               ({pkgs, ...}: {
                 networking.hostName = "monko-canoe";
-                environment.systemPackages = [pkgs.helix pkgs.git pkgs.neovim];
+                hardware.enableRedistributableFirmware = true;
+                networking.networkmanager.enable = true;
+                networking.networkmanager.wifi.backend = "iwd";
+                environment.systemPackages = with pkgs; [
+                  helix
+                  git
+                  neovim
+                  usbutils
+                  pciutils
+                  parted
+                  cryptsetup
+                ];
               })
               ./users/${userConfig.username}/default.nix
             ];
