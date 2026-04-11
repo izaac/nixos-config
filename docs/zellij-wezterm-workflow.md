@@ -41,6 +41,7 @@ You are working on a frontend app and a backend API simultaneously.
   - Wezterm Tab 1 -> Attached to Zellij "Frontend" (`zellij attach frontend`).
   - Wezterm Tab 2 (`Ctrl + Shift + T`) -> Attached to Zellij "Backend" (`zellij attach backend`).
   - You can now switch between entirely different project sessions instantly using `Ctrl + Shift + PageDown`.
+  - **New:** Use `Ctrl + Shift + P` (Project Picker) in Wezterm to quickly spawn a new tab in a pre-configured project directory.
 
 ### 2. The Remote Admin (Nested Multiplexing)
 
@@ -54,6 +55,7 @@ You need to SSH into a server and manage things, but keep your local dev environ
   - To manipulate your _local_ Zellij (e.g., split local pane): `Ctrl + a` -> `\`
   - To manipulate the _remote_ Zellij (e.g., split remote pane): `Ctrl + a` -> `a` -> `\`
     _(The first `a` passes the prefix through to the nested session)._
+  - **New:** SSH sessions now trigger a color change in the Wezterm tab bar (Rosewater/Peach) to prevent accidentally running local commands on a remote host.
 
 ### 3. "I Need More Space" (Zooming)
 
@@ -61,6 +63,21 @@ You have a complex Zellij layout, but you suddenly need to read a massive log fi
 
 - **Zellij Panes:** Use Zellij's native pane maximization (via Pane mode `Ctrl+p` -> `f`, or by mapping a toggle in your Tmux mode). _(Note: `Ctrl+p` uses Zellij's built-in Pane mode, which remains active alongside the Tmux-mode bindings)._ Wezterm's Zoom (`Ctrl + Shift + F`) will NOT maximize an inner Zellij pane if you only have one Wezterm pane running the entire Zellij session.
 - **Wezterm Panes:** If your layout consists of multiple _Wezterm-native_ splits, use Wezterm's Zoom (`Ctrl + Shift + F`). This will maximize the currently focused Wezterm pane to fill the entire window without losing the split layout state. Press it again to return to your complex layout.
+
+---
+
+## Enhanced Shell & AI Features
+
+### Semantic Navigation (OSC 133)
+The `brush` shell is integrated with Wezterm via OSC 133 escape sequences. This enables "Semantic Zones" which allow you to:
+- **Jump to Prompt:** Press `Shift + UpArrow` or `Shift + DownArrow` to skip large command outputs and jump directly to the next/previous shell prompt.
+- **Copy Command Output:** Wezterm can select the entire output of the previous command with a single native action.
+
+### Monko AI Helpers
+A set of AI-powered shell helpers are available to assist with debugging and explanation:
+- **`monko <query>`:** A lightweight alias to ask the Gemini AI a question. It is tuned to provide explanations in a "caveman" style, simplifying complex technical concepts.
+- **`ask-monko`:** A diagnostic tool that automatically captures the previously failed command from history and sends it to the AI for analysis and a suggested fix.
+- **Smart Completion:** If a command is not found, the shell will automatically suggest using `monko` for assistance.
 
 ## Summary Checklist
 

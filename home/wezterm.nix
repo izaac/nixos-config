@@ -11,6 +11,20 @@ _: {
       -- Launch brush as the interactive shell
       config.default_prog = { 'brush', '--login' }
 
+      -- Window
+      config.window_background_opacity = 0.90
+      config.window_padding = {
+        left = 8,
+        right = 8,
+        top = 8,
+        bottom = 8,
+      }
+      config.window_close_confirmation = 'NeverPrompt'
+      config.audible_bell = 'Disabled'
+
+      -- Scrollback
+      config.scrollback_lines = 10000
+
       -- Font (matching Kitty: JetBrainsMono Nerd Font Mono @ 11pt)
       config.font = wezterm.font('JetBrainsMono Nerd Font Mono')
       config.font_size = 11.0
@@ -25,16 +39,6 @@ _: {
         selection_bg = '#f5e0dc',
       }
 
-      -- Window
-      config.window_padding = {
-        left = 10,
-        right = 10,
-        top = 10,
-        bottom = 10,
-      }
-      config.window_close_confirmation = 'NeverPrompt'
-      config.audible_bell = 'Disabled'
-
       -- Tab Bar (matching Kitty's bottom powerline style)
       config.enable_tab_bar = true
       config.tab_bar_at_bottom = true
@@ -43,6 +47,19 @@ _: {
 
       -- Keybindings (cloned from Kitty)
       config.keys = {
+        -- Quick Select for Nix store paths
+        {
+          key = 's',
+          mods = 'CTRL|SHIFT',
+          action = act.QuickSelectArgs {
+            label = 'select nix store path',
+            patterns = { '/nix/store/[^\\s/]+' },
+            action = wezterm.action_callback(function(window, pane, selection)
+              wezterm.log_info('Selected: ' .. selection)
+              window:copy_to_clipboard(selection)
+            end),
+          },
+        },
         -- Tabs
         { key = 'T', mods = 'CTRL|SHIFT', action = act.SpawnTab 'CurrentPaneDomain' },
         {
@@ -76,18 +93,101 @@ _: {
 
         -- Toggle Zoom (equivalent to Kitty's stack layout toggle)
         { key = 'F', mods = 'CTRL|SHIFT', action = act.TogglePaneZoomState },
+
+        -- Jump to previous command (needs shell integration)
+        { key = 'UpArrow', mods = 'SHIFT', action = act.ScrollToPrompt(-1) },
+        { key = 'DownArrow', mods = 'SHIFT', action = act.ScrollToPrompt(1) },
+
+        -- Project Switcher (fuzzy find in repos)
+        {
+          key = 'P',
+          mods = 'CTRL|SHIFT',
+          action = act.InputSelector {
+            title = 'Project Switcher',
+            choices = {
+              { label = 'NixOS Config', id = os.getenv('HOME') .. '/nixos-config' },
+              { label = 'Nix Packages', id = os.getenv('HOME') .. '/repos/nix-packages' },
+              { label = 'Traefik Migration', id = os.getenv('HOME') .. '/repos/traefik-migration' },
+            },
+            fuzzy = true,
+            action = wezterm.action_callback(function(window, pane, id, label)
+              if id then
+                window:perform_action(act.SpawnTab { cwd = id }, pane)
+              end
+            end),
+          },
+        },
       }
 
-      -- Tab title: show process name + cwd basename
+      -- Tab title: show process name + cwd basename with icons
       wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, _hover, _max_width)
         local pane = tab.active_pane
-        local proc = pane.foreground_process_name:match('([^/]+)$') or 'brush'
+        local title = pane.foreground_process_name:match('([^/]+)$') or 'brush'
         local cwd = pane.current_working_dir
-        local dir = '''
+        local dir = ""
+
         if cwd then
-          dir = ' ' .. (cwd.file_path:match('([^/]+)/?$') or cwd.file_path)
+          if cwd.file_path == os.getenv("HOME") then
+            dir = " ~"
+          else
+            dir = " " .. (cwd.file_path:match('([^/]+)/?$') or cwd.file_path)
+          end
         end
-        return proc .. dir
+
+        local icons = {
+          ['hx'] = '󰚀',
+          ['helix'] = '󰚀',
+          ['nix'] = '󱄅',
+          ['git'] = '󰊢',
+          ['yazi'] = '󰇥',
+          ['brush'] = '󱆃',
+          ['btop'] = '󰄦',
+          ['sudo'] = '󰌆',
+          ['ssh'] = '󰒍',
+          ['man'] = '󰈙',
+          ['cat'] = '󰈙',
+          ['bat'] = '󰈙',
+        }
+
+        local icon = icons[title] or '󰆍'
+        local tab_title = string.format(" %s %s%s ", icon, title, dir)
+
+        -- Change color for SSH or Sudo
+        local bg = '#1e1e2e'
+        local fg = '#cdd6f4'
+        if title == 'ssh' then
+          bg = '#f5e0dc' -- Rosewater/Peach
+          fg = '#1e1e2e'
+        elseif title == 'sudo' then
+          bg = '#f38ba8' -- Red
+          fg = '#1e1e2e'
+        end
+
+        return {
+          { Background = { Color = bg } },
+          { Foreground = { Color = fg } },
+          { Text = tab_title },
+        }
+      end)
+
+      -- Nix Store Hyperlinks: Open in Yazi on Ctrl+Click
+      config.hyperlink_rules = wezterm.default_hyperlink_rules()
+      table.insert(config.hyperlink_rules, {
+        regex = [[(/nix/store/[^/\s]+)]],
+        format = 'nix-store:$1',
+      })
+
+      wezterm.on('open-uri', function(window, pane, uri)
+        local store_path = uri:match('^nix%-store:(.+)$')
+        if store_path then
+          window:perform_action(
+            act.SpawnCommandInNewTab {
+              args = { 'yazi', store_path },
+            },
+            pane
+          )
+          return false
+        end
       end)
 
       return config

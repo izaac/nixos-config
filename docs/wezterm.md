@@ -6,7 +6,8 @@ Wezterm serves as the foundation of the terminal stack. It is the GPU-accelerate
 
 - **Theme:** Catppuccin Mocha (with Kitty-style overrides)
 - **Font:** JetBrainsMono Nerd Font Mono @ 11pt
-- **Padding:** 10px on all sides
+- **Padding:** 8px on all sides
+- **Opacity:** 90% (Window transparency enabled)
 
 ## Keybindings (Kitty-Inspired)
 
@@ -35,9 +36,25 @@ Wezterm's native splits are useful for quick, transient side-by-side work where 
 | Navigate Panes | `Ctrl + Shift + Arrow Keys` | Moves focus around the splits.                        |
 | Toggle Zoom    | `Ctrl + Shift + F`          | Zooms the current pane to full screen (Stack Layout). |
 
-## Tab Bar Behavior
+### Navigation & Search
 
-The tab bar mimics Kitty's bottom powerline style.
+| Action                 | Shortcut             | Notes                                                 |
+| ---------------------- | -------------------- | ----------------------------------------------------- |
+| Project Picker         | `Ctrl + Shift + P`   | Fuzzy-find and jump to configured git repositories.   |
+| Quick Select Nix Path  | `Ctrl + Shift + S`   | Rapidly select and copy `/nix/store` paths on screen. |
+| Scroll to Prompt (Up)  | `Shift + UpArrow`    | Jump to the previous shell prompt (OSC 133).          |
+| Scroll to Prompt (Down)| `Shift + DownArrow`  | Jump to the next shell prompt (OSC 133).              |
 
-- **Location:** Bottom of the window.
-- **Tab Titles:** Automatically formatted to show the active process name and the current working directory's base name (e.g., `zsh ~` or `nvim src`).
+## Smart Features
+
+### Nix Store Integration
+- **Hyperlinks:** Any `/nix/store` path visible in the terminal is automatically hyperlinked. **Ctrl + Click** (or Shift + Click) a path to open it immediately in a new `yazi` tab.
+- **Quick Select:** `Ctrl + Shift + S` activates a selection mode specifically tuned to capture Nix store hashes and paths.
+
+### Tab Bar & Icons
+The tab bar mimics Kitty's bottom powerline style with enhanced visibility:
+- **Process Icons:** Shows Nerd Font icons for common tools (󱄅 Nix, 󰚀 Helix, 󰒍 SSH, 󰇥 Yazi).
+- **Context Coloring:** Tabs dynamically change background color based on the active process:
+  - **SSH Sessions:** Rosewater/Peach background for high visibility.
+  - **Sudo / Root:** Red background to indicate elevated privileges.
+- **Directory Tracking:** Shows the current working directory's basename (or `~` for Home).

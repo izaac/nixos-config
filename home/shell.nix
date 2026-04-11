@@ -316,107 +316,153 @@ in {
     };
 
     initExtra = ''
-      # Suppress brush's bind warnings for unsupported readline macro forms
-      if [ -n "$BRUSH_VERSION" ]; then
-        bind() { builtin bind "$@" 2>/dev/null; return 0; }
-      fi
+            # --- WEZTERM INTEGRATION (OSC 133) ---
+            if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
+              _wezterm_osc133_prompt_start() { printf "\033]133;A\007"; }
+              _wezterm_osc133_command_start() { printf "\033]133;C\007"; }
+              _wezterm_osc133_command_end() { printf "\033]133;D;%s\007" "$?"; }
 
-      # Stage dotfiles (used by nrb/ndr/up functions)
-      st() { git -C "${userConfig.dotfilesDir}" add .; }
-      nrb() { st && nh os switch; }
-      ndr() { st && nh os build; }
-      up() { st && nh os switch --update; }
-      up-browsers() { st && nix flake update nixpkgs && nh os switch; }
+              # Inject into PS1/PROMPT_COMMAND for Brush/Bash
+              case "$PS1" in
+                *"\033]133;A\007"*) ;;
+                *) PS1="\[$(_wezterm_osc133_prompt_start)\]$PS1" ;;
+              esac
 
-      [[ -z "$CLEAN_PATH" ]] && readonly CLEAN_PATH='${cleanPath}'
-      [[ -z "$COPILOT_BIN" ]] && readonly COPILOT_BIN='${copilotBin}'
-      [[ -z "$GEMINI_BIN" ]] && readonly GEMINI_BIN='${geminiBin}'
-      [[ -z "$NH_BIN" ]] && readonly NH_BIN='${nhBin}'
+              # Brush-specific hook for command start/end
+              if [ -n "$BRUSH_VERSION" ]; then
+                # Brush can use DEBUG trap or built-in hooks if available
+                # For now, we use the standard bash-compatible approach
+                trap '_wezterm_osc133_command_start' DEBUG
+                PROMPT_COMMAND="_wezterm_osc133_command_end; ''${PROMPT_COMMAND:-}"
+              fi
+            fi
 
-      # --- Gemini CLI ---
-      ask() {
-        if [[ $# -eq 0 ]]; then
-          PATH="$CLEAN_PATH" "$GEMINI_BIN"
-        else
-          PATH="$CLEAN_PATH" "$GEMINI_BIN" -p "$*"
-        fi
-      }
+            # Suppress brush's bind warnings
+            if [ -n "$BRUSH_VERSION" ]; then
+              bind() { builtin bind "$@" 2>/dev/null; return 0; }
+            fi
 
-      # --- Copilot CLI ---
-      ai() {
-        case "$1" in
-          "")
-            PATH="$CLEAN_PATH" "$COPILOT_BIN"
-            ;;
-          login|init|update|version|help)
-            PATH="$CLEAN_PATH" "$COPILOT_BIN" "$@"
-            ;;
-          *)
-            PATH="$CLEAN_PATH" "$COPILOT_BIN" -p "$*"
-            ;;
-        esac
-      }
+            # --- AI HELPERS ---
+            # monko: ask Gemini for help in caveman talk
+            monko() {
+              if [[ $# -eq 0 ]]; then
+                echo "Monko need words to think! Use: monko <what is wrong?>"
+                return 1
+              fi
+              ask "Explain this like a caveman named Monko: $*"
+            }
 
-      # --- Fast Package Search ---
-      nqs() {
-        if [[ $# -eq 0 ]]; then
-          echo "Usage: nqs <query...>"
-          return 2
-        fi
-        "$NH_BIN" search --limit 50 "$@"
-      }
+            # ask-monko: pipe previous command error to Gemini
+            ask-monko() {
+              local last_cmd=$(history | tail -n 2 | head -n 1 | sed 's/^[ ]*[0-9]*[ ]*//')
+              echo "Monko looking at: $last_cmd"
+              ask "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
+            }
 
-      # --- Smart Eza ---
-      _smart_eza() {
-        if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
-          local args=()
-          for arg in "$@"; do
-            [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
-          done
-          command eza --icons=never --color=never "''${args[@]}"
-        else
-          command eza --icons=auto "$@"
-        fi
-      }
+            # command_not_found_handle: Monko offer help
+            command_not_found_handle() {
+              echo "Monko not know command: $1"
+              echo "Maybe you want: monko why $1 not work?"
+              return 127
+            }
 
-      # --- GPG TTY FIX ---
-      current_tty=$(tty 2>/dev/null)
-      if [[ "$current_tty" != "not a tty" ]]; then
-        export GPG_TTY="$current_tty"
-      fi
-      unset current_tty
+            # Stage dotfiles
+       (used by nrb/ndr/up functions)
+            st() { git -C "${userConfig.dotfilesDir}" add .; }
+            nrb() { st && nh os switch; }
+            ndr() { st && nh os build; }
+            up() { st && nh os switch --update; }
+            up-browsers() { st && nix flake update nixpkgs && nh os switch; }
 
-      # --- Yazi Wrapper ---
-      y() {
-        local tmp
-        tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-        yazi "$@" --cwd-file="$tmp"
-        if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-          builtin cd -- "$cwd"
-        fi
-        rm -f -- "$tmp"
-      }
+            [[ -z "$CLEAN_PATH" ]] && readonly CLEAN_PATH='${cleanPath}'
+            [[ -z "$COPILOT_BIN" ]] && readonly COPILOT_BIN='${copilotBin}'
+            [[ -z "$GEMINI_BIN" ]] && readonly GEMINI_BIN='${geminiBin}'
+            [[ -z "$NH_BIN" ]] && readonly NH_BIN='${nhBin}'
 
-      # --- Recursive Cat ---
-      catr() {
-        local target="''${1:-.}"
-        rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
-          if file -b --mime-type "{}" | grep -q "^text/"; then
-            echo "================================================================================"
-            echo "FILE: {}"
-            echo "================================================================================"
-            cat "{}"
-            echo -e "\n"
-          fi
-        '
-      }
+            # --- Gemini CLI ---
+            ask() {
+              if [[ $# -eq 0 ]]; then
+                PATH="$CLEAN_PATH" "$GEMINI_BIN"
+              else
+                PATH="$CLEAN_PATH" "$GEMINI_BIN" -p "$*"
+              fi
+            }
 
-      # --- Project Initializers ---
-      ninit() {
-        local ver="''${1:-}"
-        local target="node"
-        if [ -n "$ver" ]; then target="node_$ver"; fi
-        cat <<EOF > .envrc
+            # --- Copilot CLI ---
+            ai() {
+              case "$1" in
+                "")
+                  PATH="$CLEAN_PATH" "$COPILOT_BIN"
+                  ;;
+                login|init|update|version|help)
+                  PATH="$CLEAN_PATH" "$COPILOT_BIN" "$@"
+                  ;;
+                *)
+                  PATH="$CLEAN_PATH" "$COPILOT_BIN" -p "$*"
+                  ;;
+              esac
+            }
+
+            # --- Fast Package Search ---
+            nqs() {
+              if [[ $# -eq 0 ]]; then
+                echo "Usage: nqs <query...>"
+                return 2
+              fi
+              "$NH_BIN" search --limit 50 "$@"
+            }
+
+            # --- Smart Eza ---
+            _smart_eza() {
+              if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
+                local args=()
+                for arg in "$@"; do
+                  [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
+                done
+                command eza --icons=never --color=never "''${args[@]}"
+              else
+                command eza --icons=auto "$@"
+              fi
+            }
+
+            # --- GPG TTY FIX ---
+            current_tty=$(tty 2>/dev/null)
+            if [[ "$current_tty" != "not a tty" ]]; then
+              export GPG_TTY="$current_tty"
+            fi
+            unset current_tty
+
+            # --- Yazi Wrapper ---
+            y() {
+              local tmp
+              tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+              yazi "$@" --cwd-file="$tmp"
+              if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+                builtin cd -- "$cwd"
+              fi
+              rm -f -- "$tmp"
+            }
+
+            # --- Recursive Cat ---
+            catr() {
+              local target="''${1:-.}"
+              rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
+                if file -b --mime-type "{}" | grep -q "^text/"; then
+                  echo "================================================================================"
+                  echo "FILE: {}"
+                  echo "================================================================================"
+                  cat "{}"
+                  echo -e "\n"
+                fi
+              '
+            }
+
+            # --- Project Initializers ---
+            ninit() {
+              local ver="''${1:-}"
+              local target="node"
+              if [ -n "$ver" ]; then target="node_$ver"; fi
+              cat <<ENVRC > .envrc
       use flake ${userConfig.dotfilesDir}/templates#$target
       watch_file package.json
       watch_file yarn.lock
@@ -426,12 +472,12 @@ in {
         elif [ -f "yarn.lock" ]; then yarn install;
         else npm install; fi
       fi
-      EOF
-        direnv allow
-      }
+      ENVRC
+              direnv allow
+            }
 
-      pinit() {
-        cat <<EOF > .envrc
+            pinit() {
+              cat <<'ENVRC' > .envrc
       use flake ${userConfig.dotfilesDir}/templates#python
       watch_file requirements.txt
       watch_file pyproject.toml
@@ -440,73 +486,73 @@ in {
           uv venv && uv pip install -r requirements.txt
         fi
       fi
-      EOF
-        direnv allow
-      }
+      ENVRC
+              direnv allow
+            }
 
-      rinit() {
-        cat <<EOF > .envrc
+            rinit() {
+              cat <<'ENVRC' > .envrc
       use flake ${userConfig.dotfilesDir}/templates#rust
       watch_file Cargo.toml
       watch_file Cargo.lock
-      EOF
-        direnv allow
-      }
+      ENVRC
+              direnv allow
+            }
 
-      cinit() {
-        cat <<EOF > .envrc
+            cinit() {
+              cat <<'ENVRC' > .envrc
       use flake ${userConfig.dotfilesDir}/templates#c
       watch_file CMakeLists.txt
       watch_file Makefile
-      EOF
-        direnv allow
-      }
+      ENVRC
+              direnv allow
+            }
 
-      cppinit() {
-        cat <<EOF > .envrc
+            cppinit() {
+              cat <<'ENVRC' > .envrc
       use flake ${userConfig.dotfilesDir}/templates#cpp
       watch_file CMakeLists.txt
       watch_file Makefile
-      EOF
-        direnv allow
-      }
+      ENVRC
+              direnv allow
+            }
 
-      # fnm (force bash mode — brush is bash-compatible but fnm can't detect it)
-      FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
-      if [ -d "$FNM_PATH" ]; then
-        export PATH="$FNM_PATH:$PATH"
-        eval "$(fnm env --shell bash)"
-      fi
+            # fnm (force bash mode — brush is bash-compatible but fnm can't detect it)
+            FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
+            if [ -d "$FNM_PATH" ]; then
+              export PATH="$FNM_PATH:$PATH"
+              eval "$(fnm env --shell bash)"
+            fi
 
-      # Ensure local binaries are in PATH
-      export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
+            # Ensure local binaries are in PATH
+            export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
 
-      # --- Distrobox: Host Tool Injection ---
-      if [ -d "/run/host/nix/store" ]; then
-        export PATH="$HOME/.local/share/distrobox/bin:$PATH"
-        unset GI_TYPELIB_PATH
-        unset GDK_PIXBUF_MODULE_FILE
-        unset XDG_DATA_DIRS
+            # --- Distrobox: Host Tool Injection ---
+            if [ -d "/run/host/nix/store" ]; then
+              export PATH="$HOME/.local/share/distrobox/bin:$PATH"
+              unset GI_TYPELIB_PATH
+              unset GDK_PIXBUF_MODULE_FILE
+              unset XDG_DATA_DIRS
 
-        if [ -L "/run/host/etc/static/ssl/certs/ca-bundle.crt" ]; then
-          export SSL_CERT_FILE=$(readlink /run/host/etc/static/ssl/certs/ca-bundle.crt)
-          export NIX_SSL_CERT_FILE=$SSL_CERT_FILE
-          export GIT_SSL_CAINFO=$SSL_CERT_FILE
-        fi
+              if [ -L "/run/host/etc/static/ssl/certs/ca-bundle.crt" ]; then
+                export SSL_CERT_FILE=$(readlink /run/host/etc/static/ssl/certs/ca-bundle.crt)
+                export NIX_SSL_CERT_FILE=$SSL_CERT_FILE
+                export GIT_SSL_CAINFO=$SSL_CERT_FILE
+              fi
 
-        host_sys=$(readlink /run/host/run/current-system)
-        host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
-        if [ -n "$host_sys" ]; then export PATH="$PATH:/run/host$host_sys/sw/bin"; fi
-        if [ -n "$host_user" ]; then
-          host_user_resolved=$(readlink "/run/host$host_user")
-          [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
-          export PATH="$PATH:/run/host$host_user_resolved/bin"
-        fi
-        unset host_sys host_user host_user_resolved
-      fi
+              host_sys=$(readlink /run/host/run/current-system)
+              host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
+              if [ -n "$host_sys" ]; then export PATH="$PATH:/run/host$host_sys/sw/bin"; fi
+              if [ -n "$host_user" ]; then
+                host_user_resolved=$(readlink "/run/host$host_user")
+                [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
+                export PATH="$PATH:/run/host$host_user_resolved/bin"
+              fi
+              unset host_sys host_user host_user_resolved
+            fi
 
-      # autocd
-      shopt -s autocd 2>/dev/null
+            # autocd
+            shopt -s autocd 2>/dev/null
     '';
   };
 
