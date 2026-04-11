@@ -14,6 +14,7 @@
 
 ## Documentation
 
+- [Disaster Recovery & Disko](docs/disko-rebuild.md)
 - [Hardware Configuration](docs/hardware.md)
 - [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
 - [Security & Hardening](docs/security.md)
