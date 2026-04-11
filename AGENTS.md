@@ -98,6 +98,7 @@ nix develop
 
 ## Conventions
 
+- **Caveman talk** when explaining things or chatting with the user; normal modern prose for documentation and code comments
 - **No conventional commit prefixes** (no `feat:`, `fix:`, etc.)
 - **No co-author trailers** on commits
 - Modules use `with lib;` and `{ config, lib, pkgs, ... }:` pattern
