@@ -64,13 +64,19 @@
       system:
         inputs.nix-packages.packages.${system}
         // {
-          iso = nixos-generators.outputs.packages.${system}.install-iso.override {
+          iso = nixos-generators.nixosGenerate {
+            inherit system;
+            format = "install-iso";
             modules = [
               ({pkgs, ...}: {
                 networking.hostName = "monko-canoe";
                 hardware.enableRedistributableFirmware = true;
                 networking.networkmanager.enable = true;
                 networking.networkmanager.wifi.backend = "iwd";
+                users.users.${userConfig.username} = {
+                  isNormalUser = true;
+                  extraGroups = ["wheel" "networkmanager"];
+                };
                 environment.systemPackages = with pkgs; [
                   helix
                   git
@@ -81,9 +87,7 @@
                   cryptsetup
                 ];
               })
-              ./users/${userConfig.username}/default.nix
             ];
-            format = "install-iso";
           };
         }
     );
