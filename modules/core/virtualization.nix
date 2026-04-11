@@ -19,7 +19,7 @@ in {
       defaultNetwork.settings.dns_enabled = true;
     };
 
-    hardware.nvidia-container-toolkit.enable = true;
+    hardware.nvidia-container-toolkit.enable = lib.elem "nvidia" config.services.xserver.videoDrivers;
 
     # 2. Performance & Environment Tweaks
     environment.sessionVariables = {

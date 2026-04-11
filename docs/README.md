@@ -9,3 +9,4 @@
 - [Wezterm Configuration](wezterm.md)
 - [Helix Editor](helix.md)
 - [Zellij + Wezterm Workflow](zellij-wezterm-workflow.md)
+- [System Recovery with Disko (ninja)](disko-rebuild.md)

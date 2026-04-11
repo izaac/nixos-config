@@ -13,6 +13,7 @@ nixpkgs.lib.nixosSystem {
 
   modules = [
     ../hosts/${hostname}/configuration.nix
+    inputs.disko.nixosModules.disko
     catppuccin.nixosModules.catppuccin
     sops-nix.nixosModules.sops
     ../modules/core/sops.nix

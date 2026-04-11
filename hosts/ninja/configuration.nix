@@ -1,9 +1,27 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
+  # --- VIRTUALIZATION VARIANT ---
+  virtualisation.vmVariant = {
+    # Disable NVIDIA in the VM
+    services.xserver.videoDrivers = lib.mkForce ["modesetting"];
+    hardware.nvidia.package = lib.mkForce pkgs.hello;
+    systemd.services.nvidia-lock-clocks.enable = lib.mkForce false;
+    hardware.graphics.extraPackages = lib.mkForce [];
+    # No sops secrets needed in the VM
+    sops.gnupg.home = lib.mkForce "/tmp/gnupg";
+    # Disable NVIDIA toolkit in VM
+    hardware.nvidia-container-toolkit.enable = lib.mkForce false;
+  };
+
   # This is 'ninja' — a high-performance workstation built around the Ryzen 9 9950X3D and NVIDIA.
   # It's optimized for zero-latency desktop feel, high-fidelity audio, and maximum gaming throughput.
 
   imports = [
     ./hardware.nix
+    ./disko.nix
     ./nvidia.nix
     ./network.nix
     ./udev-igc-fix.nix
