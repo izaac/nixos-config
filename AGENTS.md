@@ -60,10 +60,12 @@ docs/              # Human-readable documentation
 - Changing kernel or NVIDIA driver versions
 - Modifying `secrets.yaml` or sops configuration
 - Changing the login shell or display manager
+- Running `git push` — always ask the user before pushing
 
 ### 🚫 Never
 
 - Commit secrets, keys, or tokens
+- Add co-author trailers or conventional commit prefixes (`feat:`, `fix:`, etc.)
 - Modify `flake.lock` manually (use `nix flake update` or `nix flake lock --update-input`)
 - Edit files in `result/` or `/nix/store/`
 - Perform any actions regarding `markdown.sh`
@@ -99,8 +101,6 @@ nix develop
 ## Conventions
 
 - **Caveman talk** when explaining things or chatting with the user; normal modern prose for documentation and code comments
-- **No conventional commit prefixes** (no `feat:`, `fix:`, etc.)
-- **No co-author trailers** on commits
 - Modules use `with lib;` and `{ config, lib, pkgs, ... }:` pattern
 - Aliases that chain commands (`&&`) must be **functions**, not aliases (brush limitation)
 - Custom packages belong in `nix-packages` repo, not here
