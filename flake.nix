@@ -24,10 +24,6 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     ai-trace-scanner = {
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
@@ -38,7 +34,6 @@
     nixpkgs,
     catppuccin,
     sops-nix,
-    nixos-generators,
     ...
   }: let
     systems = ["x86_64-linux"];
@@ -58,37 +53,39 @@
     nixosConfigurations = {
       ninja = mkSystem "ninja" "x86_64-linux";
       windy = mkSystem "windy" "x86_64-linux";
+      monko-canoe = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
+          ({pkgs, ...}: {
+            networking.hostName = "monko-canoe";
+            system.stateVersion = "25.05";
+            hardware.enableRedistributableFirmware = true;
+            networking.networkmanager.enable = true;
+            networking.networkmanager.wifi.backend = "iwd";
+            users.users.${userConfig.username} = {
+              isNormalUser = true;
+              extraGroups = ["wheel" "networkmanager"];
+            };
+            environment.systemPackages = with pkgs; [
+              helix
+              git
+              neovim
+              usbutils
+              pciutils
+              parted
+              cryptsetup
+            ];
+          })
+        ];
+      };
     };
 
     packages = forEachSystem (
       system:
         inputs.nix-packages.packages.${system}
         // {
-          iso = nixos-generators.nixosGenerate {
-            inherit system;
-            format = "install-iso";
-            modules = [
-              ({pkgs, ...}: {
-                networking.hostName = "monko-canoe";
-                hardware.enableRedistributableFirmware = true;
-                networking.networkmanager.enable = true;
-                networking.networkmanager.wifi.backend = "iwd";
-                users.users.${userConfig.username} = {
-                  isNormalUser = true;
-                  extraGroups = ["wheel" "networkmanager"];
-                };
-                environment.systemPackages = with pkgs; [
-                  helix
-                  git
-                  neovim
-                  usbutils
-                  pciutils
-                  parted
-                  cryptsetup
-                ];
-              })
-            ];
-          };
+          iso = inputs.self.nixosConfigurations.monko-canoe.config.system.build.isoImage;
         }
     );
 
@@ -101,7 +98,7 @@
           nil
           statix
           deadnix
-          nixpkgs-fmt
+          alejandra
           sops
           ssh-to-age
           age
@@ -114,13 +111,13 @@
       pkgs = mkPkgs system;
     in {
       formatting =
-        pkgs.runCommand "nixpkgs-fmt-check"
+        pkgs.runCommand "alejandra-check"
         {
           src = ./.;
-          nativeBuildInputs = [pkgs.nixpkgs-fmt];
+          nativeBuildInputs = [pkgs.alejandra];
         } ''
           cd "$src"
-          nixpkgs-fmt --check .
+          alejandra --check .
           touch "$out"
         '';
     });
