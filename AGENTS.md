@@ -50,6 +50,9 @@ docs/              # Human-readable documentation
 - Write idiomatic Nix — use `mkOption`, `mkDefault`, `mkIf`, `lib.optionals`
 - Format with `alejandra` (enforced by pre-commit hooks; `nixpkgs-fmt` is used in `nix flake check`)
 - Test changes with `nix flake check` before committing
+- Run `nix build .#nixosConfigurations.<host>.config.system.build.toplevel` after editing system config
+- After editing `home/shell.nix`, verify the built bashrc: `nix eval ... --raw | bash -n`
+- Re-check files after pre-commit hooks run — alejandra can break bash inside Nix strings
 - Use the existing module pattern: options under `mySystem.*`, config in `modules/`
 - Home Manager config goes in `home/*.nix`, system config in `modules/`
 - Keep host-specific overrides in `hosts/<hostname>/configuration.nix`
@@ -68,6 +71,7 @@ docs/              # Human-readable documentation
 - Add co-author trailers or conventional commit prefixes (`feat:`, `fix:`, etc.)
 - Modify `flake.lock` manually (use `nix flake update` or `nix flake lock --update-input`)
 - Edit files in `result/` or `/nix/store/`
+- Build or deploy for the wrong host — configs contain hardware-specific settings
 - Perform any actions regarding `markdown.sh`
 
 ## Tools & Commands
@@ -114,3 +118,20 @@ nix develop
 - **Sched-ext**: `extraArgs` must be overridden per-host (not all schedulers accept `--autopilot`)
 - **Firefox policies** are enforced at system level in `hosts/ninja/configuration.nix`
 - **nix-ld** is configured with an extensive library list for AppImage compatibility
+
+## Gotchas
+
+- `nix flake check` only sees **git-tracked files** — stage new files with `git add` before checking
+- **Heredocs in Nix `''` strings**: the closing delimiter (e.g., `EOF`) must have no leading whitespace in the built output. Nix strips indent to the minimum level, but if all lines share the same indent the delimiter keeps spaces and bash breaks. Put heredoc content at column 0 in the Nix source.
+- **Alejandra can break bash**: the formatter moves Nix expressions around but does not understand bash inside multiline strings. Always re-verify after it runs.
+- `home/shell.nix` is the most fragile file — it contains bash functions, heredocs, and tool integrations inside Nix strings. Test changes with: `nix eval '.#nixosConfigurations.ninja.config.home-manager.users.izaac.programs.bash.initExtra' --extra-experimental-features dynamic-derivations --raw | bash -n`
+
+## Troubleshooting
+
+| Symptom                                        | Cause                                         | Fix                                                     |
+| ---------------------------------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| `bashrc: syntax error: unexpected end of file` | Heredoc `EOF` has leading whitespace          | Move heredoc body + delimiter to column 0 in Nix source |
+| `command not found` after `source ~/.bashrc`   | Comment lost its `#` after alejandra reformat | Check the built bashrc for bare text lines              |
+| `nix flake check` fails on new file            | File not tracked by git                       | `git add <file>` first                                  |
+| YubiKey fails on first lock-screen attempt     | PAM U2F race with greeter                     | `security.pam.u2f.settings.cue = true`                  |
+| Brush alias with `&&` silently exits           | Brush cannot expand functions inside aliases  | Convert to a function instead                           |
