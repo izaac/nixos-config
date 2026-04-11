@@ -10,6 +10,7 @@
   # Enable U2F for login and sudo
   security.pam.u2f = {
     enable = true;
+    settings.cue = true;
   };
 
   security.pam.services = {
