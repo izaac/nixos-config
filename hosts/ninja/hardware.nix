@@ -16,58 +16,26 @@
   # Prevents PCIe power management from putting the NIC into a state it can't recover from
   boot.kernelParams = ["pcie_port_pm=off" "pcie_aspm.policy=performance"];
 
-  fileSystems = lib.mkIf (!config.disko.enable or false) {
-    "/" = {
-      device = "/dev/mapper/luks-782b8c84-7a71-4244-8a98-c884f7678b96";
-      fsType = "ext4";
-      options = ["noatime" "nodiratime" "lazytime" "commit=60" "discard"];
-    };
-
-    "/boot" = {
-      device = "/dev/disk/by-uuid/48E1-0BDF";
-      fsType = "vfat";
-      options = ["fmask=0077" "dmask=0077" "noatime"];
-    };
-
-    "/mnt/data" = {
-      device = "/dev/disk/by-uuid/7f69bc73-1ebb-4883-851a-f08d8101da9e";
-      fsType = "ext4";
-      options = [
-        "rw"
-        "noatime"
-        "commit=60"
-        "nofail"
-        "lazytime"
-        "exec"
-        "discard"
-      ];
-    };
-
-    "/mnt/storage" = {
-      device = "192.168.0.173:/storage";
-      fsType = "nfs4";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-        "x-systemd.idle-timeout=900"
-        "x-systemd.mount-timeout=5s"
-        "x-systemd.device-timeout=5s"
-        # NFS Performance Tweaks
-        "nconnect=4" # Open 4 parallel pipes to the NAS (saturates the network link)
-        "rsize=1048576"
-        "wsize=1048576"
-        "actimeo=60" # Cache file info for a minute so `ls` is instant
-        "noatime"
-        "nodiratime"
-        "hard"
-        "timeo=14" # Wait 1.4s before retrying if the connection drops
-      ];
-    };
+  # NFS mount — not managed by disko, always present
+  fileSystems."/mnt/storage" = {
+    device = "192.168.0.173:/storage";
+    fsType = "nfs4";
+    options = [
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=900"
+      "x-systemd.mount-timeout=5s"
+      "x-systemd.device-timeout=5s"
+      "nconnect=4"
+      "rsize=1048576"
+      "wsize=1048576"
+      "actimeo=60"
+      "noatime"
+      "nodiratime"
+      "hard"
+      "timeo=14"
+    ];
   };
-
-  boot.initrd.luks.devices = lib.mkIf (!config.disko.enable or false) (lib.mkForce {
-    "luks-782b8c84-7a71-4244-8a98-c884f7678b96".device = "/dev/disk/by-uuid/782b8c84-7a71-4244-8a98-c884f7678b96";
-  });
 
   swapDevices = [];
 

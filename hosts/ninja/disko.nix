@@ -24,7 +24,7 @@
               content = {
                 type = "luks";
                 name = "luks-782b8c84-7a71-4244-8a98-c884f7678b96";
-                extraOpenArgs = ["--allow-discards"];
+                settings.allowDiscards = true;
                 content = {
                   type = "filesystem";
                   format = "ext4";
