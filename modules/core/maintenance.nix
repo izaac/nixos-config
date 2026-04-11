@@ -50,6 +50,7 @@ in {
       fd
       bottom
       btop
+      dust
     ];
 
     # Ventoy is marked insecure upstream — review periodically for patches.

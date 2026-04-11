@@ -176,12 +176,11 @@ in {
     duf # disk usage
     dust # du replacement
     gdu # disk usage analyzer
-    ncdu # ncurses disk usage
 
     # --- VIEWERS & PAGERS ---
     viddy # modern watch
     hexyl # hex viewer
-    glow # markdown renderer
+    mdcat # markdown renderer
     man-db # man pages
 
     # --- NETWORK & DIAGNOSTICS ---
@@ -266,7 +265,7 @@ in {
       jq = "jaq";
       sg = "ast-grep";
       hex = "hexyl";
-      md = "glow";
+      md = "mdcat";
 
       # --- NETWORK ---
       mtr = "trip";
@@ -285,7 +284,6 @@ in {
       zlj = "zellij";
 
       # --- GIT ---
-      lg = "lazygit";
       gco = "git checkout";
 
       # --- NIX MANAGEMENT ---
