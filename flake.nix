@@ -20,6 +20,14 @@
       url = "github:izaac/nix-packages";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     ai-trace-scanner = {
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
@@ -30,6 +38,7 @@
     nixpkgs,
     catppuccin,
     sops-nix,
+    nixos-generators,
     ...
   }: let
     systems = ["x86_64-linux"];
@@ -51,7 +60,21 @@
       windy = mkSystem "windy" "x86_64-linux";
     };
 
-    packages = forEachSystem (system: inputs.nix-packages.packages.${system});
+    packages = forEachSystem (
+      system: inputs.nix-packages.packages.${system}
+        // {
+          iso = nixos-generators.outputs.packages.${system}.install-iso.override {
+            modules = [
+              ({pkgs, ...}: {
+                networking.hostName = "monko-canoe";
+                environment.systemPackages = [pkgs.helix pkgs.git pkgs.neovim];
+              })
+              ./users/${userConfig.username}/default.nix
+            ];
+            format = "install-iso";
+          };
+        }
+    );
 
     devShells = forEachSystem (system: let
       pkgs = mkPkgs system;
