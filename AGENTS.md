@@ -7,6 +7,7 @@
 
 Personal NixOS flake managing two hosts (`ninja`, `windy`). Tracks **nixos-unstable**.
 Custom packages live in a separate [nix-packages](https://github.com/izaac/nix-packages) repo consumed as a flake input.
+See [docs/hardware.md](docs/hardware.md) and [docs/windy.md](docs/windy.md) for detailed hardware specs.
 
 ## Hosts
 
@@ -46,6 +47,7 @@ docs/              # Human-readable documentation
 
 ### ✅ Always
 
+- Consult [docs/security.md](docs/security.md) before modifying AppArmor or hardening settings.
 - Use `nix run nixpkgs#<tool>` or `nix shell nixpkgs#<tool>` to run tools not in the dev shell
 - Write idiomatic Nix — use `mkOption`, `mkDefault`, `mkIf`, `lib.optionals`
 - Format with `alejandra` (enforced by pre-commit hooks; `nixpkgs-fmt` is used in `nix flake check`)
