@@ -68,7 +68,7 @@
 
 | Name             | Protocol | Usage           | Notes                        |
 | ---------------- | -------- | --------------- | ---------------------------- |
-| **/mnt/storage** | CIFS     | General Storage | Network share with automount |
+| **/mnt/storage** | NFS4     | General Storage | Network share with automount |
 
 ### Current Configuration (Optimized)
 
