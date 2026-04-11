@@ -4,8 +4,8 @@
     defaultEditor = true;
 
     extraPackages = with pkgs; [
-      # Git TUI (was bundled with LazyVim)
-      lazygit
+      # Git TUI
+      gitui
 
       # Shell
       bash-language-server

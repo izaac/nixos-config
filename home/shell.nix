@@ -17,7 +17,7 @@ in {
   catppuccin.bat.enable = true;
   catppuccin.fzf.enable = true;
   catppuccin.bottom.enable = true;
-  catppuccin.lazygit.enable = true;
+  catppuccin.gitui.enable = true;
   catppuccin.yazi.enable = true;
   catppuccin.btop.enable = true;
   catppuccin.k9s.enable = true;

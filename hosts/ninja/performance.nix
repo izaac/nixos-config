@@ -2,7 +2,9 @@
   # Hardware-specific performance profile for ninja
   systemd.tmpfiles.rules = [
     "w /sys/bus/platform/drivers/amd_x3d_vcache/AMDI0101:00/amd_x3d_mode - - - - cache"
-    "w /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference - - - - performance"
+    "w /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference - - - - balance_performance"
+    # Summer-friendly: cap boost at 4.5 GHz (4500000 KHz), GameMode unlocks full 5.7 GHz
+    "w /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq - - - - 4500000"
   ];
 
   boot.kernel.sysctl = {

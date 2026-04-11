@@ -6,6 +6,31 @@
 }:
 with lib; let
   cfg = config.mySystem.gaming;
+  nvidiaSmi = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi";
+  gamemode-start = pkgs.writeShellScript "gamemode-start" ''
+    # CPU: Push all cores to max performance EPP
+    for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
+      echo performance > "$f" 2>/dev/null
+    done
+    # CPU: Unlock full boost (5.7 GHz)
+    for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do
+      echo 5756452 > "$f" 2>/dev/null
+    done
+    # GPU: Unlock full clock range for gaming
+    ${nvidiaSmi} -lgc 210,2475
+  '';
+  gamemode-end = pkgs.writeShellScript "gamemode-end" ''
+    # CPU: Restore cool-running EPP
+    for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
+      echo balance_performance > "$f" 2>/dev/null
+    done
+    # CPU: Restore summer-friendly frequency cap (4.5 GHz)
+    for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do
+      echo 4500000 > "$f" 2>/dev/null
+    done
+    # GPU: Restore summer-friendly clock ceiling
+    ${nvidiaSmi} -lgc 210,2100
+  '';
 in {
   options.mySystem.gaming = {
     enable = mkEnableOption "Gaming optimizations and tools";
@@ -43,8 +68,8 @@ in {
         };
         # Prevent "split_lock_mitigate" errors without needing root for every game
         custom = {
-          start = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'Optimizations Active'";
-          end = "${pkgs.libnotify}/bin/notify-send 'GameMode' 'Optimizations Disabled'";
+          start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start} && ${pkgs.libnotify}/bin/notify-send \"GameMode\" \"Performance Mode Active (5.7GHz + 2475MHz)\"'";
+          end = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-end} && ${pkgs.libnotify}/bin/notify-send \"GameMode\" \"Efficiency Mode Restored (4.5GHz + 2100MHz)\"'";
         };
       };
     };
@@ -52,6 +77,23 @@ in {
     # Make gamemode libraries globally available for Steam and Proton
     environment.systemPackages = with pkgs; [
       gamemode
+    ];
+
+    # Passwordless sudo for GameMode thermal scripts
+    security.sudo.extraRules = [
+      {
+        groups = ["gamemode"];
+        commands = [
+          {
+            command = toString gamemode-start;
+            options = ["NOPASSWD"];
+          }
+          {
+            command = toString gamemode-end;
+            options = ["NOPASSWD"];
+          }
+        ];
+      }
     ];
 
     # Boost memory map limits for modern titles like Cyberpunk or Hogwarts Legacy

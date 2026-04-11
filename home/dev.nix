@@ -4,7 +4,7 @@
   ...
 }: {
   home.packages = with pkgs; [
-    # --- LAZYVIM DEPENDENCIES ---
+    # --- CORE DEPENDENCIES ---
     gcc
     gnumake
     tree-sitter
@@ -74,26 +74,8 @@
     };
   };
 
-  # --- LAZYGIT ---
-  programs.lazygit = {
-    enable = true;
-    package = pkgs.lazygit;
-    settings = {
-      gui = {
-        theme = {
-          activeBorderColor = ["#a6e3a1" "bold"];
-          inactiveBorderColor = ["#a6adc8"];
-          optionsTextColor = ["#89b4fa"];
-          selectedLineBgColor = ["#313244"];
-          selectedRangeBgColor = ["#313244"];
-          cherryPickedCommitBgColor = ["#45475a"];
-          cherryPickedCommitFgColor = ["#a6e3a1"];
-          uploadDownloadArrowColor = ["#f2cdcd"];
-          warningColor = ["#fab387"];
-        };
-      };
-    };
-  };
+  # --- GITUI ---
+  programs.gitui.enable = true;
 
   # --- GPG ---
   programs.gpg = {

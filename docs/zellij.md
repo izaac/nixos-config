@@ -25,7 +25,7 @@ Requires hitting `Ctrl + a` first.
 
 | Action      | Shortcut | Notes                                                      |
 | ----------- | -------- | ---------------------------------------------------------- |
-| Split Right | `\|`     | Matches standard `tmux` vertical split (side-by-side).     |
+| Split Right | `\`      | Matches standard `tmux` vertical split (side-by-side).     |
 | Split Down  | `v`      | Matches standard `tmux` horizontal split (top-and-bottom). |
 | Close Pane  | `x`      |                                                            |
 | Rename Pane | `$`      | Enters Pane Rename mode.                                   |

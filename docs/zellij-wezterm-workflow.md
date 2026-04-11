@@ -15,7 +15,7 @@ While both Wezterm and Zellij can split panes and manage tabs, they serve entire
 - Viewing local `man` pages or documentation alongside a primary task.
 - **Rule of thumb:** If you don't care about losing the split when you close the window, use Wezterm.
 
-### When to use Zellij splits (`Ctrl + a`, then `\|` or `v`)
+### When to use Zellij splits (`Ctrl + a`, then `\` or `v`)
 
 - Setting up a development environment (e.g., editor on the left, server output on the right, git status below).
 - Any workspace that you might want to detach from and return to later.
@@ -32,7 +32,7 @@ You are working on a frontend app and a backend API simultaneously.
 
 - **Zellij Session "Frontend":**
   - Tab 1: Neovim (`Ctrl+a` -> `c`)
-  - Tab 2: `npm run dev` server + `git` pane (Split: `Ctrl + a` -> `\|`)
+  - Tab 2: `npm run dev` server + `git` pane (Split: `Ctrl + a` -> `\`)
 - **Zellij Session "Backend":**
   - Tab 1: Neovim
   - Tab 2: Docker compose logs + DB client
@@ -51,8 +51,8 @@ You need to SSH into a server and manage things, but keep your local dev environ
 - In a Zellij pane, SSH into a remote host like `windy`.
 - On `windy`, start another Zellij session (`zellij`).
 - **Conflict Resolution:**
-  - To manipulate your _local_ Zellij (e.g., split local pane): `Ctrl + a` -> `\|`
-  - To manipulate the _remote_ Zellij (e.g., split remote pane): `Ctrl + a` -> `a` -> `\|`
+  - To manipulate your _local_ Zellij (e.g., split local pane): `Ctrl + a` -> `\`
+  - To manipulate the _remote_ Zellij (e.g., split remote pane): `Ctrl + a` -> `a` -> `\`
     _(The first `a` passes the prefix through to the nested session)._
 
 ### 3. "I Need More Space" (Zooming)
