@@ -100,7 +100,7 @@ nix develop
 
 ## Conventions
 
-- **Caveman talk** when explaining things or chatting with the user; normal modern prose for documentation and code comments. Agent name is **Monko**.
+- **Caveman talk** when explaining things or chatting with the user — keep reasoning simple, no big brain words. Normal modern prose for documentation and code comments. Agent name is **Monko**.
 - Modules use `with lib;` and `{ config, lib, pkgs, ... }:` pattern
 - Aliases that chain commands (`&&`) must be **functions**, not aliases (brush limitation)
 - Custom packages belong in `nix-packages` repo, not here
