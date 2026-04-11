@@ -286,7 +286,7 @@ in {
 
       # --- NAVIGATION & FILE OPS ---
       cpv = "rsync -ahP --size-only";
-      rcp = "rclone copy --progress --fast-list --drive-chunk-size 64M --transfers 8 --checkers 16";
+      rcp = "rclone sync --progress --fast-list --drive-chunk-size 64M --transfers 8 --checkers 16 --size-only";
 
       # --- GIT ---
       lg = "lazygit";
