@@ -289,12 +289,8 @@ in {
       gco = "git checkout";
 
       # --- NIX MANAGEMENT ---
-      nrb = "st && nh os switch";
-      ndr = "st && nh os build";
       ncl = "nh clean all --keep 10 --nogc";
       ncl-full = "direnv prune && nh clean all --keep 10";
-      up = "st && nh os switch --update";
-      up-browsers = "st && nix flake update nixpkgs && nh os switch";
       nv-sys = "nvd diff $(command ls -vd /nix/var/nix/profiles/system-*-link | tail -2)";
       nv-boot = "nvd diff /run/booted-system /run/current-system";
 
@@ -322,13 +318,17 @@ in {
     };
 
     initExtra = ''
-      # Silence brush's incomplete bind builtin (atuin/skim inject bind -x calls)
+      # Suppress brush's bind warnings for unsupported readline macro forms
       if [ -n "$BRUSH_VERSION" ]; then
-        bind() { command bind "$@" 2>/dev/null; return 0; }
+        bind() { builtin bind "$@" 2>/dev/null; return 0; }
       fi
 
-      # Stage dotfiles (used by nrb/ndr/up aliases)
+      # Stage dotfiles (used by nrb/ndr/up functions)
       st() { git -C "${userConfig.dotfilesDir}" add .; }
+      nrb() { st && nh os switch; }
+      ndr() { st && nh os build; }
+      up() { st && nh os switch --update; }
+      up-browsers() { st && nix flake update nixpkgs && nh os switch; }
 
       [[ -z "$CLEAN_PATH" ]] && readonly CLEAN_PATH='${cleanPath}'
       [[ -z "$COPILOT_BIN" ]] && readonly COPILOT_BIN='${copilotBin}'
@@ -538,6 +538,15 @@ in {
     if type starship_precmd &>/dev/null; then
       PROMPT_COMMAND="starship_precmd;''${PROMPT_COMMAND:-}"
     fi
+  '';
+
+  # Brush config — enable zsh-style hooks for atuin/starship integration
+  xdg.configFile."brush/config.toml".text = ''
+    [ui]
+    syntax-highlighting = true
+
+    [experimental]
+    zsh-hooks = true
   '';
 
   # 6. Desktop Entries

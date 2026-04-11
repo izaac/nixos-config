@@ -80,11 +80,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1775915069,
-        "narHash": "sha256-NSXIZDj0m+vVS8nWuLENckRWzP4L4ONN88pDm4DOwNo=",
+        "lastModified": 1775920839,
+        "narHash": "sha256-3EVSHnifM3A+gr6oT01Ib08z8n1/t2a3p3qnuV10osg=",
         "owner": "izaac",
         "repo": "nix-packages",
-        "rev": "0eaa149cd9df9afc3765f244e732b1368222c83e",
+        "rev": "5542aff2ca5a4ff8c84a25867aacc2d3fc79aa59",
         "type": "github"
       },
       "original": {

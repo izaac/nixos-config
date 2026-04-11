@@ -30,7 +30,11 @@ if [ -n "$STAGED_NIX_FILES" ]; then
 fi
 
 echo "Scanning for AI traces..."
-ai-trace-scan --staged --quiet
+if command -v ai-trace-scan &>/dev/null; then
+    ai-trace-scan --staged --quiet
+else
+    echo "  (ai-trace-scan not found, skipping)"
+fi
 
 echo "Pre-Commit Checks Passed!"
 exit 0
