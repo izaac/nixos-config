@@ -6,11 +6,11 @@
 - **DM:** cosmic-greeter (greetd)
 - **DE:** COSMIC (Epoch 1)
 - **Theme:** Catppuccin Mocha (Blue Accent)
-- **Shell:** Zsh + Starship + Atuin + Rust Coreutils
-- **Terminal:** Wezterm + Zellij
+- **Shell:** Brush (Rust) + Starship + Atuin + Zoxide
+- **Terminal:** WezTerm + Zellij
 - **Editor:** Helix
-- **Security:** dbus-broker
-- **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, Conty
+- **Security:** dbus-broker, sops-nix + age, YubiKey (U2F)
+- **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, GameMode
 
 ## Documentation
 
