@@ -98,9 +98,28 @@ deadnix .
 nix run nixpkgs#prettier -- --write '**/*.md'
 nix run nixpkgs#markdownlint-cli2 -- '**/*.md'
 
+# Verify shell.nix produces valid bash
+nix eval '.#nixosConfigurations.ninja.config.home-manager.users.izaac.programs.bash.initExtra' \
+  --extra-experimental-features dynamic-derivations --raw | bash -n
+
+# Full system build (without switching)
+nix build .#nixosConfigurations.ninja.config.system.build.toplevel
+
 # Dev shell (includes nixd, statix, deadnix, nixpkgs-fmt, sops tools)
 nix develop
 ```
+
+## Pre-commit Hooks
+
+Hooks run automatically on `git commit` for staged `.nix` files:
+
+1. **alejandra** — formats Nix code (can rewrite file structure)
+2. **deadnix** — removes dead code
+3. **statix** — lints and auto-fixes each file
+4. **Re-stages** the modified files automatically
+5. **ai-trace-scan** — checks for AI traces (optional, skipped if not installed)
+
+⚠️ Alejandra re-stages files after formatting. If it breaks bash inside Nix strings, the broken version gets committed. Always check the output after commit.
 
 ## Conventions
 
@@ -125,6 +144,63 @@ nix develop
 - **Heredocs in Nix `''` strings**: the closing delimiter (e.g., `EOF`) must have no leading whitespace in the built output. Nix strips indent to the minimum level, but if all lines share the same indent the delimiter keeps spaces and bash breaks. Put heredoc content at column 0 in the Nix source.
 - **Alejandra can break bash**: the formatter moves Nix expressions around but does not understand bash inside multiline strings. Always re-verify after it runs.
 - `home/shell.nix` is the most fragile file — it contains bash functions, heredocs, and tool integrations inside Nix strings. Test changes with: `nix eval '.#nixosConfigurations.ninja.config.home-manager.users.izaac.programs.bash.initExtra' --extra-experimental-features dynamic-derivations --raw | bash -n`
+
+## Nix String Cheat Sheet
+
+Inside Nix `''` (multiline) strings:
+
+| You write      | Bash gets    | Notes                                         |
+| -------------- | ------------ | --------------------------------------------- |
+| `$FOO`         | `$FOO`       | Dollar sign passes through as-is              |
+| `${nixVar}`    | _(expanded)_ | Nix interpolation — replaced at eval          |
+| `''${bashVar}` | `${bashVar}` | Escape to get literal `${...}` in bash        |
+| `'''`          | `''`         | Literal two single quotes                     |
+| `''\n`         | _(newline)_  | Nix escape sequence                           |
+| `\\`           | `\`          | Literal backslash (only if before `$` or `'`) |
+
+Rule of thumb: `$name` is fine, `${name}` needs `''` prefix to stop Nix from eating it.
+
+## Custom Packages (nix-packages repo)
+
+Packages not in nixpkgs live in [nix-packages](https://github.com/izaac/nix-packages):
+
+| Package          | Description                                                     |
+| ---------------- | --------------------------------------------------------------- |
+| `brush-shell`    | Bash/POSIX-compatible shell written in Rust (built from source) |
+| `vcrunch`        | Video re-encoding tool                                          |
+| `ethereal-waves` | Music player for COSMIC Desktop                                 |
+| `zelda-oot`      | Zelda Ocarina of Time PC port                                   |
+
+Update with: `nix flake lock --update-input nix-packages`
+
+## Common Workflows
+
+### Add a new user package
+
+1. Add to `home.packages` in the relevant `home/*.nix` file
+2. `nix build .#nixosConfigurations.ninja.config.system.build.toplevel`
+3. Commit, then `nrb` to switch
+
+### Add a new system package
+
+1. Add to `environment.systemPackages` in the relevant `modules/` file
+2. Build and test as above
+
+### Edit shell config
+
+1. Edit `home/shell.nix`
+2. Verify bash syntax: `nix eval '...' --raw | bash -n` (see Tools & Commands)
+3. Commit — watch for alejandra changes
+4. Re-verify bash syntax after commit (hooks may have changed the file)
+5. `nrb` to switch
+
+### Add a new module
+
+1. Create `modules/<category>/newmodule.nix` with `{ config, lib, pkgs, ... }:` pattern
+2. Add option under `mySystem.*` namespace
+3. Import in `modules/<category>/default.nix`
+4. Enable in relevant `hosts/<hostname>/configuration.nix`
+5. Build and test
 
 ## Troubleshooting
 
