@@ -39,7 +39,12 @@ in {
   config = mkIf cfg.enable {
     # 1. Controller & Hardware Support
     # Provides udev rules for Steam Deck, DualSense, and other controllers.
-    hardware.steam-hardware.enable = true;
+    hardware = {
+      steam-hardware.enable = true;
+      # 5. Controller & Hardware Support
+      xpadneo.enable = true; # Xbox Bluetooth
+      uinput.enable = true; # Virtual Input (Critical for remapping tools)
+    };
 
     # 2. Host Steam Configuration
     programs.steam = {
@@ -101,23 +106,23 @@ in {
 
     # 4. Sched-ext (Dynamic Schedulers)
     # Native support in Linux 6.12+. scx_lavd is a beast for gaming latency.
-    services.scx = {
-      enable = true;
-      scheduler = mkDefault "scx_lavd";
-      extraArgs = mkDefault ["--autopilot"];
-    };
-
     # 5. Controller & Hardware Support
-    hardware.xpadneo.enable = true; # Xbox Bluetooth
-    services.joycond.enable = false; # Nintendo Switch JoyCons (Merge L+R)
-    hardware.uinput.enable = true; # Virtual Input (Critical for remapping tools)
-    services.input-remapper.enable = true; # Easy input remapping daemon
+    services = {
+      scx = {
+        enable = true;
+        scheduler = mkDefault "scx_lavd";
+        extraArgs = mkDefault ["--autopilot"];
+      };
 
-    services.udev.packages = with pkgs; [
-      game-devices-udev-rules # The big community list
-      logitech-udev-rules
-      openrgb # RGB Control access
-    ];
+      joycond.enable = false; # Nintendo Switch JoyCons (Merge L+R)
+      input-remapper.enable = true; # Easy input remapping daemon
+
+      udev.packages = with pkgs; [
+        game-devices-udev-rules # The big community list
+        logitech-udev-rules
+        openrgb # RGB Control access
+      ];
+    };
 
     # 6. Environment Tweaks
     environment.sessionVariables = {

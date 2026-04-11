@@ -7,14 +7,18 @@
 }: {
   imports = [(modulesPath + "/installer/scan/not-detected.nix")];
 
-  boot.initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "uas" "usb_storage" "sd_mod" "sr_mod"];
-  boot.initrd.kernelModules = [];
-  boot.kernelModules = ["kvm-amd" "nct6775" "ntsync"];
-  boot.extraModulePackages = [];
+  boot = {
+    initrd = {
+      availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "uas" "usb_storage" "sd_mod" "sr_mod"];
+      kernelModules = [];
+    };
+    kernelModules = ["kvm-amd" "nct6775" "ntsync"];
+    extraModulePackages = [];
 
-  # Workaround for Intel I225-V (igc) dropping connections after a few hours
-  # Prevents PCIe power management from putting the NIC into a state it can't recover from
-  boot.kernelParams = ["pcie_port_pm=off" "pcie_aspm.policy=performance"];
+    # Workaround for Intel I225-V (igc) dropping connections after a few hours
+    # Prevents PCIe power management from putting the NIC into a state it can't recover from
+    kernelParams = ["pcie_port_pm=off" "pcie_aspm.policy=performance"];
+  };
 
   # NFS mount — not managed by disko, always present
   fileSystems."/mnt/storage" = {

@@ -13,7 +13,21 @@ in {
 
   config = mkIf cfg.enable {
     # --- COSMIC Desktop ---
-    services.desktopManager.cosmic.enable = true;
+    services = {
+      desktopManager.cosmic.enable = true;
+
+      # --- DISPLAY MANAGER (cosmic-greeter via greetd) ---
+      displayManager.cosmic-greeter.enable = true;
+
+      # XServer is required for XWayland
+      xserver = {
+        enable = true;
+        xkb = {
+          layout = "us";
+          variant = "";
+        };
+      };
+    };
 
     programs.gnupg.agent = {
       enable = true;
@@ -21,24 +35,16 @@ in {
       pinentryPackage = pkgs.pinentry-gnome3;
     };
 
-    # --- DISPLAY MANAGER (cosmic-greeter via greetd) ---
-    services.displayManager.cosmic-greeter.enable = true;
-
-    catppuccin.enable = true;
-    catppuccin.flavor = "mocha";
-    catppuccin.accent = "blue";
-    catppuccin.tty.enable = true;
-
-    security.pam.services.cosmic-greeter.enableGnomeKeyring = true;
-    security.pam.services.login.enableGnomeKeyring = true;
-
-    # XServer is required for XWayland
-    services.xserver = {
+    catppuccin = {
       enable = true;
-      xkb = {
-        layout = "us";
-        variant = "";
-      };
+      flavor = "mocha";
+      accent = "blue";
+      tty.enable = true;
+    };
+
+    security.pam.services = {
+      cosmic-greeter.enableGnomeKeyring = true;
+      login.enableGnomeKeyring = true;
     };
 
     # Portals (COSMIC registers its own via the module)
@@ -48,14 +54,15 @@ in {
     };
 
     # Clipboard manager protocol for COSMIC
-    environment.sessionVariables.COSMIC_DATA_CONTROL_ENABLED = "1";
-
-    environment.systemPackages = with pkgs; [
-      adwaita-icon-theme
-      libgnome-keyring
-      seahorse # GPG/SSH key management
-      gcr # Graphical prompts (GPG, etc.)
-      pam_gnupg # GPG unlocking
-    ];
+    environment = {
+      sessionVariables.COSMIC_DATA_CONTROL_ENABLED = "1";
+      systemPackages = with pkgs; [
+        adwaita-icon-theme
+        libgnome-keyring
+        seahorse # GPG/SSH key management
+        gcr # Graphical prompts (GPG, etc.)
+        pam_gnupg # GPG unlocking
+      ];
+    };
   };
 }

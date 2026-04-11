@@ -23,10 +23,12 @@
   ];
 
   # https://devenv.sh/scripts/
-  scripts.build.exec = "cargo build";
-  scripts.test.exec = "cargo test";
-  scripts.run.exec = "cargo run";
-  scripts.watch.exec = "bacon";
+  scripts = {
+    build.exec = "cargo build";
+    test.exec = "cargo test";
+    run.exec = "cargo run";
+    watch.exec = "bacon";
+  };
 
   # https://devenv.sh/pre-commit-hooks/
   # Uncomment to enable pre-commit hooks

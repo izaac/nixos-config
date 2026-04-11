@@ -7,13 +7,15 @@
   virtualisation.vmVariant = {
     # Disable NVIDIA in the VM
     services.xserver.videoDrivers = lib.mkForce ["modesetting"];
-    hardware.nvidia.package = lib.mkForce pkgs.hello;
+    hardware = {
+      nvidia.package = lib.mkForce pkgs.hello;
+      graphics.extraPackages = lib.mkForce [];
+      # Disable NVIDIA toolkit in VM
+      nvidia-container-toolkit.enable = lib.mkForce false;
+    };
     systemd.services.nvidia-lock-clocks.enable = lib.mkForce false;
-    hardware.graphics.extraPackages = lib.mkForce [];
     # No sops secrets needed in the VM
     sops.gnupg.home = lib.mkForce "/tmp/gnupg";
-    # Disable NVIDIA toolkit in VM
-    hardware.nvidia-container-toolkit.enable = lib.mkForce false;
   };
 
   # This is 'ninja' — a high-performance workstation built around the Ryzen 9 9950X3D and NVIDIA.
@@ -38,21 +40,25 @@
 
   # --- CORE FEATURES ---
   # Enabling the modular components that make up this system's identity.
-  mySystem.gaming.enable = true;
-  mySystem.desktop.enable = true;
-  mySystem.core.audio.enable = true;
-  mySystem.core.bluetooth.enable = true;
-  mySystem.core.codecs.enable = true;
-  mySystem.core.virtualization.enable = true;
-  mySystem.core.nfs.enable = true;
-  mySystem.core.maintenance.enable = true;
-  mySystem.core.performance.enable = true;
-  mySystem.core.sops.enable = true;
-  mySystem.core.system.enable = true;
-  mySystem.core.usb-fixes.enable = true;
-  mySystem.core.user.enable = true;
-  mySystem.core.home-manager.enable = true;
-  mySystem.core.nix-ld.enable = true;
+  mySystem = {
+    gaming.enable = true;
+    desktop.enable = true;
+    core = {
+      audio.enable = true;
+      bluetooth.enable = true;
+      codecs.enable = true;
+      virtualization.enable = true;
+      nfs.enable = true;
+      maintenance.enable = true;
+      performance.enable = true;
+      sops.enable = true;
+      system.enable = true;
+      usb-fixes.enable = true;
+      user.enable = true;
+      home-manager.enable = true;
+      nix-ld.enable = true;
+    };
+  };
 
   # --- DRIVERS & FIRMWARE ---
   # Including all firmware to ensure the 9950X3D and NVIDIA GPU have everything they need.

@@ -58,11 +58,13 @@
         modules = [
           "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
           ({pkgs, ...}: {
-            networking.hostName = "monko-canoe";
+            networking = {
+              hostName = "monko-canoe";
+              networkmanager.enable = true;
+              networkmanager.wifi.backend = "iwd";
+            };
             system.stateVersion = "25.05";
             hardware.enableRedistributableFirmware = true;
-            networking.networkmanager.enable = true;
-            networking.networkmanager.wifi.backend = "iwd";
             users.users.${userConfig.username} = {
               isNormalUser = true;
               extraGroups = ["wheel" "networkmanager"];
@@ -118,6 +120,26 @@
         } ''
           cd "$src"
           alejandra --check .
+          touch "$out"
+        '';
+      linting =
+        pkgs.runCommand "statix-check"
+        {
+          src = ./.;
+          nativeBuildInputs = [pkgs.statix];
+        } ''
+          cd "$src"
+          statix check .
+          touch "$out"
+        '';
+      deadcode =
+        pkgs.runCommand "deadnix-check"
+        {
+          src = ./.;
+          nativeBuildInputs = [pkgs.deadnix];
+        } ''
+          cd "$src"
+          deadnix --fail .
           touch "$out"
         '';
     });

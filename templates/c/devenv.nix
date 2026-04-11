@@ -34,10 +34,12 @@
   ];
 
   # https://devenv.sh/scripts/
-  scripts.build.exec = "cmake -B build -G Ninja && ninja -C build";
-  scripts.clean.exec = "rm -rf build";
-  scripts.test.exec = "cd build && ctest";
-  scripts.debug.exec = "gdb ./build/main";
+  scripts = {
+    build.exec = "cmake -B build -G Ninja && ninja -C build";
+    clean.exec = "rm -rf build";
+    test.exec = "cd build && ctest";
+    debug.exec = "gdb ./build/main";
+  };
 
   # Environment variables for C development
   env = {

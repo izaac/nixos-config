@@ -11,9 +11,11 @@
     ./dev.nix
   ];
 
-  home.username = userConfig.username;
-  home.homeDirectory = "/home/${userConfig.username}";
-  home.stateVersion = "26.05";
+  home = {
+    inherit (userConfig) username;
+    homeDirectory = "/home/${userConfig.username}";
+    stateVersion = "26.05";
+  };
 
   programs.home-manager.enable = true;
 }

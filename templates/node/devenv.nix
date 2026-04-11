@@ -27,11 +27,13 @@
   ];
 
   # https://devenv.sh/scripts/
-  scripts.dev.exec = "npm run dev";
-  scripts.build.exec = "npm run build";
-  scripts.test.exec = "npm test";
-  scripts.lint.exec = "npm run lint";
-  scripts.format.exec = "npm run format";
+  scripts = {
+    dev.exec = "npm run dev";
+    build.exec = "npm run build";
+    test.exec = "npm test";
+    lint.exec = "npm run lint";
+    format.exec = "npm run format";
+  };
 
   # Environment variables
   env = {

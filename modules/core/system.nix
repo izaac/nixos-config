@@ -31,27 +31,29 @@ in {
     };
 
     # Common Services
-    services.openssh = {
-      enable = true;
-      settings = {
-        PasswordAuthentication = lib.mkDefault false;
-        KbdInteractiveAuthentication = lib.mkDefault false;
-        PermitRootLogin = "no";
-        MaxAuthTries = 3;
-        AllowTcpForwarding = false;
-        AllowAgentForwarding = false;
-        X11Forwarding = false;
+    services = {
+      openssh = {
+        enable = true;
+        settings = {
+          PasswordAuthentication = lib.mkDefault false;
+          KbdInteractiveAuthentication = lib.mkDefault false;
+          PermitRootLogin = "no";
+          MaxAuthTries = 3;
+          AllowTcpForwarding = false;
+          AllowAgentForwarding = false;
+          X11Forwarding = false;
+        };
       };
+
+      fstrim.enable = true;
+      power-profiles-daemon.enable = lib.mkForce false;
+
+      # Limit journal size to prevent unbounded /var/log growth
+      journald.extraConfig = ''
+        SystemMaxUse=2G
+        MaxRetentionSec=1month
+      '';
     };
-
-    services.fstrim.enable = true;
-    services.power-profiles-daemon.enable = lib.mkForce false;
-
-    # Limit journal size to prevent unbounded /var/log growth
-    services.journald.extraConfig = ''
-      SystemMaxUse=2G
-      MaxRetentionSec=1month
-    '';
 
     # Auto-purge /tmp files older than 7 days
     systemd.tmpfiles.rules = [

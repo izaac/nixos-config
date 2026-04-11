@@ -37,37 +37,41 @@ in {
     };
 
     # --- KERNEL TUNING ---
-    boot.kernel.sysctl = {
-      # ZRAM Swappiness (Aggressive swap-to-zram, avoids disk wait)
-      "vm.swappiness" = mkDefault 180;
-      "vm.vfs_cache_pressure" = 50; # Keep filesystem cache longer (snappier Nautilus)
-      "vm.dirty_ratio" = 10;
-      "vm.dirty_background_ratio" = 5;
+    boot = {
+      kernel.sysctl = {
+        # ZRAM Swappiness (Aggressive swap-to-zram, avoids disk wait)
+        "vm.swappiness" = mkDefault 180;
+        "vm.vfs_cache_pressure" = 50; # Keep filesystem cache longer (snappier Nautilus)
+        "vm.dirty_ratio" = 10;
+        "vm.dirty_background_ratio" = 5;
 
-      # Networking performance (lower latency)
-      "net.core.default_qdisc" = "fq"; # Fair Queueing (Bufferbloat reduction)
-      "net.ipv4.tcp_congestion_control" = "bbr"; # Google BBR congestion control
+        # Networking performance (lower latency)
+        "net.core.default_qdisc" = "fq"; # Fair Queueing (Bufferbloat reduction)
+        "net.ipv4.tcp_congestion_control" = "bbr"; # Google BBR congestion control
+      };
+
+      # --- GAMING & INPUT LATENCY ---
+      kernelParams = [
+        # Transparent Hugepages (THP) - 'madvise' allows apps (like Steam/Proton)
+        # to opt-in, reducing TLB misses without the overhead of 'always'.
+        "transparent_hugepage=madvise"
+
+        # Disable USB autosuspend to eliminate tiny wake-up delays for mice/keyboards.
+        "usbcore.autosuspend=-1"
+      ];
     };
-
-    # --- GAMING & INPUT LATENCY ---
-    boot.kernelParams = [
-      # Transparent Hugepages (THP) - 'madvise' allows apps (like Steam/Proton)
-      # to opt-in, reducing TLB misses without the overhead of 'always'.
-      "transparent_hugepage=madvise"
-
-      # Disable USB autosuspend to eliminate tiny wake-up delays for mice/keyboards.
-      "usbcore.autosuspend=-1"
-    ];
 
     # dbus-broker (Fedora/GNOME standard)
     # High-performance D-Bus message broker that reduces latency in desktop communication.
-    services.dbus.implementation = "broker";
+    services = {
+      dbus.implementation = "broker";
 
-    # Ananicy-cpp (Auto-nice daemon) - Disabled per Anticipation Strategy
-    services.ananicy.enable = false;
+      # Ananicy-cpp (Auto-nice daemon) - Disabled per Anticipation Strategy
+      ananicy.enable = false;
 
-    # Irqbalance - Disabled per Anticipation Strategy
-    services.irqbalance.enable = false;
+      # Irqbalance - Disabled per Anticipation Strategy
+      irqbalance.enable = false;
+    };
 
     # --- FIREFOX VIP WRAPPER ---
     security.wrappers.firefox-vip = {

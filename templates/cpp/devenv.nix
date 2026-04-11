@@ -44,12 +44,14 @@
   ];
 
   # https://devenv.sh/scripts/
-  scripts.build.exec = "cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 && ninja -C build";
-  scripts.clean.exec = "rm -rf build";
-  scripts.test.exec = "cd build && ctest";
-  scripts.debug.exec = "lldb ./build/main";
-  scripts.format.exec = "find . -name '*.cpp' -o -name '*.hpp' | xargs clang-format -i";
-  scripts.lint.exec = "clang-tidy src/*.cpp -- -I./include";
+  scripts = {
+    build.exec = "cmake -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 && ninja -C build";
+    clean.exec = "rm -rf build";
+    test.exec = "cd build && ctest";
+    debug.exec = "lldb ./build/main";
+    format.exec = "find . -name '*.cpp' -o -name '*.hpp' | xargs clang-format -i";
+    lint.exec = "clang-tidy src/*.cpp -- -I./include";
+  };
 
   # Environment variables for C++ development
   env = {

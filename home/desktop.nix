@@ -66,78 +66,80 @@ in {
     newsflash # GTK4/Libadwaita RSS Reader
   ];
 
-  xdg.userDirs = {
-    enable = true;
-    createDirectories = true;
-    setSessionVariables = false;
-  };
-  xdg.desktopEntries.ventoy = {
-    name = "Ventoy";
-    exec = "sudo ventoy-full-gtk";
-    icon = "ventoy";
-    terminal = false;
-    categories = ["Utility" "System"];
-  };
+  xdg = {
+    userDirs = {
+      enable = true;
+      createDirectories = true;
+      setSessionVariables = false;
+    };
+    desktopEntries.ventoy = {
+      name = "Ventoy";
+      exec = "sudo ventoy-full-gtk";
+      icon = "ventoy";
+      terminal = false;
+      categories = ["Utility" "System"];
+    };
 
-  # Default Applications (File Associations)
-  xdg.mimeApps = {
-    enable = true;
-    defaultApplications = {
-      "text/html" = ["chromium-browser.desktop"];
-      "x-scheme-handler/http" = ["chromium-browser.desktop"];
-      "x-scheme-handler/https" = ["chromium-browser.desktop"];
-      "x-scheme-handler/about" = ["chromium-browser.desktop"];
-      "x-scheme-handler/unknown" = ["chromium-browser.desktop"];
+    # Default Applications (File Associations)
+    mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "text/html" = ["chromium-browser.desktop"];
+        "x-scheme-handler/http" = ["chromium-browser.desktop"];
+        "x-scheme-handler/https" = ["chromium-browser.desktop"];
+        "x-scheme-handler/about" = ["chromium-browser.desktop"];
+        "x-scheme-handler/unknown" = ["chromium-browser.desktop"];
 
-      # Text
-      "text/plain" = ["com.system76.CosmicEdit.desktop"];
-      "text/markdown" = ["com.system76.CosmicEdit.desktop"];
-      "text/x-log" = ["com.system76.CosmicEdit.desktop"];
+        # Text
+        "text/plain" = ["com.system76.CosmicEdit.desktop"];
+        "text/markdown" = ["com.system76.CosmicEdit.desktop"];
+        "text/x-log" = ["com.system76.CosmicEdit.desktop"];
 
-      # Archives
-      "application/zip" = ["org.gnome.FileRoller.desktop"];
-      "application/x-tar" = ["org.gnome.FileRoller.desktop"];
-      "application/x-7z-compressed" = ["org.gnome.FileRoller.desktop"];
-      "application/x-rar" = ["org.gnome.FileRoller.desktop"];
-      "application/gzip" = ["org.gnome.FileRoller.desktop"];
-      "application/x-bzip2" = ["org.gnome.FileRoller.desktop"];
-      "application/x-xz" = ["org.gnome.FileRoller.desktop"];
+        # Archives
+        "application/zip" = ["org.gnome.FileRoller.desktop"];
+        "application/x-tar" = ["org.gnome.FileRoller.desktop"];
+        "application/x-7z-compressed" = ["org.gnome.FileRoller.desktop"];
+        "application/x-rar" = ["org.gnome.FileRoller.desktop"];
+        "application/gzip" = ["org.gnome.FileRoller.desktop"];
+        "application/x-bzip2" = ["org.gnome.FileRoller.desktop"];
+        "application/x-xz" = ["org.gnome.FileRoller.desktop"];
 
-      # Video
-      "video/mp4" = ["dev.philn.Glide.desktop"];
-      "video/x-matroska" = ["dev.philn.Glide.desktop"];
-      "video/webm" = ["dev.philn.Glide.desktop"];
-      "video/quicktime" = ["dev.philn.Glide.desktop"];
-      "video/x-flv" = ["dev.philn.Glide.desktop"];
-      "video/x-msvideo" = ["dev.philn.Glide.desktop"];
-      "video/mpeg" = ["dev.philn.Glide.desktop"];
-      "video/ogg" = ["dev.philn.Glide.desktop"];
-      "video/x-ogm+xml" = ["dev.philn.Glide.desktop"];
-      "video/3gpp" = ["dev.philn.Glide.desktop"];
-      "video/3gpp2" = ["dev.philn.Glide.desktop"];
-      "video/h264" = ["dev.philn.Glide.desktop"];
-      "video/mp2t" = ["dev.philn.Glide.desktop"];
-      "video/vnd.rn-realvideo" = ["dev.philn.Glide.desktop"];
-      "video/x-ms-wmv" = ["dev.philn.Glide.desktop"];
+        # Video
+        "video/mp4" = ["dev.philn.Glide.desktop"];
+        "video/x-matroska" = ["dev.philn.Glide.desktop"];
+        "video/webm" = ["dev.philn.Glide.desktop"];
+        "video/quicktime" = ["dev.philn.Glide.desktop"];
+        "video/x-flv" = ["dev.philn.Glide.desktop"];
+        "video/x-msvideo" = ["dev.philn.Glide.desktop"];
+        "video/mpeg" = ["dev.philn.Glide.desktop"];
+        "video/ogg" = ["dev.philn.Glide.desktop"];
+        "video/x-ogm+xml" = ["dev.philn.Glide.desktop"];
+        "video/3gpp" = ["dev.philn.Glide.desktop"];
+        "video/3gpp2" = ["dev.philn.Glide.desktop"];
+        "video/h264" = ["dev.philn.Glide.desktop"];
+        "video/mp2t" = ["dev.philn.Glide.desktop"];
+        "video/vnd.rn-realvideo" = ["dev.philn.Glide.desktop"];
+        "video/x-ms-wmv" = ["dev.philn.Glide.desktop"];
 
-      # Audio
-      "audio/mpeg" = ["com.galacticpirateradio.ethereal-waves.desktop"];
-      "audio/flac" = ["com.galacticpirateradio.ethereal-waves.desktop"];
-      "audio/x-wav" = ["com.galacticpirateradio.ethereal-waves.desktop"];
+        # Audio
+        "audio/mpeg" = ["com.galacticpirateradio.ethereal-waves.desktop"];
+        "audio/flac" = ["com.galacticpirateradio.ethereal-waves.desktop"];
+        "audio/x-wav" = ["com.galacticpirateradio.ethereal-waves.desktop"];
 
-      # Documents / Images
-      "application/pdf" = ["org.pwmt.zathura.desktop"];
-      "application/epub+zip" = ["org.pwmt.zathura.desktop"];
-      "image/png" = ["org.gnome.Loupe.desktop"];
-      "image/jpeg" = ["org.gnome.Loupe.desktop"];
-      "image/webp" = ["org.gnome.Loupe.desktop"];
-      "image/gif" = ["org.gnome.Loupe.desktop"];
-      "image/svg+xml" = ["org.gnome.Loupe.desktop"];
-      "image/bmp" = ["org.gnome.Loupe.desktop"];
-      "image/tiff" = ["org.gnome.Loupe.desktop"];
+        # Documents / Images
+        "application/pdf" = ["org.pwmt.zathura.desktop"];
+        "application/epub+zip" = ["org.pwmt.zathura.desktop"];
+        "image/png" = ["org.gnome.Loupe.desktop"];
+        "image/jpeg" = ["org.gnome.Loupe.desktop"];
+        "image/webp" = ["org.gnome.Loupe.desktop"];
+        "image/gif" = ["org.gnome.Loupe.desktop"];
+        "image/svg+xml" = ["org.gnome.Loupe.desktop"];
+        "image/bmp" = ["org.gnome.Loupe.desktop"];
+        "image/tiff" = ["org.gnome.Loupe.desktop"];
 
-      # Directories (COSMIC Files)
-      "inode/directory" = ["com.system76.CosmicFiles.desktop"];
+        # Directories (COSMIC Files)
+        "inode/directory" = ["com.system76.CosmicFiles.desktop"];
+      };
     };
   };
 

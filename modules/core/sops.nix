@@ -20,14 +20,16 @@ in {
       defaultSopsFormat = "yaml";
       age.keyFile = "${config.users.users.${userConfig.username}.home}/.config/sops/age/keys.txt";
 
-      secrets.sshHost = {
-        owner = userConfig.username;
-      };
-      secrets.geminiProject = {
-        owner = userConfig.username;
-      };
-      secrets.cloudCodeProject = {
-        owner = userConfig.username;
+      secrets = {
+        sshHost = {
+          owner = userConfig.username;
+        };
+        geminiProject = {
+          owner = userConfig.username;
+        };
+        cloudCodeProject = {
+          owner = userConfig.username;
+        };
       };
     };
   };

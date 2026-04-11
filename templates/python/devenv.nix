@@ -27,10 +27,12 @@
   ];
 
   # https://devenv.sh/scripts/
-  scripts.test.exec = "pytest";
-  scripts.lint.exec = "ruff check .";
-  scripts.format.exec = "ruff format .";
-  scripts.typecheck.exec = "mypy .";
+  scripts = {
+    test.exec = "pytest";
+    lint.exec = "ruff check .";
+    format.exec = "ruff format .";
+    typecheck.exec = "mypy .";
+  };
 
   # Environment variables
   env = {
