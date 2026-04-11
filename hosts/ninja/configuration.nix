@@ -48,7 +48,11 @@
     nmap
     alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
+    ddcutil # Monitor brightness control via DDC/CI
   ];
+
+  # Allow ddcutil to access I2C devices
+  hardware.i2c.enable = true;
 
   # --- SLIMMING THE SYSTEM ---
   # Keep man pages for offline reference; skip NixOS module docs and info pages.

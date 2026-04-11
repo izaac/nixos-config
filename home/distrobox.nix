@@ -96,7 +96,7 @@
   '';
 
   # Alias to easily create/update these containers
-  programs.zsh.shellAliases = {
+  programs.bash.shellAliases = {
     db-up = "distrobox assemble create --file ~/.config/distrobox/distrobox.ini";
     db-rm = "distrobox assemble rm --file ~/.config/distrobox/distrobox.ini";
     db-arch = "distrobox enter archy";

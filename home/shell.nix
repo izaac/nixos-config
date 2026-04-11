@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   userConfig,
@@ -15,7 +14,7 @@ in {
   # 1. Theme & Styling
   # catppuccin.starship.enable = true;
   catppuccin.bat.enable = true;
-  catppuccin.fzf.enable = true;
+  catppuccin.skim.enable = true;
   catppuccin.bottom.enable = true;
   catppuccin.gitui.enable = true;
   catppuccin.yazi.enable = true;
@@ -55,7 +54,7 @@ in {
 
   programs.atuin = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
     settings = {
       auto_sync = false;
       style = "compact";
@@ -68,36 +67,36 @@ in {
 
   programs.zoxide = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
   };
 
   programs.pay-respects = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
   };
 
   # --- FILE MANAGERS & NAVIGATION ---
   programs.yazi = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
     shellWrapperName = "y";
   };
 
   programs.broot = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
   };
 
   programs.eza = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
     icons = "auto";
     git = true;
   };
 
-  programs.fzf = {
+  programs.skim = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
     defaultCommand = "fd --type f";
     fileWidgetCommand = "fd --type f";
     changeDirWidgetCommand = "fd --type d";
@@ -152,7 +151,7 @@ in {
   # --- NIX UTILS ---
   programs.nix-index = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
   };
 
   # 3. System Packages
@@ -217,6 +216,7 @@ in {
 
     # --- MEDIA & ENCODING ---
     nix-packages.vcrunch
+    nix-packages.brush-shell
 
     # --- COMPRESSION & ARCHIVING ---
     ouch
@@ -247,14 +247,9 @@ in {
   ];
 
   # 4. Shell Configuration
-  programs.zsh = {
+  programs.bash = {
     enable = true;
     enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-    autocd = true;
-    historySubstringSearch.enable = true;
-    dotDir = "${config.xdg.configHome}/zsh";
 
     shellAliases = {
       # --- CORE OVERRIDES ---
@@ -287,11 +282,11 @@ in {
       # --- NAVIGATION & FILE OPS ---
       cpv = "rsync -ahP --size-only";
       rcp = "rclone sync --progress --fast-list --drive-chunk-size 64M --transfers 8 --checkers 16 --size-only";
+      zlj = "zellij";
 
       # --- GIT ---
       lg = "lazygit";
       gco = "git checkout";
-      st = "git -C $NH_FLAKE add .";
 
       # --- NIX MANAGEMENT ---
       nrb = "st && nh os switch";
@@ -326,140 +321,104 @@ in {
       VISUAL = "hx";
     };
 
-    initContent = ''
-            typeset -U path PATH
+    initExtra = ''
+      # Silence brush's incomplete bind builtin (atuin/skim inject bind -x calls)
+      if [ -n "$BRUSH_VERSION" ]; then
+        bind() { command bind "$@" 2>/dev/null; return 0; }
+      fi
 
-            (( ''${+CLEAN_PATH} )) || readonly CLEAN_PATH='${cleanPath}'
-            (( ''${+COPILOT_BIN} )) || readonly COPILOT_BIN='${copilotBin}'
-            (( ''${+GEMINI_BIN} )) || readonly GEMINI_BIN='${geminiBin}'
-            (( ''${+NH_BIN} )) || readonly NH_BIN='${nhBin}'
+      # Stage dotfiles (used by nrb/ndr/up aliases)
+      st() { git -C "${userConfig.dotfilesDir}" add .; }
 
-            # --- Gemini CLI ---
-            function ask() {
-              if [[ $# -eq 0 ]]; then
-                PATH="$CLEAN_PATH" "$GEMINI_BIN"
-              else
-                PATH="$CLEAN_PATH" "$GEMINI_BIN" -p "$*"
-              fi
-            }
+      [[ -z "$CLEAN_PATH" ]] && readonly CLEAN_PATH='${cleanPath}'
+      [[ -z "$COPILOT_BIN" ]] && readonly COPILOT_BIN='${copilotBin}'
+      [[ -z "$GEMINI_BIN" ]] && readonly GEMINI_BIN='${geminiBin}'
+      [[ -z "$NH_BIN" ]] && readonly NH_BIN='${nhBin}'
 
-            # --- Copilot CLI ---
-            function ai() {
-              case "$1" in
-                "")
-                  PATH="$CLEAN_PATH" "$COPILOT_BIN"
-                  ;;
-                login|init|update|version|help)
-                  PATH="$CLEAN_PATH" "$COPILOT_BIN" "$@"
-                  ;;
-                *)
-                  PATH="$CLEAN_PATH" "$COPILOT_BIN" -p "$*"
-                  ;;
-              esac
-            }
+      # --- Gemini CLI ---
+      ask() {
+        if [[ $# -eq 0 ]]; then
+          PATH="$CLEAN_PATH" "$GEMINI_BIN"
+        else
+          PATH="$CLEAN_PATH" "$GEMINI_BIN" -p "$*"
+        fi
+      }
 
-            # --- Fast Package Search ---
-            nqs() {
-              if [[ $# -eq 0 ]]; then
-                echo "Usage: nqs <query...>"
-                return 2
-              fi
-              "$NH_BIN" search --limit 50 "$@"
-            }
+      # --- Copilot CLI ---
+      ai() {
+        case "$1" in
+          "")
+            PATH="$CLEAN_PATH" "$COPILOT_BIN"
+            ;;
+          login|init|update|version|help)
+            PATH="$CLEAN_PATH" "$COPILOT_BIN" "$@"
+            ;;
+          *)
+            PATH="$CLEAN_PATH" "$COPILOT_BIN" -p "$*"
+            ;;
+        esac
+      }
 
-            # --- Familiar Line Navigation ---
-            zmodload zsh/terminfo 2>/dev/null || true
-            _bind_line_navigation() {
-              local key
-              local -a home_keys=("$terminfo[khome]" '^[[H' '^[[1~' '^[[7~' '^[OH')
-              local -a end_keys=("$terminfo[kend]" '^[[F' '^[[4~' '^[[8~' '^[OF')
-              local -a backward_word_keys=("$terminfo[kLFT3]" '^[[1;3D' '^[^[[D' '^[b')
-              local -a forward_word_keys=("$terminfo[kRIT3]" '^[[1;3C' '^[^[[C' '^[f')
+      # --- Fast Package Search ---
+      nqs() {
+        if [[ $# -eq 0 ]]; then
+          echo "Usage: nqs <query...>"
+          return 2
+        fi
+        "$NH_BIN" search --limit 50 "$@"
+      }
 
-              for key in "''${home_keys[@]}"; do
-                [[ -n "$key" ]] || continue
-                bindkey -M emacs "$key" beginning-of-line
-                bindkey -M main "$key" beginning-of-line
-                bindkey -M viins "$key" beginning-of-line
-                bindkey -M vicmd "$key" vi-beginning-of-line
-              done
+      # --- Smart Eza ---
+      _smart_eza() {
+        if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
+          local args=()
+          for arg in "$@"; do
+            [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
+          done
+          command eza --icons=never --color=never "''${args[@]}"
+        else
+          command eza --icons=auto "$@"
+        fi
+      }
 
-              for key in "''${end_keys[@]}"; do
-                [[ -n "$key" ]] || continue
-                bindkey -M emacs "$key" end-of-line
-                bindkey -M main "$key" end-of-line
-                bindkey -M viins "$key" end-of-line
-                bindkey -M vicmd "$key" vi-end-of-line
-              done
+      # --- GPG TTY FIX ---
+      current_tty=$(tty 2>/dev/null)
+      if [[ "$current_tty" != "not a tty" ]]; then
+        export GPG_TTY="$current_tty"
+      fi
+      unset current_tty
 
-              for key in "''${backward_word_keys[@]}"; do
-                [[ -n "$key" ]] || continue
-                bindkey -M emacs "$key" backward-word
-                bindkey -M main "$key" backward-word
-                bindkey -M viins "$key" backward-word
-                bindkey -M vicmd "$key" vi-backward-word
-              done
+      # --- Yazi Wrapper ---
+      y() {
+        local tmp
+        tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+        yazi "$@" --cwd-file="$tmp"
+        if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+          builtin cd -- "$cwd"
+        fi
+        rm -f -- "$tmp"
+      }
 
-              for key in "''${forward_word_keys[@]}"; do
-                [[ -n "$key" ]] || continue
-                bindkey -M emacs "$key" forward-word
-                bindkey -M main "$key" forward-word
-                bindkey -M viins "$key" forward-word
-                bindkey -M vicmd "$key" vi-forward-word
-              done
-            }
-            _bind_line_navigation
-            unset -f _bind_line_navigation
+      # --- Recursive Cat ---
+      catr() {
+        local target="''${1:-.}"
+        rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
+          if file -b --mime-type "{}" | grep -q "^text/"; then
+            echo "================================================================================"
+            echo "FILE: {}"
+            echo "================================================================================"
+            cat "{}"
+            echo -e "\n"
+          fi
+        '
+      }
 
-            # --- Smart Eza ---
-            _smart_eza() {
-              if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
-                local args=()
-                for arg in "$@"; do
-                  [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
-                done
-                command eza --icons=never --color=never "''${args[@]}"
-              else
-                command eza --icons=auto "$@"
-              fi
-            }
-
-            # --- GPG TTY FIX ---
-            local current_tty=$(tty 2>/dev/null)
-            if [[ "$current_tty" != "not a typewriter" ]]; then
-              export GPG_TTY="$current_tty"
-            fi
-
-            # --- Yazi Wrapper ---
-            y() {
-              local tmp="''$(mktemp -t "yazi-cwd.XXXXXX")"
-              yazi "$@" --cwd-file="$tmp"
-              if cwd="''$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-                builtin cd -- "$cwd"
-              fi
-              rm -f -- "$tmp"
-            }
-
-            # --- Recursive Cat ---
-            catr() {
-              local target="''${1:-.}"
-              rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
-                if file -b --mime-type "{}" | grep -q "^text/"; then
-                  echo "================================================================================"
-                  echo "FILE: {}"
-                  echo "================================================================================"
-                  cat "{}"
-                  echo -e "\n"
-                fi
-              '
-            }
-
-            # --- Project Initializers ---
-            ninit() {
-              local ver="''${1:-}"
-              local target="node"
-              if [ -n "$ver" ]; then target="node_$ver"; fi
-              cat <<EOF > .envrc
+      # --- Project Initializers ---
+      ninit() {
+        local ver="''${1:-}"
+        local target="node"
+        if [ -n "$ver" ]; then target="node_$ver"; fi
+        cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#$target
       watch_file package.json
       watch_file yarn.lock
@@ -470,11 +429,11 @@ in {
         else npm install; fi
       fi
       EOF
-              direnv allow
-            }
+        direnv allow
+      }
 
-            pinit() {
-              cat <<EOF > .envrc
+      pinit() {
+        cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#python
       watch_file requirements.txt
       watch_file pyproject.toml
@@ -484,68 +443,72 @@ in {
         fi
       fi
       EOF
-              direnv allow
-            }
+        direnv allow
+      }
 
-            rinit() {
-              cat <<EOF > .envrc
+      rinit() {
+        cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#rust
       watch_file Cargo.toml
       watch_file Cargo.lock
       EOF
-              direnv allow
-            }
+        direnv allow
+      }
 
-            cinit() {
-              cat <<EOF > .envrc
+      cinit() {
+        cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#c
       watch_file CMakeLists.txt
       watch_file Makefile
       EOF
-              direnv allow
-            }
+        direnv allow
+      }
 
-            cppinit() {
-              cat <<EOF > .envrc
+      cppinit() {
+        cat <<EOF > .envrc
       use flake ${userConfig.dotfilesDir}/templates#cpp
       watch_file CMakeLists.txt
       watch_file Makefile
       EOF
-              direnv allow
-            }
+        direnv allow
+      }
 
-            # fnm
-            FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
-            if [ -d "$FNM_PATH" ]; then
-              path=("$FNM_PATH" $path)
-              eval "`fnm env`"
-            fi
+      # fnm (force bash mode — brush is bash-compatible but fnm can't detect it)
+      FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
+      if [ -d "$FNM_PATH" ]; then
+        export PATH="$FNM_PATH:$PATH"
+        eval "$(fnm env --shell bash)"
+      fi
 
-            # Ensure local binaries are in PATH
-            path+=("$HOME/.local/bin" "$HOME/bin")
+      # Ensure local binaries are in PATH
+      export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
 
-            # --- Distrobox: Host Tool Injection ---
-            if [ -d "/run/host/nix/store" ]; then
-              path=("$HOME/.local/share/distrobox/bin" $path)
-              unset GI_TYPELIB_PATH
-              unset GDK_PIXBUF_MODULE_FILE
-              unset XDG_DATA_DIRS
+      # --- Distrobox: Host Tool Injection ---
+      if [ -d "/run/host/nix/store" ]; then
+        export PATH="$HOME/.local/share/distrobox/bin:$PATH"
+        unset GI_TYPELIB_PATH
+        unset GDK_PIXBUF_MODULE_FILE
+        unset XDG_DATA_DIRS
 
-              if [ -L "/run/host/etc/static/ssl/certs/ca-bundle.crt" ]; then
-                export SSL_CERT_FILE=$(readlink /run/host/etc/static/ssl/certs/ca-bundle.crt)
-                export NIX_SSL_CERT_FILE=$SSL_CERT_FILE
-                export GIT_SSL_CAINFO=$SSL_CERT_FILE
-              fi
+        if [ -L "/run/host/etc/static/ssl/certs/ca-bundle.crt" ]; then
+          export SSL_CERT_FILE=$(readlink /run/host/etc/static/ssl/certs/ca-bundle.crt)
+          export NIX_SSL_CERT_FILE=$SSL_CERT_FILE
+          export GIT_SSL_CAINFO=$SSL_CERT_FILE
+        fi
 
-              local host_sys=$(readlink /run/host/run/current-system)
-              local host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
-              if [ -n "$host_sys" ]; then path+=("/run/host$host_sys/sw/bin"); fi
-              if [ -n "$host_user" ]; then
-                local host_user_resolved=$(readlink "/run/host$host_user")
-                [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
-                path+=("/run/host$host_user_resolved/bin")
-              fi
-            fi
+        host_sys=$(readlink /run/host/run/current-system)
+        host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
+        if [ -n "$host_sys" ]; then export PATH="$PATH:/run/host$host_sys/sw/bin"; fi
+        if [ -n "$host_user" ]; then
+          host_user_resolved=$(readlink "/run/host$host_user")
+          [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
+          export PATH="$PATH:/run/host$host_user_resolved/bin"
+        fi
+        unset host_sys host_user host_user_resolved
+      fi
+
+      # autocd
+      shopt -s autocd 2>/dev/null
     '';
   };
 
@@ -568,6 +531,13 @@ in {
     set pget:default-n 5
     set net:connection-limit 10
     set net:connection-takeover yes
+  '';
+
+  # Brush epilogue — runs after .bashrc so all tool integrations exist
+  home.file.".brushrc".text = ''
+    if type starship_precmd &>/dev/null; then
+      PROMPT_COMMAND="starship_precmd;''${PROMPT_COMMAND:-}"
+    fi
   '';
 
   # 6. Desktop Entries

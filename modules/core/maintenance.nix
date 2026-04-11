@@ -32,9 +32,7 @@ in {
       dmidecode
       smartmontools
       nvme-cli
-      wget
       curl
-      tree
       file
       iotop
       iftop
@@ -45,12 +43,12 @@ in {
       dnsutils
 
       # TTY rescue tools (root accessible)
-      neovim
+      vim
       git
-      tmux
+      zellij
       ripgrep
       fd
-      htop
+      bottom
       btop
     ];
 

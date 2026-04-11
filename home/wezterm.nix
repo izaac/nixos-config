@@ -1,12 +1,15 @@
 _: {
   programs.wezterm = {
     enable = true;
-    enableZshIntegration = true;
+    enableBashIntegration = true;
 
     extraConfig = ''
       local wezterm = require 'wezterm'
       local act = wezterm.action
       local config = wezterm.config_builder()
+
+      -- Launch brush as the interactive shell
+      config.default_prog = { 'brush', '--login' }
 
       -- Font (matching Kitty: JetBrainsMono Nerd Font Mono @ 11pt)
       config.font = wezterm.font('JetBrainsMono Nerd Font Mono')
@@ -78,7 +81,7 @@ _: {
       -- Tab title: show process name + cwd basename
       wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, _hover, _max_width)
         local pane = tab.active_pane
-        local proc = pane.foreground_process_name:match('([^/]+)$') or 'zsh'
+        local proc = pane.foreground_process_name:match('([^/]+)$') or 'brush'
         local cwd = pane.current_working_dir
         local dir = '''
         if cwd then

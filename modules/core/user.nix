@@ -18,11 +18,11 @@ in {
       isNormalUser = true;
       description = userConfig.name;
       extraGroups = ["wheel" "input" "video" "render" "dialout" "podman" "audio" "networkmanager" "gamemode"];
-      shell = pkgs.zsh;
+      shell = pkgs.bash;
     };
 
-    # Enable Zsh system-wide (Required to use as default shell)
-    programs.zsh.enable = true;
+    # Enable Bash system-wide (Required to use as default shell)
+    programs.bash.enable = true;
 
     # Sudo Configuration
     security.sudo = {
