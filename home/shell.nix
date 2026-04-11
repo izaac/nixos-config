@@ -258,7 +258,6 @@ in {
       la = "_smart_eza -la --group-directories-first";
       lt = "_smart_eza --tree --level=2";
       cd = "z";
-      rm = "rip";
 
       # --- VIEWERS & DATA ---
       cat = "bat";
@@ -274,7 +273,6 @@ in {
       dig = "doggo";
 
       # --- SYSTEM & MONITORING ---
-      sudo = "sudo ";
       top = "btop";
       sysls = "systemctl --type=service --state=running";
       ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
@@ -379,7 +377,21 @@ in {
             [[ -z "$GEMINI_BIN" ]] && readonly GEMINI_BIN='${geminiBin}'
             [[ -z "$NH_BIN" ]] && readonly NH_BIN='${nhBin}'
 
-            # --- Gemini CLI ---
+            # --- COMMAND OVERRIDES (functions for Brush compatibility) ---
+      rm() {
+        command -v rip &>/dev/null && rip "$@" || command rm "$@"
+      }
+
+      sudo() {
+        if [[ "$1" == "rm" ]]; then
+          shift
+          command sudo rip "$@"
+        else
+          command sudo "$@"
+        fi
+      }
+
+      # --- Gemini CLI ---
             ask() {
               if [[ $# -eq 0 ]]; then
                 PATH="$CLEAN_PATH" "$GEMINI_BIN"
