@@ -10,6 +10,7 @@
           type = "gpt";
           partitions = {
             ESP = {
+              label = "EFI";
               size = "1G";
               type = "EF00";
               content = {
@@ -20,6 +21,7 @@
               };
             };
             luks = {
+              label = "root";
               size = "100%";
               content = {
                 type = "luks";
@@ -43,6 +45,7 @@
           type = "gpt";
           partitions = {
             games = {
+              label = "primary";
               size = "100%";
               content = {
                 type = "filesystem";
