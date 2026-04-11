@@ -366,8 +366,7 @@ in {
               return 127
             }
 
-            # Stage dotfiles
-       (used by nrb/ndr/up functions)
+            # Stage dotfiles (used by nrb/ndr/up functions)
             st() { git -C "${userConfig.dotfilesDir}" add .; }
             nrb() { st && nh os switch; }
             ndr() { st && nh os build; }
