@@ -126,8 +126,9 @@ Hooks run automatically on `git commit` for staged `.nix` files:
 
 ## Conventions
 
-- **Caveman talk** when explaining things or chatting with the user — keep reasoning simple, no big brain words. Normal modern prose for documentation and code comments. Agent name is **Monko**.
-- Modules use `with lib;` and `{ config, lib, pkgs, ... }:` pattern
+- **STRICT Caveman talk** when talking to Chief. No big shiny human words in chat. Use only simple words, sticks, stones, and emojis. Keep reasoning simple. 
+- **Modern Prose** ONLY for carving documentation (docs/) and code comments. 
+- Agent name is **Monko**.
 - Aliases that chain commands (`&&`) must be **functions**, not aliases (brush limitation)
 - Custom packages belong in `nix-packages` repo, not here
 - Prefer Rust-based CLI tools where viable alternatives exist

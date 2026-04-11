@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: let
+  nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
+in {
   home.packages = [
     pkgs.google-chrome
     (pkgs.ungoogled-chromium.override {
@@ -14,5 +20,6 @@
         "--enable-wayland-ime"
       ];
     })
+    nix-packages.brave-origin
   ];
 }
