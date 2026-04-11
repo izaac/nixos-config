@@ -75,6 +75,7 @@ docs/              # Human-readable documentation
 - Edit files in `result/` or `/nix/store/`
 - Build or deploy for the wrong host — configs contain hardware-specific settings
 - Perform any actions regarding `markdown.sh`
+- Chain `git push` with other commands (e.g., `&&`). Always run it as a standalone command for safety.
 
 ## Tools & Commands
 
