@@ -32,7 +32,7 @@ in {
   home = {
     packages = with pkgs; [
       # --- CORE CLI UTILS ---
-      uutils-coreutils-noprefix
+      (lib.hiPrio uutils-coreutils-noprefix)
       jaq # Rust-based jq replacement
       sd # sed replacement
       choose # cut/awk replacement
