@@ -14,6 +14,13 @@ in {
     time.timeZone = "America/Phoenix";
     i18n.defaultLocale = "en_US.UTF-8";
 
+    # --- RUST SYSTEM SPIRITS ---
+    security.sudo.enable = false;
+    security.sudo-rs.enable = true;
+
+    services.ntpd-rs.enable = true;
+    services.timesyncd.enable = false;
+
     # Nix Maintenance & Settings
     nix = {
       settings = {

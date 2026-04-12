@@ -105,6 +105,7 @@
           ssh-to-age
           age
           git
+          just
         ];
       };
     });
