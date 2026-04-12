@@ -19,15 +19,17 @@ in {
       useGlobalPkgs = true;
       useUserPackages = true;
       backupFileExtension = "hm-backup";
-      # Base Home Manager profile:
-      # - core.nix: shared CLI/session defaults
-      # - catppuccin + nix-flatpak: framework-level HM modules
-      # User role/application modules are layered in users/<name>/default.nix
+      # Framework-level HM modules shared across all users/hosts.
+      # Stylix HM module is imported here (not per-user) so it's
+      # available even when the NixOS-level stylix.enable is false.
+      sharedModules = [
+        inputs.stylix.homeModules.stylix
+        inputs.nix-flatpak.homeManagerModules.nix-flatpak
+      ];
       extraSpecialArgs = {inherit inputs userConfig;};
       users.${userConfig.username} = {
         imports = [
           ../../home/core.nix
-          inputs.nix-flatpak.homeManagerModules.nix-flatpak
         ];
       };
     };

@@ -36,4 +36,9 @@
       color-scheme = "prefer-dark";
     };
   };
+
+  stylix.targets = {
+    firefox.profileNames = ["default"];
+    qt.enable = false; # Handled by kvantum manually
+  };
 }
