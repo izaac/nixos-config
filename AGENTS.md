@@ -122,16 +122,23 @@ The Chief maintains a separate repository for personal packages at `~/nix-packag
 
 ```bash
 # Rebuild and switch (preferred)
-nh os switch .             # or use the 'nrb' shell function
+just build                 # or use the 'nrb' shell function
 
-# Dry-run rebuild
-nh os switch . -- --dry-run
+# Dry-run build
+just dry-build             # or use the 'ndr' shell function
+
+# Build the Travel-Canoe (ISO)
+just iso
+
+# Ghost Cave (VM with Disko)
+just vm
 
 # Update flake inputs
-nix flake update
+just up                    # or use the 'up' shell function
 
-# Format (alejandra via pre-commit and flake check)
+# Format (alejandra via pre-commit and nix flake check)
 nix flake check
+```
 
 # Lint Nix (also run automatically by pre-commit hooks)
 statix check .

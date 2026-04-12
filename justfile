@@ -31,6 +31,11 @@ up:
 	nix flake update
 	nh os switch . --update
 
+# Update only browser inputs and switch
+up-browsers:
+	nix flake update nixpkgs
+	nh os switch .
+
 # Deploy Ninja brain to a remote IP via SSH (WIPES DISK!)
 deploy-ninja ip:
 	nix run github:nix-community/nixos-anywhere -- --flake .#ninja root@{{ip}}

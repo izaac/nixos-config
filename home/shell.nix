@@ -402,12 +402,12 @@ in {
                 return 127
               }
 
-              # Stage dotfiles (used by nrb/ndr/up functions)
+              # Stage dotfiles (used by build/up functions)
               st() { git -C "${userConfig.dotfilesDir}" add .; }
-              nrb() { st && nh os switch; }
-              ndr() { st && nh os build; }
-              up() { st && nh os switch --update; }
-              up-browsers() { st && nix flake update nixpkgs && nh os switch; }
+              nrb() { st && just build; }
+              ndr() { st && just dry-build; }
+              up() { st && just up; }
+              up-browsers() { st && just up-browsers; }
 
               [[ -z "$CLEAN_PATH" ]] && readonly CLEAN_PATH='${cleanPath}'
               [[ -z "$COPILOT_BIN" ]] && readonly COPILOT_BIN='${copilotBin}'
