@@ -310,7 +310,7 @@ in {
         dig = "doggo";
 
         # --- SYSTEM & MONITORING ---
-        top = "btop";
+        top = "btm";
         sysls = "systemctl --type=service --state=running";
         ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
 
