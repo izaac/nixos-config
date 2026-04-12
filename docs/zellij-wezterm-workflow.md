@@ -71,12 +71,16 @@ You have a complex Zellij layout, but you suddenly need to read a massive log fi
 ## Enhanced Shell & AI Features
 
 ### Semantic Navigation (OSC 133)
+
 The `brush` shell is integrated with Wezterm via OSC 133 escape sequences. This enables "Semantic Zones" which allow you to:
+
 - **Jump to Prompt:** Press `Shift + UpArrow` or `Shift + DownArrow` to skip large command outputs and jump directly to the next/previous shell prompt.
 - **Copy Command Output:** Wezterm can select the entire output of the previous command with a single native action.
 
 ### Monko AI Helpers
+
 A set of AI-powered shell helpers are available to assist with debugging and explanation:
+
 - **`monko <query>`:** A lightweight alias to ask the Gemini AI a question. It is tuned to provide explanations in a "caveman" style, simplifying complex technical concepts.
 - **`ask-monko`:** A diagnostic tool that automatically captures the previously failed command from history and sends it to the AI for analysis and a suggested fix.
 - **Smart Completion:** If a command is not found, the shell will automatically suggest using `monko` for assistance.

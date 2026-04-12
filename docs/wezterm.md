@@ -38,21 +38,24 @@ Wezterm's native splits are useful for quick, transient side-by-side work where 
 
 ### Navigation & Search
 
-| Action                 | Shortcut             | Notes                                                 |
-| ---------------------- | -------------------- | ----------------------------------------------------- |
-| Project Picker         | `Ctrl + Shift + P`   | Fuzzy-find and jump to configured git repositories.   |
-| Quick Select Nix Path  | `Ctrl + Shift + S`   | Rapidly select and copy `/nix/store` paths on screen. |
-| Scroll to Prompt (Up)  | `Shift + UpArrow`    | Jump to the previous shell prompt (OSC 133).          |
-| Scroll to Prompt (Down)| `Shift + DownArrow`  | Jump to the next shell prompt (OSC 133).              |
+| Action                  | Shortcut            | Notes                                                 |
+| ----------------------- | ------------------- | ----------------------------------------------------- |
+| Project Picker          | `Ctrl + Shift + P`  | Fuzzy-find and jump to configured git repositories.   |
+| Quick Select Nix Path   | `Ctrl + Shift + S`  | Rapidly select and copy `/nix/store` paths on screen. |
+| Scroll to Prompt (Up)   | `Shift + UpArrow`   | Jump to the previous shell prompt (OSC 133).          |
+| Scroll to Prompt (Down) | `Shift + DownArrow` | Jump to the next shell prompt (OSC 133).              |
 
 ## Smart Features
 
 ### Nix Store Integration
+
 - **Hyperlinks:** Any `/nix/store` path visible in the terminal is automatically hyperlinked. **Ctrl + Click** (or Shift + Click) a path to open it immediately in a new `yazi` tab.
 - **Quick Select:** `Ctrl + Shift + S` activates a selection mode specifically tuned to capture Nix store hashes and paths.
 
 ### Tab Bar & Icons
+
 The tab bar mimics Kitty's bottom powerline style with enhanced visibility:
+
 - **Process Icons:** Shows Nerd Font icons for common tools (󱄅 Nix, 󰚀 Helix, 󰒍 SSH, 󰇥 Yazi).
 - **Context Coloring:** Tabs dynamically change background color based on the active process:
   - **SSH Sessions:** Rosewater/Peach background for high visibility.

@@ -6,11 +6,11 @@
 
 ## 1. Data Cleanup
 
-| Technique | Tool | When |
-| --------- | ---- | ---- |
-| Markdown conversion | Firecrawl, Jina Reader | Scraping websites — strip ads, nav, footers |
-| PDF extraction | Unstructured.io | Ingesting scanned/messy PDFs |
-| Strip boilerplate | Manual or Firecrawl page selector | Remove headers/footers before prompting |
+| Technique           | Tool                              | When                                        |
+| ------------------- | --------------------------------- | ------------------------------------------- |
+| Markdown conversion | Firecrawl, Jina Reader            | Scraping websites — strip ads, nav, footers |
+| PDF extraction      | Unstructured.io                   | Ingesting scanned/messy PDFs                |
+| Strip boilerplate   | Manual or Firecrawl page selector | Remove headers/footers before prompting     |
 
 **Rule:** Never feed raw HTML or unprocessed PDFs to the model. Clean first, prompt second.
 
@@ -37,12 +37,12 @@
 
 ## 4. Session Management
 
-| Action | Command | When |
-| ------ | ------- | ---- |
-| Clear context | `/clear` | Between unrelated tasks |
-| Compact context | `/compact` | At ~50% context usage |
-| Check context | `/context` | Periodically during long sessions |
-| Check usage | `/usage` | Monitor token spend |
+| Action          | Command    | When                              |
+| --------------- | ---------- | --------------------------------- |
+| Clear context   | `/clear`   | Between unrelated tasks           |
+| Compact context | `/compact` | At ~50% context usage             |
+| Check context   | `/context` | Periodically during long sessions |
+| Check usage     | `/usage`   | Monitor token spend               |
 
 - **One chat per task.** Don't mix feature work, debugging, and questions in one window.
 - **Subagents for exploration.** They run in separate context, report back summaries.
@@ -52,9 +52,9 @@
 
 ## 5. Model Selection
 
-| Task Type | Model | Why |
-| --------- | ----- | --- |
-| File reads, syntax questions, simple refactors | Haiku | Fast, cheap |
+| Task Type                                             | Model       | Why             |
+| ----------------------------------------------------- | ----------- | --------------- |
+| File reads, syntax questions, simple refactors        | Haiku       | Fast, cheap     |
 | Complex architecture, multi-file refactors, debugging | Sonnet/Opus | Reasoning power |
 
 **Always set model deliberately.** Never rely on defaults.
@@ -85,7 +85,8 @@
 ## 8. File Exclusions
 
 Create `.claudeignore` (Claude Code) or equivalent:
-```
+
+```text
 node_modules/
 build/
 dist/
@@ -93,18 +94,19 @@ result/
 .git/
 *.log
 ```
+
 Less scanning = fewer tokens.
 
 ---
 
 ## 9. Monitoring
 
-| Tool | Purpose |
-| ---- | ------- |
-| `/usage` | Session + weekly token totals |
-| [claude.ai/settings/usage](https://claude.ai/settings/usage) | Dashboard (auto-refreshes) |
-| [claude-hud](https://github.com/jarrodwatts/claude-hud) | Real-time context bar in terminal |
-| `claude -p "..."` | Headless mode — fewer tokens than interactive |
+| Tool                                                         | Purpose                                       |
+| ------------------------------------------------------------ | --------------------------------------------- |
+| `/usage`                                                     | Session + weekly token totals                 |
+| [claude.ai/settings/usage](https://claude.ai/settings/usage) | Dashboard (auto-refreshes)                    |
+| [claude-hud](https://github.com/jarrodwatts/claude-hud)      | Real-time context bar in terminal             |
+| `claude -p "..."`                                            | Headless mode — fewer tokens than interactive |
 
 ---
 

@@ -1,6 +1,7 @@
 # Documentation Index
 
 ## Project
+
 - [Hardware Configuration (ninja)](hardware.md)
 - [Host Notes (windy)](windy.md)
 - [NVIDIA Driver Updates](nvidia-driver-updates.md)
@@ -9,6 +10,7 @@
 - [System Recovery with Disko (ninja)](disko-rebuild.md)
 
 ## Tools & Workflows
+
 - [Just Command Guide](just-commands.md)
 - [CLI Tools and Comma Integration](cli-tools.md)
 - [Zellij Configuration](zellij.md)
@@ -17,5 +19,6 @@
 - [Helix Editor](helix.md)
 
 ## Agent Instructions
+
 - [Token Optimization Playbook](agent-token-shield.md)
 - [Agent Troubleshooting](agent-troubleshooting.md)

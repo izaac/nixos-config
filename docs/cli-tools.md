@@ -7,7 +7,9 @@ This repository integrates several modern, Rust-based CLI utilities designed to 
 The `comma` tool (a wrapper for `nix-index`) allows for the execution of software without requiring a permanent installation in the user environment. This is ideal for one-off tasks or testing new packages.
 
 ### Usage
+
 Prepend any command with a comma to execute it via Nix:
+
 ```bash
 , cowsay "Hello from Nix"
 ```
@@ -35,4 +37,3 @@ nix eval ".#nixosConfigurations.$(hostname).config.home-manager.users.$USER.prog
 ```
 
 This command evaluates the Nix expression, extracts the raw bash content, and pipes it through `bash -n` to perform a syntax check without executing the code.
-
