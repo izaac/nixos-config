@@ -2,23 +2,45 @@ name: Cave-Check
 on:
   push:
     branches: [main]
+    paths:
+      - "**/*.nix"
+      - "**/*.md"
+      - "flake.lock"
   pull_request:
     branches: [main]
+    paths:
+      - "**/*.nix"
+      - "**/*.md"
+      - "flake.lock"
+
 jobs:
   check-stones:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Cave
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
       - name: Build Fire (Nix)
         uses: cachix/install-nix-action@ba0dd844c9180cbf77aa72a116d6fbc515d0e87b # v27
         with:
           nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Get Changed Files
+        id: changed-files
+        uses: tj-actions/changed-files@dcc7a0cba800f454d79dea4b963bd225b9ab999c # v45.0.5
+
       - name: Magic Eye (nix flake check)
+        if: steps.changed-files.outputs.any_modified == 'true' && (contains(steps.changed-files.outputs.all_modified_files, '.nix') || contains(steps.changed-files.outputs.all_modified_files, 'flake.lock'))
         run: nix flake check
+
       - name: Stone Linter (statix)
+        if: steps.changed-files.outputs.any_modified == 'true' && contains(steps.changed-files.outputs.all_modified_files, '.nix')
         run: nix run nixpkgs#statix -- check .
+
       - name: Polish Stones (Prettier)
+        if: steps.changed-files.outputs.any_modified == 'true' && contains(steps.changed-files.outputs.all_modified_files, '.md')
         run: nix run nixpkgs#prettier -- --check '**/*.md' --ignore-path .gitignore
+
       - name: Wash Stones (markdownlint)
+        if: steps.changed-files.outputs.any_modified == 'true' && contains(steps.changed-files.outputs.all_modified_files, '.md')
         run: nix run nixpkgs#markdownlint-cli2 -- '**/*.md' '#.direnv' '#result' '#.git'

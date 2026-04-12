@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Cave
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
       - name: Mirror Move
-        uses: pixta-dev/repository-mirroring-action@v1
+        uses: pixta-dev/repository-mirroring-action@4833250ef80ca3d066cf6660fb0090066966099a # v1.1.1
         with:
           target_repo_url: git@codeberg.org:izaac/nixos-config.git
           ssh_private_key: ${{ secrets.CODEBERG_SSH_KEY }}

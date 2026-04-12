@@ -8,20 +8,23 @@ exec 1>&2
 
 echo "Running Pre-Commit Hooks..."
 
-# Get staged nix files
+# Get staged files
 STAGED_NIX_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.nix$' || true)
+STAGED_MD_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.md$' || true)
+LOCK_CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep 'flake\.lock$' || true)
 
+# --- NIX CHECKS ---
 if [ -n "$STAGED_NIX_FILES" ]; then
-    echo "Formatting..."
+    echo "Processing Nix files..."
+    echo " -> Formatting..."
     nix run nixpkgs#alejandra -- -q $STAGED_NIX_FILES
     
-    echo "Checking for dead code..."
+    echo " -> Checking for dead code..."
     nix run nixpkgs#deadnix -- -e $STAGED_NIX_FILES
     
-    echo "Running statix..."
-    # Statix requires single files
+    echo " -> Running statix..."
     for file in $STAGED_NIX_FILES; do
-        echo " -> $file"
+        echo "    - $file"
         nix run nixpkgs#statix -- fix "$file"
     done
 
@@ -29,9 +32,26 @@ if [ -n "$STAGED_NIX_FILES" ]; then
     git add $STAGED_NIX_FILES
 fi
 
-echo "Running nix flake check..."
-nix flake check
+if [ -n "$STAGED_NIX_FILES" ] || [ -n "$LOCK_CHANGED" ]; then
+    echo "Running nix flake check..."
+    nix flake check
+fi
 
+# --- MARKDOWN CHECKS ---
+if [ -n "$STAGED_MD_FILES" ]; then
+    echo "Processing Markdown files..."
+    echo " -> Formatting..."
+    nix run nixpkgs#prettier -- --write $STAGED_MD_FILES --ignore-path .gitignore
+    
+    echo " -> Linting..."
+    # We run lint on the whole repo to be safe, but only if md files changed
+    nix run nixpkgs#markdownlint-cli2 -- '**/*.md' '#.direnv' '#result' '#.git'
+    
+    # Re-stage formatted files
+    git add $STAGED_MD_FILES
+fi
+
+# --- AI TRACE SCAN ---
 echo "Scanning for AI traces..."
 if command -v ai-trace-scan &>/dev/null; then
     ai-trace-scan --staged --quiet
