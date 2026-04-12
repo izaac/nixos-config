@@ -10,3 +10,4 @@
 - [Helix Editor](helix.md)
 - [Zellij + Wezterm Workflow](zellij-wezterm-workflow.md)
 - [System Recovery with Disko (ninja)](disko-rebuild.md)
+- [Just Command Guide](just-commands.md)
