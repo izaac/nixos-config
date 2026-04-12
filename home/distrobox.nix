@@ -59,6 +59,7 @@
       additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
       init=false
       nvidia=true
+      shell=/bin/bash
       # Export apps to host automatically
       # export="google-chrome"
       # === Ubuntu Gaming Container (The "Golden Recipe" for NixOS + NVIDIA) ===
@@ -71,6 +72,7 @@
       init=false
       nvidia=true
       init_hooks="sh ~/.config/distrobox/nvidia-setup.sh"
+      shell=/bin/bash
 
       [debi]
       image=debian:latest
@@ -78,6 +80,7 @@
       additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch"
       init=false
       nvidia=true
+      shell=/bin/bash
 
       [rhel10]
       image=registry.access.redhat.com/ubi10/ubi:latest
@@ -85,6 +88,7 @@
       additional_packages="subscription-manager git vim"
       init=false
       nvidia=true
+      shell=/bin/bash
       volume="/home/${userConfig.username}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-consumer:/etc/pki/consumer /home/${userConfig.username}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
       init_hooks="if [ ! -f /etc/rhsm/ca/redhat-uep.pem ]; then dnf reinstall -y subscription-manager-rhsm-certificates subscription-manager; fi"
     '';
@@ -103,11 +107,28 @@
 
   # Alias to easily create/update these containers
   programs.bash.shellAliases = {
-    db-up = "distrobox assemble create --file ~/.config/distrobox/distrobox.ini";
-    db-rm = "distrobox assemble rm --file ~/.config/distrobox/distrobox.ini";
+    db-up = "distrobox assemble create --file /home/${userConfig.username}/.config/distrobox/distrobox.ini";
+    db-rm = "distrobox assemble rm --file /home/${userConfig.username}/.config/distrobox/distrobox.ini";
     db-arch = "distrobox enter archy";
     db-ubu = "distrobox enter ubu";
     db-debian = "distrobox enter debi";
     db-rhel = "distrobox enter rhel10";
   };
+
+  # --- Distrobox: bash-preexec array fix ---
+  # Bash 5.1+ uses PROMPT_COMMAND arrays, which older bash-preexec fails to clean up.
+  # This uses mkAfter to run AFTER atuin sources bash-preexec.sh, manually
+  # triggering the install and scrubbing the broken strings so Atuin works.
+  programs.bash.initExtra = pkgs.lib.mkAfter ''
+    if [ -d "/run/host/nix/store" ] && type __bp_install &>/dev/null; then
+      __bp_install
+      if declare -p PROMPT_COMMAND 2>/dev/null | grep -q 'declare -a'; then
+        for i in "''${!PROMPT_COMMAND[@]}"; do
+          PROMPT_COMMAND[$i]="''${PROMPT_COMMAND[$i]//__bp_trap_string=\"\$(trap -p DEBUG)\"/}"
+          PROMPT_COMMAND[$i]="''${PROMPT_COMMAND[$i]//trap - DEBUG/}"
+          PROMPT_COMMAND[$i]="''${PROMPT_COMMAND[$i]//__bp_install/}"
+        done
+      fi
+    fi
+  '';
 }

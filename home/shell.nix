@@ -88,6 +88,7 @@ in {
 
       # --- AI CLI TOOLS ---
       github-copilot-cli
+      claude-code
       ai-trace-scanner
 
       # --- MEDIA & ENCODING ---
@@ -312,7 +313,6 @@ in {
         # --- SYSTEM & MONITORING ---
         top = "btm";
         sysls = "systemctl --type=service --state=running";
-        ks = "sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" && echo \"RAM cache cleared\"";
 
         # --- NAVIGATION & FILE OPS ---
         cpv = "rsync -ahP --size-only";
@@ -324,13 +324,11 @@ in {
 
         # --- NIX MANAGEMENT ---
         ncl = "nh clean all --keep 10 --nogc";
-        ncl-full = "direnv prune && nh clean all --keep 10";
         nv-sys = "nvd diff $(command ls -vd /nix/var/nix/profiles/system-*-link | tail -2)";
         nv-boot = "nvd diff /run/booted-system /run/current-system";
 
         # --- TERMINAL FIXES & SECURITY ---
         ssh = "TERM=xterm-256color ssh";
-        gpg-fix = "gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'";
 
         # --- AI TOOLS ---
         ai-scan = "ai-trace-scan";
@@ -339,8 +337,6 @@ in {
 
         # --- GAMING (ELDEN RING) ---
         ersave = "cp -r /home/${userConfig.username}/.local/share/Steam/steamapps/compatdata/1245620/pfx/drive_c/users/steamuser/AppData/Roaming/EldenRing ~/Documents/ER_Backup_$(date +%F)";
-        er-offline = "cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\\ RING/Game && if [ -f start_protected_game.exe ] && [ ! -f start_protected_game_original.exe ]; then mv start_protected_game.exe start_protected_game_original.exe && cp eldenring.exe start_protected_game.exe && echo 'Elden Ring Offline Mode (EAC Bypass) ENABLED'; else echo 'Already in offline mode or Game path not found'; fi";
-        er-online = "cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\\ RING/Game && if [ -f start_protected_game_original.exe ]; then rm start_protected_game.exe && mv start_protected_game_original.exe start_protected_game.exe && echo 'Elden Ring Online Mode (EAC) RESTORED'; else echo 'Already in online mode or Game path not found'; fi";
 
         # --- AUDIO ---
         pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";
@@ -352,6 +348,33 @@ in {
       };
 
       initExtra = ''
+              # --- BRUSH COMPATIBILITY FUNCTIONS (replaces chained aliases) ---
+              ks() { sudo sh -c "sync; echo 1 > /proc/sys/vm/drop_caches" && echo "RAM cache cleared"; }
+              ncl-full() { direnv prune && nh clean all --keep 10; }
+              gpg-fix() { gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'; }
+
+              er-offline() {
+                cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
+                if [ -f start_protected_game.exe ] && [ ! -f start_protected_game_original.exe ]; then
+                  mv start_protected_game.exe start_protected_game_original.exe && \
+                  cp eldenring.exe start_protected_game.exe && \
+                  echo 'Elden Ring Offline Mode (EAC Bypass) ENABLED'
+                else
+                  echo 'Already in offline mode or Game path not found'
+                fi
+              }
+
+              er-online() {
+                cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
+                if [ -f start_protected_game_original.exe ]; then
+                  rm start_protected_game.exe && \
+                  mv start_protected_game_original.exe start_protected_game.exe && \
+                  echo 'Elden Ring Online Mode (EAC) RESTORED'
+                else
+                  echo 'Already in online mode or Game path not found'
+                fi
+              }
+
               # --- WEZTERM INTEGRATION (OSC 133) ---
               if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
                 _wezterm_osc133_prompt_start() { printf "\033]133;A\007"; }
@@ -579,6 +602,10 @@ in {
               # --- Distrobox: Host Tool Injection ---
               if [ -d "/run/host/nix/store" ]; then
                 export PATH="$HOME/.local/share/distrobox/bin:$PATH"
+                unset ATUIN_NO_MODIFY_DB # Allow bash to save history inside distrobox
+                unset ATUIN_SHLVL # Force Atuin to generate a new session ID for the container
+                unset ATUIN_PREEXEC_BACKEND # Clear inherited preexec state
+
                 unset GI_TYPELIB_PATH
                 unset GDK_PIXBUF_MODULE_FILE
                 unset XDG_DATA_DIRS

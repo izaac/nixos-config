@@ -1,0 +1,39 @@
+# --- Monko's Cave ---
+.gemini/
+
+# --- Nix Build Junk ---
+result
+result-*
+repl-result
+.direnv/
+
+# --- Giant Lockfiles (Waste AI brain tokens) ---
+flake.lock
+templates/**/flake.lock
+
+# --- Encrypted Secrets (AI cannot read them anyway) ---
+secrets.yaml
+.sops.yaml
+*.age
+
+# --- Security ---
+.env
+.env.*
+*.pem
+*.key
+id_rsa
+id_ed25519
+secring.gpg
+
+# --- Editor & Backup Junk ---
+*.backup
+*.bck
+*.swp
+*.swo
+session.vim
+
+# --- Dev Environment ---
+node_modules/
+target/
+__pycache__/
+.venv/
