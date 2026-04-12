@@ -24,3 +24,15 @@ The following tools are integrated and aliased by default:
 - **`zoxide` (`z`):** A smart directory jumper that learns your most-used paths to enable rapid navigation.
 - **`btop`:** A graphical system monitor for real-time tracking of CPU, memory, and network usage.
 - **`yazi` (`y`):** A terminal-based file manager with high-performance image previews and intuitive navigation.
+
+## Shell Configuration Validation
+
+The `home/shell.nix` file is complex and contains many embedded bash functions. To ensure changes do not introduce syntax errors that could break the login shell, use the following validation command:
+
+```bash
+nix eval ".#nixosConfigurations.$(hostname).config.home-manager.users.$USER.programs.bash.initExtra" \
+  --extra-experimental-features dynamic-derivations --raw | bash -n
+```
+
+This command evaluates the Nix expression, extracts the raw bash content, and pipes it through `bash -n` to perform a syntax check without executing the code.
+

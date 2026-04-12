@@ -348,96 +348,155 @@ in {
       };
 
       initExtra = ''
-              # --- BRUSH COMPATIBILITY FUNCTIONS (replaces chained aliases) ---
-              ks() { sudo sh -c "sync; echo 1 > /proc/sys/vm/drop_caches" && echo "RAM cache cleared"; }
-              ncl-full() { direnv prune && nh clean all --keep 10; }
-              gpg-fix() { gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'; }
+        # --- DISTROBOX SHIELD (Must run before everything else) ---
+        if [ -d "/run/host/nix/store" ]; then
+          export _MONKO_DISTROBOX=1
 
-              er-offline() {
-                cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
-                if [ -f start_protected_game.exe ] && [ ! -f start_protected_game_original.exe ]; then
-                  mv start_protected_game.exe start_protected_game_original.exe && \
-                  cp eldenring.exe start_protected_game.exe && \
-                  echo 'Elden Ring Offline Mode (EAC Bypass) ENABLED'
-                else
-                  echo 'Already in offline mode or Game path not found'
+          # 1. Early PATH injection (host + container tools)
+          export PATH="$HOME/.local/share/distrobox/bin:/run/host/run/current-system/sw/bin:/run/host/bin:/run/host/usr/bin:$PATH"
+
+          # Inject host user profile binaries early
+          host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
+          if [ -n "$host_user" ]; then
+            host_user_resolved=$(readlink "/run/host$host_user")
+            [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
+            export PATH="$PATH:/run/host$host_user_resolved/bin"
+          fi
+          unset host_user host_user_resolved
+
+          # Ensure container-native paths survive (direnv may strip them later)
+          for _d in /usr/local/bin /usr/bin /usr/sbin /bin /sbin; do
+            [[ ":$PATH:" != *":$_d:"* ]] && [ -d "$_d" ] && PATH="$PATH:$_d"
+          done
+          export PATH
+          unset _d
+
+          # 2. Atuin container reset
+          unset ATUIN_NO_MODIFY_DB
+          unset ATUIN_SHLVL
+          unset ATUIN_PREEXEC_BACKEND
+
+          # 3. Scrub PROMPT_COMMAND if already haunted (pure bash, no grep)
+          __rock_shield_scrub() {
+            local _decl
+            _decl=$(declare -p PROMPT_COMMAND 2>/dev/null) || return 0
+            if [[ "$_decl" == *"declare -a"* ]]; then
+              local i
+              for i in "''${!PROMPT_COMMAND[@]}"; do
+                if [[ "''${PROMPT_COMMAND[$i]}" == *"__rock"* ]] || [[ "''${PROMPT_COMMAND[$i]}" == *"__bp_install"* ]]; then
+                  unset 'PROMPT_COMMAND[$i]'
                 fi
-              }
+              done
+            fi
+          }
+          __rock_shield_scrub
+          unset -f __rock_shield_scrub
+        fi
 
-              er-online() {
-                cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
-                if [ -f start_protected_game_original.exe ]; then
-                  rm start_protected_game.exe && \
-                  mv start_protected_game_original.exe start_protected_game.exe && \
-                  echo 'Elden Ring Online Mode (EAC) RESTORED'
-                else
-                  echo 'Already in online mode or Game path not found'
-                fi
-              }
+        # --- BRUSH COMPATIBILITY FUNCTIONS (replaces chained aliases) ---
+        ks() { sudo sh -c "sync; echo 1 > /proc/sys/vm/drop_caches" && echo "RAM cache cleared"; }
+        ncl-full() { direnv prune && nh clean all --keep 10; }
+        gpg-fix() { gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'; }
 
-              # --- WEZTERM INTEGRATION (OSC 133) ---
-              if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
-                _wezterm_osc133_prompt_start() { printf "\033]133;A\007"; }
-                _wezterm_osc133_command_start() { printf "\033]133;C\007"; }
-                _wezterm_osc133_command_end() { printf "\033]133;D;%s\007" "$?"; }
+        er-offline() {
+          cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
+          if [ -f start_protected_game.exe ] && [ ! -f start_protected_game_original.exe ]; then
+            mv start_protected_game.exe start_protected_game_original.exe && \
+            cp eldenring.exe start_protected_game.exe && \
+            echo 'Elden Ring Offline Mode (EAC Bypass) ENABLED'
+          else
+            echo 'Already in offline mode or Game path not found'
+          fi
+        }
 
-                # Inject into PS1/PROMPT_COMMAND for Brush/Bash
-                case "$PS1" in
-                  *"\033]133;A\007"*) ;;
-                  *) PS1="\[$(_wezterm_osc133_prompt_start)\]$PS1" ;;
-                esac
+        er-online() {
+          cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
+          if [ -f start_protected_game_original.exe ]; then
+            rm start_protected_game.exe && \
+            mv start_protected_game_original.exe start_protected_game.exe && \
+            echo 'Elden Ring Online Mode (EAC) RESTORED'
+          else
+            echo 'Already in online mode or Game path not found'
+          fi
+        }
 
-                # Brush-specific hook for command start/end
-                if [ -n "$BRUSH_VERSION" ]; then
-                  # Brush can use DEBUG trap or built-in hooks if available
-                  # For now, we use the standard bash-compatible approach
-                  trap '_wezterm_osc133_command_start' DEBUG
-                  PROMPT_COMMAND="_wezterm_osc133_command_end; ''${PROMPT_COMMAND:-}"
-                fi
+        # --- WEZTERM INTEGRATION (OSC 133) ---
+        if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
+          _wezterm_osc133_prompt_start() { printf "\033]133;A\007"; }
+          _wezterm_osc133_command_start() { printf "\033]133;C\007"; }
+          _wezterm_osc133_command_end() { printf "\033]133;D;%s\007" "$?"; }
+
+          _wezterm_user_vars_precmd() {
+            __wezterm_set_user_var() {
+              local b64
+              if command -v base64 >/dev/null 2>&1; then
+                b64=$(echo -n "$2" | base64 2>/dev/null)
               fi
+              printf "\033]1337;SetUserVar=%s=%s\007" "$1" "''${b64:-}"
+            }
+            if command -v id >/dev/null 2>&1; then
+              __wezterm_set_user_var WEZTERM_USER "$(id -un)"
+            fi
+            if [ -r /proc/sys/kernel/hostname ] && command -v cat >/dev/null 2>&1; then
+              __wezterm_set_user_var WEZTERM_HOST "$(cat /proc/sys/kernel/hostname 2>/dev/null)"
+            fi
+          }
 
-              # Suppress brush's bind warnings
-              if [ -n "$BRUSH_VERSION" ]; then
-                bind() { builtin bind "$@" 2>/dev/null; return 0; }
-              fi
+          # Inject into PS1/PROMPT_COMMAND for Brush/Bash
+          case "$PS1" in
+            *"\033]133;A\007"*) ;;
+            *) PS1="\[$(_wezterm_osc133_prompt_start)\]$PS1" ;;
+          esac
 
-              # --- AI HELPERS ---
-              # monko: ask Gemini for help in caveman talk
-              monko() {
-                if [[ $# -eq 0 ]]; then
-                  echo "Monko need words to think! Use: monko <what is wrong?>"
-                  return 1
-                fi
-                ask "Explain this like a caveman named Monko: $*"
-              }
+          # Brush-specific hook for command start/end
+          if [ -n "$BRUSH_VERSION" ]; then
+            trap '_wezterm_osc133_command_start' DEBUG
+            PROMPT_COMMAND="_wezterm_osc133_command_end; ''${PROMPT_COMMAND:-}"
+          fi
+        fi
 
-              # ask-monko: pipe previous command error to Gemini
-              ask-monko() {
-                local last_cmd=$(history | tail -n 2 | head -n 1 | sed 's/^[ ]*[0-9]*[ ]*//')
-                echo "Monko looking at: $last_cmd"
-                ask "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
-              }
+        # Suppress brush's bind warnings
+        if [ -n "$BRUSH_VERSION" ]; then
+          bind() { builtin bind "$@" 2>/dev/null; return 0; }
+        fi
 
-              # command_not_found_handle: Monko offer help
-              command_not_found_handle() {
-                echo "Monko not know command: $1"
-                echo "Maybe you want: monko why $1 not work?"
-                return 127
-              }
+        # --- AI HELPERS ---
+        # monko: ask Gemini for help in caveman talk
+        monko() {
+          if [[ $# -eq 0 ]]; then
+            echo "Monko need words to think! Use: monko <what is wrong?>"
+            return 1
+          fi
+          ask "Explain this like a caveman named Monko: $*"
+        }
 
-              # Stage dotfiles (used by build/up functions)
-              st() { git -C "${userConfig.dotfilesDir}" add .; }
-              nrb() { st && just build; }
-              ndr() { st && just dry-build; }
-              up() { st && just up; }
-              up-browsers() { st && just up-browsers; }
+        # ask-monko: pipe previous command error to Gemini
+        ask-monko() {
+          local last_cmd=$(history | tail -n 2 | head -n 1 | sed 's/^[ ]*[0-9]*[ ]*//')
+          echo "Monko looking at: $last_cmd"
+          ask "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
+        }
 
-              [[ -z "$CLEAN_PATH" ]] && readonly CLEAN_PATH='${cleanPath}'
-              [[ -z "$COPILOT_BIN" ]] && readonly COPILOT_BIN='${copilotBin}'
-              [[ -z "$GEMINI_BIN" ]] && readonly GEMINI_BIN='${geminiBin}'
-              [[ -z "$NH_BIN" ]] && readonly NH_BIN='${nhBin}'
+        # command_not_found_handle: Monko offer help
+        command_not_found_handle() {
+          echo "Monko not know command: $1"
+          echo "Maybe you want: monko why $1 not work?"
+          return 127
+        }
 
-              # --- COMMAND OVERRIDES (functions for Brush compatibility) ---
+        # Stage dotfiles (used by build/up functions)
+        st() { git -C "${userConfig.dotfilesDir}" add .; }
+        nrb() { st && just build; }
+        ndr() { st && just dry-build; }
+        up() { st && just up; }
+        up-browsers() { st && just up-browsers; }
+
+        [[ -z "$CLEAN_PATH" ]] && readonly CLEAN_PATH='${cleanPath}'
+        [[ -z "$COPILOT_BIN" ]] && readonly COPILOT_BIN='${copilotBin}'
+        [[ -z "$GEMINI_BIN" ]] && readonly GEMINI_BIN='${geminiBin}'
+        [[ -z "$NH_BIN" ]] && readonly NH_BIN='${nhBin}'
+
+        # --- COMMAND OVERRIDES (functions for Brush compatibility) ---
         rm() {
           command -v rip &>/dev/null && rip "$@" || command rm "$@"
         }
@@ -452,89 +511,89 @@ in {
         }
 
         # --- Gemini CLI ---
-              ask() {
-                if [[ $# -eq 0 ]]; then
-                  PATH="$CLEAN_PATH" "$GEMINI_BIN"
-                else
-                  PATH="$CLEAN_PATH" "$GEMINI_BIN" -p "$*"
-                fi
-              }
+        ask() {
+          if [[ $# -eq 0 ]]; then
+            PATH="$CLEAN_PATH" "$GEMINI_BIN"
+          else
+            PATH="$CLEAN_PATH" "$GEMINI_BIN" -p "$*"
+          fi
+        }
 
-              # --- Copilot CLI ---
-              ai() {
-                case "$1" in
-                  "")
-                    PATH="$CLEAN_PATH" "$COPILOT_BIN"
-                    ;;
-                  login|init|update|version|help)
-                    PATH="$CLEAN_PATH" "$COPILOT_BIN" "$@"
-                    ;;
-                  *)
-                    PATH="$CLEAN_PATH" "$COPILOT_BIN" -p "$*"
-                    ;;
-                esac
-              }
+        # --- Copilot CLI ---
+        ai() {
+          case "$1" in
+            "")
+              PATH="$CLEAN_PATH" "$COPILOT_BIN"
+              ;;
+            login|init|update|version|help)
+              PATH="$CLEAN_PATH" "$COPILOT_BIN" "$@"
+              ;;
+            *)
+              PATH="$CLEAN_PATH" "$COPILOT_BIN" -p "$*"
+              ;;
+          esac
+        }
 
-              # --- Fast Package Search ---
-              nqs() {
-                if [[ $# -eq 0 ]]; then
-                  echo "Usage: nqs <query...>"
-                  return 2
-                fi
-                "$NH_BIN" search --limit 50 "$@"
-              }
+        # --- Fast Package Search ---
+        nqs() {
+          if [[ $# -eq 0 ]]; then
+            echo "Usage: nqs <query...>"
+            return 2
+          fi
+          "$NH_BIN" search --limit 50 "$@"
+        }
 
-              # --- Smart Eza ---
-              _smart_eza() {
-                if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
-                  local args=()
-                  for arg in "$@"; do
-                    [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
-                  done
-                  command eza --icons=never --color=never "''${args[@]}"
-                else
-                  command eza --icons=auto "$@"
-                fi
-              }
+        # --- Smart Eza ---
+        _smart_eza() {
+          if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
+            local args=()
+            for arg in "$@"; do
+              [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")
+            done
+            command eza --icons=never --color=never "''${args[@]}"
+          else
+            command eza --icons=auto "$@"
+          fi
+        }
 
-              # --- GPG TTY FIX ---
-              current_tty=$(tty 2>/dev/null)
-              if [[ "$current_tty" != "not a tty" ]]; then
-                export GPG_TTY="$current_tty"
-              fi
-              unset current_tty
+        # --- GPG TTY FIX ---
+        current_tty=$(tty 2>/dev/null)
+        if [[ "$current_tty" != "not a tty" ]]; then
+          export GPG_TTY="$current_tty"
+        fi
+        unset current_tty
 
-              # --- Yazi Wrapper ---
-              y() {
-                local tmp
-                tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
-                yazi "$@" --cwd-file="$tmp"
-                if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-                  builtin cd -- "$cwd"
-                fi
-                rm -f -- "$tmp"
-              }
+        # --- Yazi Wrapper ---
+        y() {
+          local tmp
+          tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+          yazi "$@" --cwd-file="$tmp"
+          if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+            builtin cd -- "$cwd"
+          fi
+          rm -f -- "$tmp"
+        }
 
-              # --- Recursive Cat ---
-              catr() {
-                local target="''${1:-.}"
-                rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
-                  if file -b --mime-type "{}" | grep -q "^text/"; then
-                    echo "================================================================================"
-                    echo "FILE: {}"
-                    echo "================================================================================"
-                    cat "{}"
-                    echo -e "\n"
-                  fi
-                '
-              }
+        # --- Recursive Cat ---
+        catr() {
+          local target="''${1:-.}"
+          rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
+            if file -b --mime-type "{}" | grep -q "^text/"; then
+              echo "================================================================================"
+              echo "FILE: {}"
+              echo "================================================================================"
+              cat "{}"
+              echo -e "\n"
+            fi
+          '
+        }
 
-              # --- Project Initializers ---
-              ninit() {
-                local ver="''${1:-}"
-                local target="node"
-                if [ -n "$ver" ]; then target="node_$ver"; fi
-                cat <<ENVRC > .envrc
+        # --- Project Initializers ---
+        ninit() {
+          local ver="''${1:-}"
+          local target="node"
+          if [ -n "$ver" ]; then target="node_$ver"; fi
+          cat <<ENVRC > .envrc
         use flake ${userConfig.dotfilesDir}/templates#$target
         watch_file package.json
         watch_file yarn.lock
@@ -545,11 +604,11 @@ in {
           else npm install; fi
         fi
         ENVRC
-                direnv allow
-              }
+          direnv allow
+        }
 
-              pinit() {
-                cat <<'ENVRC' > .envrc
+        pinit() {
+          cat <<'ENVRC' > .envrc
         use flake ${userConfig.dotfilesDir}/templates#python
         watch_file requirements.txt
         watch_file pyproject.toml
@@ -559,76 +618,82 @@ in {
           fi
         fi
         ENVRC
-                direnv allow
-              }
+          direnv allow
+        }
 
-              rinit() {
-                cat <<'ENVRC' > .envrc
+        rinit() {
+          cat <<'ENVRC' > .envrc
         use flake ${userConfig.dotfilesDir}/templates#rust
         watch_file Cargo.toml
         watch_file Cargo.lock
         ENVRC
-                direnv allow
-              }
+          direnv allow
+        }
 
-              cinit() {
-                cat <<'ENVRC' > .envrc
+        cinit() {
+          cat <<'ENVRC' > .envrc
         use flake ${userConfig.dotfilesDir}/templates#c
         watch_file CMakeLists.txt
         watch_file Makefile
         ENVRC
-                direnv allow
-              }
+          direnv allow
+        }
 
-              cppinit() {
-                cat <<'ENVRC' > .envrc
+        cppinit() {
+          cat <<'ENVRC' > .envrc
         use flake ${userConfig.dotfilesDir}/templates#cpp
         watch_file CMakeLists.txt
         watch_file Makefile
         ENVRC
-                direnv allow
-              }
+          direnv allow
+        }
 
-              # fnm (force bash mode — brush is bash-compatible but fnm can't detect it)
-              FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
-              if [ -d "$FNM_PATH" ]; then
-                export PATH="$FNM_PATH:$PATH"
-                eval "$(fnm env --shell bash)"
-              fi
+        # fnm (force bash mode — brush is bash-compatible but fnm can't detect it)
+        FNM_PATH="/home/${userConfig.username}/.local/share/fnm"
+        if [ -d "$FNM_PATH" ]; then
+          export PATH="$FNM_PATH:$PATH"
+          eval "$(fnm env --shell bash)"
+        fi
 
-              # Ensure local binaries are in PATH
-              export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
+        # Ensure local binaries are in PATH
+        export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
 
-              # --- Distrobox: Host Tool Injection ---
-              if [ -d "/run/host/nix/store" ]; then
-                export PATH="$HOME/.local/share/distrobox/bin:$PATH"
-                unset ATUIN_NO_MODIFY_DB # Allow bash to save history inside distrobox
-                unset ATUIN_SHLVL # Force Atuin to generate a new session ID for the container
-                unset ATUIN_PREEXEC_BACKEND # Clear inherited preexec state
+        # --- Distrobox Late Guard (runs inside PROMPT_COMMAND, after all tool inits) ---
+        if [[ -n "''${_MONKO_DISTROBOX-}" ]]; then
+          # Re-inject host/container paths every prompt (direnv strips them on cd)
+          __rock_path_guard() {
+            local _p
+            for _p in /run/host/run/current-system/sw/bin /run/host/usr/bin /usr/bin /bin; do
+              [[ ":$PATH:" != *":$_p:"* ]] && [ -d "$_p" ] && PATH="$PATH:$_p"
+            done
+          }
 
-                unset GI_TYPELIB_PATH
-                unset GDK_PIXBUF_MODULE_FILE
-                unset XDG_DATA_DIRS
+          # One-shot: override recursive command_not_found_handle after nix-index set it
+          __rock_cnf_guard() {
+            command_not_found_handle() {
+              printf '%s: command not found\n' "$1" >&2
+              return 127
+            }
+            # Remove self from PROMPT_COMMAND after first run
+            local i
+            for i in "''${!PROMPT_COMMAND[@]}"; do
+              [[ "''${PROMPT_COMMAND[$i]}" == "__rock_cnf_guard" ]] && unset 'PROMPT_COMMAND[$i]'
+            done
+          }
 
-                if [ -L "/run/host/etc/static/ssl/certs/ca-bundle.crt" ]; then
-                  export SSL_CERT_FILE=$(readlink /run/host/etc/static/ssl/certs/ca-bundle.crt)
-                  export NIX_SSL_CERT_FILE=$SSL_CERT_FILE
-                  export GIT_SSL_CAINFO=$SSL_CERT_FILE
-                fi
+          # Restore bash-preexec DEBUG trap if active
+          __rock_trap_guard() {
+            if [[ -n "''${bash_preexec_imported-}" ]] || [[ -n "''${__bp_imported-}" ]]; then
+              trap -- '__bp_preexec_invoke_exec "$_"' DEBUG
+              shopt -s extdebug 2>/dev/null
+            fi
+          }
 
-                host_sys=$(readlink /run/host/run/current-system)
-                host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
-                if [ -n "$host_sys" ]; then export PATH="$PATH:/run/host$host_sys/sw/bin"; fi
-                if [ -n "$host_user" ]; then
-                  host_user_resolved=$(readlink "/run/host$host_user")
-                  [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
-                  export PATH="$PATH:/run/host$host_user_resolved/bin"
-                fi
-                unset host_sys host_user host_user_resolved
-              fi
+          PROMPT_COMMAND=(__rock_cnf_guard __rock_path_guard __rock_trap_guard "''${PROMPT_COMMAND[@]}")
+        fi
 
-              # autocd
-              shopt -s autocd 2>/dev/null
+        # autocd
+        shopt -s autocd 2>/dev/null
       '';
     };
   };

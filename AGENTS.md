@@ -150,7 +150,7 @@ nix run nixpkgs#prettier -- --write '**/*.md'
 nix run nixpkgs#markdownlint-cli2 -- '**/*.md'
 
 # Verify shell.nix produces valid bash
-nix eval '.#nixosConfigurations.ninja.config.home-manager.users.izaac.programs.bash.initExtra' \
+nix eval ".#nixosConfigurations.$(hostname).config.home-manager.users.$USER.programs.bash.initExtra" \
   --extra-experimental-features dynamic-derivations --raw | bash -n
 
 # Full system build (without switching)

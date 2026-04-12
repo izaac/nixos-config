@@ -114,21 +114,4 @@
     db-debian = "distrobox enter debi";
     db-rhel = "distrobox enter rhel10";
   };
-
-  # --- Distrobox: bash-preexec array fix ---
-  # Bash 5.1+ uses PROMPT_COMMAND arrays, which older bash-preexec fails to clean up.
-  # This uses mkAfter to run AFTER atuin sources bash-preexec.sh, manually
-  # triggering the install and scrubbing the broken strings so Atuin works.
-  programs.bash.initExtra = pkgs.lib.mkAfter ''
-    if [ -d "/run/host/nix/store" ] && type __bp_install &>/dev/null; then
-      __bp_install
-      if declare -p PROMPT_COMMAND 2>/dev/null | grep -q 'declare -a'; then
-        for i in "''${!PROMPT_COMMAND[@]}"; do
-          PROMPT_COMMAND[$i]="''${PROMPT_COMMAND[$i]//__bp_trap_string=\"\$(trap -p DEBUG)\"/}"
-          PROMPT_COMMAND[$i]="''${PROMPT_COMMAND[$i]//trap - DEBUG/}"
-          PROMPT_COMMAND[$i]="''${PROMPT_COMMAND[$i]//__bp_install/}"
-        done
-      fi
-    fi
-  '';
 }
