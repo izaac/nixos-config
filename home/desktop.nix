@@ -46,8 +46,7 @@ in {
     ffmpeg-full
 
     # COSMIC Extensions & Integration
-    cosmic-ext-applet-emoji
-    cosmic-ext-applet-clipboard
+    cosmic-applets # Official System76 applet bundle
 
     # CD/DVD Backup & Cloning
     cdrtools # CLI: readcd, etc.
