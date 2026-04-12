@@ -20,10 +20,6 @@ in {
   # --- FONTS ---
   fonts.fontconfig.enable = true;
 
-  catppuccin.fuzzel.enable = true;
-
-  programs.fuzzel.enable = true;
-
   home.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.symbols-only
@@ -41,15 +37,17 @@ in {
     nix-packages.ethereal-waves # COSMIC Music Player
 
     # General Software
-    abiword # Lightweight GTK Word Processor
     gophertube # TUI YouTube Client
     chafa # Terminal Graphics for gophertube
     fragments # GTK Torrent Client (Rust)
-    glide-media-player # GTK Video Player
-    brasero # GTK CD/DVD Burning
-    snapshot # GTK Camera App
+    clapper # Modern GTK4 Video Player (Rust)
+    snapshot # GTK Camera App (Rust)
     sparrow
     ffmpeg-full
+
+    # COSMIC Extensions & Integration
+    cosmic-ext-applet-emoji
+    cosmic-ext-applet-clipboard
 
     # CD/DVD Backup & Cloning
     cdrtools # CLI: readcd, etc.
@@ -99,30 +97,30 @@ in {
         "text/x-log" = ["com.system76.CosmicEdit.desktop"];
 
         # Archives
-        "application/zip" = ["org.gnome.FileRoller.desktop"];
-        "application/x-tar" = ["org.gnome.FileRoller.desktop"];
-        "application/x-7z-compressed" = ["org.gnome.FileRoller.desktop"];
-        "application/x-rar" = ["org.gnome.FileRoller.desktop"];
-        "application/gzip" = ["org.gnome.FileRoller.desktop"];
-        "application/x-bzip2" = ["org.gnome.FileRoller.desktop"];
-        "application/x-xz" = ["org.gnome.FileRoller.desktop"];
+        "application/zip" = ["com.system76.CosmicFiles.desktop"];
+        "application/x-tar" = ["com.system76.CosmicFiles.desktop"];
+        "application/x-7z-compressed" = ["com.system76.CosmicFiles.desktop"];
+        "application/x-rar" = ["com.system76.CosmicFiles.desktop"];
+        "application/gzip" = ["com.system76.CosmicFiles.desktop"];
+        "application/x-bzip2" = ["com.system76.CosmicFiles.desktop"];
+        "application/x-xz" = ["com.system76.CosmicFiles.desktop"];
 
         # Video
-        "video/mp4" = ["dev.philn.Glide.desktop"];
-        "video/x-matroska" = ["dev.philn.Glide.desktop"];
-        "video/webm" = ["dev.philn.Glide.desktop"];
-        "video/quicktime" = ["dev.philn.Glide.desktop"];
-        "video/x-flv" = ["dev.philn.Glide.desktop"];
-        "video/x-msvideo" = ["dev.philn.Glide.desktop"];
-        "video/mpeg" = ["dev.philn.Glide.desktop"];
-        "video/ogg" = ["dev.philn.Glide.desktop"];
-        "video/x-ogm+xml" = ["dev.philn.Glide.desktop"];
-        "video/3gpp" = ["dev.philn.Glide.desktop"];
-        "video/3gpp2" = ["dev.philn.Glide.desktop"];
-        "video/h264" = ["dev.philn.Glide.desktop"];
-        "video/mp2t" = ["dev.philn.Glide.desktop"];
-        "video/vnd.rn-realvideo" = ["dev.philn.Glide.desktop"];
-        "video/x-ms-wmv" = ["dev.philn.Glide.desktop"];
+        "video/mp4" = ["com.github.rafostar.Clapper.desktop"];
+        "video/x-matroska" = ["com.github.rafostar.Clapper.desktop"];
+        "video/webm" = ["com.github.rafostar.Clapper.desktop"];
+        "video/quicktime" = ["com.github.rafostar.Clapper.desktop"];
+        "video/x-flv" = ["com.github.rafostar.Clapper.desktop"];
+        "video/x-msvideo" = ["com.github.rafostar.Clapper.desktop"];
+        "video/mpeg" = ["com.github.rafostar.Clapper.desktop"];
+        "video/ogg" = ["com.github.rafostar.Clapper.desktop"];
+        "video/x-ogm+xml" = ["com.github.rafostar.Clapper.desktop"];
+        "video/3gpp" = ["com.github.rafostar.Clapper.desktop"];
+        "video/3gpp2" = ["com.github.rafostar.Clapper.desktop"];
+        "video/h264" = ["com.github.rafostar.Clapper.desktop"];
+        "video/mp2t" = ["com.github.rafostar.Clapper.desktop"];
+        "video/vnd.rn-realvideo" = ["com.github.rafostar.Clapper.desktop"];
+        "video/x-ms-wmv" = ["com.github.rafostar.Clapper.desktop"];
 
         # Audio
         "audio/mpeg" = ["org.gnome.Amberol.desktop"];
