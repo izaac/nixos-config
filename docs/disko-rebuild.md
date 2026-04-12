@@ -171,3 +171,55 @@ The NFS mount (`/mnt/storage` → `192.168.0.173:/storage`) is defined in `hardw
 ## How It Works
 
 Disko owns all local disk mounts (`/`, `/boot`, `/mnt/data`). The `hardware.nix` file only declares hardware modules (kernel modules, microcode, kernel params) and the NFS network mount (`/mnt/storage`), which disko does not manage. Disko is always the single source of truth for local disk layout.
+
+## Remote Install with nixos-anywhere
+
+[nixos-anywhere](https://github.com/nix-community/nixos-anywhere) can install NixOS on a remote machine over SSH — no USB drive needed. The target just needs to be booted into any Linux with SSH access (e.g., a rescue system from your hosting provider, or a live USB on another machine).
+
+### Different Disk Layout
+
+Each machine needs its own disko config because disk paths differ. To deploy to a machine with different disks:
+
+1. Create a new host in the flake:
+
+   ```text
+   hosts/newbox/
+   ├── configuration.nix   # system config for the new machine
+   ├── disko.nix           # disk layout matching the target's drives
+   └── hardware.nix        # hardware modules, kernel config
+   ```
+
+2. Find the target machine's disk IDs (over SSH):
+
+   ```bash
+   ssh root@target ls -l /dev/disk/by-id/
+   ```
+
+3. Write `disko.nix` using those disk IDs. The structure is the same as `hosts/ninja/disko.nix` but with different device paths, partition sizes, and labels.
+
+4. Add the new host to `flake.nix`:
+
+   ```nix
+   nixosConfigurations = {
+     ninja = mkSystem "ninja" "x86_64-linux";
+     windy = mkSystem "windy" "x86_64-linux";
+     newbox = mkSystem "newbox" "x86_64-linux";
+   };
+   ```
+
+5. Run nixos-anywhere:
+
+   ```bash
+   nix run github:nix-community/nixos-anywhere -- \
+     --flake .#newbox \
+     root@target-ip
+   ```
+
+   This will SSH into the target, run disko to partition and format the disks, install NixOS with the `newbox` config, and reboot.
+
+### Requirements
+
+- Target machine must have SSH access as root (or a user with sudo).
+- Target must be booted into a Linux environment (any distro works, even a rescue shell).
+- Target must have enough RAM to hold the NixOS installer in a tmpfs (2GB+ recommended).
+- Your local machine needs Nix installed to run the nixos-anywhere command.
