@@ -79,6 +79,8 @@ in {
       nix-tree # dependency explorer
       comma # run without install (, pkg)
       nvd # diff nix derivations
+      nix-init # generate nix packages from URLs
+      nix-melt # TUI flake explorer
 
       # --- SECURITY ---
       sops

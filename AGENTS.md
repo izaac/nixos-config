@@ -112,6 +112,12 @@ docs/              # Human-readable documentation
 - Perform any actions regarding `markdown.sh`
 - Chain `git push` with other commands (e.g., `&&`). Always run it as a standalone command for safety.
 
+### 🛠️ Custom Packages (nix-packages)
+
+The Chief maintains a separate repository for personal packages at `~/nix-packages`.
+- **`nix-init <URL>`**: Use this tool to automatically generate Nix expressions for new packages. It handles fetchers, hashes, and dependencies.
+- **Workflow**: Generate the expression with `nix-init`, move it to the `nix-packages` repo, and update its `flake.nix`.
+
 ## Tools & Commands
 
 ```bash

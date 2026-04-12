@@ -32,7 +32,7 @@
 - `home/`: Home Manager modules for user-level configuration
 - `users/`: per-user profile composition
 - `overlays/`: package overrides
-- Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) and are consumed as a flake input
+- Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) and are consumed as a flake input. Use **`nix-init`** to bootstrap new package definitions for this repository.
 
 ## Quick Start
 

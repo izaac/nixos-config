@@ -106,6 +106,8 @@
           age
           git
           just
+          nix-init
+          nix-melt
         ];
       };
     });
