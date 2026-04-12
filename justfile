@@ -4,9 +4,9 @@
 build:
 	nh os switch .
 
-# Dry-run build
+# Dry-run build (match old ndr behavior)
 dry-build:
-	nh os switch . -- --dry-run
+	nh os build .
 
 # Build the Travel-Canoe (ISO)
 iso:
