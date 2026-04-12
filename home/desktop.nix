@@ -20,7 +20,6 @@ in {
   # --- FONTS ---
   fonts.fontconfig.enable = true;
 
-  catppuccin.zathura.enable = true;
   catppuccin.fuzzel.enable = true;
 
   programs.fuzzel.enable = true;
@@ -37,13 +36,15 @@ in {
     # Audio Tools
     pulsemixer
     monophony
+    amberol # Simple Rust Music Player
+    shortwave # Rust Internet Radio
     nix-packages.ethereal-waves # COSMIC Music Player
 
     # General Software
     abiword # Lightweight GTK Word Processor
     gophertube # TUI YouTube Client
     chafa # Terminal Graphics for gophertube
-    fragments # GTK Torrent Client
+    fragments # GTK Torrent Client (Rust)
     glide-media-player # GTK Video Player
     brasero # GTK CD/DVD Burning
     snapshot # GTK Camera App
@@ -60,10 +61,12 @@ in {
     boxbuddy
     gearlever
 
-    # GTK Apps
-    loupe # Image Viewer
+    # GTK Apps (Rust-based replacements)
+    loupe # Image Viewer (Rust)
+    papers # PDF/Document Viewer (Rust)
+    mission-center # System Monitor (Rust)
     file-roller # Archive Manager
-    newsflash # GTK4/Libadwaita RSS Reader
+    newsflash # GTK4/Libadwaita RSS Reader (Rust)
   ];
 
   xdg = {
@@ -122,13 +125,13 @@ in {
         "video/x-ms-wmv" = ["dev.philn.Glide.desktop"];
 
         # Audio
-        "audio/mpeg" = ["com.galacticpirateradio.ethereal-waves.desktop"];
-        "audio/flac" = ["com.galacticpirateradio.ethereal-waves.desktop"];
-        "audio/x-wav" = ["com.galacticpirateradio.ethereal-waves.desktop"];
+        "audio/mpeg" = ["org.gnome.Amberol.desktop"];
+        "audio/flac" = ["org.gnome.Amberol.desktop"];
+        "audio/x-wav" = ["org.gnome.Amberol.desktop"];
 
         # Documents / Images
-        "application/pdf" = ["org.pwmt.zathura.desktop"];
-        "application/epub+zip" = ["org.pwmt.zathura.desktop"];
+        "application/pdf" = ["org.gnome.Papers.desktop"];
+        "application/epub+zip" = ["org.gnome.Papers.desktop"];
         "image/png" = ["org.gnome.Loupe.desktop"];
         "image/jpeg" = ["org.gnome.Loupe.desktop"];
         "image/webp" = ["org.gnome.Loupe.desktop"];
