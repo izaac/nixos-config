@@ -1,5 +1,7 @@
 # Zellij Configuration & Workflows
 
+> Keybinding reference. For workflow philosophy and when to use Zellij vs Wezterm, see [zellij-wezterm-workflow.md](zellij-wezterm-workflow.md).
+
 ## Overview
 
 Zellij is the primary terminal multiplexer, replacing `tmux`. It provides session persistence, robust layout management, and an organized way to handle complex development environments.

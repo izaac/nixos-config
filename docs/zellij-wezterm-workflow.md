@@ -22,6 +22,8 @@ While both Wezterm and Zellij can split panes and manage tabs, they serve entire
 - Long-running processes that shouldn't die if the UI or SSH connection drops.
 - **Rule of thumb:** If the layout represents a "project state", use Zellij.
 
+> **For Zellij keybindings and shortcuts:** See [zellij.md](zellij.md)
+
 ---
 
 ## Example Workflows

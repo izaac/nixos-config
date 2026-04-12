@@ -1,38 +1,50 @@
 # NixOS Configuration
 
+Personal NixOS flake managing two hosts (`ninja`, `windy`). Tracks **nixos-unstable**.
+Custom packages live in a separate [nix-packages](https://github.com/izaac/nix-packages) repo consumed as a flake input.
+
 ## Overview
 
 - **OS:** NixOS (Branch: 25.11)
 - **DM:** cosmic-greeter (greetd)
 - **DE:** COSMIC (Epoch 1)
-- **Theme:** Catppuccin Mocha (Blue Accent)
-- **Shell:** Brush (Rust) + Starship + Atuin + Zoxide
+- **Theme:** Catppuccin Mocha (Blue Accent, system-wide via catppuccin/nix)
+- **Shell:** Brush (Rust bash-compatible) + Starship + Atuin + Zoxide
 - **Terminal:** WezTerm + Zellij
 - **Editor:** Helix
 - **Security:** dbus-broker, sops-nix + age, YubiKey (U2F)
-- **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, GameMode
-
-## Documentation
-
-- [Disaster Recovery & Disko](docs/disko-rebuild.md)
-- [Hardware Configuration](docs/hardware.md)
-- [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
-- [Security & Hardening](docs/security.md)
-- [Secret Management](docs/secrets.md)
-- [Zellij Configuration](docs/zellij.md)
-- [Wezterm Configuration](docs/wezterm.md)
-- [Helix Editor](docs/helix.md)
-- [Terminal Workflows & Configuration](docs/zellij-wezterm-workflow.md)
-- [Documentation Index](docs/README.md)
+- **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, GameMode, sched-ext
 
 ## Structure
 
-- `hosts/`: host-specific system configuration (`ninja`, `windy`)
-- `modules/`: reusable NixOS modules behind `mySystem.*` options
-- `home/`: Home Manager modules for user-level configuration
-- `users/`: per-user profile composition
-- `overlays/`: package overrides
-- Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) and are consumed as a flake input. Use **`nix-init`** to bootstrap new package definitions for this repository.
+```text
+flake.nix          # Entry point — defines inputs, hosts, devShells, checks
+lib/               # mkSystem helper, user config
+hosts/             # Per-host configuration.nix + hardware
+modules/           # Reusable NixOS modules (mySystem.* options)
+  core/            # Audio, codecs, nix-ld, performance, sops, maintenance
+  desktop/         # COSMIC DE, display manager
+  gaming/          # Steam, GameMode, sched-ext (SCX)
+home/              # Home Manager modules (per-app .nix files)
+  shell/           # Split shell config (aliases, functions, packages)
+users/             # Per-user profile composition
+overlays/          # Package overrides
+crunch/            # Media encoding configs
+secrets.yaml       # SOPS-encrypted secrets
+docs/              # Human-readable documentation
+```
+
+Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) and are consumed as a flake input. Use **`nix-init`** to bootstrap new package definitions.
+
+## Documentation
+
+- [Hardware (ninja)](docs/hardware.md) | [Hardware (windy)](docs/windy.md)
+- [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
+- [Security & Hardening](docs/security.md) | [Secrets](docs/secrets.md)
+- [Disaster Recovery & Disko](docs/disko-rebuild.md)
+- [Zellij](docs/zellij.md) | [Wezterm](docs/wezterm.md) | [Workflow](docs/zellij-wezterm-workflow.md)
+- [Helix Editor](docs/helix.md) | [CLI Tools](docs/cli-tools.md) | [Just Commands](docs/just-commands.md)
+- [Full Index](docs/README.md)
 
 ## Quick Start
 
