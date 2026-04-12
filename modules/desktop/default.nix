@@ -35,13 +35,6 @@ in {
       pinentryPackage = pkgs.pinentry-gnome3;
     };
 
-    catppuccin = {
-      enable = true;
-      flavor = "mocha";
-      accent = "blue";
-      tty.enable = true;
-    };
-
     security.pam.services = {
       cosmic-greeter.enableGnomeKeyring = true;
       login.enableGnomeKeyring = true;

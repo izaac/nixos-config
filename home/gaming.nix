@@ -1,5 +1,6 @@
 {
   pkgs,
+  lib,
   userConfig,
   inputs,
   ...
@@ -67,17 +68,16 @@ in {
   programs.mangohud = {
     enable = true;
     settings = {
-      # Visual Style (Catppuccin Mocha)
-      text_color = "cdd6f4";
-      gpu_color = "a6e3a1"; # Green
-      cpu_color = "89b4fa"; # Blue
-      vram_color = "f38ba8"; # Red
-      ram_color = "fab387"; # Orange
-      engine_color = "89b4fa"; # Blue
-
-      frametime_color = "94e2d5"; # Teal
-      background_alpha = "0.4";
-      font_size = 24;
+      # Visual Style (Handled by Stylix, but overrides possible)
+      # text_color = "cdd6f4";
+      # gpu_color = "a6e3a1"; # Green
+      # cpu_color = "89b4fa"; # Blue
+      # vram_color = "f38ba8"; # Red
+      # ram_color = "fab387"; # Orange
+      # engine_color = "89b4fa"; # Blue
+      # frametime_color = "94e2d5"; # Teal
+      background_alpha = lib.mkForce 0.4;
+      font_size = lib.mkForce 24;
 
       # The Data
       gpu_stats = true;

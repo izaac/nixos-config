@@ -1,5 +1,4 @@
 {pkgs, ...}: {
-  catppuccin.cava.enable = true;
   programs.cava = {
     enable = true;
     package = pkgs.cava;

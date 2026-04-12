@@ -3,57 +3,21 @@
   lib,
   userConfig,
   ...
-}: let
-  catppuccin-papirus = pkgs.catppuccin-papirus-folders.override {
-    flavor = "mocha";
-    accent = "blue";
-  };
-  catppuccin-gtk-overridden = pkgs.catppuccin-gtk.override {
-    accents = ["blue"];
-    size = "standard";
-    tweaks = ["rimless"];
-    variant = "mocha";
-  };
-in {
-  catppuccin = {
-    enable = true;
-    vscode.profiles.default.enable = false;
-    flavor = "mocha";
-    accent = "blue";
-    # Enable specific integrations (but disable Catppuccin cursors to use Bibata)
-    cursors.enable = false;
-  };
+}: {
+  # Stylix handles standard theming now.
+  # Manual overrides go here.
 
-  # Use Bibata Modern Ice for a blue pointer matching COSMIC aesthetic
   home = {
-    pointerCursor = {
-      name = "Bibata-Modern-Ice";
-      package = pkgs.bibata-cursors;
-      size = 24;
-      gtk.enable = true;
-      x11.enable = true;
-    };
-
-    packages = with pkgs; [
-      catppuccin-papirus
-    ];
-
-    # Theme Libadwaita
-    sessionVariables.GTK_THEME = "catppuccin-mocha-blue-standard";
-
     # Set custom icon for Games folder
     activation.setGamesIcon = lib.hm.dag.entryAfter ["writeBoundary"] ''
       $DRY_RUN_CMD ${pkgs.glib}/bin/gio set -t string /home/${userConfig.username}/Games metadata::gvfs.extra-icon folder-cat-mocha-blue-games
     '';
+
+    sessionVariables.GTK_THEME = "catppuccin-mocha-blue-standard";
   };
 
   gtk = {
     enable = true;
-    gtk4.theme = null;
-    theme = {
-      name = "catppuccin-mocha-blue-standard";
-      package = catppuccin-gtk-overridden;
-    };
     gtk3.bookmarks = [
       "file:///home/${userConfig.username}/Documents Documents"
       "file:///home/${userConfig.username}/Downloads Downloads"
@@ -65,13 +29,6 @@ in {
       "file:///mnt/storage storage"
       "file:///mnt/data data"
     ];
-  };
-
-  # GTK 4 settings
-  xdg.configFile = {
-    "gtk-4.0/gtk.css".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-blue-standard/gtk-4.0/gtk.css";
-    "gtk-4.0/gtk-dark.css".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-blue-standard/gtk-4.0/gtk-dark.css";
-    "gtk-4.0/assets".source = "${catppuccin-gtk-overridden}/share/themes/catppuccin-mocha-blue-standard/gtk-4.0/assets";
   };
 
   dconf.settings = {

@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   boot = {
     # Bootloader and startup UX
     loader = {
@@ -13,7 +17,7 @@
 
     plymouth = {
       enable = true;
-      theme = "bgrt";
+      theme = lib.mkForce "bgrt";
     };
 
     consoleLogLevel = 0;
@@ -53,6 +57,5 @@
       "split_lock_detect=off"
     ];
   };
-  catppuccin.plymouth.enable = false;
   programs.fuse.enable = true;
 }

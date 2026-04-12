@@ -1,7 +1,4 @@
 {pkgs, ...}: {
-  catppuccin.firefox.enable = false;
-  catppuccin.firefox.profiles.default.enable = false;
-
   # We use the standard firefox package here.
   # System-wide policies in hosts/ninja/configuration.nix will apply to this.
   programs.firefox = {

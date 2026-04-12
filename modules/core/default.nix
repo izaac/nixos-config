@@ -14,5 +14,6 @@
     ./sops.nix
     ./nfs.nix
     ./yubikey.nix
+    ./theme.nix
   ];
 }

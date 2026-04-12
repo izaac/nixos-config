@@ -13,19 +13,6 @@ in {
     ./shell/init.nix
   ];
 
-  # 1. Theme & Styling
-  catppuccin = {
-    bat.enable = true;
-    skim.enable = true;
-    bottom.enable = true;
-    gitui.enable = true;
-    yazi.enable = true;
-    btop.enable = true;
-    k9s.enable = true;
-    atuin.enable = true;
-    delta.enable = true;
-  };
-
   home = {
     packages = [
       nix-packages.vcrunch

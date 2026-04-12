@@ -1,11 +1,9 @@
-_: {
+{lib, ...}: {
   qt = {
     enable = true;
-    platformTheme.name = "kvantum";
-    style.name = "kvantum";
+    platformTheme.name = lib.mkForce "kvantum";
+    style.name = lib.mkForce "kvantum";
   };
-
-  catppuccin.kvantum.enable = true;
 
   # Ensure GTK apps (Libadwaita, etc.) use dark theme
   dconf.settings = {

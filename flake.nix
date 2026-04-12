@@ -24,6 +24,7 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    stylix.url = "github:danth/stylix";
     ai-trace-scanner = {
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
@@ -32,7 +33,7 @@
 
   outputs = inputs @ {
     nixpkgs,
-    catppuccin,
+    stylix,
     sops-nix,
     ...
   }: let
@@ -47,7 +48,7 @@
     userConfig = import ./lib/user.nix;
 
     mkSystem = import ./lib/mkSystem.nix {
-      inherit inputs nixpkgs catppuccin sops-nix userConfig;
+      inherit inputs nixpkgs stylix sops-nix userConfig;
     };
   in {
     nixosConfigurations = {

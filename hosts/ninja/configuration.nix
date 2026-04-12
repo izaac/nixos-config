@@ -55,6 +55,7 @@
       system.enable = true;
       usb-fixes.enable = true;
       user.enable = true;
+      theme.enable = true;
       home-manager.enable = true;
       nix-ld.enable = true;
     };
@@ -91,9 +92,9 @@
   # Override COSMIC's system-level cosmic-mimeapps.list so the Settings panel
   # and xdg-mime both resolve to the correct apps.
   xdg.mime.defaultApplications = {
-    "x-scheme-handler/http" = "chromium-browser.desktop";
-    "x-scheme-handler/https" = "chromium-browser.desktop";
-    "text/html" = "chromium-browser.desktop";
+    "x-scheme-handler/http" = "brave-origin.desktop";
+    "x-scheme-handler/https" = "brave-origin.desktop";
+    "text/html" = "brave-origin.desktop";
     "audio/mpeg" = "com.galacticpirateradio.ethereal-waves.desktop";
     "audio/flac" = "com.galacticpirateradio.ethereal-waves.desktop";
     "audio/x-wav" = "com.galacticpirateradio.ethereal-waves.desktop";

@@ -112,8 +112,6 @@
     };
   };
 
-  catppuccin.delta.enable = true;
-
   services.gpg-agent = {
     enable = true;
     enableSshSupport = false;

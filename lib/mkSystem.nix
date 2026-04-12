@@ -1,7 +1,7 @@
 {
   inputs,
   nixpkgs,
-  catppuccin,
+  stylix,
   sops-nix,
   userConfig,
 }: hostname: system:
@@ -14,7 +14,7 @@ nixpkgs.lib.nixosSystem {
   modules = [
     ../hosts/${hostname}/configuration.nix
     inputs.disko.nixosModules.disko
-    catppuccin.nixosModules.catppuccin
+    stylix.nixosModules.stylix
     sops-nix.nixosModules.sops
     ../modules/core/sops.nix
     {
