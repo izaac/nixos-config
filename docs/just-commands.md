@@ -20,7 +20,12 @@ just <command>
 | `just vm` | Build and prep the Ghost-Cave | `nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko` |
 | `just clean` | Remove old system generations | `nh clean all --keep 5` |
 | `just up` | Update flake and system | `nix flake update && nh os switch . --update` |
+| `just deploy-ninja <ip>` | Install NixOS on remote machine | `nix run github:nix-community/nixos-anywhere` |
 
-## Adding New Magic
+## Remote Installation (nixos-anywhere)
+The `deploy-ninja` command uses `nixos-anywhere` to bootstrap a new machine over SSH. 
+- **Requirement**: The target machine must have an existing Linux install with SSH access as `root`.
+- **Warning**: This command will **entirely wipe the destination disk** using the `disko` configuration.
+- **RAM**: The target needs at least 1.5GB of RAM to host the temporary installer.
 
 To add more commands, edit the `justfile` in the repository root. Remember to use tabs for indentation, as `just` follows `make` syntax.
