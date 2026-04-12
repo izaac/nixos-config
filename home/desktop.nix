@@ -143,7 +143,6 @@ in {
     };
   };
 
-  programs.zathura.enable = true;
   services.udiskie.enable = true;
 
   # Clipboard History Watcher (stores clipboard entries for recall)
