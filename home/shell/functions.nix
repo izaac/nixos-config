@@ -1,7 +1,4 @@
-{
-  userConfig,
-  ...
-}: let
+{userConfig, ...}: let
   cleanPath = "/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin";
 in {
   programs.bash.initExtra = ''

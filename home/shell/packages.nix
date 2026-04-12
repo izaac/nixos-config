@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   home.packages = with pkgs; [
     # --- CORE CLI UTILS ---
     (lib.hiPrio uutils-coreutils-noprefix)

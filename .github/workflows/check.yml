@@ -18,3 +18,7 @@ jobs:
         run: nix flake check
       - name: Stone Linter (statix)
         run: nix run nixpkgs#statix -- check .
+      - name: Polish Stones (Prettier)
+        run: nix run nixpkgs#prettier -- --check '**/*.md' --ignore-path .gitignore
+      - name: Wash Stones (markdownlint)
+        run: nix run nixpkgs#markdownlint-cli2 -- '**/*.md' '#.direnv' '#result' '#.git'

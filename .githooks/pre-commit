@@ -29,6 +29,9 @@ if [ -n "$STAGED_NIX_FILES" ]; then
     git add $STAGED_NIX_FILES
 fi
 
+echo "Running nix flake check..."
+nix flake check
+
 echo "Scanning for AI traces..."
 if command -v ai-trace-scan &>/dev/null; then
     ai-trace-scan --staged --quiet
