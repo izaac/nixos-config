@@ -15,11 +15,11 @@ in {
     i18n.defaultLocale = "en_US.UTF-8";
 
     # --- RUST SYSTEM SPIRITS ---
-    security.sudo.enable = false;
-    security.sudo-rs.enable = true;
+    security.sudo.enable = lib.mkForce false;
+    security.sudo-rs.enable = lib.mkForce true;
 
-    services.ntpd-rs.enable = true;
-    services.timesyncd.enable = false;
+    services.ntpd-rs.enable = lib.mkForce true;
+    services.timesyncd.enable = lib.mkForce false;
 
     # Nix Maintenance & Settings
     nix = {
