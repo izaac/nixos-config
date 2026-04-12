@@ -24,6 +24,8 @@ in {
       # available even when the NixOS-level stylix.enable is false.
       sharedModules = [
         inputs.stylix.homeModules.stylix
+        # useGlobalPkgs = true means overlays come from NixOS, not HM
+        {stylix.overlays.enable = false;}
         inputs.nix-flatpak.homeManagerModules.nix-flatpak
       ];
       extraSpecialArgs = {inherit inputs userConfig;};
