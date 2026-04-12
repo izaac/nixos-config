@@ -80,7 +80,7 @@ docs/              # Human-readable documentation
 
 ### ✅ Always
 
-- **Perform a dry-run or dry-build** before every commit (`just dry-build` or `nh os switch . -- --dry-run`).
+- **Perform a dry-run/build and `statix check .`** before every commit (`just dry-build` and `just check`).
 - Consult [docs/security.md](docs/security.md) before modifying AppArmor or hardening settings.
 - Use `nix run nixpkgs#<tool>` or `nix shell nixpkgs#<tool>` to run tools not in the dev shell
 - Write idiomatic Nix — use `mkOption`, `mkDefault`, `mkIf`, `lib.optionals`
