@@ -14,9 +14,6 @@ in {
   config = mkIf cfg.enable {
     stylix = {
       enable = true;
-      # HM stylix module is already imported via sharedModules in home-manager.nix.
-      # Disable auto-import to prevent duplicates; followSystem still works via copyModules.
-      homeManagerIntegration.autoImport = false;
       image = pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/orangci/walls-catppuccin-mocha/master/black-hole.png";
         sha256 = "0nq4qxx3i4s84v4srxvggzlvp15sc2wgf4vc4awaijwdzqy79nfr";

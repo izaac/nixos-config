@@ -26,6 +26,7 @@
       usb-fixes.enable = true;
       user.enable = true;
       home-manager.enable = true;
+      theme.enable = true;
       nix-ld.enable = true;
     };
   };

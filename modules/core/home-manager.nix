@@ -19,13 +19,7 @@ in {
       useGlobalPkgs = true;
       useUserPackages = true;
       backupFileExtension = "hm-backup";
-      # Framework-level HM modules shared across all users/hosts.
-      # Stylix HM module is imported here (not per-user) so it's
-      # available even when the NixOS-level stylix.enable is false.
       sharedModules = [
-        inputs.stylix.homeModules.stylix
-        # useGlobalPkgs = true means overlays come from NixOS, not HM
-        {stylix.overlays.enable = false;}
         inputs.nix-flatpak.homeManagerModules.nix-flatpak
       ];
       extraSpecialArgs = {inherit inputs userConfig;};
