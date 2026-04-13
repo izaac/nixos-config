@@ -9,6 +9,7 @@
     ./theme.nix
     ./whosthere.nix
     ./dev.nix
+    ./ai-agents
   ];
 
   home = {
