@@ -3,14 +3,21 @@
   userConfig,
   ...
 }: let
+  globalMd = builtins.readFile ./global.md;
   geminiMd = "/home/${userConfig.username}/.gemini/GEMINI.md";
 in {
   home.file = {
     # Claude Code: ~/.claude/CLAUDE.md
-    ".claude/CLAUDE.md".source = ./claude.md;
+    ".claude/CLAUDE.md".text = ''
+      ${globalMd}
+      ${builtins.readFile ./claude.md}
+    '';
 
     # Gemini CLI: read-only base instructions
-    ".gemini/instructions.md".source = ./gemini.md;
+    ".gemini/instructions.md".text = ''
+      ${globalMd}
+      ${builtins.readFile ./gemini.md}
+    '';
   };
 
   # Bootstrap mutable GEMINI.md that @imports the managed base.

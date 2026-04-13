@@ -1,5 +1,3 @@
-# Gemini CLI — Global User Config
-
 ## Gemini-Specific
 
 - Base instructions are managed by NixOS in `~/.gemini/instructions.md`.

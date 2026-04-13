@@ -1,7 +1,3 @@
-# Claude Code — Global User Config
-
-See [Global Protocol](global.md) for shared rules.
-
 ## Claude-Specific
 
 - Use `adaptive` thinking with `low` effort for simple tasks.
