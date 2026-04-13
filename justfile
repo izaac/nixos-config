@@ -6,7 +6,7 @@ build:
 
 # Dry-run build (match old ndr behavior)
 dry-build:
-	nh os build .
+	nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --dry-run
 
 # Build the Travel-Canoe (ISO)
 iso:

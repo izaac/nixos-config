@@ -53,8 +53,8 @@ in {
       # Ananicy-cpp (Auto-nice daemon) - Disabled per Anticipation Strategy
       ananicy.enable = false;
 
-      # Irqbalance - Disabled per Anticipation Strategy
-      irqbalance.enable = false;
+      # Irqbalance - Spread interrupts across cores to reduce thermal hotspots
+      irqbalance.enable = true;
     };
   };
 }
