@@ -85,26 +85,6 @@
         "type": "github"
       }
     },
-    "catppuccin": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1775994227,
-        "narHash": "sha256-4VKeWtl9dEubrgpy9fSXkXbjBZlNXPNlQQM5l1ppHv4=",
-        "owner": "catppuccin",
-        "repo": "nix",
-        "rev": "d0a9a21ed8e235956a768fc624242ec9a3e15575",
-        "type": "github"
-      },
-      "original": {
-        "owner": "catppuccin",
-        "repo": "nix",
-        "type": "github"
-      }
-    },
     "disko": {
       "inputs": {
         "nixpkgs": [
@@ -343,7 +323,6 @@
     "root": {
       "inputs": {
         "ai-trace-scanner": "ai-trace-scanner",
-        "catppuccin": "catppuccin",
         "disko": "disko",
         "home-manager": "home-manager",
         "nix-flatpak": "nix-flatpak",
