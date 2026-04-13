@@ -15,7 +15,10 @@ iso:
 # Run the Magic Eye (Checks)
 check:
 	nix flake check
-	statix check .
+
+# Format all stones (treefmt)
+fmt:
+	nix fmt
 
 # Ghost Cave (VM with Disko)
 vm:

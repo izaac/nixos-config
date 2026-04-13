@@ -27,6 +27,42 @@ The following tools are integrated and aliased by default:
 - **`btop`:** A graphical system monitor for real-time tracking of CPU, memory, and network usage.
 - **`yazi` (`y`):** A terminal-based file manager with high-performance image previews and intuitive navigation.
 
+## Nix Package Maintenance
+
+### nix-update
+
+Automatically bumps package versions and hashes for packages defined in a flake. Works with standard `callPackage` packages in `nix-packages`.
+
+```bash
+cd ~/nix-packages
+
+# Auto-detect latest version and update
+nix-update --flake ethereal-waves
+
+# Pin to a specific version
+nix-update --flake --version=0.4.0 brush-shell
+```
+
+**Limitations:** Does not work with inline overlays (e.g., `overlays/sparrow-temurin-fix.nix`). Only works with packages that have a discoverable upstream (GitHub releases, PyPI, etc.).
+
+### nurl
+
+Generates Nix fetcher calls (with hashes) from repository URLs. Useful when adding new packages or manually updating overlays.
+
+```bash
+# Generate fetchFromGitHub expression
+nurl https://github.com/reubeno/brush v0.3.1
+
+# Generate fetchurl hash for a release tarball
+nurl https://github.com/sparrowwallet/sparrow/releases/download/2.5.0/sparrowwallet-2.5.0-x86_64.tar.gz
+```
+
+**Workflow for overlay updates (e.g., Sparrow):**
+
+1. Get the new hash: `nurl https://github.com/sparrowwallet/sparrow <new-version>`
+2. Update version and hash in the overlay file manually
+3. Rebuild: `nh os build .`
+
 ## Shell Configuration Validation
 
 The `home/shell.nix` file is complex and contains many embedded bash functions. To ensure changes do not introduce syntax errors that could break the login shell, use the following validation command:

@@ -17,7 +17,8 @@ just <command>
 | `just build`             | Rebuild and switch system       | `nh os switch .`                                                        |
 | `just dry-build`         | Dry-run system build            | `nh os switch . -- --dry-run`                                           |
 | `just iso`               | Build the Travel-Canoe (ISO)    | `nix build .#iso`                                                       |
-| `just check`             | Run flake checks and linting    | `nix flake check && statix check .`                                     |
+| `just check`             | Run flake checks (treefmt)      | `nix flake check`                                                       |
+| `just fmt`               | Format all files (treefmt)      | `nix fmt`                                                               |
 | `just vm`                | Build and prep the Ghost-Cave   | `nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko` |
 | `just clean`             | Remove old system generations   | `nh clean all --keep 5`                                                 |
 | `just up`                | Update flake and system         | `nix flake update && nh os switch . --update`                           |

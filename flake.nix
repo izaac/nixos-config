@@ -26,6 +26,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix.url = "github:danth/stylix";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
     ai-trace-scanner = {
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
@@ -33,6 +34,7 @@
   };
 
   outputs = inputs @ {
+    self,
     nixpkgs,
     stylix,
     sops-nix,
@@ -51,6 +53,10 @@
     mkSystem = import ./lib/mkSystem.nix {
       inherit inputs nixpkgs stylix sops-nix userConfig;
     };
+
+    treefmtEval =
+      forEachSystem (system:
+        inputs.treefmt-nix.lib.evalModule (mkPkgs system) ./treefmt.nix);
   in {
     nixosConfigurations = {
       ninja = mkSystem "ninja" "x86_64-linux";
@@ -93,60 +99,36 @@
         }
     );
 
+    formatter =
+      forEachSystem (system:
+        treefmtEval.${system}.config.build.wrapper);
+
     devShells = forEachSystem (system: let
       pkgs = mkPkgs system;
     in {
       default = pkgs.mkShell {
-        packages = with pkgs; [
-          nixd
-          nil
-          statix
-          deadnix
-          alejandra
-          sops
-          ssh-to-age
-          age
-          git
-          just
-          nix-init
-          nix-melt
-        ];
+        packages =
+          [
+            treefmtEval.${system}.config.build.wrapper
+          ]
+          ++ (with pkgs; [
+            nixd
+            nil
+            sops
+            ssh-to-age
+            age
+            git
+            just
+            nix-init
+            nix-melt
+            nix-update
+            nurl
+          ]);
       };
     });
 
-    checks = forEachSystem (system: let
-      pkgs = mkPkgs system;
-    in {
-      formatting =
-        pkgs.runCommand "alejandra-check"
-        {
-          src = ./.;
-          nativeBuildInputs = [pkgs.alejandra];
-        } ''
-          cd "$src"
-          alejandra --check .
-          touch "$out"
-        '';
-      linting =
-        pkgs.runCommand "statix-check"
-        {
-          src = ./.;
-          nativeBuildInputs = [pkgs.statix];
-        } ''
-          cd "$src"
-          statix check .
-          touch "$out"
-        '';
-      deadcode =
-        pkgs.runCommand "deadnix-check"
-        {
-          src = ./.;
-          nativeBuildInputs = [pkgs.deadnix];
-        } ''
-          cd "$src"
-          deadnix --fail .
-          touch "$out"
-        '';
+    checks = forEachSystem (system: {
+      formatting = treefmtEval.${system}.config.build.check self;
     });
   };
 }

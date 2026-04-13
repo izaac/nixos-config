@@ -55,6 +55,9 @@
     nvd
     nix-init
     nix-melt
+    nix-output-monitor
+    nix-update
+    nurl
 
     # --- SECURITY ---
     sops

@@ -42,6 +42,7 @@ Consult these project-specific stones for local knowledge:
 - [Project Overview](README.md)
 - [Hardware: ninja](docs/hardware.md) | [Hardware: windy](docs/windy.md)
 - [Local Workflows & Commands](docs/just-commands.md)
+- [CLI Tools & Package Maintenance](docs/cli-tools.md)
 
 ---
 
@@ -52,9 +53,7 @@ Consult these project-specific stones for local knowledge:
 - **Use Git for reverts:** If a fix fails or Chief asks to go back, use `git checkout <file>` or `git restore`. No manual overwriting.
 - **Dry-run/build** before every commit (`nh os build .`).
 - Write idiomatic code (Nix: `mkIf`, `lib.optionals`).
-- **Format with project tools:**
-  - Nix: `alejandra .`
-  - Markdown: `nix run nixpkgs#prettier -- --write '**/*.md' --ignore-path .gitignore && nix run nixpkgs#markdownlint-cli2 -- '**/*.md' '#.direnv' '#result' '#.git'`
+- **Format with project tools:** `nix fmt` (runs treefmt — alejandra, prettier, statix, deadnix)
 - **Verify shell syntax:** `nix eval ".#nixosConfigurations.$(hostname).config.home-manager.users.$USER.programs.bash.initExtra" --extra-experimental-features dynamic-derivations --raw | bash -n`
 
 ### 🚫 Never

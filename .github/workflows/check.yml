@@ -25,22 +25,5 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
-      - name: Get Changed Files
-        id: changed-files
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-
-      - name: Magic Eye (nix flake check)
-        if: steps.changed-files.outputs.any_modified == 'true' && (contains(steps.changed-files.outputs.all_modified_files, '.nix') || contains(steps.changed-files.outputs.all_modified_files, 'flake.lock'))
+      - name: Magic Eye (nix flake check — treefmt + linters)
         run: nix flake check
-
-      - name: Stone Linter (statix)
-        if: steps.changed-files.outputs.any_modified == 'true' && contains(steps.changed-files.outputs.all_modified_files, '.nix')
-        run: nix run nixpkgs#statix -- check .
-
-      - name: Polish Stones (Prettier)
-        if: steps.changed-files.outputs.any_modified == 'true' && contains(steps.changed-files.outputs.all_modified_files, '.md')
-        run: nix run nixpkgs#prettier -- --check '**/*.md' --ignore-path .gitignore
-
-      - name: Wash Stones (markdownlint)
-        if: steps.changed-files.outputs.any_modified == 'true' && contains(steps.changed-files.outputs.all_modified_files, '.md')
-        run: nix run nixpkgs#markdownlint-cli2 -- '**/*.md' '#.direnv' '#result' '#.git'
