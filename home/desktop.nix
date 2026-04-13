@@ -7,7 +7,6 @@
 in {
   imports = [
     ./distrobox.nix
-    ./firefox.nix
     ./wezterm.nix
     ./cava.nix
     ./cmus.nix

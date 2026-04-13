@@ -30,7 +30,6 @@
     ./boot.nix
     ./performance.nix
     ./audio.nix
-    ./firefox.nix
     ./chromium.nix
     ../../modules/core
     ../../modules/gaming

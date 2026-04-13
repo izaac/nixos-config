@@ -65,7 +65,6 @@
 ## Audio
 
 - **Server**: Pipewire (with PulseAudio emulation)
-- **Backend**: `media.cubeb.backend = pulse` (Firefox optimization)
 - **Hardware**: Realtek ALC255 (HDA Intel PCH)
 
 ---

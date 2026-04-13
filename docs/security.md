@@ -48,14 +48,6 @@ Host firewall policy is enabled in `hosts/ninja/network.nix`:
 - Declarative nftables input exception for NAS host:
   - `extraInputRules = '' ip saddr 192.168.0.173 accept ''`
 
-## Browser Wrapper Capability
-
-`modules/core/performance.nix` defines:
-
-- `security.wrappers.firefox-vip` with `cap_sys_nice+ep`
-
-This allows the wrapper to raise scheduling priority without granting full root execution.
-
 ## D-Bus Broker
 
 Desktop message bus uses `dbus-broker` (`modules/core/performance.nix`):

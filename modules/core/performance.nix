@@ -1,26 +1,10 @@
 {
   config,
-  pkgs,
   lib,
   ...
 }:
 with lib; let
   cfg = config.mySystem.core.performance;
-  firefox-vip-src = pkgs.writeText "firefox-vip.c" ''
-    #include <sys/time.h>
-    #include <sys/resource.h>
-    #include <unistd.h>
-    #include <stdio.h>
-
-    int main(int argc, char *argv[]) {
-        setpriority(PRIO_PROCESS, 0, -10);
-        execv("${pkgs.firefox}/bin/firefox", argv);
-        return 1;
-    }
-  '';
-  firefox-vip-bin = pkgs.runCommand "firefox-vip" {nativeBuildInputs = [pkgs.stdenv.cc];} ''
-    $CC ${firefox-vip-src} -o $out
-  '';
 in {
   options.mySystem.core.performance = {
     enable = mkEnableOption "Core performance tweaks and kernel tuning";
@@ -71,14 +55,6 @@ in {
 
       # Irqbalance - Disabled per Anticipation Strategy
       irqbalance.enable = false;
-    };
-
-    # --- FIREFOX VIP WRAPPER ---
-    security.wrappers.firefox-vip = {
-      source = "${firefox-vip-bin}";
-      capabilities = "cap_sys_nice+ep";
-      owner = "root";
-      group = "root";
     };
   };
 }

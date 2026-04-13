@@ -38,7 +38,6 @@
   };
 
   stylix.targets = {
-    firefox.profileNames = ["default"];
     qt.enable = false; # Handled by kvantum manually
   };
 }
