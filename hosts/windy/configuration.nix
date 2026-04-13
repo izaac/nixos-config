@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     ./hardware.nix
     ./nvidia.nix
@@ -7,6 +11,11 @@
     ../../modules/gaming
     ../../modules/desktop
     ../../users/izaac
+    # nixos-hardware: Intel CPU, NVIDIA Prime offload, laptop power, SSD trim
+    inputs.nixos-hardware.nixosModules.common-cpu-intel
+    inputs.nixos-hardware.nixosModules.common-gpu-nvidia
+    inputs.nixos-hardware.nixosModules.common-pc-laptop
+    inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
 
   # Custom Feature Flags

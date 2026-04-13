@@ -39,6 +39,7 @@
     lftp
 
     # --- CLOUD & CONTAINERS ---
+    gh
     kubernetes-helm
     kubectl
     lazydocker

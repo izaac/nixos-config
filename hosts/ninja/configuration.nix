@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
 }: {
   # --- VIRTUALIZATION VARIANT ---
@@ -35,6 +36,10 @@
     ../../modules/gaming
     ../../modules/desktop
     ../../users/izaac
+    # nixos-hardware: AMD pstate, NVIDIA (nonprime/desktop), SSD trim
+    inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
+    inputs.nixos-hardware.nixosModules.common-gpu-nvidia-nonprime
+    inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
 
   # --- CORE FEATURES ---
