@@ -3,6 +3,7 @@
     hostName = "ninja";
     useDHCP = false;
     useNetworkd = true;
+    nftables.enable = true;
     networkmanager.enable = lib.mkForce false;
 
     # --- FIREWALL ---
