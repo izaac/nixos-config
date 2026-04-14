@@ -41,6 +41,10 @@
     ];
   };
 
+  # disko does not set neededForBoot for root — without this the initrd
+  # has no /etc/fstab entry, so systemd never mounts /sysroot after LUKS.
+  fileSystems."/".neededForBoot = true;
+
   swapDevices = [];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

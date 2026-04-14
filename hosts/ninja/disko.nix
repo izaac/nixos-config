@@ -31,6 +31,9 @@
                   type = "filesystem";
                   format = "ext4";
                   mountpoint = "/";
+                  # IMPORTANT: disko does not set neededForBoot on the root filesystem.
+                  # Without fileSystems."/".neededForBoot = true in hardware.nix, the
+                  # initrd has no fstab entry and systemd hangs after LUKS decrypt.
                   mountOptions = ["noatime" "nodiratime" "lazytime" "commit=60" "discard"];
                 };
               };

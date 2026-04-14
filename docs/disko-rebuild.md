@@ -172,6 +172,18 @@ The NFS mount (`/mnt/storage` → `192.168.0.173:/storage`) is defined in `hardw
 
 Disko owns all local disk mounts (`/`, `/boot`, `/mnt/data`). The `hardware.nix` file only declares hardware modules (kernel modules, microcode, kernel params) and the NFS network mount (`/mnt/storage`), which disko does not manage. Disko is always the single source of truth for local disk layout.
 
+### neededForBoot Workaround
+
+Disko does **not** set `neededForBoot = true` on the root filesystem. Without this flag the initrd generates no `/etc/fstab` entry for `/`, so systemd-in-initrd successfully decrypts the LUKS volume but then **hangs indefinitely** because it never mounts `/sysroot`.
+
+The fix lives in `hosts/ninja/hardware.nix`:
+
+```nix
+fileSystems."/".neededForBoot = true;
+```
+
+If this line is ever removed the system will appear to freeze immediately after entering the LUKS passphrase. Re-add it and rebuild to recover (from a live USB or `nixos-enter`).
+
 ## Remote Install with nixos-anywhere
 
 [nixos-anywhere](https://github.com/nix-community/nixos-anywhere) can install NixOS on a remote machine over SSH — no USB drive needed. The target just needs to be booted into any Linux with SSH access (e.g., a rescue system from your hosting provider, or a live USB on another machine).

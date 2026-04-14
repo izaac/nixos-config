@@ -13,6 +13,7 @@
         consoleMode = "max";
       };
       efi.canTouchEfiVariables = true;
+      grub.enable = false;
     };
 
     plymouth = {
