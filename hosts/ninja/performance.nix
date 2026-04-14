@@ -71,6 +71,7 @@
       HandleSuspendKey = "suspend";
       HandleHibernateKey = "hibernate";
       HandleLidSwitch = "ignore";
+      NAutoVTs = 0; # Don't autospawn gettys — greetd handles login
     };
 
     flatpak.enable = true;
