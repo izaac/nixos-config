@@ -32,8 +32,13 @@
 
   boot = {
     kernel.sysctl = {
-      "kernel.dmesg_restrict" = 0; # Allow unprivileged dmesg access
+      "kernel.dmesg_restrict" = 0;
       "kernel.split_lock_mitigate" = 0;
+      "kernel.kptr_restrict" = 2; # Hide kernel pointers
+      "kernel.kexec_load_disabled" = 1; # Prevent hot-loading another kernel
+      "net.ipv4.conf.all.accept_redirects" = 0;
+      "net.ipv4.conf.default.accept_redirects" = 0;
+      "net.ipv4.conf.all.send_redirects" = 0;
 
       # vm.swappiness is set in core/performance.nix (mkDefault 180)
       "vm.page_lock_unfairness" = 1;

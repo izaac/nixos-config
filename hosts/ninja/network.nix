@@ -9,7 +9,7 @@
     firewall = {
       enable = true;
       # Open SSH or Steam ports here if needed
-      allowedTCPPorts = [22];
+      allowedTCPPorts = [];
       allowedTCPPortRanges = [
         {
           from = 1714;
