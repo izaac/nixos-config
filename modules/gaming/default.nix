@@ -84,8 +84,8 @@ in {
       gamemode
     ];
 
-    # Passwordless sudo for GameMode thermal scripts
-    security.sudo.extraRules = [
+    # Passwordless sudo-rs for GameMode thermal scripts
+    security.sudo-rs.extraRules = [
       {
         groups = ["gamemode"];
         commands = [

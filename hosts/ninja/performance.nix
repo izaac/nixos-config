@@ -32,14 +32,16 @@
 
   boot = {
     kernel.sysctl = {
+      "kernel.dmesg_restrict" = 0; # Allow unprivileged dmesg access
       "kernel.split_lock_mitigate" = 0;
 
-      "vm.swappiness" = 180;
+      # vm.swappiness is set in core/performance.nix (mkDefault 180)
       "vm.page_lock_unfairness" = 1;
 
       "kernel.sched_autogroup_enabled" = 0;
       "kernel.sched_cfs_bandwidth_slice_us" = 3000;
 
+      # vm.dirty_ratio and vm.dirty_background_ratio set in core/performance.nix
       "vm.dirty_writeback_centisecs" = 500;
       "vm.dirty_expire_centisecs" = 1200;
 
@@ -63,11 +65,7 @@
   };
 
   services = {
-    scx = {
-      enable = true;
-      scheduler = "scx_lavd";
-      extraArgs = ["--autopilot"];
-    };
+    # scx_lavd is configured in gaming/default.nix (mkDefault)
 
     logind.settings.Login = {
       HandleSuspendKey = "suspend";

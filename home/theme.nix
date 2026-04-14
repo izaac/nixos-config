@@ -10,7 +10,7 @@
   home = {
     # Set custom icon for Games folder
     activation.setGamesIcon = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      $DRY_RUN_CMD ${pkgs.glib}/bin/gio set -t string /home/${userConfig.username}/Games metadata::gvfs.extra-icon folder-cat-mocha-blue-games
+      $DRY_RUN_CMD ${pkgs.glib}/bin/gio set -t string /home/${userConfig.username}/Games metadata::gvfs.extra-icon folder-cat-mocha-blue-games || true
     '';
 
     sessionVariables.GTK_THEME = "catppuccin-mocha-blue-standard";
@@ -18,6 +18,7 @@
 
   gtk = {
     enable = true;
+    gtk4.theme = null; # Stylix handles GTK4 theming
     gtk3.bookmarks = [
       "file:///home/${userConfig.username}/Documents Documents"
       "file:///home/${userConfig.username}/Downloads Downloads"

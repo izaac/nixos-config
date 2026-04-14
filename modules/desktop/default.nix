@@ -19,16 +19,25 @@ in {
       # --- DISPLAY MANAGER (cosmic-greeter via greetd) ---
       displayManager.cosmic-greeter.enable = true;
 
-      # XWayland is provided by cosmic-comp directly — do NOT enable xserver.
-      # Enabling it spawns a competing X session on tty1 that blocks greetd's
-      # session handoff, preventing cosmic-comp from acquiring DRM master.
-      # This caused "Permission denied" on /dev/dri/card1 and cascading
-      # COSMIC applet crashes (cosmic-workspaces, xdg-desktop-portal-cosmic, etc).
-      xserver.xkb = {
-        layout = "us";
-        variant = "";
-      };
+      # Override greeter command to set cursor theme.
+      # Do NOT add XDG_SESSION_TYPE here — greetd creates the PAM session
+      # before running this command, so pam_systemd won't see it.
+      greetd.settings.default_session.command = lib.mkForce (
+        builtins.concatStringsSep " " [
+          "${pkgs.coreutils}/bin/env"
+          "XCURSOR_THEME=\${XCURSOR_THEME:-Pop}"
+          "${pkgs.cosmic-greeter}/bin/cosmic-greeter-start"
+        ]
+      );
+
+      # Do NOT enable xserver — cosmic-comp provides its own XWayland.
+      # Enabling it spawns a competing X session on tty1 that blocks DRM master.
     };
+
+    # Ensure pam_systemd registers the greeter session as type 'wayland'.
+    # Must be in the service environment (not the command) so pam_systemd
+    # picks it up via getenv() fallback before the command runs.
+    systemd.services.greetd.environment.XDG_SESSION_TYPE = "wayland";
 
     programs.gnupg.agent = {
       enable = true;

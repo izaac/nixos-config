@@ -24,9 +24,9 @@ in {
     # Enable Bash system-wide (Required to use as default shell)
     programs.bash.enable = true;
 
-    # Sudo Configuration
-    security.sudo = {
-      enable = true;
+    # sudo-rs is enabled via core/system.nix (mkForce).
+    # Configure it here for user-facing settings.
+    security.sudo-rs = {
       wheelNeedsPassword = true;
       extraConfig = ''
         Defaults editor=${pkgs.helix}/bin/hx

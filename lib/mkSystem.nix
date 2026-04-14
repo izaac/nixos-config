@@ -24,6 +24,7 @@ nixpkgs.lib.nixosSystem {
         (import ../overlays/dwarfs-fix.nix)
         (import ../overlays/ai-trace-scanner.nix inputs)
         (import ../overlays/copilot-fix.nix)
+        (import ../overlays/cosmic-session-drm-fix.nix)
       ];
     }
   ];

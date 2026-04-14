@@ -17,7 +17,8 @@
 
     # Workaround for Intel I225-V (igc) dropping connections after a few hours
     # Prevents PCIe power management from putting the NIC into a state it can't recover from
-    kernelParams = ["pcie_port_pm=off" "pcie_aspm.policy=performance"];
+    # Note: pcie_aspm=off is already set in boot.nix (pcie_aspm.policy is not a valid param)
+    kernelParams = ["pcie_port_pm=off"];
   };
 
   # NFS mount — not managed by disko, always present

@@ -15,7 +15,7 @@
   home = {
     inherit (userConfig) username;
     homeDirectory = "/home/${userConfig.username}";
-    stateVersion = "26.05";
+    stateVersion = "25.11";
   };
 
   programs.home-manager.enable = true;

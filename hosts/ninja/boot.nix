@@ -1,8 +1,4 @@
-{
-  pkgs,
-  lib,
-  ...
-}: {
+{pkgs, ...}: {
   boot = {
     # Bootloader and startup UX
     loader = {
@@ -16,10 +12,9 @@
       grub.enable = false;
     };
 
-    plymouth = {
-      enable = true;
-      theme = lib.mkForce "bgrt";
-    };
+    # Plymouth disabled — causes DRM warnings during simpledrm→nvidia-drm
+    # handoff (connector Unknown-1 leaked, drm_gem_shmem_release warnings).
+    # Boot is fast enough without it (~10s to greeter).
 
     consoleLogLevel = 0;
     initrd = {
@@ -43,7 +38,6 @@
 
     kernelParams = [
       "quiet"
-      "splash"
       "loglevel=3"
       "rd.systemd.show_status=false"
       "rd.udev.log_level=3"
@@ -55,7 +49,7 @@
       "pcie_ports=native"
       "amd_pstate=active"
       "preempt=full"
-      "split_lock_detect=off"
+      # split_lock_mitigate is handled via sysctl in performance.nix
     ];
   };
   programs.fuse.enable = true;

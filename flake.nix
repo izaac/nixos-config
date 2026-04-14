@@ -67,7 +67,7 @@
               networkmanager.enable = true;
               networkmanager.wifi.backend = "iwd";
             };
-            system.stateVersion = "25.05";
+            system.stateVersion = "25.11";
             hardware.enableRedistributableFirmware = true;
             users.users.${userConfig.username} = {
               isNormalUser = true;
