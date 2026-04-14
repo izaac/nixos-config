@@ -19,13 +19,14 @@ in {
       # --- DISPLAY MANAGER (cosmic-greeter via greetd) ---
       displayManager.cosmic-greeter.enable = true;
 
-      # XServer is required for XWayland
-      xserver = {
-        enable = true;
-        xkb = {
-          layout = "us";
-          variant = "";
-        };
+      # XWayland is provided by cosmic-comp directly — do NOT enable xserver.
+      # Enabling it spawns a competing X session on tty1 that blocks greetd's
+      # session handoff, preventing cosmic-comp from acquiring DRM master.
+      # This caused "Permission denied" on /dev/dri/card1 and cascading
+      # COSMIC applet crashes (cosmic-workspaces, xdg-desktop-portal-cosmic, etc).
+      xserver.xkb = {
+        layout = "us";
+        variant = "";
       };
     };
 
