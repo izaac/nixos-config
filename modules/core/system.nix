@@ -41,18 +41,7 @@ in {
       ntpd-rs.enable = lib.mkForce true;
       timesyncd.enable = lib.mkForce false;
 
-      openssh = {
-        enable = true;
-        settings = {
-          PasswordAuthentication = lib.mkDefault false;
-          KbdInteractiveAuthentication = lib.mkDefault false;
-          PermitRootLogin = "no";
-          MaxAuthTries = 3;
-          AllowTcpForwarding = false;
-          AllowAgentForwarding = false;
-          X11Forwarding = false;
-        };
-      };
+      openssh.enable = false;
 
       fstrim.enable = true;
       power-profiles-daemon.enable = lib.mkForce false;
