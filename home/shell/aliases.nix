@@ -6,7 +6,6 @@ _: {
     ll = "_smart_eza -l --group-directories-first";
     la = "_smart_eza -la --group-directories-first";
     lt = "_smart_eza --tree --level=2";
-    cd = "z";
 
     # --- VIEWERS & DATA ---
     cat = "bat";
@@ -22,7 +21,7 @@ _: {
     dig = "doggo";
 
     # --- SYSTEM & MONITORING ---
-    top = "btm";
+    top = "btop";
     sysls = "systemctl --type=service --state=running";
 
     # --- NAVIGATION & FILE OPS ---

@@ -21,7 +21,6 @@
     ast-grep
 
     # --- DISK & FILE USAGE ---
-    duf
     dust
     gdu
 
@@ -91,7 +90,6 @@
     cliphist
     dwarfs
     fuse3
-    nvitop
     nvtopPackages.nvidia
     bluetuith
 

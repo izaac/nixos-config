@@ -46,10 +46,12 @@ in {
       ask "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
     }
 
-    # command_not_found_handle: Monko offer help
+    # command_not_found_handle: Monko offer help (interactive only)
     command_not_found_handle() {
-      echo "Monko not know command: $1"
-      echo "Maybe you want: monko why $1 not work?"
+      if [[ -t 2 ]]; then
+        echo "Monko not know command: $1" >&2
+        echo "Maybe you want: monko why $1 not work?" >&2
+      fi
       return 127
     }
 
@@ -103,18 +105,16 @@ in {
       rm -f -- "$tmp"
     }
 
-    # --- Recursive Cat ---
+    # --- Recursive Cat (text files only, skips binary via fd) ---
     catr() {
       local target="''${1:-.}"
-      rg --files --hidden -g '!.git' "$target" -0 | xargs -0 -I {} sh -c '
-        if file -b --mime-type "{}" | grep -q "^text/"; then
-          echo "================================================================================"
-          echo "FILE: {}"
-          echo "================================================================================"
-          cat "{}"
-          echo -e "\n"
-        fi
-      '
+      fd --type f --hidden --exclude .git . "$target" --exec sh -c '
+        case "$(head -c 512 "$1" | LC_ALL=C tr -d "[:print:][:space:]")" in
+          "") echo "================================================================================";
+              echo "FILE: $1";
+              echo "================================================================================";
+              cat "$1"; echo;;
+        esac' _ {}
     }
 
     # --- Project Initializers ---

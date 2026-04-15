@@ -29,24 +29,11 @@ in {
     };
 
     file = {
-      ".lftprc".text = ''
-        set sftp:max-packets-in-flight 32
-        set net:socket-buffer 2097152
-        set net:socket-maxseg 1440
-        set mirror:parallel-directories yes
-        set mirror:parallel-transfer-count 2
-        set pget:default-n 5
-        set net:connection-limit 10
-        set net:connection-takeover yes
-      '';
-
       ".brushrc".text = ''
         if type starship_precmd &>/dev/null; then
           PROMPT_COMMAND="starship_precmd;''${PROMPT_COMMAND:-}"
         fi
       '';
-
-      ".zshrc".text = "# Silence Distrobox zsh-newuser-install fallback prompt\n";
     };
   };
 
@@ -55,7 +42,7 @@ in {
       enable = true;
       package = pkgs.starship;
       settings = {
-        command_timeout = 5000;
+        command_timeout = 500;
         add_newline = false;
         format = "$directory$hostname$git_branch$git_status$container$character";
         character = {
@@ -127,16 +114,6 @@ in {
 
     bat.enable = true;
 
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
-        light = false;
-        side-by-side = true;
-        line-numbers = true;
-      };
-    };
-
     tealdeer = {
       enable = true;
       settings = {
@@ -159,16 +136,6 @@ in {
       };
     };
 
-    bottom = {
-      enable = true;
-      settings = {
-        flags = {
-          avg_cpu = true;
-          temperature_type = "c";
-        };
-      };
-    };
-
     nix-index = {
       enable = true;
       enableBashIntegration = true;
@@ -177,6 +144,9 @@ in {
     bash = {
       enable = true;
       enableCompletion = true;
+      historySize = 50000;
+      historyFileSize = 100000;
+      historyControl = ["ignoredups" "ignorespace" "erasedups"];
 
       # --- DISTROBOX SHIELD (Must run before everything else) ---
       initExtra = pkgs.lib.mkBefore ''
@@ -199,18 +169,18 @@ in {
           unset ATUIN_PREEXEC_BACKEND
 
           # 3. Scrub PROMPT_COMMAND if it's already haunted
-          __monko_shield_scrub() {
+          _dbx_shield_scrub() {
             if declare -p PROMPT_COMMAND 2>/dev/null | grep -q "declare -a"; then
               local i
               for i in "''${!PROMPT_COMMAND[@]}"; do
-                if [[ "''${PROMPT_COMMAND[$i]}" == *"__monko"* ]] || [[ "''${PROMPT_COMMAND[$i]}" == *"__bp_install"* ]]; then
+                if [[ "''${PROMPT_COMMAND[$i]}" == *"_dbx_"* ]] || [[ "''${PROMPT_COMMAND[$i]}" == *"__bp_install"* ]]; then
                   unset 'PROMPT_COMMAND[$i]'
                 fi
               done
             fi
           }
-          __monko_shield_scrub
-          unset -f __monko_shield_scrub
+          _dbx_shield_scrub
+          unset -f _dbx_shield_scrub
         fi
       '';
 
@@ -223,6 +193,17 @@ in {
 
   # 6. Desktop Entries
   xdg = {
+    configFile."lftp/rc".text = ''
+      set sftp:max-packets-in-flight 32
+      set net:socket-buffer 2097152
+      set net:socket-maxseg 1440
+      set mirror:parallel-directories yes
+      set mirror:parallel-transfer-count 2
+      set pget:default-n 5
+      set net:connection-limit 10
+      set net:connection-takeover yes
+    '';
+
     configFile."brush/config.toml".text = ''
       [ui]
       syntax-highlighting = true
