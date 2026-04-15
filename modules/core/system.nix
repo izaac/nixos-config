@@ -53,6 +53,9 @@ in {
       '';
     };
 
+    # Don't let NTP block graphical.target — time sync can happen after login
+    systemd.services.ntpd-rs.wantedBy = lib.mkForce [];
+
     # Auto-purge /tmp files older than 7 days
     systemd.tmpfiles.rules = [
       "q /tmp 1777 root root 7d"

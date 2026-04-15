@@ -20,8 +20,6 @@ nixpkgs.lib.nixosSystem {
     {
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
-        (import ../overlays/sparrow-temurin-fix.nix)
-        (import ../overlays/dwarfs-fix.nix)
         (import ../overlays/ai-trace-scanner.nix inputs)
         (import ../overlays/copilot-fix.nix)
         (import ../overlays/cosmic-session-drm-fix.nix)

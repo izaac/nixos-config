@@ -21,8 +21,7 @@
       pyright
       ruff
 
-      # Nix
-      nil
+      # Nix (nil LSP provided by dev.nix)
       alejandra
 
       # YAML / Ansible

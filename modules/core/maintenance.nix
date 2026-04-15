@@ -48,9 +48,7 @@ in {
       zellij
       ripgrep
       fd
-      bottom
       btop
-      dust
     ];
 
     # Ventoy is marked insecure upstream — review periodically for patches.

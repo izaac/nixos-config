@@ -172,4 +172,11 @@ in {
       ignored-directories = ["&DESKTOP" "&DOCUMENTS" "&DOWNLOAD" "&MUSIC" "&PICTURES" "&PUBLIC_SHARE" "&TEMPLATES" "&VIDEOS"];
     };
   };
+
+  # Disable unused gvfs monitors (GNOME Online Accounts not used)
+  xdg.configFile."autostart/gvfs-goa-volume-monitor.desktop".text = ''
+    [Desktop Entry]
+    Type=Application
+    Hidden=true
+  '';
 }

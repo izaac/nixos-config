@@ -68,6 +68,9 @@
     ];
   };
 
+  # System-level Flatpak (required by nix-flatpak home module)
+  services.flatpak.enable = true;
+
   # Laptop-specific Power Management
   services = {
     thermald.enable = true;

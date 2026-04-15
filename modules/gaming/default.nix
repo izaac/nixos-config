@@ -38,10 +38,8 @@ in {
 
   config = mkIf cfg.enable {
     # 1. Controller & Hardware Support
-    # Provides udev rules for Steam Deck, DualSense, and other controllers.
     hardware = {
       steam-hardware.enable = true;
-      # 5. Controller & Hardware Support
       xpadneo.enable = true; # Xbox Bluetooth
       uinput.enable = true; # Virtual Input (Critical for remapping tools)
     };
@@ -79,10 +77,7 @@ in {
       };
     };
 
-    # Make gamemode libraries globally available for Steam and Proton
-    environment.systemPackages = with pkgs; [
-      gamemode
-    ];
+    # gamemode libraries already provided by programs.gamemode
 
     # Passwordless sudo-rs for GameMode thermal scripts
     security.sudo-rs.extraRules = [
@@ -104,9 +99,7 @@ in {
     # Boost memory map limits for modern titles like Cyberpunk or Hogwarts Legacy
     boot.kernel.sysctl."vm.max_map_count" = 2147483642;
 
-    # 4. Sched-ext (Dynamic Schedulers)
-    # Native support in Linux 6.12+. scx_lavd is a beast for gaming latency.
-    # 5. Controller & Hardware Support
+    # 4. Sched-ext & Services
     services = {
       scx = {
         enable = true;
@@ -115,7 +108,7 @@ in {
       };
 
       joycond.enable = false; # Nintendo Switch JoyCons (Merge L+R)
-      input-remapper.enable = true; # Easy input remapping daemon
+      input-remapper.enable = false;
 
       udev.packages = with pkgs; [
         game-devices-udev-rules # The big community list
@@ -126,19 +119,13 @@ in {
 
     # 6. Environment Tweaks
     environment.sessionVariables = {
-      # G-Sync / VRR support
-      __GL_GSYNC_ALLOWED = "1";
-      __GL_VRR_ALLOWED = "1";
+      # G-Sync/VRR handled by host nvidia.nix
 
       # NVIDIA-specific DLSS/NGX
       PROTON_ENABLE_NGX_UPDATER = "1";
 
-      # Fast Synchronization (ntsync / fsync)
-      # ntsync is the modern NT synchronization driver (XanMod 6.13+)
-      # fsync is the standard high-performance sync method
-      PROTON_USE_NTSYNC = "1";
+      # Fast Synchronization (ntsync in kernel 6.13+, fsync fallback)
       PROTON_ENABLE_NTSYNC = "1";
-      WINE_NTSYNC = "1";
       WINE_FSYNC = "1";
 
       # NVIDIA & DX12 Performance Fixes
@@ -151,11 +138,9 @@ in {
       # Wayland Fixes for NVIDIA
       DISABLE_RT_CHECK = "1"; # Helps with some Raytracing titles on Wayland
 
-      # Steam UI Performance & Stability Fixes
-      # -no-cef-sandbox: Fixes web helper crashes
-      # -disable-gpu-compositing: Prevents UI flickering/lag
-      # -disable-smooth-scrolling: Reduces rendering load
-      STEAM_EXTRA_ARGS = "-no-cef-sandbox -disable-gpu-compositing -disable-smooth-scrolling";
+      # Steam UI Stability
+      # -no-cef-sandbox: Fixes web helper crashes on NixOS
+      STEAM_EXTRA_ARGS = "-no-cef-sandbox";
 
       # Fix for X11 BadWindow errors on NVIDIA
       STEAM_DISABLE_PH_CLIPPED_VIDEO = "1";

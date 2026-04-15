@@ -83,6 +83,12 @@
       wpa_supplicant.enable = false;
       ModemManager.enable = false;
     };
+
+    # Only wait for eno1 (static IP) — don't block boot on all interfaces
+    network.wait-online = {
+      anyInterface = true;
+      timeout = 5;
+    };
   };
   programs.nm-applet.enable = false;
 

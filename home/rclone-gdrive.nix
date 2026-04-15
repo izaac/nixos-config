@@ -13,7 +13,7 @@ in {
     };
 
     Service = {
-      Type = "simple";
+      Type = "exec";
       # Create the directory right before mounting
       ExecStartPre = "/run/current-system/sw/bin/mkdir -p ${mountPoint}";
       # Optimized for desktop usage:

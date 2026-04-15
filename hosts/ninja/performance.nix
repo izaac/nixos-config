@@ -21,8 +21,8 @@
       Nice = 19;
       CPUWeight = 1;
       IOWeight = 1;
-      MemoryMax = "24G";
-      MemoryHigh = "22G";
+      MemoryMax = "40G";
+      MemoryHigh = "36G";
       AllowedCPUs = "8-15,24-31";
       CPUSchedulingPolicy = "idle";
       IOSchedulingClass = "idle";
@@ -85,7 +85,7 @@
   };
 
   nix.settings = {
-    max-jobs = 4;
+    max-jobs = 6;
     cores = 8;
   };
 }

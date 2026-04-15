@@ -60,8 +60,6 @@
       init=false
       nvidia=true
       shell=/bin/bash
-      # Export apps to host automatically
-      # export="google-chrome"
       # === Ubuntu Gaming Container (The "Golden Recipe" for NixOS + NVIDIA) ===
       # This container uses ~/.config/distrobox/nvidia-setup.sh to automatically
       # link host NVIDIA drivers and configure 32-bit support for Steam.

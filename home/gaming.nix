@@ -19,18 +19,15 @@ in {
     bubblewrap # Provides 'bwrap'
 
     # Gaming Tools
-    heroic # Disabled temporarily due to electron_39 build failure on nixos-unstable
+    heroic
     lutris
-    protonplus
     protonup-rs
     samrewritten
     cartridges
     openrgb
     goverlay
     vkbasalt
-    input-remapper
     umu-launcher
-    steamtinkerlaunch
     gamescope
     (bottles.override {removeWarningPopup = true;})
 
@@ -68,14 +65,6 @@ in {
   programs.mangohud = {
     enable = true;
     settings = {
-      # Visual Style (Handled by Stylix, but overrides possible)
-      # text_color = "cdd6f4";
-      # gpu_color = "a6e3a1"; # Green
-      # cpu_color = "89b4fa"; # Blue
-      # vram_color = "f38ba8"; # Red
-      # ram_color = "fab387"; # Orange
-      # engine_color = "89b4fa"; # Blue
-      # frametime_color = "94e2d5"; # Teal
       background_alpha = lib.mkForce 0.4;
       font_size = lib.mkForce 24;
 
@@ -89,7 +78,7 @@ in {
       ram = true;
       fps = true;
       frametime = true; # Stutter checking
-      gamemode = false;
+      gamemode = true;
 
       # Layout
       table_columns = 3;
