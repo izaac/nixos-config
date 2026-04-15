@@ -50,11 +50,11 @@ in {
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
       localNetworkGameTransfers.openFirewall = true;
-      extraCompatPackages = [pkgs.steamtinkerlaunch];
       extraPackages = with pkgs; [
         libvdpau
         libva
         mangohud
+        steamtinkerlaunch
         protonplus
         gamemode # The daemon and binaries
       ];

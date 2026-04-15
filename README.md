@@ -29,7 +29,6 @@ home/              # Home Manager modules (per-app .nix files)
   shell/           # Split shell config (aliases, functions, packages)
 users/             # Per-user profile composition
 overlays/          # Package overrides
-crunch/            # Media encoding configs
 secrets.yaml       # SOPS-encrypted secrets
 docs/              # Human-readable documentation
 ```

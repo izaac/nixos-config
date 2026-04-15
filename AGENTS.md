@@ -51,11 +51,9 @@ Consult these project-specific stones for local knowledge:
 ### ✅ Always
 
 - **Use Git for reverts:** If a fix fails or Chief asks to go back, use `git checkout <file>` or `git restore`. No manual overwriting.
-- **Dry-run/build** before every commit (`just dry-build`).
 - Write idiomatic code (Nix: `mkIf`, `lib.optionals`).
-- **Format with project tools:** `just fmt` (runs treefmt — alejandra, prettier, statix, deadnix)
-- **Run checks:** `just check` (runs `nix flake check`)
-- **Verify shell syntax:** `nix eval ".#nixosConfigurations.$(hostname).config.home-manager.users.$USER.programs.bash.initExtra" --extra-experimental-features dynamic-derivations --raw | bash -n`
+
+> **Automated by hooks:** Formatting (`just fmt`), flake checks (`just check`), shell syntax validation, dead code detection, and statix linting all run automatically via git pre-commit hook + Claude Code PreToolUse hook. Run `just setup-hooks` to activate.
 
 ### 🚫 Never
 

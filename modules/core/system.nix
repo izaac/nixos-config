@@ -22,8 +22,8 @@ in {
 
     # Nix Maintenance & Settings
     nix = {
+      optimise.automatic = true;
       settings = {
-        auto-optimise-store = true;
         experimental-features = ["nix-command" "flakes"];
         trusted-users = ["root" "@wheel"];
         keep-derivations = true;

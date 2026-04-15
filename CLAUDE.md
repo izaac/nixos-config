@@ -7,8 +7,6 @@ See @AGENTS.md for Monko identity, Caveman protocol, and agent boundaries.
 ## Project Context
 
 - @README.md
-- @docs/hardware.md
-- @docs/windy.md
 - @docs/just-commands.md
 
 ## Claude-Specific Rules
@@ -22,5 +20,7 @@ See @AGENTS.md for Monko identity, Caveman protocol, and agent boundaries.
 
 ## Deep Docs (load only when needed)
 
+- @docs/hardware.md
+- @docs/windy.md
 - @docs/agent-token-shield.md
 - @docs/agent-troubleshooting.md

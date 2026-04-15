@@ -39,6 +39,11 @@ up-browsers:
 	nix flake update nixpkgs
 	nh os switch .
 
+# Activate git pre-commit hooks
+setup-hooks:
+	git config core.hooksPath .githooks
+	@echo "Git hooks activated (.githooks/pre-commit)"
+
 # Deploy Ninja brain to a remote IP via SSH (WIPES DISK!)
 deploy-ninja ip:
 	nix run github:nix-community/nixos-anywhere -- --flake .#ninja root@{{ip}}

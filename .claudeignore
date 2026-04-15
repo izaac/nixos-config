@@ -37,3 +37,8 @@ node_modules/
 target/
 __pycache__/
 .venv/
+
+# --- Large Build Artifacts ---
+*.iso
+*.qcow2
+crunch/

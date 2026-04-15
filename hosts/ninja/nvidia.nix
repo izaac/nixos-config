@@ -63,11 +63,6 @@
     __GL_VRR_ALLOWED = "1";
   };
 
-  # 4. Unlock Overclocking/Undervolting (Coolbits)
-  services.xserver.deviceSection = ''
-    Option "Coolbits" "28"
-  '';
-
   environment.systemPackages = with pkgs; [
     nvtopPackages.nvidia
   ];

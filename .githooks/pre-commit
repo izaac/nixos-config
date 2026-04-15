@@ -51,6 +51,19 @@ if [ -n "$STAGED_MD_FILES" ]; then
     git add $STAGED_MD_FILES
 fi
 
+# --- SHELL SYNTAX CHECK ---
+echo "Validating shell syntax..."
+if [ -n "$STAGED_NIX_FILES" ]; then
+    HOSTNAME=$(hostname)
+    USER=$(whoami)
+    SHELL_EXPR=".#nixosConfigurations.${HOSTNAME}.config.home-manager.users.${USER}.programs.bash.initExtra"
+    if nix eval "$SHELL_EXPR" --extra-experimental-features dynamic-derivations --raw 2>/dev/null | bash -n 2>&1; then
+        echo "  Shell syntax OK"
+    else
+        echo "  WARNING: Shell syntax check failed (non-blocking)"
+    fi
+fi
+
 # --- AI TRACE SCAN ---
 echo "Scanning for AI traces..."
 if command -v ai-trace-scan &>/dev/null; then

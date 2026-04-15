@@ -13,6 +13,29 @@ in {
       ${builtins.readFile ./claude.md}
     '';
 
+    # Claude Code: ~/.claude/settings.json
+    ".claude/settings.json".text = builtins.toJSON {
+      model = "opus[1m]";
+      enabledPlugins = {
+        "frontend-design@claude-plugins-official" = true;
+      };
+      hooks = {
+        PreToolUse = [
+          {
+            matcher = "Bash";
+            hooks = [
+              {
+                type = "command";
+                "if" = "Bash(git commit)";
+                command = "cd \"$CLAUDE_PROJECT_DIR\" && just fmt 2>&1 | tail -5";
+                timeout = 60;
+              }
+            ];
+          }
+        ];
+      };
+    };
+
     # Gemini CLI: read-only base instructions
     ".gemini/instructions.md".text = ''
       ${globalMd}
@@ -25,6 +48,14 @@ in {
   home.activation.gemini-bootstrap = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f "${geminiMd}" ]; then
       printf '%s\n' '@instructions.md' "" '## Gemini Added Memories' > "${geminiMd}"
+    fi
+  '';
+
+  # Register Claude Code MCP servers (idempotent — claude mcp add overwrites existing)
+  home.activation.claude-mcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    if command -v claude >/dev/null 2>&1; then
+      claude mcp add context7 --transport stdio -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
+      claude mcp add sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
     fi
   '';
 }
