@@ -114,8 +114,6 @@
       enable = true;
       package = pkgs.direnv;
       nix-direnv.enable = true;
-      enableZshIntegration = true;
-
       # TOML configuration to surgically silence the export list.
       config = {
         global = {

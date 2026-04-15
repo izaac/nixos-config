@@ -81,20 +81,10 @@ in {
       options = ["--cmd" "cd"];
     };
 
-    pay-respects = {
-      enable = true;
-      enableBashIntegration = true;
-    };
-
     yazi = {
       enable = true;
       enableBashIntegration = true;
       shellWrapperName = "y";
-    };
-
-    broot = {
-      enable = true;
-      enableBashIntegration = true;
     };
 
     eza = {
