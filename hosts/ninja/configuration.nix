@@ -45,7 +45,18 @@
   # --- CORE FEATURES ---
   # Enabling the modular components that make up this system's identity.
   mySystem = {
-    gaming.enable = true;
+    gaming = {
+      enable = true;
+      cpuBoostFreq = 5756452; # 5.7 GHz
+      cpuBaseFreq = 4500000; # 4.5 GHz
+      gpuBoostClock = 2475; # RTX 5070 Ti gaming
+      gpuBaseClock = 2100; # RTX 5070 Ti efficiency
+      thermalGuard = {
+        enable = true;
+        throttleTemp = 90;
+        recoverTemp = 80;
+      };
+    };
     desktop.enable = true;
     core = {
       audio.enable = true;

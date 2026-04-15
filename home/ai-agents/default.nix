@@ -81,8 +81,8 @@ in {
   # Register Claude Code MCP servers (idempotent — claude mcp add overwrites existing)
   home.activation.claude-mcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if command -v claude >/dev/null 2>&1; then
-      claude mcp add context7 --transport stdio -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
-      claude mcp add sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
+      claude mcp add --scope user context7 --transport stdio -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
+      claude mcp add --scope user sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
     fi
   '';
 }

@@ -71,12 +71,16 @@ in {
       # The Data
       gpu_stats = true;
       gpu_temp = true;
-      gpu_load_change = true; # Shows link speed jumps
+      gpu_core_clock = true;
+      gpu_mem_clock = true;
+      gpu_load_change = true;
       cpu_stats = true;
       cpu_temp = true;
+      cpu_mhz = true;
       vram = true;
       ram = true;
       fps = true;
+      vulkan_driver = true;
       frametime = true; # Stutter checking
       gamemode = true;
 

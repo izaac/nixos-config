@@ -152,15 +152,20 @@ _: {
         local icon = icons[title] or '󰆍'
         local tab_title = string.format(" %s %s%s ", icon, title, dir)
 
-        -- Change color for SSH or Sudo
-        local bg = '#1e1e2e'
-        local fg = '#cdd6f4'
+        -- Tab colors: active vs inactive, special for SSH/Sudo
+        local bg, fg
         if title == 'ssh' then
-          bg = '#f5e0dc' -- Rosewater/Peach
+          bg = '#f5e0dc' -- Rosewater
           fg = '#1e1e2e'
         elseif title == 'sudo' then
           bg = '#f38ba8' -- Red
           fg = '#1e1e2e'
+        elseif tab.is_active then
+          bg = '#89b4fa' -- Catppuccin Blue
+          fg = '#1e1e2e'
+        else
+          bg = '#1e1e2e' -- Mantle
+          fg = '#6c7086' -- Overlay0 (dimmed)
         end
 
         return {
