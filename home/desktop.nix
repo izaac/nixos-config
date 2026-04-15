@@ -124,6 +124,11 @@ in {
         "audio/mpeg" = ["org.gnome.Amberol.desktop"];
         "audio/flac" = ["org.gnome.Amberol.desktop"];
         "audio/x-wav" = ["org.gnome.Amberol.desktop"];
+        "audio/ogg" = ["org.gnome.Amberol.desktop"];
+        "audio/x-vorbis+ogg" = ["org.gnome.Amberol.desktop"];
+        "audio/mp4" = ["org.gnome.Amberol.desktop"];
+        "audio/x-flac" = ["org.gnome.Amberol.desktop"];
+        "audio/x-mp3" = ["org.gnome.Amberol.desktop"];
 
         # Documents / Images
         "application/pdf" = ["org.gnome.Papers.desktop"];

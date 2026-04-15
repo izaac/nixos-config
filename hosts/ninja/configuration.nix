@@ -93,31 +93,7 @@
     info.enable = false;
   };
 
-  # --- DEFAULT APPLICATIONS ---
-  # Override COSMIC's system-level cosmic-mimeapps.list so the Settings panel
-  # and xdg-mime both resolve to the correct apps.
-  xdg.mime.defaultApplications = {
-    "x-scheme-handler/http" = "brave-origin.desktop";
-    "x-scheme-handler/https" = "brave-origin.desktop";
-    "text/html" = "brave-origin.desktop";
-    "audio/mpeg" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "audio/flac" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "audio/x-wav" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "audio/ogg" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "audio/x-vorbis+ogg" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "audio/mp4" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "audio/x-flac" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "audio/x-mp3" = "com.galacticpirateradio.ethereal-waves.desktop";
-    "video/mp4" = "net.base_art.Glide.desktop";
-    "video/x-matroska" = "net.base_art.Glide.desktop";
-    "video/webm" = "net.base_art.Glide.desktop";
-    "video/quicktime" = "net.base_art.Glide.desktop";
-    "video/x-msvideo" = "net.base_art.Glide.desktop";
-    "video/mpeg" = "net.base_art.Glide.desktop";
-    "video/ogg" = "net.base_art.Glide.desktop";
-    "video/x-flv" = "net.base_art.Glide.desktop";
-    "video/x-ms-wmv" = "net.base_art.Glide.desktop";
-  };
+  # MIME defaults centralized in home/desktop.nix (user-level takes precedence)
 
   system.stateVersion = "25.11";
 }

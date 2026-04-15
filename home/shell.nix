@@ -91,6 +91,7 @@ in {
     zoxide = {
       enable = true;
       enableBashIntegration = true;
+      options = ["--cmd" "cd"];
     };
 
     pay-respects = {

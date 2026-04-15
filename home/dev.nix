@@ -33,6 +33,19 @@
         9FE9496B3FF98EED829F2FD4BE0A07C5C64AA998
         841969EBFACD2E9E45FF7349BE991D37D7079FBF
       '';
+
+      # Devshell stdenv prepends GNU coreutils to PATH, burying user
+      # profile tools (uutils-coreutils, rm-improved, etc.).
+      # Wraps use_flake to re-prepend user profile after devshell PATH.
+      ".config/direnv/lib/zz-user-path.sh".text = ''
+        eval "_original_$(declare -f use_flake)"
+        use_flake() {
+          _original_use_flake "$@"
+          local ret=$?
+          PATH_add /etc/profiles/per-user/$USER/bin
+          return $ret
+        }
+      '';
     };
   };
 
