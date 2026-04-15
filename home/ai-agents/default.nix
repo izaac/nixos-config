@@ -30,6 +30,33 @@ in {
                 command = "cd \"$CLAUDE_PROJECT_DIR\" && just fmt 2>&1 | tail -5";
                 timeout = 60;
               }
+              {
+                type = "command";
+                "if" = "Bash(rm -rf|git push --force|git push -f|git reset --hard|git checkout \\.|git clean -f)";
+                command = "echo 'BLOCKED: Destructive command detected. Ask Chief first.' >&2; exit 2";
+              }
+            ];
+          }
+          {
+            matcher = "Edit|Write";
+            hooks = [
+              {
+                type = "command";
+                "if" = "Edit(secrets.yaml|.env|.age|.pem|.key)|Write(secrets.yaml|.env|.age|.pem|.key)";
+                command = "echo 'BLOCKED: Cannot write to secret files.' >&2; exit 2";
+              }
+            ];
+          }
+        ];
+        PostToolUse = [
+          {
+            matcher = "Edit|Write";
+            hooks = [
+              {
+                type = "command";
+                command = "f=\"$CLAUDE_FILE_PATH\"; if [ \"$${f##*.}\" = 'nix' ] && command -v alejandra >/dev/null 2>&1; then alejandra -q \"$f\" 2>/dev/null; fi";
+                timeout = 15;
+              }
             ];
           }
         ];
