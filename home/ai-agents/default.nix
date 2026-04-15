@@ -70,19 +70,24 @@ in {
     '';
   };
 
-  # Bootstrap mutable GEMINI.md that @imports the managed base.
-  # Only creates the file if it doesn't exist — preserves memories.
+  # Ensure GEMINI.md exists and has @instructions.md import.
+  # Creates file if missing, prepends import if stripped.
   home.activation.gemini-bootstrap = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f "${geminiMd}" ]; then
       printf '%s\n' '@instructions.md' "" '## Gemini Added Memories' > "${geminiMd}"
+    elif ! head -1 "${geminiMd}" | grep -q '@instructions.md'; then
+      sed -i '1i @instructions.md\n' "${geminiMd}"
     fi
   '';
 
-  # Register Claude Code MCP servers (idempotent — claude mcp add overwrites existing)
-  home.activation.claude-mcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
+  # Register MCP servers for AI agents (idempotent — mcp add overwrites existing)
+  home.activation.ai-mcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if command -v claude >/dev/null 2>&1; then
       claude mcp add --scope user context7 --transport stdio -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
       claude mcp add --scope user sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
+    fi
+    if command -v gemini >/dev/null 2>&1; then
+      gemini mcp add --scope user context7 npx -- -y @upstash/context7-mcp@latest 2>/dev/null || true
     fi
   '';
 }
