@@ -21,5 +21,6 @@ in {
       ];
     })
     nix-packages.brave-origin
+    pkgs.microsoft-edge
   ];
 }
