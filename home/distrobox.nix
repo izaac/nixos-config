@@ -33,6 +33,19 @@
 
   # Script to automate NVIDIA driver linking in Ubuntu containers
   xdg.configFile = {
+    # Sudo wrapper for rootless containers — runs commands as root via podman exec.
+    # Placed in distrobox/bin which is first in PATH, ahead of host sudo.
+    "distrobox/sudo-fix.sh".text = ''
+      #!/bin/sh
+      SUDO_BIN="/home/${userConfig.username}/.local/share/distrobox/bin/sudo"
+      mkdir -p "$(dirname "$SUDO_BIN")"
+      cat > "$SUDO_BIN" <<'WRAPPER'
+      #!/bin/sh
+      exec distrobox-host-exec podman exec -it -u root "$CONTAINER_ID" "$@"
+      WRAPPER
+      chmod +x "$SUDO_BIN"
+    '';
+
     "distrobox/nvidia-setup.sh".text = ''
       #!/bin/sh
       # 1. Enable 32-bit architecture and multiverse repos
@@ -59,6 +72,7 @@
       additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
       init=false
       nvidia=true
+      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh"
       shell=/bin/bash
       # === Ubuntu Gaming Container (The "Golden Recipe" for NixOS + NVIDIA) ===
       # This container uses ~/.config/distrobox/nvidia-setup.sh to automatically
@@ -66,18 +80,19 @@
       [ubu]
       image=ubuntu:24.04
       pull=true
-      additional_packages="build-essential neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
+      additional_packages="neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
       init=false
       nvidia=true
-      init_hooks="sh ~/.config/distrobox/nvidia-setup.sh"
+      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh && sh /home/${userConfig.username}/.config/distrobox/nvidia-setup.sh"
       shell=/bin/bash
 
       [debi]
       image=debian:latest
       pull=true
-      additional_packages="build-essential git curl wget neovim ripgrep lsd fastfetch"
+      additional_packages="git curl wget neovim ripgrep lsd fastfetch"
       init=false
       nvidia=true
+      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh"
       shell=/bin/bash
 
       [rhel10]
@@ -88,7 +103,7 @@
       nvidia=true
       shell=/bin/bash
       volume="/home/${userConfig.username}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-consumer:/etc/pki/consumer /home/${userConfig.username}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
-      init_hooks="if [ ! -f /etc/rhsm/ca/redhat-uep.pem ]; then dnf reinstall -y subscription-manager-rhsm-certificates subscription-manager; fi"
+      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh && if [ ! -f /etc/rhsm/ca/redhat-uep.pem ]; then dnf reinstall -y subscription-manager-rhsm-certificates subscription-manager; fi"
     '';
   };
 

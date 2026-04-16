@@ -38,7 +38,7 @@ _: {
     nv-boot = "nvd diff /run/booted-system /run/current-system";
 
     # --- TERMINAL FIXES & SECURITY ---
-    ssh = "TERM=xterm-256color ssh";
+    ssh = "env TERM=xterm-256color ssh";
 
     # --- AI TOOLS ---
     ai-scan = "ai-trace-scan";
