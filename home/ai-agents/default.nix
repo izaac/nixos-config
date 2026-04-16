@@ -63,6 +63,9 @@ in {
       };
     };
 
+    # GitHub Copilot: ~/.copilot/copilot-instructions.md
+    ".copilot/copilot-instructions.md".text = globalMd;
+
     # Gemini CLI: read-only base instructions
     ".gemini/instructions.md".text = ''
       ${globalMd}
