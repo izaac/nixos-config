@@ -6,5 +6,8 @@
         "--password-store=gnome-libsecret"
       ];
     };
+    profiles.default.userSettings = {
+      "editor.minimap.enabled" = false;
+    };
   };
 }

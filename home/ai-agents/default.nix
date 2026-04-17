@@ -15,6 +15,9 @@ in {
 
     # Claude Code: ~/.claude/settings.json
     ".claude/settings.json".text = builtins.toJSON {
+      env = {
+        CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = "1";
+      };
       model = "opus[1m]";
       enabledPlugins = {
         "frontend-design@claude-plugins-official" = true;

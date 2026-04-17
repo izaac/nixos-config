@@ -1,6 +1,5 @@
 {pkgs, ...}: {
   boot = {
-    # Bootloader and startup UX
     loader = {
       systemd-boot = {
         enable = true;
@@ -12,11 +11,8 @@
       grub.enable = false;
     };
 
-    # Plymouth disabled — causes DRM warnings during simpledrm→nvidia-drm
-    # handoff (connector Unknown-1 leaked, drm_gem_shmem_release warnings).
-    # Boot is fast enough without it (~10s to greeter).
-
-    consoleLogLevel = 0;
+    # No Plymouth, no quiet — plain systemd-initrd handles the LUKS prompt.
+    consoleLogLevel = 3;
     initrd = {
       verbose = false;
       systemd = {
@@ -27,7 +23,6 @@
 
     supportedFilesystems = ["exfat"];
 
-    # Keep latest kernel for current hardware support
     kernelPackages = pkgs.linuxPackages_latest;
     blacklistedKernelModules = [
       "sp5100_tco"
@@ -37,11 +32,6 @@
     ];
 
     kernelParams = [
-      "quiet"
-      "loglevel=3"
-      "rd.systemd.show_status=false"
-      "rd.udev.log_level=3"
-      "udev.log_priority=3"
       "boot.shell_on_fail"
       "pci=realloc,pcie_bus_safe"
       "pcie_aspm=off"

@@ -52,6 +52,7 @@
 - Keep response structures consistent across requests (prompt caching).
 - One task per chat. Don't mix feature work, debugging, and questions.
 - Use subagents for exploration — they run in separate context, report summaries.
+- When Chief asks to spawn agents, launch them **in the background** so chat stays active. Never block waiting on a subagent. Report results when they finish.
 - Be specific in prompts: file paths, line numbers, error messages. Vague = expensive.
 - Favor small, modular files over giant monoblocks.
 

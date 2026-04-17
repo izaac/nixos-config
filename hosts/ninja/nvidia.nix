@@ -41,10 +41,7 @@
   };
 
   # 3. Kernel Modules & Wayland Environment
-  # Load nvidia in initrd so DRM device (card1) is available from early boot.
-  # Without this, simpledrm loads first (card0) then nvidia replaces it later,
-  # creating a race where greetd/cosmic-comp may start before nvidia-drm is ready.
-  boot.initrd.kernelModules = ["nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm"];
+  # nvidia modules load post-initrd — keeps LUKS prompt input clean.
   boot.kernelParams = [
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1" # Explicitly added since powerManagement is disabled
     "nvidia.NVreg_UseKernelSuspendNotifiers=1" # Required for improved memory preservation on Open Modules
