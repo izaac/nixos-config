@@ -5,7 +5,10 @@
   ...
 }: let
   globalMd = builtins.readFile ./global.md;
-  homeDir = if pkgs.stdenv.isDarwin then "/Users/${userConfig.username}" else "/home/${userConfig.username}";
+  homeDir =
+    if pkgs.stdenv.isDarwin
+    then "/Users/${userConfig.username}"
+    else "/home/${userConfig.username}";
   geminiMd = "${homeDir}/.gemini/GEMINI.md";
 in {
   home.file = {

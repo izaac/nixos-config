@@ -1,4 +1,9 @@
-{ lib, pkgs, userConfig, ... }: {
+{
+  lib,
+  pkgs,
+  userConfig,
+  ...
+}: {
   home = {
     sessionVariables = {
       PAGER = "bat";

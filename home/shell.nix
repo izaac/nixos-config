@@ -1,4 +1,5 @@
-{ lib,
+{
+  lib,
   pkgs,
   inputs,
   ...
@@ -15,6 +16,6 @@ in {
   ];
 
   home.packages = with pkgs;
-    lib.optionals (nix-packages ? vcrunch) [ nix-packages.vcrunch ] ++
-    lib.optionals (nix-packages ? brush-shell) [ nix-packages.brush-shell ];
+    lib.optionals (nix-packages ? vcrunch) [nix-packages.vcrunch]
+    ++ lib.optionals (nix-packages ? brush-shell) [nix-packages.brush-shell];
 }

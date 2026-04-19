@@ -96,7 +96,7 @@
     darwinConfigurations = {
       Mac = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
-        specialArgs = { inherit inputs userConfig; };
+        specialArgs = {inherit inputs userConfig;};
         modules = [
           ./hosts/Mac/configuration.nix
           inputs.home-manager.darwinModules.home-manager

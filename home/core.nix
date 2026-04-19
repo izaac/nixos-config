@@ -1,4 +1,4 @@
-{ userConfig, ... }: {
+{userConfig, ...}: {
   imports = [
     ./shell.nix
     ./fastfetch.nix
