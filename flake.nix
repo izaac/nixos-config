@@ -103,6 +103,9 @@
           inputs.stylix.darwinModules.stylix
           {
             nixpkgs.config.allowUnfree = true;
+            nixpkgs.overlays = [
+              (import ./overlays/ai-trace-scanner.nix inputs)
+            ];
           }
         ];
       };

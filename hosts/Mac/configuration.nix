@@ -91,7 +91,6 @@
     users.${userConfig.username} = {
       imports = [
         ../../home/core.nix
-        inputs.stylix.homeManagerModules.stylix
       ];
       home = {
         homeDirectory = pkgs.lib.mkForce "/Users/${userConfig.username}";
