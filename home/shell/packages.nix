@@ -67,7 +67,7 @@
       github-copilot-cli
       gemini-cli-bin
       claude-code
-      # ai-trace-scanner is provided via overlay or direct input if needed
+      ai-trace-scanner
 
       # --- COMPRESSION & ARCHIVING ---
       ouch
