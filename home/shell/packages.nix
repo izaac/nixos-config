@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
 }: {
   home.packages = with pkgs; [
@@ -66,10 +67,7 @@
     github-copilot-cli
     gemini-cli-bin
     claude-code
-    ai-trace-scanner
-
-    # --- MEDIA & ENCODING ---
-    # (inputs.nix-packages is handled in shell.nix)
+    # ai-trace-scanner is provided via overlay or direct input if needed
 
     # --- COMPRESSION & ARCHIVING ---
     ouch
@@ -84,7 +82,10 @@
     bzip2
     libarchive
 
-    # --- SYSTEM & HARDWARE ---
+    # --- TUI / WIDGETS ---
+    ticker
+    tenki
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
     appimage-run
     wl-clipboard
     cliphist
@@ -92,9 +93,5 @@
     fuse3
     nvtopPackages.nvidia
     bluetuith
-
-    # --- TUI / WIDGETS ---
-    ticker
-    tenki
   ];
 }

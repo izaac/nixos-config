@@ -42,7 +42,7 @@
         use_flake() {
           _original_use_flake "$@"
           local ret=$?
-          PATH_add /etc/profiles/per-user/$USER/bin
+          PATH_add ${if pkgs.stdenv.isDarwin then "/run/current-system/sw/bin" else "/etc/profiles/per-user/$USER/bin"}
           return $ret
         }
       '';
@@ -70,7 +70,7 @@
         };
 
         init.defaultBranch = "main";
-        credential.helper = "libsecret";
+        credential.helper = if pkgs.stdenv.isDarwin then "osxkeychain" else "libsecret";
         safe.directory = userConfig.dotfilesDir;
 
         # Note the singular 'alias' key under settings
@@ -126,7 +126,7 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = false;
-    pinentry.package = pkgs.pinentry-gnome3;
+    pinentry.package = if pkgs.stdenv.isDarwin then pkgs.pinentry_mac else pkgs.pinentry-gnome3;
     defaultCacheTtl = 3600;
     extraConfig = ''
       allow-preset-passphrase
