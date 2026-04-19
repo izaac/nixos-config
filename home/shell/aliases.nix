@@ -41,6 +41,7 @@ _: {
     ssh = "env TERM=xterm-256color ssh";
 
     # --- AI TOOLS ---
+    claude = "env CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude";
     ai-scan = "ai-trace-scan";
     ai-scan-staged = "ai-trace-scan --staged";
     ai-scan-wip = "ai-trace-scan --unstaged";

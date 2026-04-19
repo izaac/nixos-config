@@ -4,6 +4,7 @@
   ...
 }: let
   nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
+  helium-browser = inputs.helium.defaultPackage.${pkgs.stdenv.hostPlatform.system};
 in {
   imports = [
     ./distrobox.nix
@@ -36,8 +37,7 @@ in {
     nix-packages.ethereal-waves # COSMIC Music Player
 
     # General Software
-    gophertube # TUI YouTube Client
-    chafa # Terminal Graphics for gophertube
+    helium-browser # Added helium browser
     fragments # GTK Torrent Client (Rust)
     clapper # Modern GTK4 Video Player (Rust)
     snapshot # GTK Camera App (Rust)
@@ -83,11 +83,11 @@ in {
     mimeApps = {
       enable = true;
       defaultApplications = {
-        "text/html" = ["brave-origin.desktop"];
-        "x-scheme-handler/http" = ["brave-origin.desktop"];
-        "x-scheme-handler/https" = ["brave-origin.desktop"];
-        "x-scheme-handler/about" = ["brave-origin.desktop"];
-        "x-scheme-handler/unknown" = ["brave-origin.desktop"];
+        "text/html" = ["helium.desktop"];
+        "x-scheme-handler/http" = ["helium.desktop"];
+        "x-scheme-handler/https" = ["helium.desktop"];
+        "x-scheme-handler/about" = ["helium.desktop"];
+        "x-scheme-handler/unknown" = ["helium.desktop"];
 
         # Text
         "text/plain" = ["com.system76.CosmicEdit.desktop"];

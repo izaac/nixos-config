@@ -27,6 +27,7 @@
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
     };
+    helium.url = "github:FKouhai/helium2nix/main";
   };
 
   outputs = inputs @ {
