@@ -1,10 +1,12 @@
 {
+  pkgs,
   lib,
   userConfig,
   ...
 }: let
   globalMd = builtins.readFile ./global.md;
-  geminiMd = "/home/${userConfig.username}/.gemini/GEMINI.md";
+  homeDir = if pkgs.stdenv.isDarwin then "/Users/${userConfig.username}" else "/home/${userConfig.username}";
+  geminiMd = "${homeDir}/.gemini/GEMINI.md";
 in {
   home.file = {
     # Claude Code: ~/.claude/CLAUDE.md
@@ -24,16 +26,16 @@ in {
   };
 
   # Ensure GEMINI.md exists and has @instructions.md import.
-  # Creates file if missing, prepends import if stripped.
   home.activation.gemini-bootstrap = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if [ ! -f "${geminiMd}" ]; then
+      mkdir -p "$(dirname "${geminiMd}")"
       printf '%s\n' '@instructions.md' "" '## Gemini Added Memories' > "${geminiMd}"
     elif ! head -1 "${geminiMd}" | grep -q '@instructions.md'; then
       sed -i '1i @instructions.md\n' "${geminiMd}"
     fi
   '';
 
-  # Register MCP servers for AI agents (idempotent — mcp add overwrites existing)
+  # Register MCP servers for AI agents
   home.activation.ai-mcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
     if command -v claude >/dev/null 2>&1; then
       claude mcp add --scope user context7 --transport stdio -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true

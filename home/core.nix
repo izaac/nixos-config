@@ -1,8 +1,7 @@
-{userConfig, ...}: {
+{ userConfig, ... }: {
   imports = [
     ./shell.nix
     ./fastfetch.nix
-    ./flatpak.nix
     ./ssh.nix
     ./rclone-gdrive.nix
     ./zellij.nix
@@ -14,7 +13,6 @@
 
   home = {
     inherit (userConfig) username;
-    homeDirectory = "/home/${userConfig.username}";
     stateVersion = "25.11";
   };
 

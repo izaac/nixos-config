@@ -1,6 +1,6 @@
-_: {
+{ pkgs, ... }: {
   programs.ssh = {
-    enable = true;
+    enable = pkgs.stdenv.isLinux;
 
     enableDefaultConfig = false;
 

@@ -26,6 +26,7 @@ in {
       users.${userConfig.username} = {
         imports = [
           ../../home/core.nix
+          ../../home/flatpak.nix
         ];
       };
     };

@@ -1,5 +1,5 @@
 {
-  description = "Izaac NVIDIA NixOS Configuration";
+  description = "Izaac NVIDIA NixOS and Darwin Configuration";
 
   inputs = {
     nix-flatpak.url = "github:gmodena/nix-flatpak";
@@ -23,6 +23,10 @@
     };
     stylix.url = "github:danth/stylix";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     ai-trace-scanner = {
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
@@ -35,9 +39,10 @@
     nixpkgs,
     stylix,
     sops-nix,
+    darwin,
     ...
   }: let
-    systems = ["x86_64-linux"];
+    systems = ["x86_64-linux" "aarch64-darwin"];
     forEachSystem = nixpkgs.lib.genAttrs systems;
     mkPkgs = system:
       import nixpkgs {
@@ -88,12 +93,29 @@
       };
     };
 
+    darwinConfigurations = {
+      Mac = darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = { inherit inputs userConfig; };
+        modules = [
+          ./hosts/Mac/configuration.nix
+          inputs.home-manager.darwinModules.home-manager
+          inputs.stylix.darwinModules.stylix
+          {
+            nixpkgs.config.allowUnfree = true;
+          }
+        ];
+      };
+    };
+
     packages = forEachSystem (
-      system:
-        inputs.nix-packages.packages.${system}
-        // {
+      system: let
+        extraPkgs = inputs.nix-packages.packages.${system} or {};
+      in
+        extraPkgs
+        // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
           iso = inputs.self.nixosConfigurations.monko-canoe.config.system.build.isoImage;
-        }
+        })
     );
 
     formatter =
