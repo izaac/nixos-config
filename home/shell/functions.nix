@@ -66,9 +66,9 @@ in {
 
     ai() {
       case "$1" in
-        "") PATH="${cleanPath}" copilot ;;
-        login|init|update|version|help) PATH="${cleanPath}" copilot "$@" ;;
-        *) PATH="${cleanPath}" copilot -p "$*" ;;
+        "") PATH="${cleanPath}" COPILOT_PROGRESS=false copilot ;;
+        login|init|update|version|help) PATH="${cleanPath}" COPILOT_PROGRESS=false copilot "$@" ;;
+        *) PATH="${cleanPath}" COPILOT_PROGRESS=false copilot -p "$*" ;;
       esac
     }
 
