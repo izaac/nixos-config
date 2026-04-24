@@ -42,6 +42,7 @@ _: {
 
     # --- AI TOOLS ---
     claude = "env CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude";
+    codex = "codex";
     ai-scan = "ai-trace-scan";
     ai-scan-staged = "ai-trace-scan --staged";
     ai-scan-wip = "ai-trace-scan --unstaged";
