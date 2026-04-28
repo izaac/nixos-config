@@ -2,7 +2,7 @@
 
 # Build the system for macOS (drb alias)
 darwin-build:
-        nix run github:LnL7/nix-darwin -- switch --flake .#Mac
+        sudo nix run github:LnL7/nix-darwin -- switch --flake .#Mac
 
 # Build the system (nrb alias)
 build:

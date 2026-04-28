@@ -105,6 +105,11 @@
             nixpkgs.config.allowUnfree = true;
             nixpkgs.overlays = [
               (import ./overlays/ai-trace-scanner.nix inputs)
+              (final: prev: {
+                direnv = prev.direnv.overrideAttrs (old: {
+                  doCheck = false;
+                });
+              })
             ];
           }
         ];
