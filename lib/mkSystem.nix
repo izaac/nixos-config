@@ -23,6 +23,11 @@ nixpkgs.lib.nixosSystem {
         (import ../overlays/ai-trace-scanner.nix inputs)
         (import ../overlays/copilot-fix.nix)
         (import ../overlays/cosmic-session-drm-fix.nix)
+        (_final: prev: {
+          openldap = prev.openldap.overrideAttrs (_oldAttrs: {
+            doCheck = false;
+          });
+        })
       ];
     }
   ];

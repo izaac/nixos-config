@@ -58,6 +58,11 @@ in {
 
     # Clipboard manager protocol for COSMIC
     environment = {
+      gnome.excludePackages = with pkgs; [
+        nautilus
+        gnome-settings-daemon
+        gnome-online-accounts
+      ];
       sessionVariables.COSMIC_DATA_CONTROL_ENABLED = "1";
       systemPackages = with pkgs; [
         adwaita-icon-theme

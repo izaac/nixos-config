@@ -14,7 +14,6 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       ffmpeg
-      ffmpegthumbnailer # For video miniatures in Nautilus
       libdvdcss
 
       # GStreamer (The "Good, Bad, and Ugly")

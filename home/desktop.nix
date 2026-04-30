@@ -61,7 +61,6 @@ in {
     loupe # Image Viewer (Rust)
     papers # PDF/Document Viewer (Rust)
     mission-center # System Monitor (Rust)
-    file-roller # Archive Manager
     newsflash # GTK4/Libadwaita RSS Reader (Rust)
   ];
 
@@ -121,14 +120,14 @@ in {
         "video/x-ms-wmv" = ["com.github.rafostar.Clapper.desktop"];
 
         # Audio
-        "audio/mpeg" = ["org.gnome.Amberol.desktop"];
-        "audio/flac" = ["org.gnome.Amberol.desktop"];
-        "audio/x-wav" = ["org.gnome.Amberol.desktop"];
-        "audio/ogg" = ["org.gnome.Amberol.desktop"];
-        "audio/x-vorbis+ogg" = ["org.gnome.Amberol.desktop"];
-        "audio/mp4" = ["org.gnome.Amberol.desktop"];
-        "audio/x-flac" = ["org.gnome.Amberol.desktop"];
-        "audio/x-mp3" = ["org.gnome.Amberol.desktop"];
+        "audio/mpeg" = ["com.system76.CosmicPlayer.desktop"];
+        "audio/flac" = ["com.system76.CosmicPlayer.desktop"];
+        "audio/x-wav" = ["com.system76.CosmicPlayer.desktop"];
+        "audio/ogg" = ["com.system76.CosmicPlayer.desktop"];
+        "audio/x-vorbis+ogg" = ["com.system76.CosmicPlayer.desktop"];
+        "audio/mp4" = ["com.system76.CosmicPlayer.desktop"];
+        "audio/x-flac" = ["com.system76.CosmicPlayer.desktop"];
+        "audio/x-mp3" = ["com.system76.CosmicPlayer.desktop"];
 
         # Documents / Images
         "application/pdf" = ["org.gnome.Papers.desktop"];
@@ -148,30 +147,6 @@ in {
   };
 
   services.udiskie.enable = true;
-
-  # Clipboard History Watcher (stores clipboard entries for recall)
-  systemd.user.services.cliphist-watcher = {
-    Unit = {
-      Description = "Clipboard history watcher";
-      PartOf = ["graphical-session.target"];
-      After = ["graphical-session.target"];
-    };
-    Service = {
-      ExecStart = "${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store";
-      Restart = "on-failure";
-      RestartSec = 3;
-    };
-    Install.WantedBy = ["graphical-session.target"];
-  };
-
-  dconf.settings = {
-    # Tracker indexing limits (still used by some GTK apps)
-    "org/freedesktop/Tracker3/Miner/Files" = {
-      index-recursive-directories = [];
-      index-single-directories = [];
-      ignored-directories = ["&DESKTOP" "&DOCUMENTS" "&DOWNLOAD" "&MUSIC" "&PICTURES" "&PUBLIC_SHARE" "&TEMPLATES" "&VIDEOS"];
-    };
-  };
 
   # Disable unused gvfs monitors (GNOME Online Accounts not used)
   xdg.configFile."autostart/gvfs-goa-volume-monitor.desktop".text = ''
