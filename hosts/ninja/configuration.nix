@@ -73,6 +73,7 @@
       theme.enable = true;
       home-manager.enable = true;
       nix-ld.enable = true;
+      yubikey.enable = true;
     };
   };
 

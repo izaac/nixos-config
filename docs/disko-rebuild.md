@@ -4,7 +4,7 @@ Complete disaster-recovery guide for the `ninja` workstation — from building t
 
 ## 1. Build the Recovery ISO
 
-The flake includes a minimal recovery image called **monko-canoe**. It has NetworkManager (with iwd for WiFi), firmware blobs, disk tools, and your user account — no desktop environment.
+The flake includes a minimal recovery image called **canoe**. It has NetworkManager (with iwd for WiFi), firmware blobs, disk tools, and your user account — no desktop environment.
 
 ```bash
 # From any machine with Nix installed

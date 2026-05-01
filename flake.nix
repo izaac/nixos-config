@@ -21,8 +21,14 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix.url = "github:danth/stylix";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,7 +37,10 @@
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
     };
-    helium.url = "github:FKouhai/helium2nix/main";
+    helium = {
+      url = "github:FKouhai/helium2nix/main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
@@ -63,33 +72,10 @@
     nixosConfigurations = {
       ninja = mkSystem "ninja" "x86_64-linux";
       windy = mkSystem "windy" "x86_64-linux";
-      monko-canoe = nixpkgs.lib.nixosSystem {
+      canoe = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        modules = [
-          "${nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix"
-          ({pkgs, ...}: {
-            networking = {
-              hostName = "monko-canoe";
-              networkmanager.enable = true;
-              networkmanager.wifi.backend = "iwd";
-            };
-            system.stateVersion = "25.11";
-            hardware.enableRedistributableFirmware = true;
-            users.users.${userConfig.username} = {
-              isNormalUser = true;
-              extraGroups = ["wheel" "networkmanager"];
-            };
-            environment.systemPackages = with pkgs; [
-              helix
-              git
-              neovim
-              usbutils
-              pciutils
-              parted
-              cryptsetup
-            ];
-          })
-        ];
+        specialArgs = {inherit userConfig;};
+        modules = [./hosts/canoe/configuration.nix];
       };
     };
 
@@ -122,7 +108,7 @@
       in
         extraPkgs
         // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
-          iso = inputs.self.nixosConfigurations.monko-canoe.config.system.build.isoImage;
+          iso = inputs.self.nixosConfigurations.canoe.config.system.build.isoImage;
         })
     );
 

@@ -1,7 +1,7 @@
 inputs: final: _prev: {
   ai-trace-scanner = final.python3Packages.buildPythonApplication {
     pname = "ai-trace-scan";
-    version = "0.6.0";
+    version = "0.8.0";
     pyproject = true;
 
     src = inputs.ai-trace-scanner;

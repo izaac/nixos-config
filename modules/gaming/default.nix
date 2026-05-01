@@ -159,37 +159,39 @@ in {
       uinput.enable = true;
     };
 
-    programs.gamescope = {
-      enable = true;
-      capSysNice = true;
-    };
+    programs = {
+      gamescope = {
+        enable = true;
+        capSysNice = true;
+      };
 
-    programs.steam = {
-      enable = true;
-      remotePlay.openFirewall = true;
-      dedicatedServer.openFirewall = true;
-      localNetworkGameTransfers.openFirewall = true;
-      extraPackages = with pkgs; [
-        libvdpau
-        libva
-        mangohud
-        steamtinkerlaunch
-        protonplus
-        gamemode
-      ];
-    };
+      steam = {
+        enable = true;
+        remotePlay.openFirewall = true;
+        dedicatedServer.openFirewall = true;
+        localNetworkGameTransfers.openFirewall = true;
+        extraPackages = with pkgs; [
+          libvdpau
+          libva
+          mangohud
+          steamtinkerlaunch
+          protonplus
+          gamemode
+        ];
+      };
 
-    programs.gamemode = {
-      enable = true;
-      enableRenice = true;
-      settings = {
-        general = {
-          softrealtime = "auto";
-          renice = 5;
-        };
-        custom = mkIf (hasTuning || hasGpuTuning) {
-          start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${optionalString cfg.thermalGuard.enable " && sudo ${thermal-guard} &"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
-          end = "${pkgs.bash}/bin/bash -c '${optionalString cfg.thermalGuard.enable "touch /tmp/thermal-guard.stop; "}sudo ${gamemode-end} && ${notify} \"GameMode\" \"Efficiency: ${baseDesc}\"'";
+      gamemode = {
+        enable = true;
+        enableRenice = true;
+        settings = {
+          general = {
+            softrealtime = "auto";
+            renice = 5;
+          };
+          custom = mkIf (hasTuning || hasGpuTuning) {
+            start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${optionalString cfg.thermalGuard.enable " && sudo ${thermal-guard} &"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
+            end = "${pkgs.bash}/bin/bash -c '${optionalString cfg.thermalGuard.enable "touch /tmp/thermal-guard.stop; "}sudo ${gamemode-end} && ${notify} \"GameMode\" \"Efficiency: ${baseDesc}\"'";
+          };
         };
       };
     };
