@@ -45,6 +45,9 @@ in {
       pinentryPackage = pkgs.pinentry-gnome3;
     };
 
+    # Cross-platform LAN file transfer (auto-opens firewall port 53317).
+    programs.localsend.enable = true;
+
     security.pam.services = {
       cosmic-greeter.enableGnomeKeyring = true;
       login.enableGnomeKeyring = true;

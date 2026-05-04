@@ -6,7 +6,10 @@
       settings = {
         command_timeout = 500;
         add_newline = false;
-        format = "$directory$hostname$git_branch$git_status$container$character";
+        # The default $container module reports "Docker" generically because
+        # /.dockerenv is empty. Distrobox exports $CONTAINER_ID with the real
+        # box name (rhel10, ubu, alpy, ...) — surface it via env_var instead.
+        format = "$directory$hostname$git_branch$git_status$env_var$character";
         character = {
           success_symbol = "[](bold green) ";
           error_symbol = "[](bold red) ";
@@ -20,6 +23,11 @@
             "windy" = "󰌢 windy";
             "ninja" = "󰟀 ninja";
           };
+        };
+        container.disabled = true;
+        env_var.CONTAINER_ID = {
+          format = "[⬢ \\[$env_value\\]]($style) ";
+          style = "bold yellow";
         };
       };
     };

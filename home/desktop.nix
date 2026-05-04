@@ -11,6 +11,7 @@ in {
     ./wezterm.nix
     ./cava.nix
     ./cmus.nix
+    ./abcde.nix
     ./qt.nix
     ./chrome.nix
     ./helix.nix
