@@ -16,6 +16,9 @@
 
   hardware.enableRedistributableFirmware = true;
 
+  # Adopt 26.11 default early; ISO doesn't use ZFS root.
+  boot.zfs.forceImportRoot = false;
+
   users.users.${userConfig.username} = {
     isNormalUser = true;
     extraGroups = ["wheel" "networkmanager"];

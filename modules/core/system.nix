@@ -14,6 +14,9 @@ in {
     time.timeZone = "America/Phoenix";
     i18n.defaultLocale = "en_US.UTF-8";
 
+    # Adopt the 26.11 default early; we don't use ZFS root, so safe.
+    boot.zfs.forceImportRoot = false;
+
     # --- RUST SYSTEM SPIRITS ---
     security = {
       sudo.enable = lib.mkForce false;
