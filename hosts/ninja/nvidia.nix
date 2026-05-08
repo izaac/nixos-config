@@ -3,29 +3,16 @@
   pkgs,
   ...
 }: {
-  # 1. Graphics / OpenGL
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-    extraPackages = with pkgs; [
-      nvidia-vaapi-driver
-      libva-vdpau-driver
-      libvdpau-va-gl
-    ];
-  };
-
-  # 2. NVIDIA Driver Config
-  services.xserver.videoDrivers = ["nvidia"];
+  # Shared NVIDIA baseline (graphics, open module, VAAPI/VDPAU) lives in
+  # modules/desktop/nvidia.nix. This file overrides only ninja-specific bits.
+  mySystem.desktop.nvidia.enable = true;
 
   hardware.nvidia = {
-    modesetting.enable = true;
     # Note: On 595+ with open modules, NixOS automatically enables 'kernelSuspendNotifier'.
     # We must explicitly disable NixOS powerManagement to prevent the creation of legacy
     # nvidia-suspend/resume systemd services which conflict with the kernel notifiers.
     powerManagement.enable = false;
     powerManagement.finegrained = false;
-    open = true; # Open modules required for RTX 50-series (Blackwell)
-    nvidiaSettings = true;
     # Track nixpkgs production branch. Switched from a custom mkDriver pin on
     # 2026-04-30 once the channel default caught up. Verify
     # `nvidiaPackages.production.version` is at least the previously running

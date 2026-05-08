@@ -7,6 +7,8 @@
 with lib; let
   cfg = config.mySystem.desktop;
 in {
+  imports = [./nvidia.nix];
+
   options.mySystem.desktop = {
     enable = mkEnableOption "Desktop Environment configuration";
   };

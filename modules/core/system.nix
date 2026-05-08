@@ -18,6 +18,8 @@ in {
     boot.zfs.forceImportRoot = false;
 
     # --- RUST SYSTEM SPIRITS ---
+    # mkForce both: NixOS defaults enable C sudo. We replace it with sudo-rs
+    # (memory-safe Rust port) globally, so override the default precedence.
     security = {
       sudo.enable = lib.mkForce false;
       sudo-rs.enable = lib.mkForce true;
@@ -41,12 +43,16 @@ in {
 
     # Common Services
     services = {
+      # Replace systemd-timesyncd with ntpd-rs (memory-safe Rust NTP daemon).
+      # mkForce both because timesyncd is enabled by default upstream.
       ntpd-rs.enable = lib.mkForce true;
       timesyncd.enable = lib.mkForce false;
 
       openssh.enable = false;
 
       fstrim.enable = true;
+      # Power management is handled by TLP (windy) or scx_lavd (ninja);
+      # mkForce off because some desktop modules pull in this daemon by default.
       power-profiles-daemon.enable = lib.mkForce false;
 
       # Limit journal size to prevent unbounded /var/log growth
@@ -56,7 +62,8 @@ in {
       '';
     };
 
-    # Don't let NTP block graphical.target — time sync can happen after login
+    # Don't let NTP block graphical.target — time sync can happen after login.
+    # mkForce because the upstream service unit attaches to time-sync.target.
     systemd.services.ntpd-rs.wantedBy = lib.mkForce [];
 
     # Auto-purge /tmp files older than 7 days

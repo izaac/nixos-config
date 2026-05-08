@@ -28,10 +28,27 @@ in {
         "vm.vfs_cache_pressure" = 50; # Keep filesystem cache longer (snappier Nautilus)
         "vm.dirty_ratio" = 10;
         "vm.dirty_background_ratio" = 5;
+        "vm.dirty_writeback_centisecs" = 500;
+        "vm.dirty_expire_centisecs" = 1200;
+        "vm.page_lock_unfairness" = 1;
 
         # Networking performance (lower latency)
         "net.core.default_qdisc" = "fq"; # Fair Queueing (Bufferbloat reduction)
         "net.ipv4.tcp_congestion_control" = "bbr"; # Google BBR congestion control
+
+        # Kernel hardening (universal — safe on desktop and laptop).
+        # mkForce because NixOS sets some of these at mkDefault priority and
+        # equal priorities collide; we want the stricter values regardless.
+        "kernel.kptr_restrict" = mkForce 2; # Hide kernel pointers from non-root
+        "kernel.kexec_load_disabled" = mkForce 1; # Prevent hot-loading another kernel
+
+        # Network security (universal)
+        "net.ipv4.conf.all.accept_redirects" = mkForce 0;
+        "net.ipv4.conf.default.accept_redirects" = mkForce 0;
+        "net.ipv4.conf.all.send_redirects" = mkForce 0;
+        "net.ipv4.conf.all.rp_filter" = mkForce 1;
+        "net.ipv4.conf.default.rp_filter" = mkForce 1;
+        "net.ipv4.conf.all.log_martians" = mkForce 1;
       };
 
       # --- GAMING & INPUT LATENCY ---

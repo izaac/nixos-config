@@ -5,7 +5,7 @@
     ./audio.nix
     ./nix-ld.nix
     ./codecs.nix
-    ./bluetooth-audio.nix
+    ./bluetooth.nix
     ./virtualization.nix
     ./usb-fixes.nix
     ./maintenance.nix
@@ -15,5 +15,6 @@
     ./nfs.nix
     ./yubikey.nix
     ./theme.nix
+    ./sudo-readonly.nix
   ];
 }

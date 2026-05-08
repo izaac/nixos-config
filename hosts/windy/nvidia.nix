@@ -3,27 +3,16 @@
   pkgs,
   ...
 }: {
-  # 1. Graphics / OpenGL
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-    extraPackages = with pkgs; [
-      intel-media-driver # For Intel QuickSync / Video acceleration
-      nvidia-vaapi-driver
-      libva-vdpau-driver
-      libvdpau-va-gl
-    ];
-  };
+  # Shared NVIDIA baseline (graphics, open module, VAAPI/VDPAU) lives in
+  # modules/desktop/nvidia.nix. This file adds laptop-specific overrides.
+  mySystem.desktop.nvidia.enable = true;
 
-  # 2. NVIDIA Driver Config
-  services.xserver.videoDrivers = ["nvidia"];
+  # Add Intel QuickSync alongside the shared NVIDIA VAAPI stack.
+  hardware.graphics.extraPackages = [pkgs.intel-media-driver];
 
   hardware.nvidia = {
-    modesetting.enable = true;
     powerManagement.enable = true; # Recommended for laptops to help with battery
     powerManagement.finegrained = true; # Better power savings for hybrid
-    open = true;
-    nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
 
     # Prime / Hybrid Configuration

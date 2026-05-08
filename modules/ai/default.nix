@@ -24,14 +24,12 @@ in {
     };
   };
 
-  config = mkIf cfg.enable (mkMerge [
-    (mkIf cfg.ollama.enable {
-      # Ollama listens on 127.0.0.1:11434 by default.
-      services.ollama = {
-        enable = true;
-        package = pkgs.ollama-cuda;
-        inherit (cfg.ollama) loadModels;
-      };
-    })
-  ]);
+  config = mkIf (cfg.enable && cfg.ollama.enable) {
+    # Ollama listens on 127.0.0.1:11434 by default.
+    services.ollama = {
+      enable = true;
+      package = pkgs.ollama-cuda;
+      inherit (cfg.ollama) loadModels;
+    };
+  };
 }

@@ -31,24 +31,14 @@
   };
 
   boot = {
+    # Universal hardening + dirty-page tuning live in modules/core/performance.nix.
+    # Keys here are workstation-specific (high-core scheduling, big NIC buffers,
+    # debug-friendly dmesg) and override mkDefault values from the shared module.
     kernel.sysctl = {
-      "kernel.dmesg_restrict" = 0;
-      "kernel.split_lock_mitigate" = 0;
-      "kernel.kptr_restrict" = 2; # Hide kernel pointers
-      "kernel.kexec_load_disabled" = 1; # Prevent hot-loading another kernel
-      "net.ipv4.conf.all.accept_redirects" = 0;
-      "net.ipv4.conf.default.accept_redirects" = 0;
-      "net.ipv4.conf.all.send_redirects" = 0;
-
-      # vm.swappiness is set in core/performance.nix (mkDefault 180)
-      "vm.page_lock_unfairness" = 1;
-
+      "kernel.dmesg_restrict" = 0; # Workstation: allow non-root dmesg for debugging
+      "kernel.split_lock_mitigate" = 0; # Performance trade-off on this 16-core CPU
       "kernel.sched_autogroup_enabled" = 0;
       "kernel.sched_cfs_bandwidth_slice_us" = 3000;
-
-      # vm.dirty_ratio and vm.dirty_background_ratio set in core/performance.nix
-      "vm.dirty_writeback_centisecs" = 500;
-      "vm.dirty_expire_centisecs" = 1200;
 
       "net.core.wmem_max" = 67108864;
       "net.core.rmem_max" = 67108864;
@@ -60,10 +50,6 @@
       "net.core.netdev_budget" = 300;
       "net.core.netdev_budget_usecs" = 4000;
       "net.ipv4.tcp_max_syn_backlog" = 8192;
-      # Network security
-      "net.ipv4.conf.all.rp_filter" = 1;
-      "net.ipv4.conf.default.rp_filter" = 1;
-      "net.ipv4.conf.all.log_martians" = 1;
     };
 
     tmp.useTmpfs = true;

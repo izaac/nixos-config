@@ -63,6 +63,7 @@ in {
     papers # PDF/Document Viewer (Rust)
     mission-center # System Monitor (Rust)
     newsflash # GTK4/Libadwaita RSS Reader (Rust)
+    drawing # GTK image editor (MS Paint-like)
   ];
 
   xdg = {

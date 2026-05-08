@@ -19,7 +19,11 @@
 
     gtk = {
       enable = true;
-      gtk4.theme = null; # Stylix handles GTK4 theming
+      gtk4 = {
+        theme = null; # Stylix handles GTK4 theming
+        extraConfig.gtk-application-prefer-dark-theme = 1;
+      };
+      gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
       gtk3.bookmarks = [
         "file:///home/${userConfig.username}/Documents Documents"
         "file:///home/${userConfig.username}/Downloads Downloads"

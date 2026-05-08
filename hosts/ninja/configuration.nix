@@ -79,6 +79,7 @@
       home-manager.enable = true;
       nix-ld.enable = true;
       yubikey.enable = true;
+      sudoReadonly.enable = true;
     };
   };
 
