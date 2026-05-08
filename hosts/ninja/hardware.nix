@@ -30,7 +30,8 @@
       "noauto"
       "x-systemd.idle-timeout=900"
       "x-systemd.mount-timeout=5s"
-      "x-systemd.device-timeout=5s"
+      # x-systemd.device-timeout is for block devices; systemd-fstab-generator
+      # warns on NFS sources because they're not /dev/* paths.
       "nconnect=4"
       "rsize=1048576"
       "wsize=1048576"

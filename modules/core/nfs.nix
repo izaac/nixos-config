@@ -12,14 +12,17 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Enable NFS client support
-    services.rpcbind.enable = true; # Required for NFSv3
+    # NFSv4 client support. rpcbind/portmapper is NOT needed — NFSv4 uses
+    # port 2049 only and embeds mount/lock/state in the protocol. NixOS's
+    # built-in NFS module unconditionally enables rpcbind when any NFS
+    # fileSystems entry exists, even for NFSv4-only clients, so we mkForce
+    # it off. Re-enable here if a NFSv3 export ever returns.
+    services.rpcbind.enable = lib.mkForce false;
 
     environment.systemPackages = with pkgs; [
       nfs-utils
     ];
 
-    # Kernel modules for NFS support
-    boot.supportedFilesystems = ["nfs" "nfs4"];
+    boot.supportedFilesystems = ["nfs4"];
   };
 }

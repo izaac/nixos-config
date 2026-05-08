@@ -24,6 +24,7 @@ nixpkgs.lib.nixosSystem {
         (import ../overlays/copilot-fix.nix)
         (import ../overlays/cosmic-session-drm-fix.nix)
         (import ../overlays/openldap-no-tests.nix)
+        (import ../overlays/gvfs-no-wsdd.nix)
       ];
     }
   ];

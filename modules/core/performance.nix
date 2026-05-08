@@ -42,13 +42,26 @@ in {
         "kernel.kptr_restrict" = mkForce 2; # Hide kernel pointers from non-root
         "kernel.kexec_load_disabled" = mkForce 1; # Prevent hot-loading another kernel
 
-        # Network security (universal)
+        # Network security (universal). `all` and `default` must both be set:
+        # - `all` is logical-OR'd with per-interface for receive paths and
+        #   logical-AND'd for accept_redirects, but `send_redirects` is
+        #   per-interface only — `all=0` does not propagate, so each interface
+        #   inherits from `default` at creation time.
+        # - Existing interfaces keep their initial value, so we mkForce both
+        #   scopes to override NixOS defaults.
         "net.ipv4.conf.all.accept_redirects" = mkForce 0;
         "net.ipv4.conf.default.accept_redirects" = mkForce 0;
         "net.ipv4.conf.all.send_redirects" = mkForce 0;
+        "net.ipv4.conf.default.send_redirects" = mkForce 0;
         "net.ipv4.conf.all.rp_filter" = mkForce 1;
         "net.ipv4.conf.default.rp_filter" = mkForce 1;
         "net.ipv4.conf.all.log_martians" = mkForce 1;
+
+        # IPv6 ICMP redirects — workstation has static routes (or RA-based
+        # routes via `accept_ra`), so we never need to learn routes via
+        # redirects. Closes a LAN-attacker MITM vector.
+        "net.ipv6.conf.all.accept_redirects" = mkForce 0;
+        "net.ipv6.conf.default.accept_redirects" = mkForce 0;
       };
 
       # --- GAMING & INPUT LATENCY ---
