@@ -1,8 +1,8 @@
 ## Claude-Specific
 
-- Use `adaptive` thinking with `low` effort for simple tasks.
-- Run `/compact` at ~50% context. Run `/clear` between unrelated tasks.
-- Use subagents for codebase exploration — keeps main context clean.
-- Never load full docs when a link or `@` import suffices.
-- Point to specific files and line numbers in prompts.
-- **Always query Context7** before implementing patterns you are not 100% certain about — especially test design (cleanup, fixtures, assertions), Playwright API usage, and any library/framework best practices. Training data may be stale; Context7 has current docs. This applies to both main context and subagents.
+- Use `adaptive` thinking, `low` effort for simple task.
+- Run `/compact` at ~50% context. Run `/clear` between unrelated task.
+- Use subagent for codebase explore — keep main context clean.
+- Never load full doc when link or `@` import enough.
+- Point to specific file + line number in prompt.
+- **Always query Context7** before implement pattern not 100% sure — especially test design (cleanup, fixtures, assertions), Playwright API, any library/framework best practice. Training data stale; Context7 current. Apply to main context + subagent.
