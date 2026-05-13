@@ -47,6 +47,7 @@ in {
       libXtst
       libxkbcommon
       mesa
+      vulkan-loader
       wayland
       libdrm
       libkrb5

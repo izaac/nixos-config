@@ -1,11 +1,8 @@
 {
   pkgs,
-  modulesPath,
   userConfig,
   ...
 }: {
-  imports = [(modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")];
-
   networking = {
     hostName = "canoe";
     networkmanager = {
@@ -22,6 +19,7 @@
   users.users.${userConfig.username} = {
     isNormalUser = true;
     extraGroups = ["wheel" "networkmanager"];
+    initialHashedPassword = "";
   };
 
   environment.systemPackages = with pkgs; [
@@ -32,6 +30,7 @@
     pciutils
     parted
     cryptsetup
+    disko
   ];
 
   system.stateVersion = "25.11";

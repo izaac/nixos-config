@@ -4,7 +4,6 @@
   ...
 }: let
   nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
-  helium-browser = inputs.helium.defaultPackage.${pkgs.stdenv.hostPlatform.system};
 in {
   imports = [
     ./distrobox.nix
@@ -38,7 +37,6 @@ in {
     nix-packages.ethereal-waves # COSMIC Music Player
 
     # General Software
-    helium-browser # Added helium browser
     fragments # GTK Torrent Client (Rust)
     clapper # Modern GTK4 Video Player (Rust)
     snapshot # GTK Camera App (Rust)
@@ -60,7 +58,7 @@ in {
 
     # GTK Apps (Rust-based replacements)
     loupe # Image Viewer (Rust)
-    papers # PDF/Document Viewer (Rust)
+    (papers.override {supportNautilus = false;}) # PDF/Document Viewer (Rust)
     mission-center # System Monitor (Rust)
     newsflash # GTK4/Libadwaita RSS Reader (Rust)
     drawing # GTK image editor (MS Paint-like)
@@ -84,11 +82,11 @@ in {
     mimeApps = {
       enable = true;
       defaultApplications = {
-        "text/html" = ["helium.desktop"];
-        "x-scheme-handler/http" = ["helium.desktop"];
-        "x-scheme-handler/https" = ["helium.desktop"];
-        "x-scheme-handler/about" = ["helium.desktop"];
-        "x-scheme-handler/unknown" = ["helium.desktop"];
+        "text/html" = ["chromium-browser.desktop"];
+        "x-scheme-handler/http" = ["chromium-browser.desktop"];
+        "x-scheme-handler/https" = ["chromium-browser.desktop"];
+        "x-scheme-handler/about" = ["chromium-browser.desktop"];
+        "x-scheme-handler/unknown" = ["chromium-browser.desktop"];
 
         # Text
         "text/plain" = ["com.system76.CosmicEdit.desktop"];

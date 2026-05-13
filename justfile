@@ -12,9 +12,13 @@ build:
 dry-build:
         nix build .#nixosConfigurations.$(hostname).config.system.build.toplevel --dry-run
 
-# Build the Travel-Canoe (ISO)
+# Build the Travel-Canoe (minimal ISO)
 iso:
         nix build .#iso
+
+# Build the Travel-Canoe with COSMIC desktop (live ISO)
+iso-cosmic:
+        nix build .#iso-cosmic -o result-cosmic
 
 # Run the Magic Eye (Checks)
 check:

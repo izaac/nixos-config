@@ -37,10 +37,6 @@
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
     };
-    helium = {
-      url = "github:FKouhai/helium2nix/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs @ {
@@ -75,7 +71,12 @@
       canoe = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {inherit userConfig;};
-        modules = [./hosts/canoe/configuration.nix];
+        modules = [./hosts/canoe/minimal.nix];
+      };
+      canoe-cosmic = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {inherit userConfig;};
+        modules = [./hosts/canoe/cosmic.nix];
       };
     };
 
@@ -109,6 +110,7 @@
         extraPkgs
         // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
           iso = inputs.self.nixosConfigurations.canoe.config.system.build.isoImage;
+          iso-cosmic = inputs.self.nixosConfigurations.canoe-cosmic.config.system.build.isoImage;
         })
     );
 

@@ -42,5 +42,8 @@
       # split_lock_mitigate is handled via sysctl in performance.nix
     ];
   };
-  programs.fuse.enable = true;
+  programs.fuse = {
+    enable = true;
+    userAllowOther = true;
+  };
 }

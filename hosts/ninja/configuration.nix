@@ -35,7 +35,6 @@
     ../../modules/core
     ../../modules/gaming
     ../../modules/desktop
-    ../../modules/ai
     ../../users/izaac
     # nixos-hardware: AMD pstate, NVIDIA (nonprime/desktop), SSD trim
     inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
@@ -59,10 +58,6 @@
       };
     };
     desktop.enable = true;
-    ai = {
-      enable = true;
-      ollama.enable = true;
-    };
     core = {
       audio.enable = true;
       bluetooth.enable = true;
