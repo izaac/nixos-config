@@ -4,9 +4,15 @@
   ...
 }: let
   nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
+  waylandFlags = [
+    "--ozone-platform-hint=auto"
+    "--enable-wayland-ime"
+  ];
 in {
   home.packages = [
-    pkgs.google-chrome
+    (pkgs.google-chrome.override {
+      commandLineArgs = waylandFlags;
+    })
     (pkgs.ungoogled-chromium.override {
       commandLineArgs = [
         # GPU / hardware-accelerated rendering
@@ -20,7 +26,11 @@ in {
         "--enable-wayland-ime"
       ];
     })
-    nix-packages.brave-origin
-    pkgs.microsoft-edge
+    (nix-packages.brave-origin.override {
+      commandLineArgs = waylandFlags;
+    })
+    (pkgs.microsoft-edge.override {
+      commandLineArgs = waylandFlags;
+    })
   ];
 }

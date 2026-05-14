@@ -43,6 +43,7 @@
       kubernetes-helm
       kubectl
       lazydocker
+      skopeo
       rclone
       rsync
 
