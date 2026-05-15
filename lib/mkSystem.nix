@@ -1,11 +1,8 @@
 {
   inputs,
-  nixpkgs,
-  stylix,
-  sops-nix,
   userConfig,
 }: hostname: system:
-nixpkgs.lib.nixosSystem {
+inputs.nixpkgs.lib.nixosSystem {
   inherit system;
   specialArgs = {
     inherit inputs userConfig;
@@ -14,8 +11,8 @@ nixpkgs.lib.nixosSystem {
   modules = [
     ../hosts/${hostname}/configuration.nix
     inputs.disko.nixosModules.disko
-    stylix.nixosModules.stylix
-    sops-nix.nixosModules.sops
+    inputs.stylix.nixosModules.stylix
+    inputs.sops-nix.nixosModules.sops
     ../modules/core/sops.nix
     {
       nixpkgs.config.allowUnfree = true;

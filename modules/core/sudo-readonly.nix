@@ -5,7 +5,7 @@
   ...
 }:
 with lib; let
-  cfg = config.mySystem.core.sudoReadonly;
+  cfg = config.mySystem.core."sudo-readonly";
 
   bin = "/run/current-system/sw/bin";
 
@@ -51,7 +51,7 @@ with lib; let
     "${bin}/iotop"
   ];
 in {
-  options.mySystem.core.sudoReadonly = {
+  options.mySystem.core."sudo-readonly" = {
     enable = mkEnableOption "NOPASSWD sudo for read-only system diagnostics";
   };
 

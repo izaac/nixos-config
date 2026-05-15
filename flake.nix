@@ -42,8 +42,6 @@
   outputs = inputs @ {
     self,
     nixpkgs,
-    stylix,
-    sops-nix,
     darwin,
     ...
   }: let
@@ -58,7 +56,7 @@
     userConfig = import ./lib/user.nix;
 
     mkSystem = import ./lib/mkSystem.nix {
-      inherit inputs nixpkgs stylix sops-nix userConfig;
+      inherit inputs userConfig;
     };
 
     treefmtEval =
@@ -70,12 +68,12 @@
       windy = mkSystem "windy" "x86_64-linux";
       canoe = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit userConfig;};
+        specialArgs = {inherit inputs userConfig;};
         modules = [./hosts/canoe/minimal.nix];
       };
       canoe-cosmic = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit userConfig;};
+        specialArgs = {inherit inputs userConfig;};
         modules = [./hosts/canoe/cosmic.nix];
       };
     };

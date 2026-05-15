@@ -38,7 +38,7 @@
       theme.enable = true;
       nix-ld.enable = true;
       yubikey.enable = true;
-      sudoReadonly.enable = true;
+      "sudo-readonly".enable = true;
     };
   };
 

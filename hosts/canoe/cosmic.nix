@@ -11,16 +11,18 @@
 
   isoImage.edition = "cosmic";
 
-  # cosmic-comp owns the seat; X server would race on tty1.
-  services.xserver.enable = lib.mkForce false;
+  services = {
+    # cosmic-comp owns the seat; X server would race on tty1.
+    xserver.enable = lib.mkForce false;
 
-  services.desktopManager.cosmic.enable = true;
+    desktopManager.cosmic.enable = true;
 
-  services.greetd = {
-    enable = true;
-    settings.initial_session = {
-      command = lib.getExe pkgs.cosmic-session;
-      user = "nixos";
+    greetd = {
+      enable = true;
+      settings.initial_session = {
+        command = lib.getExe pkgs.cosmic-session;
+        user = "nixos";
+      };
     };
   };
 }
