@@ -21,28 +21,6 @@
     kernelParams = ["pcie_port_pm=off"];
   };
 
-  # NFS mount — not managed by disko, always present
-  fileSystems."/mnt/storage" = {
-    device = "192.168.0.173:/storage";
-    fsType = "nfs4";
-    options = [
-      "x-systemd.automount"
-      "noauto"
-      "x-systemd.idle-timeout=900"
-      "x-systemd.mount-timeout=5s"
-      # x-systemd.device-timeout is for block devices; systemd-fstab-generator
-      # warns on NFS sources because they're not /dev/* paths.
-      "nconnect=4"
-      "rsize=1048576"
-      "wsize=1048576"
-      "actimeo=60"
-      "noatime"
-      "nodiratime"
-      "hard"
-      "timeo=14"
-    ];
-  };
-
   # disko does not set neededForBoot for root — without this the initrd
   # has no /etc/fstab entry, so systemd never mounts /sysroot after LUKS.
   fileSystems."/".neededForBoot = true;

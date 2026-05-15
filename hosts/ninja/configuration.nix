@@ -63,7 +63,7 @@
       bluetooth.enable = true;
       codecs.enable = true;
       virtualization.enable = true;
-      nfs.enable = true;
+      nfs.enable = false;
       maintenance.enable = true;
       performance.enable = true;
       sops.enable = true;

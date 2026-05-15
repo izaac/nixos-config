@@ -32,7 +32,6 @@
         "file:///home/${userConfig.username}/Videos Videos"
         "file:///home/${userConfig.username}/repos repos"
         "file:///home/${userConfig.username}/Games Games"
-        "file:///mnt/storage storage"
         "file:///mnt/data data"
       ];
     };
