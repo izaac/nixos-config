@@ -29,10 +29,6 @@
       "eeepc_wmi"
       "joydev"
       "pcspkr"
-      # Fragnesia mitigation (CVE-2026-46300) — disable XFRM ESP-in-TCP until
-      # nixpkgs ships a kernel >= 7.0.8 / 6.18.31 with the upstream fix.
-      "esp4"
-      "esp6"
     ];
 
     kernelParams = [
