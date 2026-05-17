@@ -62,6 +62,7 @@ in {
     mission-center # System Monitor (Rust)
     newsflash # GTK4/Libadwaita RSS Reader (Rust)
     drawing # GTK image editor (MS Paint-like)
+    gnome-calculator # GTK4/libadwaita scientific + programming calculator
   ];
 
   xdg = {

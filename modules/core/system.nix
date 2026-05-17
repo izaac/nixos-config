@@ -34,8 +34,14 @@ in {
         keep-derivations = true;
         keep-outputs = true;
         # Explicitly lock substituters to prevent rogue cache injection
-        substituters = ["https://cache.nixos.org"];
-        trusted-public-keys = ["cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="];
+        substituters = [
+          "https://cache.nixos.org"
+          "https://izaac-nix.cachix.org"
+        ];
+        trusted-public-keys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
+        ];
         # Ensure sandbox is on (default, but explicit)
         sandbox = true;
       };
