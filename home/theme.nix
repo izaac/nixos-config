@@ -13,8 +13,6 @@
       activation.setGamesIcon = lib.hm.dag.entryAfter ["writeBoundary"] ''
         $DRY_RUN_CMD ${pkgs.glib}/bin/gio set -t string /home/${userConfig.username}/Games metadata::gvfs.extra-icon folder-cat-mocha-blue-games || true
       '';
-
-      sessionVariables.GTK_THEME = "catppuccin-mocha-blue-standard";
     };
 
     gtk = {
