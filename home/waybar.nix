@@ -23,7 +23,6 @@
         "tray"
         "pulseaudio"
         "network"
-        "bluetooth"
         "battery"
         "cpu"
         "memory"
@@ -90,12 +89,6 @@
         format-disconnected = "  off";
         tooltip-format = "{ifname}: {ipaddr}";
         on-click = "nm-connection-editor";
-      };
-
-      bluetooth = {
-        format = "  {status}";
-        format-connected = "  {device_alias}";
-        on-click = "blueman-manager";
       };
 
       battery = {
