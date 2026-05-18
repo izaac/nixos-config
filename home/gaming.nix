@@ -5,12 +5,11 @@
   inputs,
   ...
 }: let
-  flashgbx = pkgs.callPackage ./flashgbx.nix {};
   nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
 in {
   home.packages = with pkgs; [
     # Custom
-    flashgbx
+    nix-packages.flashgbx
     nix-packages.zelda-oot
 
     # Repack Support Tools
