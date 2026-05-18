@@ -102,6 +102,7 @@ in {
     hotkey-overlay.skip-at-startup = true;
 
     spawn-at-startup = [
+      {command = ["waybar"];}
       {command = ["mako"];}
       {command = ["nm-applet" "--indicator"];}
       {command = ["blueman-applet"];}

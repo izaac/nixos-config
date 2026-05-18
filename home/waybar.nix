@@ -9,7 +9,11 @@
 
   programs.waybar = {
     enable = true;
-    systemd.enable = true; # Start after graphical-session.target (proper ordering)
+    # Spawned by niri at session start (see home/niri.nix spawn-at-startup).
+    # systemd.enable = true would gate on WAYLAND_DISPLAY, which niri does
+    # not import into the systemd user manager early enough, so the unit
+    # silently skips with "unmet condition" on every relogin.
+    systemd.enable = false;
 
     settings.main = {
       layer = "top";
