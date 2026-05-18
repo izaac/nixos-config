@@ -110,7 +110,7 @@ in {
     ];
 
     window-rules = [
-      # Picture-in-Picture: float by default (Firefox + Chromium)
+      # Picture-in-Picture: float by default (Firefox + Chromium-based)
       {
         matches = [
           {
@@ -118,6 +118,7 @@ in {
             title = "^Picture-in-Picture$";
           }
           {
+            app-id = "^(google-chrome|brave-browser|brave-origin|chromium)$";
             title = "^Picture in picture$";
           }
         ];
@@ -161,7 +162,7 @@ in {
 
       # --- Window/session ---
       "Mod+Q".action = close-window;
-      "Mod+Shift+E".action.quit.skip-confirmation = false;
+      "Mod+Shift+E".action.quit.skip-confirmation = true;
 
       # --- Focus ---
       "Mod+Left".action = focus-column-left;

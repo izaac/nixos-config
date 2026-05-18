@@ -4,7 +4,6 @@
     networkmanagerapplet # nm-applet + nm-connection-editor
     blueman # blueman-applet + manager
     pavucontrol # PulseAudio volume control (fallback GUI)
-    font-awesome # Glyphs used in waybar modules
   ];
 
   programs.waybar = {

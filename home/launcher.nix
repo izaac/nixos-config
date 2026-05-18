@@ -7,7 +7,7 @@ _: {
         layer = "overlay";
         width = 40;
         lines = 12;
-        prompt = "'> '";
+        prompt = "> ";
       };
       border = {
         radius = 8;
