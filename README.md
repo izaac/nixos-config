@@ -6,9 +6,11 @@ Custom packages live in a separate [nix-packages](https://github.com/izaac/nix-p
 ## Overview
 
 - **OS:** NixOS (Branch: 25.11)
-- **DM:** cosmic-greeter (greetd)
-- **DE:** COSMIC (Epoch 1)
-- **Theme:** Catppuccin Mocha (Blue Accent, system-wide via catppuccin/nix)
+- **DM:** tuigreet (greetd) with YubiKey U2F
+- **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake) — unstable channel for xwayland-satellite
+- **Shell of the desktop:** Waybar (bar) + fuzzel (launcher) + mako (notifications) + swaylock-effects/swayidle (lock) + wlogout (power menu)
+- **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
+- **Theme:** Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix)
 - **Shell:** Brush (Rust bash-compatible) + Starship + Atuin + Zoxide
 - **Terminal:** WezTerm + Zellij
 - **Editor:** Helix
@@ -23,9 +25,14 @@ lib/               # mkSystem helper, user config
 hosts/             # Per-host configuration.nix + hardware
 modules/           # Reusable NixOS modules (mySystem.* options)
   core/            # Audio, codecs, nix-ld, performance, sops, maintenance
-  desktop/         # COSMIC DE, display manager
+  desktop/         # Niri compositor, tuigreet greeter, NVIDIA glue
   gaming/          # Steam, GameMode, sched-ext (SCX)
 home/              # Home Manager modules (per-app .nix files)
+  niri.nix         # Compositor config, keybinds, spawn-at-startup
+  waybar.nix       # Status bar
+  launcher.nix     # fuzzel launcher
+  notifications.nix # mako
+  screenlock.nix   # swaylock + swayidle
   shell/           # Split shell config (aliases, functions, packages)
 users/             # Per-user profile composition
 overlays/          # Package overrides

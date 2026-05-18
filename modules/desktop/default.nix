@@ -14,32 +14,38 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # --- COSMIC Desktop ---
-    services = {
-      desktopManager.cosmic.enable = true;
+    # --- Niri (scrollable-tiling Wayland compositor) ---
+    # nixosModules.niri enables programs.niri, sets the binary cache,
+    # wires the overlay, and auto-imports the home-manager + stylix HM modules.
+    programs.niri = {
+      enable = true;
+      # Unstable required for xwayland-satellite integration.
+      package = pkgs.niri-unstable;
+    };
 
-      # --- DISPLAY MANAGER (cosmic-greeter via greetd) ---
-      displayManager.cosmic-greeter.enable = true;
-
-      # Override greeter command to set cursor theme.
-      # Do NOT add XDG_SESSION_TYPE here — greetd creates the PAM session
-      # before running this command, so pam_systemd won't see it.
-      greetd.settings.default_session.command = lib.mkForce (
-        builtins.concatStringsSep " " [
-          "${pkgs.coreutils}/bin/env"
-          "XCURSOR_THEME=\${XCURSOR_THEME:-Pop}"
-          "${pkgs.cosmic-greeter}/bin/cosmic-greeter-start"
-        ]
-      );
-
-      # Do NOT enable xserver — cosmic-comp provides its own XWayland.
-      # Enabling it spawns a competing X session on tty1 that blocks DRM master.
+    # --- Display Manager: tuigreet on greetd ---
+    services.greetd = {
+      enable = true;
+      settings = {
+        default_session = {
+          command = builtins.concatStringsSep " " [
+            "${pkgs.tuigreet}/bin/tuigreet"
+            "--time"
+            "--asterisks"
+            "--remember"
+            "--remember-user-session"
+            "--cmd niri-session"
+          ];
+          user = "greeter";
+        };
+      };
     };
 
     # Ensure pam_systemd registers the greeter session as type 'wayland'.
-    # Must be in the service environment (not the command) so pam_systemd
-    # picks it up via getenv() fallback before the command runs.
     systemd.services.greetd.environment.XDG_SESSION_TYPE = "wayland";
+
+    # Do NOT enable xserver — niri runs Wayland natively; xwayland-satellite
+    # is launched per-user from home/niri.nix for X11 app compatibility.
 
     programs.gnupg.agent = {
       enable = true;
@@ -51,30 +57,41 @@ in {
     programs.localsend.enable = true;
 
     security.pam.services = {
-      cosmic-greeter.enableGnomeKeyring = true;
+      greetd.enableGnomeKeyring = true;
       login.enableGnomeKeyring = true;
+      swaylock = {};
     };
 
-    # Portals (COSMIC registers its own via the module)
-    xdg.portal = {
-      enable = true;
-      extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    # Portals — niri's nixos module configures gnome+gtk portals automatically.
+    # Polkit agent for privileged GUI prompts.
+    security.polkit.enable = true;
+    systemd.user.services.polkit-gnome-authentication-agent-1 = {
+      description = "polkit-gnome-authentication-agent-1";
+      wantedBy = ["graphical-session.target"];
+      wants = ["graphical-session.target"];
+      after = ["graphical-session.target"];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+        Restart = "on-failure";
+        RestartSec = 1;
+        TimeoutStopSec = 10;
+      };
     };
 
-    # Clipboard manager protocol for COSMIC
     environment = {
       gnome.excludePackages = with pkgs; [
         nautilus
         gnome-settings-daemon
         gnome-online-accounts
       ];
-      sessionVariables.COSMIC_DATA_CONTROL_ENABLED = "1";
       systemPackages = with pkgs; [
         adwaita-icon-theme
         libgnome-keyring
         seahorse # GPG/SSH key management
         gcr # Graphical prompts (GPG, etc.)
         pam_gnupg # GPG unlocking
+        polkit_gnome
       ];
     };
   };

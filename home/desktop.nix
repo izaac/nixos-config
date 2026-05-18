@@ -1,10 +1,4 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: let
-  nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
-in {
+{pkgs, ...}: {
   imports = [
     ./distrobox.nix
     ./wezterm.nix
@@ -34,7 +28,6 @@ in {
     monophony
     amberol # Simple Rust Music Player
     shortwave # Rust Internet Radio
-    nix-packages.ethereal-waves # COSMIC Music Player
 
     # General Software
     fragments # GTK Torrent Client (Rust)
@@ -43,8 +36,15 @@ in {
     sparrow
     ffmpeg-full
 
-    # COSMIC Extensions & Integration
-    cosmic-applets # Official System76 applet bundle
+    # File manager + archives + preview thumbnailers
+    nemo-with-extensions # Nemo + bundled extensions (image preview, etc.)
+    nemo-fileroller # Archive context-menu integration
+    file-roller # Archive manager
+    ffmpegthumbnailer # Video thumbnails for Nemo
+    webp-pixbuf-loader # WebP image thumbnails
+
+    # GUI text editor (honors GNOME prefer-dark via dconf)
+    gnome-text-editor
 
     # CD/DVD Backup & Cloning
     cdrtools # CLI: readcd, etc.
@@ -90,18 +90,18 @@ in {
         "x-scheme-handler/unknown" = ["brave-origin.desktop"];
 
         # Text
-        "text/plain" = ["com.system76.CosmicEdit.desktop"];
-        "text/markdown" = ["com.system76.CosmicEdit.desktop"];
-        "text/x-log" = ["com.system76.CosmicEdit.desktop"];
+        "text/plain" = ["org.gnome.TextEditor.desktop"];
+        "text/markdown" = ["org.gnome.TextEditor.desktop"];
+        "text/x-log" = ["org.gnome.TextEditor.desktop"];
 
-        # Archives
-        "application/zip" = ["com.system76.CosmicFiles.desktop"];
-        "application/x-tar" = ["com.system76.CosmicFiles.desktop"];
-        "application/x-7z-compressed" = ["com.system76.CosmicFiles.desktop"];
-        "application/x-rar" = ["com.system76.CosmicFiles.desktop"];
-        "application/gzip" = ["com.system76.CosmicFiles.desktop"];
-        "application/x-bzip2" = ["com.system76.CosmicFiles.desktop"];
-        "application/x-xz" = ["com.system76.CosmicFiles.desktop"];
+        # Archives (file-roller)
+        "application/zip" = ["org.gnome.FileRoller.desktop"];
+        "application/x-tar" = ["org.gnome.FileRoller.desktop"];
+        "application/x-7z-compressed" = ["org.gnome.FileRoller.desktop"];
+        "application/x-rar" = ["org.gnome.FileRoller.desktop"];
+        "application/gzip" = ["org.gnome.FileRoller.desktop"];
+        "application/x-bzip2" = ["org.gnome.FileRoller.desktop"];
+        "application/x-xz" = ["org.gnome.FileRoller.desktop"];
 
         # Video
         "video/mp4" = ["com.github.rafostar.Clapper.desktop"];
@@ -120,15 +120,15 @@ in {
         "video/vnd.rn-realvideo" = ["com.github.rafostar.Clapper.desktop"];
         "video/x-ms-wmv" = ["com.github.rafostar.Clapper.desktop"];
 
-        # Audio
-        "audio/mpeg" = ["com.system76.CosmicPlayer.desktop"];
-        "audio/flac" = ["com.system76.CosmicPlayer.desktop"];
-        "audio/x-wav" = ["com.system76.CosmicPlayer.desktop"];
-        "audio/ogg" = ["com.system76.CosmicPlayer.desktop"];
-        "audio/x-vorbis+ogg" = ["com.system76.CosmicPlayer.desktop"];
-        "audio/mp4" = ["com.system76.CosmicPlayer.desktop"];
-        "audio/x-flac" = ["com.system76.CosmicPlayer.desktop"];
-        "audio/x-mp3" = ["com.system76.CosmicPlayer.desktop"];
+        # Audio (Amberol)
+        "audio/mpeg" = ["io.bassi.Amberol.desktop"];
+        "audio/flac" = ["io.bassi.Amberol.desktop"];
+        "audio/x-wav" = ["io.bassi.Amberol.desktop"];
+        "audio/ogg" = ["io.bassi.Amberol.desktop"];
+        "audio/x-vorbis+ogg" = ["io.bassi.Amberol.desktop"];
+        "audio/mp4" = ["io.bassi.Amberol.desktop"];
+        "audio/x-flac" = ["io.bassi.Amberol.desktop"];
+        "audio/x-mp3" = ["io.bassi.Amberol.desktop"];
 
         # Documents / Images
         "application/pdf" = ["org.gnome.Papers.desktop"];
@@ -141,8 +141,8 @@ in {
         "image/bmp" = ["org.gnome.Loupe.desktop"];
         "image/tiff" = ["org.gnome.Loupe.desktop"];
 
-        # Directories (COSMIC Files)
-        "inode/directory" = ["com.system76.CosmicFiles.desktop"];
+        # Directories (Nemo)
+        "inode/directory" = ["nemo.desktop"];
       };
     };
   };

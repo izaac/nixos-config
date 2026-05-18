@@ -29,8 +29,8 @@ in {
     security.pam.services = {
       login.u2fAuth = true;
       sudo.u2fAuth = true;
-      # Enable U2F for COSMIC (greetd) login
-      cosmic-greeter.u2fAuth = true;
+      # Enable U2F for greetd (tuigreet) login
+      greetd.u2fAuth = true;
     };
 
     # YubiKey related packages
