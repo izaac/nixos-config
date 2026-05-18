@@ -39,7 +39,10 @@
       "pcie_ports=native"
       "amd_pstate=active"
       "preempt=full"
-      # split_lock_mitigate is handled via sysctl in performance.nix
+      # Silence split-lock dmesg spam from Steam/Wine games. The mitigation
+      # itself is already disabled via kernel.split_lock_mitigate=0 in
+      # performance.nix; this just stops the kernel from logging traps.
+      "split_lock_detect=off"
     ];
   };
   programs.fuse = {

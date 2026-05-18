@@ -56,6 +56,9 @@ in {
     # Cross-platform LAN file transfer (auto-opens firewall port 53317).
     programs.localsend.enable = true;
 
+    # Auto-mount removable media (USB drives, optical) for udiskie + Nemo.
+    services.udisks2.enable = true;
+
     security.pam.services = {
       greetd.enableGnomeKeyring = true;
       login.enableGnomeKeyring = true;
