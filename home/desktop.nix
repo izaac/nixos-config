@@ -74,7 +74,7 @@
     desktopEntries.ventoy = {
       name = "Ventoy";
       exec = "sudo ventoy-full-gtk";
-      icon = "ventoy";
+      icon = "drive-removable-media-usb";
       terminal = false;
       categories = ["Utility" "System"];
     };

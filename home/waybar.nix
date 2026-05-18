@@ -32,7 +32,7 @@
       "custom/power" = {
         format = "⏻";
         tooltip = false;
-        on-click = "wlogout";
+        on-click = "wlogout -b 2";
       };
 
       "niri/workspaces" = {

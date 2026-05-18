@@ -151,7 +151,7 @@ in {
       "Mod+E".action = spawn "nemo";
       "Mod+B".action = spawn "brave";
       "Mod+Ctrl+L".action = spawn "swaylock";
-      "Mod+Shift+P".action = spawn "wlogout";
+      "Mod+Shift+P".action = spawn "wlogout" "-b" "2";
       "Mod+S".action = spawn (lib.getExe audioSinkMenu);
       "Mod+V".action = sh "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
 
