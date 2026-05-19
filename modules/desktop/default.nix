@@ -65,7 +65,17 @@ in {
       swaylock = {};
     };
 
-    # Portals — niri's nixos module configures gnome+gtk portals automatically.
+    # Portals — niri's nixos module enables xdg-desktop-portal-gnome.
+    # Chromium/Brave/Electron file dialogs need the GTK portal; add it
+    # explicitly and prefer it for the FileChooser interface.
+    xdg.portal = {
+      extraPortals = [pkgs.xdg-desktop-portal-gtk];
+      config.common = {
+        default = ["gnome" "gtk"];
+        "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
+      };
+    };
+
     # Polkit agent for privileged GUI prompts.
     security.polkit.enable = true;
     systemd.user.services.polkit-gnome-authentication-agent-1 = {
