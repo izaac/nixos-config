@@ -4,6 +4,7 @@
     ./fastfetch.nix
     ./ssh.nix
     ./rclone-gdrive.nix
+    ./rclone-proton.nix
     ./zellij.nix
     ./theme.nix
     ./whosthere.nix
