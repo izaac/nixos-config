@@ -17,6 +17,91 @@
       [ -n "$sel" ] && pactl set-default-sink "$(echo "$sel" | cut -f1)"
     '';
   };
+  osdNotify = pkgs.writeShellApplication {
+    name = "osd-notify";
+    runtimeInputs = with pkgs; [wireplumber brightnessctl libnotify gawk coreutils gnugrep];
+    text = ''
+      # Single-bubble OSD via mako: same sync tag replaces prior notification,
+      # so spinning the volume wheel updates one bubble instead of stacking.
+      bar() {
+        # tr is byte-oriented and mangles multibyte chars, so build the bar
+        # one glyph at a time to keep the output valid UTF-8.
+        local pct=$1 filled empty i out=""
+        filled=$((pct / 5))
+        [ "$filled" -gt 20 ] && filled=20
+        empty=$((20 - filled))
+        for ((i = 0; i < filled; i++)); do out+="█"; done
+        for ((i = 0; i < empty;  i++)); do out+="░"; done
+        printf '%s' "$out"
+      }
+
+      notify() {
+        # $1=sync-tag $2=icon $3=title $4=value(0-100) $5=body-extra
+        notify-send \
+          -h "string:x-canonical-private-synchronous:$1" \
+          -h "int:value:$4" \
+          -t 1500 \
+          -i "$2" \
+          "$3" "$(bar "$4")  $4%  $5"
+      }
+
+      volume() {
+        wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ "$1" >/dev/null
+        read -r _ raw muted < <(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+        pct=$(awk -v v="$raw" 'BEGIN{printf "%d", v*100}')
+        if [ "$muted" = "[MUTED]" ]; then
+          notify volume audio-volume-muted "Volume" "$pct" "(muted)"
+        else
+          icon=audio-volume-high
+          [ "$pct" -lt 66 ] && icon=audio-volume-medium
+          [ "$pct" -lt 33 ] && icon=audio-volume-low
+          notify volume "$icon" "Volume" "$pct" ""
+        fi
+      }
+
+      mute_sink() {
+        wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+        read -r _ raw muted < <(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+        pct=$(awk -v v="$raw" 'BEGIN{printf "%d", v*100}')
+        if [ "$muted" = "[MUTED]" ]; then
+          notify volume audio-volume-muted "Volume" "$pct" "(muted)"
+        else
+          notify volume audio-volume-high "Volume" "$pct" ""
+        fi
+      }
+
+      mute_source() {
+        wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
+        if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -q MUTED; then
+          notify-send -h string:x-canonical-private-synchronous:mic \
+                      -t 1500 -i microphone-sensitivity-muted \
+                      "Microphone" "Muted"
+        else
+          notify-send -h string:x-canonical-private-synchronous:mic \
+                      -t 1500 -i microphone-sensitivity-high \
+                      "Microphone" "Unmuted"
+        fi
+      }
+
+      brightness() {
+        brightnessctl set "$1" >/dev/null
+        cur=$(brightnessctl get)
+        max=$(brightnessctl max)
+        pct=$(( cur * 100 / max ))
+        notify brightness display-brightness "Brightness" "$pct" ""
+      }
+
+      case "$1" in
+        volume-up)    volume "5%+" ;;
+        volume-down)  volume "5%-" ;;
+        volume-mute)  mute_sink ;;
+        mic-mute)     mute_source ;;
+        brightness-up)   brightness "5%+" ;;
+        brightness-down) brightness "5%-" ;;
+        *) echo "usage: osd-notify {volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down}" >&2; exit 2 ;;
+      esac
+    '';
+  };
   screenRecord = pkgs.writeShellApplication {
     name = "screen-record";
     runtimeInputs = with pkgs; [wf-recorder slurp libnotify coreutils procps];
@@ -260,21 +345,21 @@ in {
       "Shift+Print".action = spawn (lib.getExe screenRecord) "region";
       "Ctrl+Shift+Print".action = spawn (lib.getExe screenRecord) "screen";
 
-      # --- Audio (wpctl uses PipeWire/WirePlumber) ---
+      # --- Audio (wpctl + mako OSD) ---
       "XF86AudioRaiseVolume" = {
-        action = spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%+";
+        action = spawn (lib.getExe osdNotify) "volume-up";
         allow-when-locked = true;
       };
       "XF86AudioLowerVolume" = {
-        action = spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-";
+        action = spawn (lib.getExe osdNotify) "volume-down";
         allow-when-locked = true;
       };
       "XF86AudioMute" = {
-        action = spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle";
+        action = spawn (lib.getExe osdNotify) "volume-mute";
         allow-when-locked = true;
       };
       "XF86AudioMicMute" = {
-        action = spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle";
+        action = spawn (lib.getExe osdNotify) "mic-mute";
         allow-when-locked = true;
       };
       "XF86AudioPlay".action = spawn "playerctl" "play-pause";
@@ -283,11 +368,11 @@ in {
 
       # --- Brightness (laptops) ---
       "XF86MonBrightnessUp" = {
-        action = spawn "brightnessctl" "set" "5%+";
+        action = spawn (lib.getExe osdNotify) "brightness-up";
         allow-when-locked = true;
       };
       "XF86MonBrightnessDown" = {
-        action = spawn "brightnessctl" "set" "5%-";
+        action = spawn (lib.getExe osdNotify) "brightness-down";
         allow-when-locked = true;
       };
     };

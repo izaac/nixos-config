@@ -23,7 +23,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    helix
     git
     neovim
     usbutils

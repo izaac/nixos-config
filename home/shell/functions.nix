@@ -46,14 +46,8 @@ in {
       ask "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
     }
 
-    # command_not_found_handle: Monko offer help (interactive only)
-    command_not_found_handle() {
-      if [[ -t 2 ]]; then
-        echo "Monko not know command: $1" >&2
-        echo "Maybe you want: monko why $1 not work?" >&2
-      fi
-      return 127
-    }
+    # nix-index installs its own command_not_found_handle that suggests
+    # `nix-shell -p <pkg>` for missing binaries; intentionally not overriding.
 
     # --- Gemin / Copilot Wrappers ---
     ask() {
@@ -70,6 +64,12 @@ in {
         login|init|update|version|help) PATH="${cleanPath}" COPILOT_PROGRESS=false copilot "$@" ;;
         *) PATH="${cleanPath}" COPILOT_PROGRESS=false copilot -p "$*" ;;
       esac
+    }
+
+    # --- Nix Generation Diff ---
+    # Lazy form: $() expands on each call (shell-alias form expanded at init).
+    nv-sys() {
+      nvd diff "$(command ls -vd /nix/var/nix/profiles/system-*-link | tail -2)"
     }
 
     # --- Fast Package Search ---

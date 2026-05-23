@@ -5,7 +5,7 @@
     ./ssh.nix
     ./rclone-gdrive.nix
     ./rclone-proton.nix
-    ./zellij.nix
+    ./tmux.nix
     ./theme.nix
     ./whosthere.nix
     ./dev.nix

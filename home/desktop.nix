@@ -7,7 +7,7 @@
     ./abcde.nix
     ./qt.nix
     ./chrome.nix
-    ./helix.nix
+    ./lazyvim.nix
     ./vscode.nix
   ];
 
@@ -149,10 +149,20 @@
 
   services.udiskie.enable = true;
 
-  # Disable unused gvfs monitors (GNOME Online Accounts not used)
-  xdg.configFile."autostart/gvfs-goa-volume-monitor.desktop".text = ''
-    [Desktop Entry]
-    Type=Application
-    Hidden=true
-  '';
+  # Suppress xdg-autostart for tray apps: niri's spawn-at-startup launches
+  # blueman + nm-applet directly, and pasystray runs on-demand from waybar.
+  # The systemd-xdg-autostart-generator otherwise double-starts them and
+  # fails because the first instance already owns the tray slot.
+  xdg.configFile = let
+    hidden = ''
+      [Desktop Entry]
+      Type=Application
+      Hidden=true
+    '';
+  in {
+    "autostart/gvfs-goa-volume-monitor.desktop".text = hidden;
+    "autostart/blueman.desktop".text = hidden;
+    "autostart/nm-applet.desktop".text = hidden;
+    "autostart/pasystray.desktop".text = hidden;
+  };
 }

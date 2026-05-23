@@ -14,22 +14,11 @@ _: {
         printf "\033]1337;SetUserVar=%s=%s\007" "WEZTERM_HOST" "$_wezterm_host_b64"
       }
 
-      # Inject into PS1/PROMPT_COMMAND for Brush/Bash
+      # Inject into PS1/PROMPT_COMMAND
       case "$PS1" in
         *"\033]133;A\007"*) ;;
         *) PS1="\[$(_wezterm_osc133_prompt_start)\]$PS1" ;;
       esac
-
-      # Brush-specific hook for command start/end
-      if [[ -n "$BRUSH_VERSION" ]]; then
-        trap '_wezterm_osc133_command_start' DEBUG
-        PROMPT_COMMAND="_wezterm_osc133_command_end; ''${PROMPT_COMMAND:-}"
-      fi
-    fi
-
-    # Suppress brush's bind warnings
-    if [[ -n "$BRUSH_VERSION" ]]; then
-      bind() { builtin bind "$@" 2>/dev/null; return 0; }
     fi
 
     # GPG TTY FIX

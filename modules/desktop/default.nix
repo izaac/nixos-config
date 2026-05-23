@@ -76,8 +76,11 @@ in {
       };
     };
 
-    # Polkit agent for privileged GUI prompts.
+    # Polkit agent for privileged GUI prompts. niri-flake auto-spawns a KDE
+    # polkit agent which races ours and loses every login; mask it so only
+    # the GNOME agent runs.
     security.polkit.enable = true;
+    systemd.user.services.niri-flake-polkit.enable = lib.mkForce false;
     systemd.user.services.polkit-gnome-authentication-agent-1 = {
       description = "polkit-gnome-authentication-agent-1";
       wantedBy = ["graphical-session.target"];

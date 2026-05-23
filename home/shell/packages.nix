@@ -6,7 +6,6 @@
   home.packages = with pkgs;
     [
       # --- CORE CLI UTILS ---
-      (lib.hiPrio uutils-coreutils-noprefix)
       jaq
       sd
       choose

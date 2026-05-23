@@ -15,7 +15,5 @@ in {
     ./shell/env.nix
   ];
 
-  home.packages = with pkgs;
-    lib.optionals (nix-packages ? vcrunch) [nix-packages.vcrunch]
-    ++ lib.optionals (nix-packages ? brush-shell) [nix-packages.brush-shell];
+  home.packages = lib.optionals (nix-packages ? vcrunch) [nix-packages.vcrunch];
 }

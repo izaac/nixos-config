@@ -8,8 +8,8 @@ _: {
       local act = wezterm.action
       local config = wezterm.config_builder()
 
-      -- Launch brush as the interactive shell
-      config.default_prog = { 'brush', '--login' }
+      -- Launch bash as the interactive shell (non-login so HM's .bashrc fires)
+      config.default_prog = { 'bash' }
 
       -- Window
       config.window_background_opacity = 0.90
@@ -29,15 +29,7 @@ _: {
       config.font = wezterm.font('JetBrainsMono Nerd Font Mono')
       config.font_size = 11.0
 
-      -- Theme: Catppuccin Mocha (built-in) with Kitty overrides
-      config.color_scheme = 'Catppuccin Mocha'
-      config.colors = {
-        background = '#030305',
-        cursor_bg = '#f5e0dc',
-        cursor_fg = '#1e1e2e',
-        selection_fg = '#1e1e2e',
-        selection_bg = '#f5e0dc',
-      }
+      -- Colors come from Stylix (stylix.targets.wezterm); no manual palette here.
 
       -- Tab Bar (matching Kitty's bottom powerline style)
       config.enable_tab_bar = true
@@ -122,7 +114,7 @@ _: {
       -- Tab title: show process name + cwd basename with icons
       wezterm.on('format-tab-title', function(tab, _tabs, _panes, _config, _hover, _max_width)
         local pane = tab.active_pane
-        local title = pane.foreground_process_name:match('([^/]+)$') or 'brush'
+        local title = pane.foreground_process_name:match('([^/]+)$') or 'bash'
         local cwd = pane.current_working_dir
         local dir = ""
 
@@ -135,18 +127,19 @@ _: {
         end
 
         local icons = {
-          ['hx'] = '󰚀',
-          ['helix'] = '󰚀',
+          ['nvim'] = '󰕷',
+          ['vim'] = '󰕷',
+          ['vi'] = '󰕷',
+          ['tmux'] = '󱂬',
           ['nix'] = '󱄅',
           ['git'] = '󰊢',
           ['yazi'] = '󰇥',
-          ['brush'] = '󱆃',
+          ['bash'] = '󱆃',
           ['btop'] = '󰄦',
           ['sudo'] = '󰌆',
           ['ssh'] = '󰒍',
           ['man'] = '󰈙',
           ['cat'] = '󰈙',
-          ['bat'] = '󰈙',
         }
 
         local icon = icons[title] or '󰆍'

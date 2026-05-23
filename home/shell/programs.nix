@@ -144,10 +144,8 @@
         fi
       '';
 
-      sessionVariables = {
-        EDITOR = "hx";
-        VISUAL = "hx";
-      };
+      # EDITOR/VISUAL set by programs.neovim.defaultEditor on Linux; Mac has
+      # no neovim, so leaving them unset there is intentional.
     };
   };
 }

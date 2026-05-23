@@ -29,7 +29,7 @@ in {
     security.sudo-rs = {
       wheelNeedsPassword = true;
       extraConfig = ''
-        Defaults editor=${pkgs.helix}/bin/hx
+        Defaults editor=${pkgs.neovim}/bin/nvim
       '';
     };
   };

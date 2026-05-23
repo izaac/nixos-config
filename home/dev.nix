@@ -35,7 +35,7 @@
       '';
 
       # Devshell stdenv prepends GNU coreutils to PATH, burying user
-      # profile tools (uutils-coreutils, rm-improved, etc.).
+      # profile tools (rm-improved, etc.).
       # Wraps use_flake to re-prepend user profile after devshell PATH.
       ".config/direnv/lib/zz-user-path.sh".text = ''
         eval "_original_$(declare -f use_flake)"

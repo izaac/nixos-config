@@ -45,7 +45,7 @@ in {
       # TTY rescue tools (root accessible)
       vim
       git
-      zellij
+      tmux
       ripgrep
       fd
       btop

@@ -6,20 +6,11 @@
 }: {
   home = {
     sessionVariables = {
-      PAGER = "bat";
+      PAGER = "less";
       DIRENV_LOG_FORMAT = "";
       TERMINAL = "wezterm";
-      MANPAGER = "sh -c 'col -bx | bat -l man -p'";
       ATUIN_NO_MODIFY_DB = "true";
       QA_INFRA_DIR = "/home/${userConfig.username}/repos/qa-infra-automation";
-    };
-
-    file = {
-      ".brushrc".text = ''
-        if type starship_precmd &>/dev/null; then
-          PROMPT_COMMAND="starship_precmd;''${PROMPT_COMMAND:-}"
-        fi
-      '';
     };
   };
 
@@ -33,14 +24,6 @@
       set pget:default-n 5
       set net:connection-limit 10
       set net:connection-takeover yes
-    '';
-
-    configFile."brush/config.toml".text = ''
-      [ui]
-      syntax-highlighting = true
-
-      [experimental]
-      zsh-hooks = true
     '';
 
     desktopEntries = lib.mkIf pkgs.stdenv.isLinux {
