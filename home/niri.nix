@@ -17,6 +17,32 @@
       [ -n "$sel" ] && pactl set-default-sink "$(echo "$sel" | cut -f1)"
     '';
   };
+  screenRecord = pkgs.writeShellApplication {
+    name = "screen-record";
+    runtimeInputs = with pkgs; [wf-recorder slurp libnotify coreutils procps];
+    text = ''
+      mode="''${1:-region}"
+      outdir="$HOME/Videos"
+      mkdir -p "$outdir"
+      if pgrep -x wf-recorder >/dev/null; then
+        pkill -INT -x wf-recorder
+        notify-send "Screen recording" "Stopped"
+        exit 0
+      fi
+      out="$outdir/rec-$(date +%Y%m%d-%H%M%S).mp4"
+      case "$mode" in
+        region)
+          geom=$(slurp) || exit 0
+          notify-send "Screen recording" "Started (region) → $out"
+          wf-recorder -g "$geom" -f "$out"
+          ;;
+        screen)
+          notify-send "Screen recording" "Started (screen) → $out"
+          wf-recorder -f "$out"
+          ;;
+      esac
+    '';
+  };
 in {
   # Apply Stylix theme tokens to niri config.
   stylix.targets.niri.enable = true;
@@ -56,6 +82,7 @@ in {
     cliphist # Clipboard history
     grim # Screen capture
     slurp # Region picker
+    wf-recorder # Screen recorder (Wayland)
     playerctl # MPRIS media control
     libnotify # notify-send for keybind feedback
     wlogout # Graphical power menu (logout/reboot/poweroff/suspend/lock)
@@ -228,6 +255,10 @@ in {
       "Print".action.screenshot = {};
       "Ctrl+Print".action.screenshot-screen = {};
       "Alt+Print".action.screenshot-window = {};
+
+      # --- Screen recording (toggle: press to start, press again to stop) ---
+      "Shift+Print".action = spawn (lib.getExe screenRecord) "region";
+      "Ctrl+Shift+Print".action = spawn (lib.getExe screenRecord) "screen";
 
       # --- Audio (wpctl uses PipeWire/WirePlumber) ---
       "XF86AudioRaiseVolume" = {
