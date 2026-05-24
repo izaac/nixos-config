@@ -8,7 +8,6 @@ _: {
     lt = "_smart_eza --tree --level=2";
 
     # --- VIEWERS & DATA ---
-    jq = "jaq";
     sg = "ast-grep";
     hex = "hexyl";
     md = "mdcat";
@@ -16,7 +15,6 @@ _: {
     # --- NETWORK ---
     mtr = "trip";
     ping = "gping";
-    curl = "xh";
     dig = "doggo";
 
     # --- SYSTEM & MONITORING ---

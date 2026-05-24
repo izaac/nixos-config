@@ -1,66 +1,47 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   home.packages = with pkgs; [
-    macchina
+    fastfetch
   ];
 
-  xdg.configFile = {
-    "macchina/macchina.toml".text = ''
-      theme = "nixos"
-    '';
-
-    "macchina/nixos.ascii".text = ''
-        \\  \\ //
-       ==\\__\\/ //
-         //   \\//
-      ==//     //==
-       //\\___//
-      // /\\  \\==
-        // \\  \\
-    '';
-
-    "macchina/themes/nixos.toml".text = ''
-      [custom_ascii]
-      path = "${config.xdg.configHome}/macchina/nixos.ascii"
-      color = "Blue"
-
-      [box]
-      title = "NixOS"
-      border = "rounded"
-      visible = true
-
-      [box.inner_margin]
-      x = 1
-      y = 0
-
-      [randomize]
-      key_color = false
-      separator_color = false
-
-      [keys]
-      host = "Host"
-      machine = "Machine"
-      kernel = "Kernel"
-      distribution = "Distro"
-      os = "OS"
-      desktop_environment = "DE"
-      window_manager = "WM"
-      terminal = "Terminal"
-      shell = "Shell"
-      packages = "Packages"
-      uptime = "Uptime"
-      memory = "Memory"
-      battery = "Battery"
-
-      [palette]
-      type = "Light"
-
-      [color]
-      key_color = "Blue"
-      separator_color = "Cyan"
-    '';
-  };
+  xdg.configFile."fastfetch/config.jsonc".text = ''
+    {
+      "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+      "modules": [
+        "title",
+        "separator",
+        "os",
+        "host",
+        "kernel",
+        "uptime",
+        "packages",
+        "shell",
+        "display",
+        "de",
+        "wm",
+        "wmtheme",
+        "theme",
+        "icons",
+        "font",
+        "cursor",
+        "terminal",
+        "terminalfont",
+        "cpu",
+        "gpu",
+        {
+          "type": "command",
+          "key": "NVIDIA Driver",
+          "text": "cat /sys/module/nvidia/version"
+        },
+        "memory",
+        "swap",
+        "disk",
+        "localip",
+        "battery",
+        "poweradapter",
+        "locale",
+        "break",
+        "colors"
+      ]
+    }
+  '';
 }

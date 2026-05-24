@@ -6,7 +6,7 @@
   home.packages = with pkgs;
     [
       # --- CORE CLI UTILS ---
-      jaq
+      jq
       sd
       choose
       rm-improved
@@ -34,7 +34,6 @@
       trippy
       gping
       doggo
-      xh
       lftp
 
       # --- CLOUD & CONTAINERS ---

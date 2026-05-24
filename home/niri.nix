@@ -176,6 +176,16 @@ in {
   programs.niri.settings = {
     prefer-no-csd = true;
 
+    # LG UltraGear 49" — pin to native 144Hz mode + enable FreeSync.
+    outputs."DP-1" = {
+      mode = {
+        width = 3440;
+        height = 1440;
+        refresh = 143.923;
+      };
+      variable-refresh-rate = true;
+    };
+
     # X11 app compatibility — niri-flake auto-spawns this when the path is set
     # and both niri and xwayland-satellite are on the unstable channel.
     xwayland-satellite.path = lib.getExe xwaylandSatellite;
