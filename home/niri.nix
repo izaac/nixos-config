@@ -269,7 +269,7 @@ in {
       sh = spawn "sh" "-c";
     in {
       # --- Apps ---
-      "Mod+Return".action = spawn "wezterm";
+      "Mod+Return".action = spawn "ghostty";
       "Mod+D".action = spawn "fuzzel";
       "Mod+E".action = spawn "nemo";
       "Mod+B".action = spawn "brave";

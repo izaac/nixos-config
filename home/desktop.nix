@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   imports = [
     ./distrobox.nix
-    ./wezterm.nix
+    ./ghostty.nix
     ./cava.nix
     ./cmus.nix
     ./abcde.nix
@@ -59,7 +59,6 @@
     # GTK Apps (Rust-based replacements)
     loupe # Image Viewer (Rust)
     (papers.override {supportNautilus = false;}) # PDF/Document Viewer (Rust)
-    mission-center # System Monitor (Rust)
     newsflash # GTK4/Libadwaita RSS Reader (Rust)
     drawing # GTK image editor (MS Paint-like)
     gnome-calculator # GTK4/libadwaita scientific + programming calculator

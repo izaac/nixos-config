@@ -8,6 +8,7 @@
       "*" = {
         AddKeysToAgent = "yes";
         IdentityFile = "~/.ssh/id_ed25519";
+        PreferredAuthentications = "publickey,keyboard-interactive,password";
         ServerAliveInterval = 60;
         ServerAliveCountMax = 2;
         StrictHostKeyChecking = "accept-new";

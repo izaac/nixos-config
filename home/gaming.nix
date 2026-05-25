@@ -18,7 +18,6 @@ in {
     bubblewrap # Provides 'bwrap'
 
     # Gaming Tools
-    heroic
     lutris
     protonup-rs
     samrewritten

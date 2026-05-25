@@ -3,6 +3,7 @@
   # source is reproducible (older config used `rev = "main"` which moves).
   tmux-menus = pkgs.tmuxPlugins.mkTmuxPlugin {
     pluginName = "tmux-menus";
+    rtpFilePath = "menus.tmux";
     version = "unstable-2026-05-22";
     src = pkgs.fetchFromGitHub {
       owner = "jaclu";
@@ -31,17 +32,36 @@ in {
     terminal = "tmux-256color";
 
     # --- PLUGINS ---
+    # tmux-menus loaded manually in extraConfig below so we can set
+    # @menus_use_cache BEFORE plugin init (Nix store is read-only).
     plugins = with pkgs.tmuxPlugins; [
       sensible
-      tmux-menus
     ];
 
     # --- KEYBINDS & MANUAL CONFIG ---
     extraConfig = ''
-      # 0. Status bar tweaks (Stylix paints the colors)
-      set -g status-left ""
-      set -g status-right ' session: #S '
-      set -g status-right-length 100
+      # tmux-menus: disable cache (plugin folder is read-only on Nix store),
+      # rebind trigger to "m" for menu (default \ now used for pane split),
+      # then run-shell the plugin entrypoint manually.
+      set -g @menus_use_cache "no"
+      set -g @menus_trigger "m"
+      run-shell ${tmux-menus}/share/tmux-plugins/tmux-menus/menus.tmux
+
+      # 0. Status bar (Stylix paints the colors; format only here)
+      set -g status-interval 5
+      set -g status-justify left
+
+      # Left: session name, prefix indicator when active
+      set -g status-left "#[bold] #S #[default]#{?client_prefix,#[reverse] PREFIX #[noreverse],}"
+      set -g status-left-length 40
+
+      # Window list: index:name + flags (* current, - last, ! bell, Z zoomed)
+      set -g window-status-format " #I:#W#F "
+      set -g window-status-current-format " #[bold]#I:#W#F#[nobold] "
+
+      # Right: weekday, date, time
+      set -g status-right " %a %d %b  %H:%M "
+      set -g status-right-length 60
 
       # 1. TrueColor Override
       set -ga terminal-overrides ",*-256color:Tc"
@@ -65,9 +85,13 @@ in {
       bind j select-pane -D
       bind k select-pane -U
       bind l select-pane -R
+      bind Left  select-pane -L
+      bind Down  select-pane -D
+      bind Up    select-pane -U
+      bind Right select-pane -R
 
       # --- SPLITS ---
-      bind | split-window -h
+      bind "\\" split-window -h
       bind v split-window -v
     '';
   };

@@ -3,7 +3,7 @@ _: {
     enable = true;
     settings = {
       main = {
-        terminal = "wezterm";
+        terminal = "ghostty";
         layer = "overlay";
         width = 40;
         lines = 12;

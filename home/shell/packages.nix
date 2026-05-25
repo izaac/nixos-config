@@ -29,6 +29,7 @@
       viddy
       hexyl
       mdcat
+      glow
       man-db
 
       # --- NETWORK & DIAGNOSTICS ---
@@ -45,6 +46,7 @@
       gh
       kubernetes-helm
       kubectl
+      k9s
       lazydocker
       skopeo
       rclone

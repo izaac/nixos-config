@@ -72,7 +72,13 @@
       changeDirWidgetCommand = "fd --type d";
     };
 
-    bat.enable = true;
+    bat = {
+      enable = true;
+      config = {
+        style = "plain";
+        paging = "never";
+      };
+    };
 
     tealdeer = {
       enable = true;

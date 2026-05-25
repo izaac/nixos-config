@@ -1,25 +1,6 @@
 _: {
   programs.bash.initExtra = ''
-    # --- WEZTERM INTEGRATION (OSC 133) ---
-    if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
-      _wezterm_osc133_prompt_start() { printf "\033]133;A\007"; }
-      _wezterm_osc133_command_start() { printf "\033]133;C\007"; }
-      _wezterm_osc133_command_end() { printf "\033]133;D;%s\007" "$?"; }
-
-      # Pre-encode user vars once at init
-      _wezterm_user_b64=$(echo -n "$(id -un)" | base64 2>/dev/null)
-      _wezterm_host_b64=$(cat /proc/sys/kernel/hostname 2>/dev/null | base64 2>/dev/null)
-      _wezterm_user_vars_precmd() {
-        printf "\033]1337;SetUserVar=%s=%s\007" "WEZTERM_USER" "$_wezterm_user_b64"
-        printf "\033]1337;SetUserVar=%s=%s\007" "WEZTERM_HOST" "$_wezterm_host_b64"
-      }
-
-      # Inject into PS1/PROMPT_COMMAND
-      case "$PS1" in
-        *"\033]133;A\007"*) ;;
-        *) PS1="\[$(_wezterm_osc133_prompt_start)\]$PS1" ;;
-      esac
-    fi
+    # Ghostty injects OSC 133 via its bash integration; no manual hook needed.
 
     # GPG TTY FIX
     current_tty=$(tty 2>/dev/null)
