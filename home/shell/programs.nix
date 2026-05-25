@@ -64,7 +64,7 @@
       git = true;
     };
 
-    skim = {
+    fzf = {
       enable = true;
       enableBashIntegration = true;
       defaultCommand = "fd --type f";

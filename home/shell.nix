@@ -13,6 +13,7 @@ in {
     ./shell/init.nix
     ./shell/programs.nix
     ./shell/env.nix
+    ./shell/blesh.nix
   ];
 
   home.packages = lib.optionals (nix-packages ? vcrunch) [nix-packages.vcrunch];

@@ -23,6 +23,7 @@
       # --- DISK & FILE USAGE ---
       dust
       gdu
+      duf
 
       # --- VIEWERS & PAGERS ---
       viddy
@@ -35,6 +36,10 @@
       gping
       doggo
       lftp
+      mosh
+
+      # --- BENCHMARKING ---
+      hyperfine
 
       # --- CLOUD & CONTAINERS ---
       gh
