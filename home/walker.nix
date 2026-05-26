@@ -15,6 +15,65 @@ in {
   # which leaves orphans if the compositor crashes and re-runs).
   home.packages = [pkgs.walker pkgs.elephant];
 
+  # Niri session definitions. Triggered from walker → "Current Layout".
+  # Uses proportional column widths so it survives monitor swaps.
+  # Workspace 1: Brave (≈70%) + Ghostty (≈30%) side by side.
+  xdg.configFile."elephant/nirisessions.toml".text = ''
+    [[sessions]]
+    name = "Daily"
+
+    [[sessions.workspaces]]
+    # Brave (70%) + Ghostty (30%) side by side. After all windows spawn,
+    # focus the first column so Brave is active.
+    # Commands wrapped in `systemd-run --user --no-block --collect --` so
+    # each spawn becomes a child of systemd user manager, not elephant.
+    # This makes them survive `systemctl --user restart elephant walker`.
+    windows = [
+      { command = "systemd-run --user --no-block --collect -- brave-origin", app_id = "brave-origin", after = [
+        "niri msg action set-column-width '70%'",
+      ] },
+      { command = "systemd-run --user --no-block --collect -- ghostty", app_id = "com.mitchellh.ghostty", after = [
+        "niri msg action set-column-width '30%'",
+      ] },
+    ]
+    after = [
+      "niri msg action focus-column-first",
+    ]
+  '';
+
+  # Elephant config — restrict which providers get loaded into memory.
+  # Each provider indexed costs roughly 10-25 MB resident; trimming the
+  # full auto-load set down to three cuts elephant's working set by
+  # ~80-120 MB.
+  # KEEP: desktopapplications (core grid), windows (alt-tab style focus),
+  # nirisessions (saved layouts). Drop the rest.
+  xdg.configFile."elephant/elephant.toml".text = ''
+    # Wrap every spawn in a systemd transient service unit so launched apps
+    # survive walker/elephant daemon restarts. Service mode (no --scope)
+    # detaches the process from the launcher entirely; --no-block returns
+    # immediately, --collect garbage-collects the unit after the app exits.
+    launch_prefix = "systemd-run --user --no-block --collect --"
+
+    ignored_providers = [
+      "providerlist",
+      "niriactions",
+      "wireplumber",
+      "symbols",
+      "playerctl",
+      "unicode",
+      "clipboard",
+      "bluetooth",
+      "snippets",
+      "websearch",
+      "bookmarks",
+      "archlinuxpkgs",
+      "runner",
+      "calc",
+      "todo",
+      "files",
+    ]
+  '';
+
   systemd.user.services.elephant = {
     Unit = {
       Description = "Elephant data backend for the Walker launcher";

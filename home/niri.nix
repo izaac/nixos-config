@@ -274,6 +274,7 @@ in {
       "Mod+Return".action = spawn "ghostty";
       "Mod+D".action = spawn "fuzzel";
       "Mod+Space".action = spawn "walker";
+      "Mod+Shift+S".action.spawn = ["walker" "-m" "nirisessions"];
       "Mod+E".action = spawn "nemo";
       "Mod+B".action = spawn "brave";
       "Mod+Ctrl+L".action = spawn "swaylock";
