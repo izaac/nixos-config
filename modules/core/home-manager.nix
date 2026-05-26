@@ -30,6 +30,7 @@ in {
           ../../home/niri.nix
           ../../home/waybar.nix
           ../../home/launcher.nix
+          ../../home/walker.nix
           ../../home/notifications.nix
           ../../home/screenlock.nix
         ];

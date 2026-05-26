@@ -230,6 +230,8 @@ in {
       {command = ["blueman-applet"];}
       {command = ["swaybg" "-i" "${config.stylix.image}" "-m" "fill"];}
       {command = ["sh" "-c" "wl-paste --watch cliphist store"];}
+      # walker UI daemon + elephant backend are systemd user services
+      # (declared in home/walker.nix) tied to graphical-session.target.
     ];
 
     window-rules = [
@@ -271,6 +273,7 @@ in {
       # --- Apps ---
       "Mod+Return".action = spawn "ghostty";
       "Mod+D".action = spawn "fuzzel";
+      "Mod+Space".action = spawn "walker";
       "Mod+E".action = spawn "nemo";
       "Mod+B".action = spawn "brave";
       "Mod+Ctrl+L".action = spawn "swaylock";
