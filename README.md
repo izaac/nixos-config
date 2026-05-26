@@ -11,11 +11,12 @@ Custom packages live in a separate [nix-packages](https://github.com/izaac/nix-p
 - **Shell of the desktop:** Waybar (bar) + fuzzel (launcher) + mako (notifications) + swaylock-effects/swayidle (lock) + wlogout (power menu)
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
 - **Theme:** Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix)
-- **Shell:** Brush (Rust bash-compatible) + Starship + Atuin + Zoxide
-- **Terminal:** WezTerm + Zellij
-- **Editor:** Helix
+- **Shell:** Bash + Ble.sh + Starship + Atuin + Zoxide
+- **Terminal:** Ghostty + tmux
+- **Editor:** LazyVim (Neovim distribution)
 - **Security:** dbus-broker, sops-nix + age, YubiKey (U2F)
-- **Gaming:** Steam (NVIDIA Optimized), Heroic, Lutris, Bottles, GameMode, sched-ext
+- **Gaming:** Steam (NVIDIA Optimized), Lutris, Bottles, GameMode, sched-ext
+- **Kernel (ninja):** Linux 7.0.10 pinned + slim config (see [docs/kernel-slim.md](docs/kernel-slim.md))
 
 ## Structure
 
@@ -46,10 +47,10 @@ Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) an
 
 - [Hardware (ninja)](docs/hardware.md) | [Hardware (windy)](docs/windy.md)
 - [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
+- [Slim Kernel (ninja)](docs/kernel-slim.md)
 - [Security & Hardening](docs/security.md) | [Secrets](docs/secrets.md)
 - [Disaster Recovery & Disko](docs/disko-rebuild.md)
-- [Zellij](docs/zellij.md) | [Wezterm](docs/wezterm.md) | [Workflow](docs/zellij-wezterm-workflow.md)
-- [Helix Editor](docs/helix.md) | [CLI Tools](docs/cli-tools.md) | [Just Commands](docs/just-commands.md)
+- [CLI Tools](docs/cli-tools.md) | [Just Commands](docs/just-commands.md)
 - [Full Index](docs/README.md)
 
 ## Quick Start
