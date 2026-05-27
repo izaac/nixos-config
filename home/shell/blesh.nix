@@ -11,6 +11,9 @@
     bashrcExtra = lib.mkBefore ''
       if [[ $- == *i* ]] && [[ -z "''${BLE_VERSION-}" ]]; then
         source ${pkgs.blesh}/share/blesh/ble.sh --attach=none --noinputrc
+        # Only show command-elapsed/CPU marker for commands slower than 5s
+        # (default 2000ms is noisy for routine git/ls/cd output).
+        [[ -n "''${BLE_VERSION-}" ]] && bleopt exec_elapsed_min=5000
       fi
     '';
 
