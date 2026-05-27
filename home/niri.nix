@@ -163,8 +163,7 @@ in {
   home.packages = with pkgs; [
     brightnessctl # Screen brightness control
     swaybg # Wallpaper daemon
-    wl-clipboard # wl-copy / wl-paste
-    cliphist # Clipboard history
+    # wl-clipboard + cliphist live in home/shell/packages.nix
     grim # Screen capture
     slurp # Region picker
     wf-recorder # Screen recorder (Wayland)
@@ -175,6 +174,20 @@ in {
 
   programs.niri.settings = {
     prefer-no-csd = true;
+
+    # Screenshots land in a single dated folder instead of niri's default
+    # scatter pattern. Path is expanded by niri itself; ~ → $HOME.
+    screenshot-path = "~/Pictures/Screenshots/Screenshot %Y-%m-%d %H-%M-%S.png";
+
+    # Privacy: hide notifications from screencast/recording sinks. Mako
+    # uses the `notifications` layer namespace; password-manager-style
+    # toast notifications stay out of OBS/xdg-desktop-portal captures.
+    layer-rules = [
+      {
+        matches = [{namespace = "^notifications$";}];
+        block-out-from = "screencast";
+      }
+    ];
 
     # LG UltraGear 49" — pin to native 144Hz mode.
     outputs."DP-1" = {
@@ -279,6 +292,7 @@ in {
       "Mod+B".action = spawn "brave";
       "Mod+Ctrl+L".action = spawn "swaylock";
       "Mod+Shift+P".action = spawn "wlogout" "-b" "2";
+      "Mod+Shift+N".action.spawn = ["makoctl" "mode" "-t" "do-not-disturb"];
       "Mod+S".action = spawn (lib.getExe audioSinkMenu);
       "Mod+V".action = sh "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
 

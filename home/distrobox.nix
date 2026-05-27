@@ -9,8 +9,10 @@
     # --- Distrobox: GC Survival ---
     # Link stable host-side paths so exported helpers survive profile updates and garbage collection.
     sessionVariables = {
-      DBX_CONTAINER_ALWAYS_PULL = "1";
-      # Force Distrobox to mount the stable symlink instead of the raw /nix/store path
+      # Don't pull the image on every `distrobox enter` — saves seconds +
+      # bandwidth per shell. Use `db-up` (distrobox assemble) for explicit
+      # refreshes when an image needs updating.
+      DBX_CONTAINER_ALWAYS_PULL = "0";
       DBX_NON_INTERACTIVE = "1";
     };
 

@@ -62,8 +62,19 @@ in {
           ControllerMode = "dual";
           # Faster connection/pairing for desktops (slightly more power, but better UX)
           FastConnectable = true;
-          # Better handling of repairing for some headsets
-          JustWorksRepairing = "always";
+          # Require user confirmation when an already-paired device tries to
+          # re-pair. Prevents MITM where an attacker spoofs the BD_ADDR of a
+          # known headset/gamepad and silently re-pairs. Was "always" before
+          # for headset convenience; "confirm" trades one occasional prompt
+          # for that attack vector.
+          JustWorksRepairing = "confirm";
+          # Force LE Secure Connections (BLE 4.2+ ECC pairing). Default is
+          # usually on in modern bluez but pinning explicitly survives
+          # upstream default changes.
+          SecureConnections = "on";
+          # LE privacy: rotate resolvable random addresses so the adapter
+          # is not trivially trackable by nearby scanners.
+          Privacy = "device";
           # Enables battery reporting and other experimental features
           Experimental = true;
           # Prevents the adapter from powering down too quickly

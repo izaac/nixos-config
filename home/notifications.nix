@@ -18,6 +18,11 @@ _: {
         default-timeout = 0;
         border-size = "2";
       };
+
+      # Do-Not-Disturb mode — toggle with `makoctl mode -t do-not-disturb`
+      # (bound to Mod+Shift+N in home/niri.nix). Hides all notifications
+      # while active; they still accumulate in `makoctl history`.
+      "mode=do-not-disturb".invisible = "1";
     };
   };
 }

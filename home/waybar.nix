@@ -4,7 +4,7 @@
     networkmanagerapplet # nm-applet + nm-connection-editor
     blueman # blueman-applet + manager
     pavucontrol # PulseAudio volume control (fallback GUI)
-    font-awesome # Glyphs used in cpu/memory/network/battery modules
+    # font-awesome lives in home/desktop.nix
   ];
 
   programs.waybar = {

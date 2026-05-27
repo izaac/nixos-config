@@ -40,8 +40,16 @@
         style = "compact";
         inline_height = 20;
         filter_mode = "global";
-        filter_mode_shell_up = "global";
+        # Up arrow walks the current directory's history first (most useful
+        # day-to-day); global Ctrl-R search still searches everything.
+        filter_mode_shell_up = "directory";
         search_mode = "fuzzy";
+        # Don't auto-run picked commands on Enter — paste to prompt, let
+        # the user press Enter again to execute. Prevents accidental
+        # destructive command replays.
+        enter_accept = false;
+        # Auto-scope history per git repo when inside one.
+        workspaces = true;
       };
     };
 

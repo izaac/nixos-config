@@ -63,8 +63,16 @@ in {
       set -g status-right " %a %d %b  %H:%M "
       set -g status-right-length 60
 
-      # 1. TrueColor Override
+      # 1. TrueColor Override + modern terminal feature flags. Ghostty
+      # supports OSC 52 clipboard relay and RGB color; tell tmux so yanks
+      # reach the Wayland clipboard and color rendering stays true.
       set -ga terminal-overrides ",*-256color:Tc"
+      set -as terminal-features ',*:RGB'
+      set -s set-clipboard on
+
+      # Forward focus events to apps inside tmux (fixes nvim autoread,
+      # tmux 3.5+ async refresh hooks).
+      set -g focus-events on
 
       # 2. Pane Colors (Blue/Orange)
       set-option -g display-panes-active-colour colour33

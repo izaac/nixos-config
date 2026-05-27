@@ -9,8 +9,8 @@ _: {
     fi
     unset current_tty
 
-    # Ensure local binaries are in PATH
-    export PATH="$PATH:$HOME/.local/bin:$HOME/bin"
+    # Note: $HOME/.local/bin and $HOME/bin are added via home.sessionPath
+    # in home/shell/env.nix so niri spawn and desktop entries also see them.
 
     # --- Distrobox Atuin Fix (Persistent Loop) ---
     if [ -d "/run/host/nix/store" ]; then

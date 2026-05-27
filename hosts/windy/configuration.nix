@@ -99,9 +99,8 @@
   # System Packages
   environment.systemPackages = with pkgs; [
     powertop # Monitor laptop power usage
-    brightnessctl # Control screen brightness
     acpi # Battery/Thermal info
-    libnotify # For OSD notifications
+    # brightnessctl + libnotify live in home/niri.nix (shared HM module)
   ];
 
   systemd.services.ModemManager.enable = false;

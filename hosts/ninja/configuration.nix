@@ -92,7 +92,7 @@
     alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
     ddcutil # Monitor brightness control via DDC/CI
-    btop
+    # btop lives in modules/core/maintenance.nix (TTY rescue baseline)
   ];
 
   # Allow ddcutil to access I2C devices

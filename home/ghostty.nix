@@ -20,6 +20,10 @@ _: {
 
       scrollback-limit = 10000;
 
+      # Each tab gets its own systemd transient cgroup. A runaway tab
+      # (claude/codex/btop) can't starve the rest of the terminal.
+      linux-cgroup = "always";
+
       # Tabs hidden — tmux handles windows/panes.
       gtk-tabs-location = "hidden";
 
