@@ -13,8 +13,6 @@
       # --- LANGUAGES & TOOLCHAINS ---
       docker-compose
       nodejs
-      python3 # stdlib + interpreter for AI agent scripts (parse, JSON, regex);
-      # for pip-installed libs use a venv: `python3 -m venv .venv`
 
       # --- DATA & FORMATTING ---
       sqlite
@@ -26,7 +24,6 @@
       nixd # Nix LSP (eval-aware; supersedes the older nil)
       # alejandra lives in home/shell/packages.nix under NIX TOOLS
       gopls # Go LSP
-      pyright # Python LSP
       typescript-language-server # JS/TS LSP
       taplo # TOML LSP + formatter
 
