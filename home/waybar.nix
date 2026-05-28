@@ -9,6 +9,16 @@
 
   programs.waybar = {
     enable = true;
+
+    # Stylix generates the base stylesheet but defines no rule for the
+    # custom/power module, so the rightmost glyph sits flush against the
+    # screen edge and gets clipped. Append a rule with right padding.
+    # style is types.lines, so this concatenates onto Stylix's CSS.
+    style = ''
+      #custom-power {
+        padding: 0 12px 0 5px;
+      }
+    '';
     # Spawned by niri at session start (see home/niri.nix spawn-at-startup).
     # systemd.enable = true would gate on WAYLAND_DISPLAY, which niri does
     # not import into the systemd user manager early enough, so the unit
