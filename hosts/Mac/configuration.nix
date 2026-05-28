@@ -80,6 +80,11 @@
     nerd-fonts.jetbrains-mono
   ];
 
+  # Tailscale client daemon (managed via launchd). Installs the CLI and starts
+  # tailscaled; run `sudo tailscale up` once to join the tailnet, after which
+  # this Mac can reach ninja over Tailscale SSH.
+  services.tailscale.enable = true;
+
   # Used for backwards compatibility
   system.stateVersion = 5;
 
