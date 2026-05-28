@@ -94,6 +94,12 @@
         ../../home/core.nix
         inputs.stylix.homeModules.stylix
       ];
+      # stylix.enable is off on this host, so the Darwin module never injects
+      # the useGlobalPkgs override that disables the overlay. Without
+      # stylix.enable the HM module still defaults overlays.enable to true and
+      # sets nixpkgs.overlays, which useGlobalPkgs ignores and warns about.
+      # Disable it explicitly (matches stylix's own useGlobalPkgs handling).
+      stylix.overlays.enable = false;
       home = {
         homeDirectory = pkgs.lib.mkForce "/Users/${userConfig.username}";
         stateVersion = "25.11";
