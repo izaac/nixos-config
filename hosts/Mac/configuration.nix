@@ -42,6 +42,7 @@
     lazygit
     lld
     mcfly
+    nh
     pipenv
     shfmt
     terraform
@@ -61,7 +62,8 @@
     trusted-users = ["root" userConfig.username];
   };
 
-  # No nh on Darwin, so let the daemon prune and dedupe the store on a schedule.
+  # nix-darwin has no programs.nh module, so install the CLI directly and let
+  # the daemon handle scheduled GC + dedup (nh clean is then run by hand).
   nix.gc = {
     automatic = true;
     options = "--delete-older-than 30d";
