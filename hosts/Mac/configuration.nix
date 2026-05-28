@@ -12,8 +12,12 @@
   # Required by current nix-darwin for user-scoped options (Touch ID, etc.).
   system.primaryUser = userConfig.username;
 
-  # Enable Touch ID for sudo (New syntax for nix-darwin)
-  security.pam.services.sudo_local.touchIdAuth = true;
+  # Enable Touch ID for sudo (New syntax for nix-darwin).
+  # reattach loads pam_reattach so Touch ID also works inside tmux/screen.
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+    reattach = true;
+  };
 
   # System profile holds only Mac-specific tools and the GNU userland that
   # replaces macOS's BSD utils. Shared CLI tooling (git, jq, eza, fzf, gcc,
@@ -56,6 +60,13 @@
     experimental-features = ["nix-command" "flakes"];
     trusted-users = ["root" userConfig.username];
   };
+
+  # No nh on Darwin, so let the daemon prune and dedupe the store on a schedule.
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than 30d";
+  };
+  nix.optimise.automatic = true;
 
   # Enable Bash at system level
   programs.bash.enable = true;
