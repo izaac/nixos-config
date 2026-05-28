@@ -1,0 +1,86 @@
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+with lib; let
+  cfg = config.mySystem.core.tailscale;
+in {
+  options.mySystem.core.tailscale = {
+    enable = mkEnableOption "Tailscale mesh VPN with Tailscale SSH";
+
+    advertiseRoutes = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      example = ["192.168.0.0/24"];
+      description = ''
+        Subnet CIDRs this host advertises to the tailnet, turning it into a
+        subnet router. Routes must also be approved once in the Tailscale
+        admin console. Leave empty for a plain (non-routing) node.
+      '';
+    };
+
+    routingInterface = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      example = "eno1";
+      description = ''
+        Physical interface that carries routed traffic. When this host
+        advertises routes, UDP GRO forwarding is enabled on it (Tailscale's
+        recommended tuning for subnet-router/exit-node throughput). Null skips
+        the tuning.
+      '';
+    };
+  };
+
+  config = mkIf cfg.enable {
+    services.tailscale = {
+      enable = true;
+      # Opens the WireGuard UDP port (services.tailscale.port) in the firewall.
+      openFirewall = true;
+      # "server" enables IP forwarding sysctls so this node can route the
+      # advertised subnet for the rest of the tailnet.
+      useRoutingFeatures =
+        if cfg.advertiseRoutes != []
+        then "server"
+        else "client";
+      # Flags applied on `tailscale up`. --ssh enables Tailscale SSH (auth via
+      # tailnet ACLs, no extra ports). --accept-dns=false keeps this host on its
+      # local Pi-hole resolver instead of MagicDNS.
+      extraUpFlags =
+        ["--ssh" "--accept-dns=false"]
+        ++ optional (cfg.advertiseRoutes != [])
+        "--advertise-routes=${concatStringsSep "," cfg.advertiseRoutes}";
+    };
+
+    # Subnet routing across the tailscale0 interface needs loose reverse-path
+    # filtering, and the interface itself must be trusted by the firewall.
+    networking.firewall = {
+      checkReversePath = "loose";
+      trustedInterfaces = ["tailscale0"];
+    };
+
+    # This host uses the nftables backend; tell tailscaled to match.
+    systemd.services.tailscaled.serviceConfig.Environment = [
+      "TS_DEBUG_FIREWALL_MODE=nftables"
+    ];
+
+    # Subnet routers/exit nodes get a big UDP forwarding throughput boost from
+    # enabling rx-udp-gro-forwarding on the carrying NIC. Only meaningful when
+    # this host actually routes traffic.
+    systemd.services.tailscale-udp-gro = mkIf (cfg.advertiseRoutes != [] && cfg.routingInterface != null) {
+      description = "Enable UDP GRO forwarding on ${cfg.routingInterface} for Tailscale routing";
+      after = ["sys-subsystem-net-devices-${cfg.routingInterface}.device"];
+      bindsTo = ["sys-subsystem-net-devices-${cfg.routingInterface}.device"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.ethtool}/bin/ethtool -K ${cfg.routingInterface} rx-udp-gro-forwarding on rx-gro-list off";
+      };
+    };
+
+    environment.systemPackages = [pkgs.tailscale];
+  };
+}

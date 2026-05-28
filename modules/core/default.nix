@@ -16,5 +16,6 @@
     ./yubikey.nix
     ./theme.nix
     ./sudo-readonly.nix
+    ./tailscale.nix
   ];
 }

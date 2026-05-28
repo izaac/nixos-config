@@ -76,6 +76,11 @@
       nix-ld.enable = true;
       yubikey.enable = true;
       "sudo-readonly".enable = true;
+      tailscale = {
+        enable = true;
+        advertiseRoutes = ["192.168.0.0/24"];
+        routingInterface = "eno1";
+      };
     };
   };
 
