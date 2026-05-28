@@ -284,7 +284,7 @@ in {
       sh = spawn "sh" "-c";
     in {
       # --- Apps ---
-      "Mod+Return".action = spawn "ghostty";
+      "Mod+Return".action = spawn "kitty";
       "Mod+D".action = spawn "fuzzel";
       "Mod+Space".action = spawn "walker";
       "Mod+Shift+S".action.spawn = ["walker" "-m" "nirisessions"];

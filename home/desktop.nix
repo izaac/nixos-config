@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   imports = [
     ./distrobox.nix
-    ./ghostty.nix
+    ./kitty.nix
     ./cava.nix
     ./cmus.nix
     ./abcde.nix

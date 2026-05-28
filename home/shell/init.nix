@@ -1,6 +1,6 @@
 _: {
   programs.bash.initExtra = ''
-    # Ghostty injects OSC 133 via its bash integration; no manual hook needed.
+    # Kitty injects OSC 133 via its shell integration; no manual hook needed.
 
     # GPG TTY FIX
     current_tty=$(tty 2>/dev/null)

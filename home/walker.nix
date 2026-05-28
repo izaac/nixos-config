@@ -17,13 +17,13 @@ in {
 
   # Niri session definitions. Triggered from walker → "Current Layout".
   # Uses proportional column widths so it survives monitor swaps.
-  # Workspace 1: Brave (≈70%) + Ghostty (≈30%) side by side.
+  # Workspace 1: Brave (≈70%) + Kitty (≈30%) side by side.
   xdg.configFile."elephant/nirisessions.toml".text = ''
     [[sessions]]
     name = "Daily"
 
     [[sessions.workspaces]]
-    # Brave (70%) + Ghostty (30%) side by side. After all windows spawn,
+    # Brave (70%) + Kitty (30%) side by side. After all windows spawn,
     # focus the first column so Brave is active.
     # Commands wrapped in `systemd-run --user --no-block --collect --` so
     # each spawn becomes a child of systemd user manager, not elephant.
@@ -32,7 +32,7 @@ in {
       { command = "systemd-run --user --no-block --collect -- brave-origin", app_id = "brave-origin", after = [
         "niri msg action set-column-width '70%'",
       ] },
-      { command = "systemd-run --user --no-block --collect -- ghostty", app_id = "com.mitchellh.ghostty", after = [
+      { command = "systemd-run --user --no-block --collect -- kitty", app_id = "kitty", after = [
         "niri msg action set-column-width '30%'",
       ] },
     ]

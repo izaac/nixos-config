@@ -63,7 +63,7 @@ in {
       set -g status-right " %a %d %b  %H:%M "
       set -g status-right-length 60
 
-      # 1. TrueColor Override + modern terminal feature flags. Ghostty
+      # 1. TrueColor Override + modern terminal feature flags. Kitty
       # supports OSC 52 clipboard relay and RGB color; tell tmux so yanks
       # reach the Wayland clipboard and color rendering stays true.
       set -ga terminal-overrides ",*-256color:Tc"

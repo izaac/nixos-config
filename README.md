@@ -12,7 +12,7 @@ Custom packages live in a separate [nix-packages](https://github.com/izaac/nix-p
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
 - **Theme:** Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix)
 - **Shell:** Bash + Ble.sh + Starship + Atuin + Zoxide
-- **Terminal:** Ghostty + tmux
+- **Terminal:** Kitty + tmux
 - **Editor:** LazyVim (Neovim distribution)
 - **Security:** dbus-broker, sops-nix + age, YubiKey (U2F)
 - **Gaming:** Steam (NVIDIA Optimized), Lutris, Bottles, GameMode, sched-ext

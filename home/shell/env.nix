@@ -8,7 +8,7 @@
     sessionVariables = {
       PAGER = "less";
       DIRENV_LOG_FORMAT = "";
-      TERMINAL = "ghostty";
+      TERMINAL = "kitty";
       ATUIN_NO_MODIFY_DB = "true";
       QA_INFRA_DIR = "/home/${userConfig.username}/repos/qa-infra-automation";
     };
@@ -36,7 +36,7 @@
     desktopEntries = lib.mkIf pkgs.stdenv.isLinux {
       yazi = {
         name = "Yazi";
-        exec = "ghostty -e yazi %u";
+        exec = "kitty yazi %u";
         icon = "yazi";
         terminal = false;
         categories = ["Utility" "Core" "System" "FileTools" "FileManager" "ConsoleOnly"];
@@ -48,7 +48,7 @@
 
       btop = {
         name = "btop++";
-        exec = "ghostty -e btop";
+        exec = "kitty btop";
         icon = "btop";
         terminal = false;
         categories = ["System" "Monitor" "ConsoleOnly"];

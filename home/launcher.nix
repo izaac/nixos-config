@@ -15,7 +15,7 @@ in {
     enable = true;
     settings = {
       main = {
-        terminal = "ghostty";
+        terminal = "kitty";
         layer = "overlay";
         width = 40;
         lines = 12;
