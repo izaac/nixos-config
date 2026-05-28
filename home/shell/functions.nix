@@ -1,5 +1,10 @@
-{userConfig, ...}: let
+{
+  pkgs,
+  userConfig,
+  ...
+}: let
   cleanPath = "/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin";
+  dotfilesDir = userConfig.dotfilesDirFor pkgs;
 in {
   programs.bash.initExtra = ''
     # --- BRUSH COMPATIBILITY FUNCTIONS (replaces chained aliases) ---
@@ -112,7 +117,7 @@ in {
       local target="node"
       if [ -n "$ver" ]; then target="node_$ver"; fi
       cat <<ENVRC > .envrc
-    use flake ${userConfig.dotfilesDir}/templates#$target
+    use flake ${dotfilesDir}/templates#$target
     watch_file package.json
     watch_file yarn.lock
     watch_file pnpm-lock.yaml
@@ -127,7 +132,7 @@ in {
 
     pinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${userConfig.dotfilesDir}/templates#python
+    use flake ${dotfilesDir}/templates#python
     watch_file requirements.txt
     watch_file pyproject.toml
     if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
@@ -141,7 +146,7 @@ in {
 
     rinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${userConfig.dotfilesDir}/templates#rust
+    use flake ${dotfilesDir}/templates#rust
     watch_file Cargo.toml
     watch_file Cargo.lock
     ENVRC
@@ -150,7 +155,7 @@ in {
 
     cinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${userConfig.dotfilesDir}/templates#c
+    use flake ${dotfilesDir}/templates#c
     watch_file CMakeLists.txt
     watch_file Makefile
     ENVRC
@@ -159,7 +164,7 @@ in {
 
     cppinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${userConfig.dotfilesDir}/templates#cpp
+    use flake ${dotfilesDir}/templates#cpp
     watch_file CMakeLists.txt
     watch_file Makefile
     ENVRC

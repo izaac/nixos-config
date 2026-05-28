@@ -17,7 +17,7 @@ in {
       enable = true;
       clean.enable = true;
       clean.extraArgs = "--keep 10 --keep-since 7d";
-      flake = userConfig.dotfilesDir;
+      flake = userConfig.dotfilesDirFor pkgs;
     };
 
     environment.systemPackages = with pkgs; [

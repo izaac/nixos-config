@@ -1,5 +1,6 @@
 # Walker — GNOME-Activities-style dashboard launcher (apps grid, scrollable,
-# Stylix-themed). Bound to Mod+Space in niri. Coexists with fuzzel (Mod+D).
+# Stylix-themed). Bound to Mod+Space in niri. Also backs the dmenu picks
+# (Mod+S audio sink, Mod+V clipboard) via `walker --dmenu`.
 {
   config,
   pkgs,

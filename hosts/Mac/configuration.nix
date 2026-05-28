@@ -9,10 +9,15 @@
     shell = pkgs.bashInteractive;
   };
 
+  # Required by current nix-darwin for user-scoped options (Touch ID, etc.).
+  system.primaryUser = userConfig.username;
+
   # Enable Touch ID for sudo (New syntax for nix-darwin)
   security.pam.services.sudo_local.touchIdAuth = true;
 
-  # List packages to install in system profile.
+  # System profile holds only Mac-specific tools and the GNU userland that
+  # replaces macOS's BSD utils. Shared CLI tooling (git, jq, eza, fzf, gcc,
+  # kubectl, etc.) is installed once via home-manager, not duplicated here.
   environment.systemPackages = with pkgs; [
     ansifilter
     bashInteractive
@@ -22,34 +27,18 @@
     chezmoi
     coreutils
     curlie
-    duf
-    dust
     emacs
-    eza
-    fastfetch
     findutils
-    fzf
     gawk
-    gcc
-    git
-    delta
     indent
     gnused
     gnutar
     govc
-    gping
     gnugrep
-    kubernetes-helm
-    jq
-    k9s
-    kubectl
     lazygit
     lld
-    gnumake
     mcfly
     pipenv
-    procs
-    shellcheck
     shfmt
     terraform
     tmuxinator
@@ -59,7 +48,6 @@
     yamllint
     yarn
     yt-dlp
-    zoxide
   ];
 
   # Nix daemon settings

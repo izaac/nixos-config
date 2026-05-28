@@ -75,10 +75,10 @@
         specialArgs = {inherit inputs userConfig;};
         modules = [./hosts/canoe/minimal.nix];
       };
-      canoe-cosmic = nixpkgs.lib.nixosSystem {
+      canoe-niri = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {inherit inputs userConfig;};
-        modules = [./hosts/canoe/cosmic.nix];
+        modules = [./hosts/canoe/niri.nix];
       };
     };
 
@@ -112,7 +112,7 @@
         extraPkgs
         // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
           iso = inputs.self.nixosConfigurations.canoe.config.system.build.isoImage;
-          iso-cosmic = inputs.self.nixosConfigurations.canoe-cosmic.config.system.build.isoImage;
+          iso-niri = inputs.self.nixosConfigurations.canoe-niri.config.system.build.isoImage;
         })
     );
 

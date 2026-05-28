@@ -19,7 +19,6 @@ inputs.nixpkgs.lib.nixosSystem {
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
         (import ../overlays/ai-trace-scanner.nix inputs)
-        (import ../overlays/cosmic-session-drm-fix.nix)
         (import ../overlays/openldap-no-tests.nix)
         (import ../overlays/gvfs-no-wsdd.nix)
         inputs.niri-flake.overlays.niri

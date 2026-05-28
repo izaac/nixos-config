@@ -83,13 +83,13 @@ lsblk
 nixos-install --flake github:izaac/nixos-config#ninja --no-root-password
 ```
 
-This pulls the full `ninja` configuration from GitHub including NVIDIA drivers, COSMIC desktop, all packages, and Home Manager config. Set the user password when prompted.
+This pulls the full `ninja` configuration from GitHub including NVIDIA drivers, the niri desktop, all packages, and Home Manager config. Set the user password when prompted.
 
 ## 5. Post-Installation
 
 1. Reboot and remove the USB drive.
 2. Enter your LUKS passphrase at the boot prompt.
-3. Log in to COSMIC desktop.
+3. Log in to the niri desktop.
 
 ### Restore SOPS Secrets
 

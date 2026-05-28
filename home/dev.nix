@@ -82,7 +82,7 @@
           if pkgs.stdenv.isDarwin
           then "osxkeychain"
           else "libsecret";
-        safe.directory = userConfig.dotfilesDir;
+        safe.directory = userConfig.dotfilesDirFor pkgs;
 
         # Note the singular 'alias' key under settings
         alias = {

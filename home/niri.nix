@@ -8,12 +8,12 @@
   xwaylandSatellite = inputs.niri-flake.packages.${pkgs.stdenv.hostPlatform.system}.xwayland-satellite-unstable;
   audioSinkMenu = pkgs.writeShellApplication {
     name = "audio-sink-menu";
-    runtimeInputs = with pkgs; [pulseaudio fuzzel gawk coreutils];
+    runtimeInputs = with pkgs; [pulseaudio walker gawk coreutils];
     text = ''
       sel=$(pactl list sinks | awk '
         /^Sink #/      { id=$2; sub("#","",id) }
         /Description:/ { sub(/^[[:space:]]*Description: /,""); print id"\t"$0 }
-      ' | fuzzel --dmenu --prompt "Audio: ")
+      ' | walker --dmenu --placeholder "Audio:")
       [ -n "$sel" ] && pactl set-default-sink "$(echo "$sel" | cut -f1)"
     '';
   };
@@ -285,7 +285,6 @@ in {
     in {
       # --- Apps ---
       "Mod+Return".action = spawn "kitty";
-      "Mod+D".action = spawn "fuzzel";
       "Mod+Space".action = spawn "walker";
       "Mod+Shift+S".action.spawn = ["walker" "-m" "nirisessions"];
       "Mod+E".action = spawn "nemo";
@@ -294,7 +293,7 @@ in {
       "Mod+Shift+P".action = spawn "wlogout" "-b" "2";
       "Mod+Shift+N".action.spawn = ["makoctl" "mode" "-t" "do-not-disturb"];
       "Mod+S".action = spawn (lib.getExe audioSinkMenu);
-      "Mod+V".action = sh "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
+      "Mod+V".action = sh "cliphist list | walker --dmenu | cliphist decode | wl-copy";
 
       # --- Direct power actions (skip menu) ---
       "Mod+Ctrl+Shift+S".action = spawn "systemctl" "suspend";
