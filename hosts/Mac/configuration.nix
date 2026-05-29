@@ -162,7 +162,27 @@
       upgrade = false;
       cleanup = "none";
     };
-    casks = [];
+    casks = [
+      "cyberduck"
+      "docker"
+      "firefox"
+      "google-chrome"
+      "gpg-suite-no-mail"
+      "iterm2"
+      "jellyfin-media-player"
+      "keka"
+      "plex"
+      "plexamp"
+      "slack"
+      "telegram"
+      "timemachineeditor"
+      "unetbootin"
+      "visual-studio-code"
+      "vlc"
+      "vnc-viewer"
+      "windows-app"
+      "zoom"
+    ];
     brews = [];
     masApps = {};
   };
