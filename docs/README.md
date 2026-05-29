@@ -14,6 +14,7 @@
 
 - [Just Command Guide](just-commands.md)
 - [CLI Tools and Comma Integration](cli-tools.md)
+- [Linux Builder (Mac)](linux-builder.md)
 
 ## Agent Instructions
 
