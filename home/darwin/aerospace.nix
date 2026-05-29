@@ -49,25 +49,29 @@
         # --- Apps ---
         alt-enter = "exec-and-forget open -na kitty";
 
-        # --- Focus (vim hjkl + arrows, like niri) ---
+        # --- Focus (vim hjkl + Ctrl+Option+Arrow) ---
+        # Arrows use Ctrl+Option, NOT plain Option: Option+Arrow /
+        # Option+Shift+Arrow are macOS word-motion and word-selection in text
+        # fields, terminals, and text areas, so we leave those free. Modifier
+        # order follows AeroSpace's cmd-alt-ctrl-shift convention.
         alt-h = "focus left";
         alt-j = "focus down";
         alt-k = "focus up";
         alt-l = "focus right";
-        alt-left = "focus left";
-        alt-down = "focus down";
-        alt-up = "focus up";
-        alt-right = "focus right";
+        alt-ctrl-left = "focus left";
+        alt-ctrl-down = "focus down";
+        alt-ctrl-up = "focus up";
+        alt-ctrl-right = "focus right";
 
         # --- Move window ---
         alt-shift-h = "move left";
         alt-shift-j = "move down";
         alt-shift-k = "move up";
         alt-shift-l = "move right";
-        alt-shift-left = "move left";
-        alt-shift-down = "move down";
-        alt-shift-up = "move up";
-        alt-shift-right = "move right";
+        alt-ctrl-shift-left = "move left";
+        alt-ctrl-shift-down = "move down";
+        alt-ctrl-shift-up = "move up";
+        alt-ctrl-shift-right = "move right";
 
         # --- Layout / size ---
         alt-f = "fullscreen";

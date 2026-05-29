@@ -17,9 +17,12 @@
   # kitty can tell an idle prompt from a running command, so the default
   # `confirm_os_window_close -1` only warns on close when a job is running, and
   # `macos_quit_when_last_window_closed` fully ends the instance otherwise.
+  # kitty defaults Option to composed characters; treat it as Alt/Meta so
+  # Option+Arrow word motion and other Meta bindings reach the shell.
   home.file.".config/kitty/kitty.conf".text = ''
     shell ${pkgs.bashInteractive}/bin/bash --login -i
     shell_integration no-rc
+    macos_option_as_alt yes
     macos_quit_when_last_window_closed yes
     confirm_os_window_close -1
   '';
