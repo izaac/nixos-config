@@ -8,7 +8,7 @@ Custom packages live in a separate [nix-packages](https://github.com/izaac/nix-p
 - **OS:** NixOS (Branch: 25.11)
 - **DM:** tuigreet (greetd) with YubiKey U2F
 - **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake) — unstable channel for xwayland-satellite
-- **Shell of the desktop:** Waybar (bar) + walker (launcher) + mako (notifications) + swaylock-effects/swayidle (lock) + wlogout (power menu)
+- **Shell of the desktop:** Waybar (bar) + fuzzel (launcher) + mako (notifications) + swaylock-effects/swayidle (lock) + wlogout (power menu)
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
 - **Theme:** Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix)
 - **Shell:** Bash + Ble.sh + Starship + Atuin + Zoxide
@@ -31,7 +31,7 @@ modules/           # Reusable NixOS modules (mySystem.* options)
 home/              # Home Manager modules (per-app .nix files)
   niri.nix         # Compositor config, keybinds, spawn-at-startup
   waybar.nix       # Status bar
-  walker.nix       # walker launcher (+ dmenu picks)
+  launcher.nix     # fuzzel launcher (+ dmenu picks)
   notifications.nix # mako
   screenlock.nix   # swaylock + swayidle
   shell/           # Split shell config (aliases, functions, packages)
