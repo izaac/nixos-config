@@ -186,6 +186,7 @@
       "keka"
       "plex"
       "plexamp"
+      "protonvpn"
       "raycast" # launcher (Spotlight replacement; rebind Cmd+Space in its onboarding)
       "slack"
       "telegram"
