@@ -54,6 +54,16 @@
           return $ret
         }
       '';
+
+      # Host-agnostic flake-template selector for shared project .envrc files.
+      # The dotfiles checkout path differs per host (lib/user.nix), so bake the
+      # correct path here per-host; a shared .envrc just calls
+      # `use_dotflake <template>` and resolves right on whichever host opens it.
+      ".config/direnv/lib/use_dotflake.sh".text = ''
+        use_dotflake() {
+          use flake "${userConfig.dotfilesDirFor pkgs}/templates#''${1:?use_dotflake: template name required}"
+        }
+      '';
     };
   };
 

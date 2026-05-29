@@ -1,38 +1,11 @@
-{
-  pkgs,
-  userConfig,
-  ...
-}: let
+{...}: let
   cleanPath = "/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin";
-  dotfilesDir = userConfig.dotfilesDirFor pkgs;
 in {
   programs.bash.initExtra = ''
     # --- BRUSH COMPATIBILITY FUNCTIONS (replaces chained aliases) ---
     ks() { sudo sh -c "sync; echo 1 > /proc/sys/vm/drop_caches" && echo "RAM cache cleared"; }
     ncl-full() { direnv prune && nh clean all --keep 10; }
     gpg-fix() { gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'; }
-
-    er-offline() {
-      cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
-      if [ -f start_protected_game.exe ] && [ ! -f start_protected_game_original.exe ]; then
-        mv start_protected_game.exe start_protected_game_original.exe && \
-        cp eldenring.exe start_protected_game.exe && \
-        echo 'Elden Ring Offline Mode (EAC Bypass) ENABLED'
-      else
-        echo 'Already in offline mode or Game path not found'
-      fi
-    }
-
-    er-online() {
-      cd /mnt/data/SteamLibrary/steamapps/common/ELDEN\ RING/Game && \
-      if [ -f start_protected_game_original.exe ]; then
-        rm start_protected_game.exe && \
-        mv start_protected_game_original.exe start_protected_game.exe && \
-        echo 'Elden Ring Online Mode (EAC) RESTORED'
-      else
-        echo 'Already in online mode or Game path not found'
-      fi
-    }
 
     # --- AI HELPERS ---
     # monko: ask Gemini for help in caveman talk
@@ -117,7 +90,7 @@ in {
       local target="node"
       if [ -n "$ver" ]; then target="node_$ver"; fi
       cat <<ENVRC > .envrc
-    use flake ${dotfilesDir}/templates#$target
+    use_dotflake "$target"
     watch_file package.json
     watch_file yarn.lock
     watch_file pnpm-lock.yaml
@@ -132,7 +105,7 @@ in {
 
     pinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${dotfilesDir}/templates#python
+    use_dotflake python
     watch_file requirements.txt
     watch_file pyproject.toml
     if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
@@ -146,7 +119,7 @@ in {
 
     rinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${dotfilesDir}/templates#rust
+    use_dotflake rust
     watch_file Cargo.toml
     watch_file Cargo.lock
     ENVRC
@@ -155,7 +128,7 @@ in {
 
     cinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${dotfilesDir}/templates#c
+    use_dotflake c
     watch_file CMakeLists.txt
     watch_file Makefile
     ENVRC
@@ -164,7 +137,7 @@ in {
 
     cppinit() {
       cat <<'ENVRC' > .envrc
-    use flake ${dotfilesDir}/templates#cpp
+    use_dotflake cpp
     watch_file CMakeLists.txt
     watch_file Makefile
     ENVRC
