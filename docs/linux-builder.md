@@ -35,8 +35,7 @@ automatically offloads any Linux derivation to it.
 
 - **Running** Linux GUI apps, browsers, or long-lived services. It is a build
   sandbox, not a general-purpose Linux VM or runtime.
-- Anything that needs a Linux desktop. (Example: Playwright + Microsoft Edge —
-  use the **native macOS Edge** instead; see the note at the bottom.)
+- Anything that needs to **run** a Linux desktop app interactively.
 
 > **Rule of thumb:** the builder _compiles_ Linux software. It does not _run_
 > Linux applications interactively.
