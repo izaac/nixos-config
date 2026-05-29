@@ -71,12 +71,14 @@
   nix.optimise.automatic = true;
 
   # Local Linux build VM (via Apple Virtualization). Lets this arm64 Mac build
-  # aarch64-linux closures without a remote builder; it registers itself in
-  # nix.buildMachines automatically. To also build x86_64-linux (for ninja /
-  # windy), add `boot.binfmt.emulatedSystems` via linux-builder.config later.
+  # Linux closures without a remote builder; it registers itself in
+  # nix.buildMachines automatically. binfmt adds QEMU user-mode emulation so it
+  # can also build x86_64-linux (for ninja / windy) — correct but slow, and the
+  # VM disk grows with x86_64 store paths as they are built.
   nix.linux-builder = {
     enable = true;
     maxJobs = 4;
+    config.boot.binfmt.emulatedSystems = ["x86_64-linux"];
   };
 
   # Enable Bash at system level
