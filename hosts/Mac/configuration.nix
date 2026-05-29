@@ -169,7 +169,6 @@
       "google-chrome"
       "gpg-suite-no-mail"
       "iterm2"
-      "jellyfin-media-player"
       "keka"
       "plex"
       "plexamp"
