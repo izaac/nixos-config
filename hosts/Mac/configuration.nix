@@ -70,6 +70,15 @@
   };
   nix.optimise.automatic = true;
 
+  # Local Linux build VM (via Apple Virtualization). Lets this arm64 Mac build
+  # aarch64-linux closures without a remote builder; it registers itself in
+  # nix.buildMachines automatically. To also build x86_64-linux (for ninja /
+  # windy), add `boot.binfmt.emulatedSystems` via linux-builder.config later.
+  nix.linux-builder = {
+    enable = true;
+    maxJobs = 4;
+  };
+
   # Enable Bash at system level
   programs.bash.enable = true;
   programs.zsh.enable = false;
@@ -84,6 +93,61 @@
   # tailscaled; run `sudo tailscale up` once to join the tailnet, after which
   # this Mac can reach ninja over Tailscale SSH.
   services.tailscale.enable = true;
+
+  # Declarative macOS preferences. Only the keys listed here are managed;
+  # every other System Settings value is left as-is. This writes `defaults`,
+  # it never touches application data — Tunnelblick et al. are unaffected.
+  system.defaults = {
+    NSGlobalDomain = {
+      AppleInterfaceStyle = "Dark"; # match the Catppuccin-dark theme on the other hosts
+      AppleShowAllExtensions = true;
+      ApplePressAndHoldEnabled = false; # hold key = repeat, not the accent popup
+      InitialKeyRepeat = 15;
+      KeyRepeat = 2;
+      NSAutomaticCapitalizationEnabled = false;
+      NSAutomaticSpellingCorrectionEnabled = false;
+      NSNavPanelExpandedStateForSaveMode = true; # expanded save dialogs by default
+    };
+    finder = {
+      AppleShowAllFiles = true; # show dotfiles
+      ShowPathbar = true;
+      ShowStatusBar = true;
+      FXPreferredViewStyle = "Nlsv"; # list view
+      _FXShowPosixPathInTitle = true;
+      FXEnableExtensionChangeWarning = false;
+    };
+    dock = {
+      autohide = true;
+      show-recents = false;
+      mru-spaces = false; # don't auto-rearrange Spaces
+      tilesize = 48;
+    };
+    screencapture = {
+      location = "/Users/${userConfig.username}/Screenshots";
+      type = "png";
+    };
+    trackpad = {
+      Clicking = true; # tap to click
+      TrackpadThreeFingerDrag = true;
+    };
+    loginwindow.GuestEnabled = false;
+  };
+
+  # Homebrew manages GUI apps/casks that nixpkgs can't ship on Darwin. The
+  # nix-darwin module only *drives* an existing brew install (run the official
+  # installer once first). cleanup = "none" means it NEVER removes anything not
+  # listed here, so manually-installed apps stay put. Add casks/masApps to taste.
+  homebrew = {
+    enable = true;
+    onActivation = {
+      autoUpdate = false;
+      upgrade = false;
+      cleanup = "none";
+    };
+    casks = [];
+    brews = [];
+    masApps = {};
+  };
 
   # Used for backwards compatibility
   system.stateVersion = 5;
