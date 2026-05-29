@@ -113,6 +113,12 @@
       NSAutomaticCapitalizationEnabled = false;
       NSAutomaticSpellingCorrectionEnabled = false;
       NSNavPanelExpandedStateForSaveMode = true; # expanded save dialogs by default
+
+      # Snappier UI — strip window/focus animations and make resizes near-instant.
+      NSAutomaticWindowAnimationsEnabled = false;
+      NSWindowResizeTime = 0.001;
+      NSUseAnimatedFocusRing = false;
+      "com.apple.springing.delay" = 0.0; # no delay before folders spring open
     };
     finder = {
       AppleShowAllFiles = true; # show dotfiles
@@ -124,6 +130,11 @@
     };
     dock = {
       autohide = true;
+      autohide-delay = 0.0; # Dock appears the instant the cursor hits the edge
+      autohide-time-modifier = 0.0; # no slide animation on show/hide
+      launchanim = false; # no bouncing icon when launching apps
+      expose-animation-duration = 0.1; # faster Mission Control transition
+      minimize-to-application = true; # minimized windows fold into the app icon
       show-recents = false;
       mru-spaces = false; # don't auto-rearrange Spaces
       tilesize = 48;
@@ -131,6 +142,7 @@
     screencapture = {
       location = "/Users/${userConfig.username}/Screenshots";
       type = "png";
+      disable-shadow = true; # no drop-shadow border on window screenshots
     };
     trackpad = {
       Clicking = true; # tap to click
