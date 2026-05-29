@@ -78,6 +78,10 @@
   nix.linux-builder = {
     enable = true;
     maxJobs = 4;
+    # binfmt teaches the guest VM to *run* x86_64 via QEMU; systems advertises
+    # x86_64-linux in /etc/nix/machines so the Mac's nix actually offloads
+    # those builds to it (binfmt alone is necessary but not sufficient).
+    systems = ["aarch64-linux" "x86_64-linux"];
     config.boot.binfmt.emulatedSystems = ["x86_64-linux"];
   };
 
