@@ -111,12 +111,3 @@ The fresh `nixos.qcow2` is reseeded from the updated image. A plain
   rebuild and reports a platform mismatch for foreign systems. To prove offload,
   build a fresh, uniquely-named derivation and watch for the
   `on 'ssh-ng://builder@linux-builder'` line.
-
----
-
-## Aside: Microsoft Edge / Playwright on the Mac
-
-The builder cannot help here. Microsoft Edge ships a **native Apple Silicon**
-build and is already installed at `/Applications/Microsoft Edge.app`. For a
-Playwright/patchright project, set `channel = "msedge"` so it launches the
-system Edge natively — no emulation, no Linux VM involved.
