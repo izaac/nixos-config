@@ -59,3 +59,19 @@ setup-hooks:
 # Deploy Ninja brain to a remote IP via SSH (WIPES DISK!)
 deploy-ninja ip:
         nix run github:nix-community/nixos-anywhere -- --flake .#ninja root@{{ip}}
+
+# Test-build a host's full closure WITHOUT applying — validates eval + build.
+# On the Mac this offloads the Linux build to the linux-builder VM.
+test-host host:
+        nix build .#nixosConfigurations.{{host}}.config.system.build.toplevel --no-link --print-out-paths
+
+# Show the build machines this host can offload to (Mac: the linux-builder)
+builder-info:
+        @cat /etc/nix/machines 2>/dev/null || echo "No /etc/nix/machines — no remote/linux builder configured."
+
+# Recreate the Mac linux-builder VM disk to apply nix.linux-builder.config changes (Mac-only)
+builder-reset:
+        sudo launchctl bootout system/org.nixos.linux-builder || true
+        sudo rm -f /var/lib/linux-builder/nixos.qcow2
+        sudo launchctl bootstrap system /Library/LaunchDaemons/org.nixos.linux-builder.plist
+        @echo "Builder disk recreated — it reseeds from the image on next build."

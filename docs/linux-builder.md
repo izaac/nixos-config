@@ -67,6 +67,56 @@ building '/nix/store/….drv' on 'ssh-ng://builder@linux-builder'...
 
 ---
 
+## Practical examples
+
+### 1. Test a host's config from the Mac before applying
+
+The main use. You changed a NixOS module on the Mac and want to know it builds
+before touching `ninja`:
+
+```bash
+just test-host ninja
+# equivalent:
+nix build .#nixosConfigurations.ninja.config.system.build.toplevel --no-link --print-out-paths
+```
+
+The Linux build offloads to the VM. A green build means the config **evaluates
+and every package compiles** — safe to apply on ninja. Runtime behaviour
+(services starting, GPU, boot, Wayland) is still only proven on ninja itself.
+
+### 2. Cross-compile a single x86_64 Linux binary
+
+The arm64 Mac producing an x86_64 Linux executable it cannot itself run:
+
+```bash
+nix build nixpkgs#legacyPackages.x86_64-linux.hello -o /tmp/hello
+file /tmp/hello/bin/hello
+# → ELF 64-bit LSB executable, x86-64 … for GNU/Linux
+```
+
+The build runs on the builder VM (`building … on 'ssh-ng://builder@linux-builder'`)
+and the x86_64 result is copied back to the Mac's store. Running it on macOS
+gives `Exec format error` — expected; it is a Linux binary.
+
+### 3. The reverse does not work (build Darwin on Linux)
+
+There is **no symmetric path**: a Linux host cannot build the Mac's closure,
+because macOS cannot be emulated (no `binfmt`/QEMU for Darwin — it needs the
+Apple SDK and a real macOS kernel).
+
+```bash
+# On ninja (Linux):
+nix eval  .#darwinConfigurations.Mac.config.system.build.toplevel.drvPath  # ✅ works (eval only)
+nix build .#darwinConfigurations.Mac.config.system.build.toplevel          # ❌ needs an aarch64-darwin builder
+```
+
+Linux can _evaluate_ the Darwin config (catches syntax/eval errors) but cannot
+_build_ its store paths. The only way to offload Darwin builds is to register a
+real Mac as an `aarch64-darwin` remote builder — delegation to Apple hardware,
+not emulation.
+
+---
+
 ## Workflow summary
 
 | Goal                       | Command / check                                                       |
