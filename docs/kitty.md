@@ -1,0 +1,129 @@
+# Kitty Terminal
+
+> **Hosts**: all — `ninja`, `windy` (Linux) and `Mac` (Apple Silicon laptop)
+> **Defined in**:
+>
+> - Linux: [`home/kitty.nix`](../home/kitty.nix) — `programs.kitty`, themed by Stylix
+> - Mac: [`home/darwin/kitty.nix`](../home/darwin/kitty.nix) — raw `kitty.conf`, **no Stylix**
+
+[Kitty](https://sw.kovidgoyal.net/kitty/) is the terminal on every host. `tmux`
+runs inside it for sessions/panes; the kitty binds below are terminal-level and
+sit underneath tmux's own prefix keys.
+
+The two hosts use **two separate config files** because the Mac needs macOS-only
+workarounds (shell pinning, Option-as-Alt) and is not themed by Stylix. The
+keybindings are kept in sync so muscle memory transfers, with one deliberate
+divergence for the laptop keyboard (see [Mac differences](#mac-differences)).
+
+---
+
+## Keybindings
+
+These are the **custom** binds defined in the config. Kitty's own defaults
+(e.g. `ctrl+shift+c/v` copy/paste on Linux, `⌘C/⌘V` on macOS) still apply on top.
+
+| Keys                          | Action                               | Linux | Mac |
+| ----------------------------- | ------------------------------------ | :---: | :-: |
+| `Ctrl+Shift+T`                | New tab                              |  ✅   | ✅  |
+| `Ctrl+Shift+1…4`              | Go to tab 1–4                        |  ✅   | ✅  |
+| `Ctrl+Shift+PageUp/PageDown`  | Previous / next tab                  |  ✅   | ✅  |
+| `Ctrl+Tab` / `Ctrl+Shift+Tab` | Next / previous tab (laptop cycle)   |   —   | ✅  |
+| `Ctrl+Shift+N`                | Split horizontally (`hsplit`)        |  ✅   | ✅  |
+| `Ctrl+Shift+\`                | Split vertically (`vsplit`)          |  ✅   | ✅  |
+| `Ctrl+Shift+←/→/↑/↓`          | Move focus between splits            |  ✅   | ✅  |
+| `Ctrl+Shift+F`                | Toggle zoom (`stack` layout)         |  ✅   | ✅  |
+| `Shift+↑` / `Shift+↓`         | Jump to previous / next shell prompt |  ✅   | ✅  |
+
+Splits and the zoom toggle require `enabled_layouts splits,stack` (set in both
+configs). `Shift+↑/↓` prompt-jumping relies on kitty **shell integration** being
+active (enabled on Linux; loaded manually on the Mac — see below).
+
+### Useful kitty defaults
+
+| Linux                  | Mac   | Action                       |
+| ---------------------- | ----- | ---------------------------- |
+| `Ctrl+Shift+C`         | `⌘C`  | Copy                         |
+| `Ctrl+Shift+V`         | `⌘V`  | Paste                        |
+| `Ctrl+Shift+=`         | `⌘+`  | Increase font size           |
+| `Ctrl+Shift+-`         | `⌘-`  | Decrease font size (session) |
+| `Ctrl+Shift+Backspace` | `⌘0`  | Reset font size              |
+| `Ctrl+Shift+F5`        | `⌃⌘,` | Reload `kitty.conf`          |
+
+---
+
+## Mac differences
+
+The Mac config diverges from the Linux one in a few deliberate ways:
+
+| Area             | Linux (`home/kitty.nix`)                          | Mac (`home/darwin/kitty.nix`)                                           |
+| ---------------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Theming**      | Stylix → Catppuccin Mocha, JetBrainsMono, size 13 | **Not themed** (Stylix off); kitty defaults + `font_size 14`            |
+| **Shell**        | Default `$SHELL`                                  | Pinned to the nix `bash --login -i` (see below)                         |
+| **Shell integ.** | `shellIntegration.mode = "enabled"`               | `shell_integration no-rc`, integration sourced from `.bashrc`           |
+| **Option key**   | n/a                                               | `macos_option_as_alt yes` so Option+Arrow word-motion works             |
+| **Close/quit**   | `confirm_os_window_close = 0`                     | `confirm_os_window_close -1` + `macos_quit_when_last_window_closed yes` |
+| **Tab cycle**    | PageUp/PageDown only                              | **adds `Ctrl+Tab` / `Ctrl+Shift+Tab`** (laptop, no PageUp/Down keys)    |
+| **Look**         | 0.90 opacity, 8px padding, powerline tab bar      | kitty defaults (none of these set)                                      |
+
+### Why the Mac pins the shell
+
+macOS ships bash 3.2, but `~/.bashrc` uses bash-5 features (Ble.sh, `globstar`,
+`[[ -v ]]`). The macOS GUI launchd session can leave `$SHELL` pointing at the
+stale `/bin/bash`, so a fresh kitty window would fall back to 3.2 and choke on
+the rc file. The Mac config therefore pins kitty to the nix bash with explicit
+flags (`--login -i`) so it reads `.bash_profile` → `.bashrc`.
+
+A custom shell disables kitty's **automatic** shell integration, so the Mac uses
+`shell_integration no-rc` (keeps the `KITTY_*` env vars) and sources the
+integration manually from `.bashrc` — ordered after starship/zoxide but before
+ble.sh attaches. With integration live, kitty can tell an idle prompt from a
+running command, which is what makes `confirm_os_window_close -1` only warn on
+close when a job is actually running.
+
+### Why no PageUp/PageDown on the Mac
+
+The built-in MacBook keyboard has **no physical PageUp/PageDown keys** (they are
+`Fn+↑` / `Fn+↓`). The PageUp/PageDown tab binds are kept for an external
+keyboard, but the day-to-day tab cycle is `Ctrl+Tab` / `Ctrl+Shift+Tab`. This
+mirrors the same laptop accommodation made for [AeroSpace](aerospace.md#laptop-note-workspace-navigation).
+
+### No collision with AeroSpace
+
+Every kitty bind uses `Ctrl+Shift`, `Ctrl+Tab` or `Shift+Arrow` — **never Alt**.
+[AeroSpace](aerospace.md) owns the `Alt`/`Ctrl+Alt` space, so the two never
+clash. Kitty binds also only fire while kitty is focused.
+
+---
+
+## Changing the font size
+
+- **Linux**: font comes from Stylix, not kitty. Edit `stylix.fonts.sizes.terminal`
+  in [`modules/core/theme.nix`](../modules/core/theme.nix) and rebuild.
+- **Mac**: edit `font_size` in [`home/darwin/kitty.nix`](../home/darwin/kitty.nix)
+  and re-apply. For a quick, non-persistent change use `⌘+` / `⌘-` / `⌘0`.
+
+---
+
+## How to apply
+
+### Linux (`ninja` / `windy`)
+
+```bash
+just build      # nh os switch .
+```
+
+Reload an open window after a config change with `Ctrl+Shift+F5`.
+
+### Mac
+
+Flakes only see git-tracked files, so commit + push first, then:
+
+```bash
+ssh izaac@192.168.0.218 'cd ~/repos/nixos-config && git pull --ff-only \
+  && darwin-rebuild build --flake .#Mac \
+  && sudo darwin-rebuild switch --flake .#Mac'
+```
+
+Open kitty windows keep the old config until reloaded — press `⌃⌘,` or open a
+new window. See [AeroSpace → How to apply](aerospace.md#how-to-apply) for the
+full remote workflow.

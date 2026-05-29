@@ -15,16 +15,10 @@
 - [Just Command Guide](just-commands.md)
 - [CLI Tools and Comma Integration](cli-tools.md)
 - [Linux Builder (Mac)](linux-builder.md)
+- [Kitty Terminal](kitty.md)
 - [AeroSpace (Mac tiling WM)](aerospace.md)
 
 ## Agent Instructions
 
 - [Token Optimization Playbook](agent-token-shield.md)
 - [Agent Troubleshooting](agent-troubleshooting.md)
-
-## Archived (stack reverted 2026-05-23)
-
-- [Zellij Configuration](zellij.md)
-- [Wezterm Configuration](wezterm.md)
-- [Zellij + Wezterm Workflow](zellij-wezterm-workflow.md)
-- [Helix Editor](helix.md)
