@@ -50,12 +50,5 @@ in {
       fd
       btop
     ];
-
-    # Ventoy is marked insecure upstream — review periodically for patches.
-    nixpkgs.config.permittedInsecurePackages = [
-      "ventoy-full-gtk-1.1.12"
-      "ventoy-gtk3-1.1.12"
-      "ventoy-bin-1.1.12"
-    ];
   };
 }

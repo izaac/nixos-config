@@ -21,7 +21,6 @@
 
     # Essential Tools
     telegram-desktop
-    ventoy-full-gtk
 
     # Audio Tools
     pulsemixer
@@ -69,13 +68,6 @@
       enable = true;
       createDirectories = true;
       setSessionVariables = false;
-    };
-    desktopEntries.ventoy = {
-      name = "Ventoy";
-      exec = "sudo ventoy-full-gtk";
-      icon = "drive-removable-media-usb";
-      terminal = false;
-      categories = ["Utility" "System"];
     };
 
     # Default Applications (File Associations)

@@ -139,6 +139,18 @@
     loginwindow.GuestEnabled = false;
   };
 
+  # macOS Application Firewall — governs INBOUND connections only.
+  # blockAllIncoming = false keeps Remote Login (SSH) reachable, and outbound
+  # VPN tunnels (Tunnelblick/OpenVPN) are unaffected. Stealth mode stays off so
+  # it does not drop the ICMP/diagnostic traffic VPN tooling relies on.
+  networking.applicationFirewall = {
+    enable = true;
+    allowSigned = true;
+    allowSignedApp = true;
+    blockAllIncoming = false;
+    enableStealthMode = false;
+  };
+
   # Homebrew manages GUI apps/casks that nixpkgs can't ship on Darwin. The
   # nix-darwin module only *drives* an existing brew install (run the official
   # installer once first). cleanup = "none" means it NEVER removes anything not
