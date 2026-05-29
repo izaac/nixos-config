@@ -208,6 +208,7 @@
     users.${userConfig.username} = {
       imports = [
         ../../home/core.nix
+        ../../home/darwin/aerospace.nix
         inputs.stylix.homeModules.stylix
       ];
       # stylix.enable is off on this host, so the Darwin module never injects
