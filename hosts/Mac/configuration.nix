@@ -164,7 +164,7 @@
     };
     casks = [
       "cyberduck"
-      "docker"
+      "docker-desktop"
       "firefox"
       "google-chrome"
       "gpg-suite-no-mail"
@@ -179,9 +179,7 @@
       "unetbootin"
       "visual-studio-code"
       "vlc"
-      "vnc-viewer"
       "windows-app"
-      "zoom"
     ];
     brews = [];
     masApps = {};
