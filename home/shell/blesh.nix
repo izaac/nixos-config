@@ -14,6 +14,14 @@
         # Only show command-elapsed/CPU marker for commands slower than 5s
         # (default ~1s is noisy for routine git/ls/cd output).
         [[ -n "''${BLE_VERSION-}" ]] && bleopt exec_elapsed_enabled='usr+sys>=5000'
+        # On macOS, ble.sh's per-prompt `stty` resolves to GNU coreutils stty
+        # (from nix, first in PATH). GNU stty re-reads termios after tcsetattr
+        # and reports "unable to perform all requested operations" because the
+        # Darwin kernel silently drops some bits ble.sh sets. BSD /bin/stty
+        # skips that check, so point ble's stty at it. Linux hosts keep GNU stty.
+        if [[ -n "''${BLE_VERSION-}" && $OSTYPE == darwin* ]]; then
+          function ble/bin/stty { /bin/stty "$@"; }
+        fi
       fi
     '';
 
