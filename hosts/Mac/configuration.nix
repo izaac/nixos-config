@@ -174,6 +174,8 @@
       upgrade = false;
       cleanup = "none";
     };
+    # SwipeAeroSpace lives in a third-party tap, not homebrew-cask core.
+    taps = ["mediosz/tap"];
     casks = [
       "cyberduck"
       "docker-desktop"
@@ -184,6 +186,7 @@
       "keka"
       "plex"
       "plexamp"
+      "raycast" # launcher (Spotlight replacement; rebind Cmd+Space in its onboarding)
       "slack"
       "telegram"
       "timemachineeditor"
@@ -191,6 +194,8 @@
       "visual-studio-code"
       "vlc"
       "windows-app"
+      # 3-finger trackpad swipe to change AeroSpace workspaces (laptop niri feel).
+      "mediosz/tap/swipeaerospace"
     ];
     brews = [];
     masApps = {};
