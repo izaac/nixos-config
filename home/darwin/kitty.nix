@@ -28,6 +28,8 @@
     macos_quit_when_last_window_closed yes
     confirm_os_window_close -1
 
+    font_size 14
+
     enabled_layouts splits,stack
 
     map ctrl+shift+t new_tab
