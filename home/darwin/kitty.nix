@@ -29,6 +29,7 @@
     confirm_os_window_close -1
 
     font_size 14
+    background_opacity 0.90
 
     enabled_layouts splits,stack
 

@@ -63,7 +63,7 @@ The Mac config diverges from the Linux one in a few deliberate ways:
 | **Option key**   | n/a                                               | `macos_option_as_alt yes` so Option+Arrow word-motion works             |
 | **Close/quit**   | `confirm_os_window_close = 0`                     | `confirm_os_window_close -1` + `macos_quit_when_last_window_closed yes` |
 | **Tab cycle**    | PageUp/PageDown only                              | **adds `Ctrl+Tab` / `Ctrl+Shift+Tab`** (laptop, no PageUp/Down keys)    |
-| **Look**         | 0.90 opacity, 8px padding, powerline tab bar      | kitty defaults (none of these set)                                      |
+| **Look**         | 0.90 opacity, 8px padding, powerline tab bar      | `background_opacity 0.90` (matches ninja); padding/tab-bar left default |
 
 ### Why the Mac pins the shell
 
