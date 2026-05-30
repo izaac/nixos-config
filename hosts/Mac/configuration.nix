@@ -177,6 +177,7 @@
     # SwipeAeroSpace lives in a third-party tap, not homebrew-cask core.
     taps = ["mediosz/tap"];
     casks = [
+      "boosteroid"
       "cyberduck"
       "docker-desktop"
       "firefox"
