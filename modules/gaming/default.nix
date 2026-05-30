@@ -232,6 +232,17 @@ in {
         logitech-udev-rules
         openrgb
       ];
+
+      # Sunshine: GameStream host. Pairs with Moonlight on the Mac so the
+      # 5070 Ti's NVENC does the encoding and the laptop becomes a thin
+      # client. Web UI for pairing lives at https://<host>:47990 on first
+      # run. capSysAdmin lets sunshine inject keyboard/mouse events.
+      sunshine = {
+        enable = true;
+        autoStart = true;
+        openFirewall = true;
+        capSysAdmin = true;
+      };
     };
 
     environment.sessionVariables =
