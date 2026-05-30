@@ -64,24 +64,25 @@ in {
       };
 
     activation = {
-      # Ensure GEMINI.md exists and has @instructions.md import.
+      # Ensure ~/.gemini/GEMINI.md exists and pulls in instructions.md. The
+      # path keeps its gemini-cli name because Antigravity CLI inherits the
+      # same on-disk layout under ~/.gemini/.
       gemini-bootstrap = lib.hm.dag.entryAfter ["writeBoundary"] ''
         if [ ! -f "${geminiMd}" ]; then
           mkdir -p "$(dirname "${geminiMd}")"
-          printf '%s\n' '@instructions.md' "" '## Gemini Added Memories' > "${geminiMd}"
+          printf '%s\n' '@instructions.md' "" '## Added Memories' > "${geminiMd}"
         elif ! head -1 "${geminiMd}" | grep -q '@instructions.md'; then
           sed -i '1i @instructions.md\n' "${geminiMd}"
         fi
       '';
 
-      # Register MCP servers for AI agents
+      # Register MCP servers for AI agents. Antigravity CLI MCP migration is
+      # a one-time manual step: `agy plugin import` pulls existing
+      # ~/.gemini/settings.json mcpServers entries into agy's mcp_config.json.
       ai-mcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
         if command -v claude >/dev/null 2>&1; then
           claude mcp add --scope user context7 --transport stdio -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
           claude mcp add --scope user sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
-        fi
-        if command -v gemini >/dev/null 2>&1; then
-          gemini mcp add --scope user context7 npx -- -y @upstash/context7-mcp@latest 2>/dev/null || true
         fi
       '';
     };

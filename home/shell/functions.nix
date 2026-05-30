@@ -8,34 +8,26 @@ in {
     gpg-fix() { gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'; }
 
     # --- AI HELPERS ---
-    # monko: ask Gemini for help in caveman talk
+    # monko: ask Antigravity CLI for help in caveman talk
     monko() {
       if [[ $# -eq 0 ]]; then
         echo "Monko need words to think! Use: monko <what is wrong?>"
         return 1
       fi
-      ask "Explain this like a caveman named Monko: $*"
+      PATH="${cleanPath}" agy -p "Explain this like a caveman named Monko: $*"
     }
 
-    # ask-monko: pipe previous command error to Gemini
+    # ask-monko: pipe previous command error to Antigravity CLI
     ask-monko() {
       local last_cmd=$(history | tail -n 2 | head -n 1 | sed 's/^[ ]*[0-9]*[ ]*//')
       echo "Monko looking at: $last_cmd"
-      ask "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
+      PATH="${cleanPath}" agy -p "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
     }
 
     # nix-index installs its own command_not_found_handle that suggests
     # `nix-shell -p <pkg>` for missing binaries; intentionally not overriding.
 
-    # --- Gemin / Copilot Wrappers ---
-    ask() {
-      if [[ $# -eq 0 ]]; then
-        PATH="${cleanPath}" gemini
-      else
-        PATH="${cleanPath}" gemini -p "$*"
-      fi
-    }
-
+    # --- Copilot Wrapper ---
     ai() {
       case "$1" in
         "") PATH="${cleanPath}" COPILOT_PROGRESS=false copilot ;;

@@ -71,7 +71,6 @@
 
       # --- AI CLI TOOLS ---
       github-copilot-cli
-      gemini-cli-bin
       claude-code
       codex
       ai-trace-scanner

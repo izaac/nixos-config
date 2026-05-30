@@ -16,5 +16,7 @@ in {
     ./shell/blesh.nix
   ];
 
-  home.packages = lib.optionals (nix-packages ? vcrunch) [nix-packages.vcrunch];
+  home.packages =
+    lib.optional (nix-packages ? vcrunch) nix-packages.vcrunch
+    ++ lib.optional (nix-packages ? antigravity-cli) nix-packages.antigravity-cli;
 }
