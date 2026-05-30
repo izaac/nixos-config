@@ -27,6 +27,7 @@
 
     keybindings = {
       "ctrl+shift+t" = "new_tab";
+      "ctrl+shift+x" = "close_tab";
       "ctrl+shift+page_up" = "previous_tab";
       "ctrl+shift+page_down" = "next_tab";
       "ctrl+shift+1" = "goto_tab 1";

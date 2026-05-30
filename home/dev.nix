@@ -74,6 +74,12 @@
       package = pkgs.git;
       lfs.enable = true;
 
+      # Global excludes via core.excludesfile — applies in every repo.
+      ignores = [
+        "**/.claude/settings.local.json"
+        ".antigravitycli/"
+      ];
+
       # Signing remains a top-level attribute in Home Manager for now
       signing = {
         key = userConfig.gitKey;

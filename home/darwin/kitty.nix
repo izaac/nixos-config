@@ -34,6 +34,8 @@
     enabled_layouts splits,stack
 
     map ctrl+shift+t new_tab
+    map ctrl+shift+x close_tab
+    map cmd+w close_tab
     map ctrl+shift+1 goto_tab 1
     map ctrl+shift+2 goto_tab 2
     map ctrl+shift+3 goto_tab 3
