@@ -43,6 +43,14 @@
           "if".app-id = "net.tunnelblick.tunnelblick";
           run = "layout floating";
         }
+        {
+          # Float Moonlight so AeroSpace doesn't tile it. With layout=floating
+          # the user can hit Cmd+Ctrl+F (or Moonlight's built-in fullscreen) to
+          # enter macOS native fullscreen — that gives direct scanout and the
+          # lowest possible input lag for the stream.
+          "if".app-id = "com.moonlight-stream.Moonlight";
+          run = "layout floating";
+        }
       ];
 
       mode.main.binding = {

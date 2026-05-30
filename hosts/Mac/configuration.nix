@@ -149,6 +149,23 @@
       TrackpadThreeFingerDrag = true;
     };
     loginwindow.GuestEnabled = false;
+
+    # Universal Access — reduceTransparency / reduceMotion would help here,
+    # but writing com.apple.universalaccess via `defaults` is TCC-gated:
+    # darwin-rebuild fails unless the terminal running it has Full Disk
+    # Access. Skipped to keep `just darwin-build` runnable without that
+    # manual grant; toggle in System Settings → Accessibility → Display if
+    # wanted (or grant FDA to kitty and re-enable here).
+
+    # Disable App Nap for the Moonlight bundle: ensures macOS never throttles
+    # the streaming client if the window briefly loses focus (e.g. Cmd-Tab to
+    # check a chat). In fullscreen App Nap normally stays off anyway; this is
+    # belt-and-suspenders for the windowed case.
+    CustomUserPreferences = {
+      "com.moonlight-stream.Moonlight" = {
+        NSAppSleepDisabled = true;
+      };
+    };
   };
 
   # macOS Application Firewall — governs INBOUND connections only.
@@ -182,6 +199,9 @@
       "firefox"
       "google-chrome"
       "gpg-suite-no-mail"
+      # Hammerspoon: Lua automation; drives the Moonlight launch/quit watcher
+      # in home/darwin/hammerspoon.nix (caffeinate + optional Focus toggle).
+      "hammerspoon"
       "iterm2"
       "keka"
       "microsoft-edge"
@@ -217,6 +237,7 @@
       imports = [
         ../../home/core.nix
         ../../home/darwin/aerospace.nix
+        ../../home/darwin/hammerspoon.nix
         ../../home/darwin/kitty.nix
         inputs.stylix.homeModules.stylix
       ];
