@@ -184,6 +184,7 @@
       "gpg-suite-no-mail"
       "iterm2"
       "keka"
+      "microsoft-edge"
       "plex"
       "plexamp"
       "protonvpn"
