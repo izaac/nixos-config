@@ -185,6 +185,7 @@
       "iterm2"
       "keka"
       "microsoft-edge"
+      "nvidia-geforce-now"
       "plex"
       "plexamp"
       "protonvpn"
