@@ -17,8 +17,12 @@ in {
     users.users.${userConfig.username} = {
       isNormalUser = true;
       description = userConfig.name;
-      extraGroups = ["wheel" "input" "video" "render" "dialout" "docker" "audio" "networkmanager" "gamemode"];
+      extraGroups = ["wheel" "input" "video" "render" "dialout" "docker" "audio" "networkmanager" "gamemode" "uinput"];
       shell = pkgs.bash;
+      # Linger keeps the user manager (systemd --user) alive after logout and
+      # spawns it at boot, so enabled user services like sunshine start
+      # without requiring a graphical login first.
+      linger = true;
     };
 
     # Enable Bash system-wide (Required to use as default shell)

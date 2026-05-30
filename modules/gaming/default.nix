@@ -237,13 +237,22 @@ in {
       # 5070 Ti's NVENC does the encoding and the laptop becomes a thin
       # client. Web UI for pairing lives at https://<host>:47990 on first
       # run. capSysAdmin lets sunshine inject keyboard/mouse events.
+      # Override the package with cudaSupport so NVENC is compiled in;
+      # without this sunshine falls back to libx264 (CPU encoding).
       sunshine = {
         enable = true;
         autoStart = true;
         openFirewall = true;
         capSysAdmin = true;
+        package = pkgs.sunshine.override {cudaSupport = true;};
       };
     };
+
+    # CUDA + DRM enumeration walks every /sys/bus/pci/.../drm entry; the
+    # default user-service nofile cap (1024) trips this on first
+    # NVENC init and the encoder dies with "Too many open files",
+    # which Moonlight surfaces as "connection terminated".
+    systemd.user.services.sunshine.serviceConfig.LimitNOFILE = 65536;
 
     environment.sessionVariables =
       {

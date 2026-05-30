@@ -276,6 +276,15 @@ in {
         excludes = [{title = "^Steam$";}];
         open-floating = true;
       }
+      # Elden Ring: auto-fullscreen so it owns the whole output (no niri chrome),
+      # critical when streaming via sunshine which captures the active monitor.
+      {
+        matches = [
+          {app-id = "^steam_app_1245620$";}
+          {title = "^ELDEN RING.*";}
+        ];
+        open-fullscreen = true;
+      }
     ];
 
     binds = with config.lib.niri.actions; let
