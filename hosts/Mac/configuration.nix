@@ -44,6 +44,7 @@
     mcfly
     nh
     pipenv
+    python3
     shfmt
     terraform
     tmuxinator
@@ -100,6 +101,9 @@
   # this Mac can reach ninja over Tailscale SSH.
   services.tailscale.enable = true;
 
+  # Silence the boot chime — no startup bong on power-on.
+  system.startup.chime = false;
+
   # Declarative macOS preferences. Only the keys listed here are managed;
   # every other System Settings value is left as-is. This writes `defaults`,
   # it never touches application data — Tunnelblick et al. are unaffected.
@@ -119,7 +123,23 @@
       NSWindowResizeTime = 0.001;
       NSUseAnimatedFocusRing = false;
       "com.apple.springing.delay" = 0.0; # no delay before folders spring open
+
+      # Scroll direction matches Windows/Linux mouse convention — content
+      # follows finger movement instead of macOS "natural" inversion.
+      "com.apple.swipescrolldirection" = false;
+      AppleShowScrollBars = "Always"; # persistent scrollbars, not auto-hide
+      AppleMeasurementUnits = "Centimeters";
+      AppleMetricUnits = 1;
+      AppleTemperatureUnit = "Celsius";
+      AppleICUForce24HourTime = true;
     };
+    menuExtraClock = {
+      Show24Hour = true;
+      ShowDate = 1; # 0=when space allows, 1=always, 2=never
+      ShowDayOfWeek = true;
+      ShowSeconds = false;
+    };
+    spaces.spans-displays = false; # each monitor has its own Spaces (AeroSpace-friendly)
     finder = {
       AppleShowAllFiles = true; # show dotfiles
       ShowPathbar = true;
@@ -127,6 +147,12 @@
       FXPreferredViewStyle = "Nlsv"; # list view
       _FXShowPosixPathInTitle = true;
       FXEnableExtensionChangeWarning = false;
+      CreateDesktop = false; # hide desktop icons (AeroSpace tiling stays clean)
+      FXDefaultSearchScope = "SCcf"; # search current folder by default, not whole Mac
+      # NewWindowTarget = "Other" is required whenever NewWindowTargetPath is set;
+      # "Home" alone would also work, but the explicit path survives a username change.
+      NewWindowTarget = "Other";
+      NewWindowTargetPath = "file:///Users/${userConfig.username}/";
     };
     dock = {
       autohide = true;
@@ -138,6 +164,16 @@
       show-recents = false;
       mru-spaces = false; # don't auto-rearrange Spaces
       tilesize = 48;
+      orientation = "bottom";
+      mineffect = "scale"; # cheaper than the default genie warp
+      # Hot corners: 1=disabled, 2=Mission Control, 3=App Windows, 4=Desktop,
+      # 5=Start Screen Saver, 6=Disable Screen Saver, 10=Sleep Display,
+      # 11=Launchpad, 12=Notification Center, 13=Lock Screen, 14=Quick Note.
+      # All disabled — bumping a corner mid-aim should never trigger anything.
+      wvous-tl-corner = 1;
+      wvous-tr-corner = 1;
+      wvous-bl-corner = 1;
+      wvous-br-corner = 1;
     };
     screencapture = {
       location = "/Users/${userConfig.username}/Screenshots";
