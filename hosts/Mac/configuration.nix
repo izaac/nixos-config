@@ -7,6 +7,10 @@
   users.users.${userConfig.username} = {
     home = "/Users/${userConfig.username}";
     shell = pkgs.bashInteractive;
+    openssh.authorizedKeys.keys = [
+      # ninja
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKsLkTQ0VLpDXXQV3bLXouWWdBbhmkY01s2s6uvJYlBV izaac 2.0"
+    ];
   };
 
   # Required by current nix-darwin for user-scoped options (Touch ID, etc.).
