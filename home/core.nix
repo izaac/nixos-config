@@ -15,6 +15,8 @@
   home = {
     inherit (userConfig) username;
     stateVersion = "25.11";
+    # Tracking nixos-unstable; HM master may sit on a newer release label.
+    enableNixpkgsReleaseCheck = false;
   };
 
   programs.home-manager.enable = true;
