@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  lib,
+  userConfig,
+  ...
+}: {
   # Key-only sshd. core/system.nix disables openssh globally, so override here.
   services.openssh = {
     enable = lib.mkForce true;
@@ -11,7 +15,7 @@
     };
   };
 
-  users.users.izaac.openssh.authorizedKeys.keys = [
+  users.users.${userConfig.username}.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKReCEJbKJZa0tS2D9owU5+YdXbl1pKpiRBOPlKGbQFh izaac@mac"
   ];
 

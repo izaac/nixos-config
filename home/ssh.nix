@@ -1,4 +1,4 @@
-_: {
+{userConfig, ...}: {
   programs.ssh = {
     enable = true;
 
@@ -22,7 +22,7 @@ _: {
       # this repo. ForwardAgent lets ninja authenticate outward (e.g. git
       # push to GitHub) using the local SSH agent during the session.
       ninja = {
-        User = "izaac";
+        User = userConfig.username;
         ForwardAgent = "yes";
       };
     };

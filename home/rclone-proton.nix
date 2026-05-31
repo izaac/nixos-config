@@ -35,14 +35,15 @@ in {
         # the cached (stale) credential, and even 2-3 attempts can trip
         # Proton's account rate limiter (observed 2026-05-31). If the
         # mount dies, fire a desktop notification and stay dead — Chief
-        # re-auths with `rclone config reconnect proton:` then
-        # `systemctl --user start rclone-proton`.
+        # re-auths via `rclone config` (the `reconnect` subcommand is
+        # OAuth-only and does not apply to the username/password/2FA
+        # Proton backend), then `systemctl --user start rclone-proton`.
         Restart = "no";
         ExecStopPost = pkgs.writeShellScript "rclone-proton-notify-fail" ''
           if [ "$SERVICE_RESULT" != "success" ]; then
             ${pkgs.libnotify}/bin/notify-send -u critical \
               "Proton Drive mount failed" \
-              "rclone-proton exited with $EXIT_STATUS. Run: rclone config reconnect proton: && systemctl --user start rclone-proton"
+              "rclone-proton exited with $EXIT_STATUS. Re-auth: rclone config → edit proton → re-enter password + TOTP, then systemctl --user start rclone-proton"
           fi
         '';
       };
