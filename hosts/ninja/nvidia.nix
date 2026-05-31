@@ -34,7 +34,6 @@
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     LIBVA_DRIVER_NAME = "nvidia";
     NVD_BACKEND = "direct";
-    GBM_BACKEND = "nvidia-drm";
 
     # Enable G-Sync/VRR (for GNOME/KDE Wayland)
     __GL_GSYNC_ALLOWED = "1";

@@ -8,7 +8,7 @@ with lib; let
   cfg = config.mySystem.desktop.nvidia;
 in {
   options.mySystem.desktop.nvidia = {
-    enable = mkEnableOption "Shared NVIDIA driver baseline (graphics + open module + VAAPI/VDPAU)";
+    enable = mkEnableOption "Shared NVIDIA driver baseline (graphics + open module + VAAPI)";
   };
 
   config = mkIf cfg.enable {
@@ -20,8 +20,6 @@ in {
         enable32Bit = true;
         extraPackages = with pkgs; [
           nvidia-vaapi-driver
-          libva-vdpau-driver
-          libvdpau-va-gl
         ];
       };
 
