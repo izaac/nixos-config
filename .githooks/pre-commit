@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Stop on errors
-set -e 
+set -e
 
 # Show output in git console
 exec 1>&2
@@ -15,61 +15,61 @@ LOCK_CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep 'flake\.lo
 
 # --- NIX CHECKS ---
 if [ -n "$STAGED_NIX_FILES" ]; then
-    echo "Processing Nix files..."
-    echo " -> Formatting..."
-    nix run nixpkgs#alejandra -- -q $STAGED_NIX_FILES
-    
-    echo " -> Checking for dead code..."
-    nix run nixpkgs#deadnix -- -e $STAGED_NIX_FILES
-    
-    echo " -> Running statix..."
-    for file in $STAGED_NIX_FILES; do
-        echo "    - $file"
-        nix run nixpkgs#statix -- fix "$file"
-    done
+  echo "Processing Nix files..."
+  echo " -> Formatting..."
+  nix run nixpkgs#alejandra -- -q $STAGED_NIX_FILES
 
-    # Re-stage formatted files
-    git add $STAGED_NIX_FILES
+  echo " -> Checking for dead code..."
+  nix run nixpkgs#deadnix -- -e $STAGED_NIX_FILES
+
+  echo " -> Running statix..."
+  for file in $STAGED_NIX_FILES; do
+    echo "    - $file"
+    nix run nixpkgs#statix -- fix "$file"
+  done
+
+  # Re-stage formatted files
+  git add $STAGED_NIX_FILES
 fi
 
 if [ -n "$STAGED_NIX_FILES" ] || [ -n "$LOCK_CHANGED" ]; then
-    echo "Running nix flake check..."
-    nix flake check
+  echo "Running nix flake check..."
+  nix flake check
 fi
 
 # --- MARKDOWN CHECKS ---
 if [ -n "$STAGED_MD_FILES" ]; then
-    echo "Processing Markdown files..."
-    echo " -> Formatting..."
-    nix run nixpkgs#prettier -- --write $STAGED_MD_FILES --ignore-path .gitignore
-    
-    echo " -> Linting..."
-    # We run lint on the whole repo to be safe, but only if md files changed
-    nix run nixpkgs#markdownlint-cli2 -- '**/*.md' '#.direnv' '#result' '#.git'
-    
-    # Re-stage formatted files
-    git add $STAGED_MD_FILES
+  echo "Processing Markdown files..."
+  echo " -> Formatting..."
+  nix run nixpkgs#prettier -- --write $STAGED_MD_FILES --ignore-path .gitignore
+
+  echo " -> Linting..."
+  # We run lint on the whole repo to be safe, but only if md files changed
+  nix run nixpkgs#markdownlint-cli2 -- '**/*.md' '#.direnv' '#result' '#.git'
+
+  # Re-stage formatted files
+  git add $STAGED_MD_FILES
 fi
 
 # --- SHELL SYNTAX CHECK ---
 echo "Validating shell syntax..."
 if [ -n "$STAGED_NIX_FILES" ]; then
-    HOSTNAME=$(hostname)
-    USER=$(whoami)
-    SHELL_EXPR=".#nixosConfigurations.${HOSTNAME}.config.home-manager.users.${USER}.programs.bash.initExtra"
-    if nix eval "$SHELL_EXPR" --extra-experimental-features dynamic-derivations --raw 2>/dev/null | bash -n 2>&1; then
-        echo "  Shell syntax OK"
-    else
-        echo "  WARNING: Shell syntax check failed (non-blocking)"
-    fi
+  HOSTNAME=$(hostname)
+  USER=$(whoami)
+  SHELL_EXPR=".#nixosConfigurations.${HOSTNAME}.config.home-manager.users.${USER}.programs.bash.initExtra"
+  if nix eval "$SHELL_EXPR" --extra-experimental-features dynamic-derivations --raw 2>/dev/null | bash -n 2>&1; then
+    echo "  Shell syntax OK"
+  else
+    echo "  WARNING: Shell syntax check failed (non-blocking)"
+  fi
 fi
 
 # --- AI TRACE SCAN ---
 echo "Scanning for AI traces..."
 if command -v ai-trace-scan &>/dev/null; then
-    ai-trace-scan --staged --quiet
+  ai-trace-scan --staged --quiet
 else
-    echo "  (ai-trace-scan not found, skipping)"
+  echo "  (ai-trace-scan not found, skipping)"
 fi
 
 echo "Pre-Commit Checks Passed!"
