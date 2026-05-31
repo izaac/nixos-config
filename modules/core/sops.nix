@@ -18,9 +18,14 @@ in {
     inherit (config.users.users.${userConfig.username}) home;
   in {
     sops = {
-      defaultSopsFile = ../../secrets.yaml;
+      defaultSopsFile = ../../secrets/common.yaml;
       defaultSopsFormat = "yaml";
+      # User age key — for editing secrets on this machine (`sops secrets/…`).
       age.keyFile = "${home}/.config/sops/age/keys.txt";
+      # Host SSH key — sops-nix derives the matching age private key at boot,
+      # so decryption no longer depends on the user age file existing.
+      # Matches the &host_shared recipient in .sops.yaml.
+      age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
       secrets = {
         sshHost.owner = userConfig.username;
