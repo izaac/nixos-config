@@ -16,6 +16,14 @@
   # Required by current nix-darwin for user-scoped options (Touch ID, etc.).
   system.primaryUser = userConfig.username;
 
+  # macOS doesn't export LANG over SSH (Terminal.app sets it locally only),
+  # which makes ble.sh warn on every remote login. Export a UTF-8 locale
+  # system-wide so non-interactive and SSH shells get it too.
+  environment.variables = {
+    LANG = "en_US.UTF-8";
+    LC_ALL = "en_US.UTF-8";
+  };
+
   # Enable Touch ID for sudo (New syntax for nix-darwin).
   # reattach loads pam_reattach so Touch ID also works inside tmux/screen.
   security.pam.services.sudo_local = {
