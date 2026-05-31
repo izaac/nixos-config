@@ -30,7 +30,15 @@ in {
             --buffer-size 32M \
             --no-modtime
         '';
-        ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${mountPoint}";
+        # `-` prefix: ignore fusermount exit code. rclone unmounts itself on
+        # SIGTERM before this runs, so fusermount usually returns
+        # "Operation not permitted" because the mount is already gone.
+        ExecStop = "-${pkgs.fuse}/bin/fusermount -uz ${mountPoint}";
+        # Treat SIGTERM (143) as a clean exit so planned restarts (e.g.
+        # home-manager activation) don't fire the failure notification.
+        # Anything else (auth failure exit 1, OOM kill, etc.) still
+        # reports failure and triggers ExecStopPost.
+        SuccessExitStatus = "143";
         # NEVER auto-restart. Any failed restart re-hits /auth/v4/2fa with
         # the cached (stale) credential, and even 2-3 attempts can trip
         # Proton's account rate limiter (observed 2026-05-31). If the

@@ -1,9 +1,24 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  # On unlock, focus may have drifted to the headless dummy HDMI-A-1 (parked
+  # at x=10000 for Sunshine), making niri keybinds appear "dead" until Chief
+  # mouses to DP-1. Wrap swaylock so the focus is explicitly returned to DP-1
+  # the moment the user unlocks. The wrapper depends on `daemonize = false`
+  # so the chained niri command runs AFTER unlock, not immediately.
+  swaylock-refocus = pkgs.writeShellScriptBin "swaylock-refocus" ''
+    ${pkgs.swaylock-effects}/bin/swaylock "$@"
+    niri msg action focus-monitor DP-1 || true
+  '';
+in {
+  home.packages = [swaylock-refocus];
+
   programs.swaylock = {
     enable = true;
     package = pkgs.swaylock-effects;
     settings = {
-      daemonize = true;
+      # Foreground so swaylock-refocus can chain the focus-monitor call
+      # after unlock. swayidle/niri.spawn/wlogout all handle a foreground
+      # child cleanly (fork+exec without wait).
+      daemonize = false;
       screenshots = true;
       effect-blur = "9x5";
       effect-vignette = "0.5:0.5";
@@ -25,7 +40,7 @@
     timeouts = [
       {
         timeout = 300;
-        command = "${pkgs.swaylock-effects}/bin/swaylock";
+        command = "${swaylock-refocus}/bin/swaylock-refocus";
       }
       {
         timeout = 600;
@@ -34,8 +49,8 @@
       }
     ];
     events = {
-      before-sleep = "${pkgs.swaylock-effects}/bin/swaylock";
-      lock = "${pkgs.swaylock-effects}/bin/swaylock";
+      before-sleep = "${swaylock-refocus}/bin/swaylock-refocus";
+      lock = "${swaylock-refocus}/bin/swaylock-refocus";
     };
   };
 }

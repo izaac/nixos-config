@@ -136,7 +136,7 @@ in {
   xdg.configFile."wlogout/layout".text = ''
     {
         "label" : "lock",
-        "action" : "swaylock",
+        "action" : "swaylock-refocus",
         "text" : "Lock",
         "keybind" : "l"
     }
@@ -321,7 +321,7 @@ in {
       "Alt+Space".action = spawn "fuzzel";
       "Mod+E".action = spawn "nemo";
       "Mod+B".action = spawn "brave";
-      "Mod+Ctrl+L".action = spawn "swaylock";
+      "Mod+Ctrl+L".action = spawn "swaylock-refocus";
       "Mod+Shift+P".action = spawn "wlogout" "-b" "2";
       "Mod+Shift+N".action.spawn = ["makoctl" "mode" "-t" "do-not-disturb"];
       "Mod+S".action = spawn (lib.getExe audioSinkMenu);
