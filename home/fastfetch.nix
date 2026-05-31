@@ -5,7 +5,7 @@
 }: let
   isDarwin = pkgs.stdenv.isDarwin;
 
-  # Capability detection — derived from actual system config so new hosts
+  # Capability detection: derived from actual system config so new hosts
   # inherit the right layout automatically. No hostname hardcoding.
   hasNvidia = osConfig.hardware.nvidia.modesetting.enable or false;
   isLaptop = isDarwin || (osConfig.services.tlp.enable or false);
@@ -14,7 +14,10 @@
   hasGfxApi = !isDarwin; # OpenGL + Vulkan via Linux GBM/DRI stack
   hasBattery = isLaptop;
   hasWifi = isLaptop;
-  sym = if isDarwin then "" else "󱄅"; # Apple / NixOS snowflake
+  sym =
+    if isDarwin
+    then ""
+    else "󱄅"; # Apple / NixOS snowflake
 
   # Gradient + box-drawing constants shared by every section header.
   display = ''
@@ -102,13 +105,13 @@
       "percent": { "type": 3, "green": 30, "yellow": 70 }
     }${
       if hasDataDisk
-      then '',
-        {
-          "type": "disk",
-          "key":  "{$10}└   Data      ",
-          "folders": ["/mnt/data"],
-          "percent": { "type": 3, "green": 30, "yellow": 70 }
-        }
+      then ''        ,
+                {
+                  "type": "disk",
+                  "key":  "{$10}└   Data      ",
+                  "folders": ["/mnt/data"],
+                  "percent": { "type": 3, "green": 30, "yellow": 70 }
+                }
       ''
       else ""
     },

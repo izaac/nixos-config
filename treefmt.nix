@@ -1,7 +1,7 @@
 _: {
   projectRootFile = "flake.nix";
   settings.global.excludes = [
-    "secrets.yaml"
+    "secrets/*.yaml"
   ];
   programs = {
     alejandra.enable = true;
