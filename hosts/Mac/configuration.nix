@@ -37,6 +37,7 @@
   environment.systemPackages = with pkgs; [
     ansifilter
     bashInteractive
+    blueutil
     bottom
     broot
     cheat

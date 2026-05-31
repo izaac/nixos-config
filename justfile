@@ -75,3 +75,15 @@ builder-reset:
         sudo rm -f /var/lib/linux-builder/nixos.qcow2
         sudo launchctl bootstrap system /Library/LaunchDaemons/org.nixos.linux-builder.plist
         @echo "Builder disk recreated — it reseeds from the image on next build."
+
+# Lock down for hostile networks: firewall stealth+block-all, Bluetooth off, Tailscale exit-node on
+road-on:
+        @scripts/road-mode.sh on
+
+# Revert road-on (firewall defaults, Bluetooth on, exit-node cleared)
+road-off:
+        @scripts/road-mode.sh off
+
+# Show current road-mode posture (firewall / Bluetooth / Tailscale exit-node)
+road-status:
+        @scripts/road-mode.sh status
