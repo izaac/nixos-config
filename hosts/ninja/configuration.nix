@@ -33,6 +33,7 @@
     ./performance.nix
     ./audio.nix
     ./chromium.nix
+    ./ssh.nix
     ../../modules/core
     ../../modules/gaming
     ../../modules/desktop
