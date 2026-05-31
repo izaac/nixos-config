@@ -203,10 +203,10 @@ in {
       "logo": {
         "source": "${
       if isDarwin
-      then "macos_small"
-      else "nixos_small"
+      then "macos"
+      else "nixos"
     }",
-        "padding": { "top": 1, "left": 2 }
+        "padding": { "top": 2, "left": 3 }
       },
       ${display}
       "modules": [
