@@ -100,5 +100,19 @@
       fuse3
       nvtopPackages.nvidia
       bluetuith
+    ]
+    ++ lib.optionals pkgs.stdenv.isDarwin [
+      # GNU userland for Linux-parity in interactive shell.
+      # Aliased (not PATH-prepended) so scripts using BSD defaults stay intact.
+      coreutils
+      findutils
+      gnused
+      gnugrep
+      gawk
+      gnumake
+      moreutils
+      watch
+      pstree
+      lsof
     ];
 }
