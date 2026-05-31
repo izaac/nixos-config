@@ -189,12 +189,35 @@ in {
       }
     ];
 
-    # LG UltraGear 49" — pin to native 144Hz mode.
+    # LG UltraGear 49" — pin to native 144Hz mode at origin so the dummy
+    # HDMI output (configured far right at x=10000) never auto-stacks on top.
     outputs."DP-1" = {
       mode = {
         width = 3440;
         height = 1440;
         refresh = 143.923;
+      };
+      position = {
+        x = 0;
+        y = 0;
+      };
+      variable-refresh-rate = false;
+    };
+
+    # Headless dummy HDMI plug for Sunshine streaming. Parked at x=10000 so
+    # the cursor cannot drift onto it during normal desktop use; the main
+    # monitor stays the only practical workspace. Use Mod+M to focus the
+    # dummy (next launched app lands there) and Mod+Shift+M to send the
+    # focused window/column to it.
+    outputs."HDMI-A-1" = {
+      mode = {
+        width = 1920;
+        height = 1080;
+        refresh = 60.0;
+      };
+      position = {
+        x = 10000;
+        y = 0;
       };
       variable-refresh-rate = false;
     };
@@ -293,6 +316,9 @@ in {
       # --- Apps ---
       "Mod+Return".action = spawn "kitty";
       "Mod+D".action = spawn "fuzzel";
+      # Alt+Space is the Moonlight-friendly alternative: Mac Cmd forwarding to
+      # Linux Super is unreliable, but Option (Alt) passes through cleanly.
+      "Alt+Space".action = spawn "fuzzel";
       "Mod+E".action = spawn "nemo";
       "Mod+B".action = spawn "brave";
       "Mod+Ctrl+L".action = spawn "swaylock";
@@ -351,6 +377,10 @@ in {
       "Mod+Shift+9".action.move-column-to-workspace = 9;
       "Mod+Page_Down".action = focus-workspace-down;
       "Mod+Page_Up".action = focus-workspace-up;
+
+      # --- Sunshine dummy monitor (HDMI-A-1) ---
+      "Mod+M".action.focus-monitor = "HDMI-A-1";
+      "Mod+Shift+M".action.move-column-to-monitor = "HDMI-A-1";
 
       # --- Mouse wheel focus column ---
       "Mod+WheelScrollDown" = {
