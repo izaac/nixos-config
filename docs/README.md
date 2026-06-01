@@ -8,6 +8,7 @@
 - [Slim Kernel (ninja)](kernel-slim.md)
 - [Security & Hardening](security.md)
 - [Secret Management](secrets.md)
+- [GitHub SSH Host Key Pinning](known-hosts.md)
 - [System Recovery with Disko (ninja)](disko-rebuild.md)
 
 ## Tools & Workflows
