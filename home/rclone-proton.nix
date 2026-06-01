@@ -56,8 +56,11 @@ in {
         '';
       };
 
+      # Auto-start disabled: rclone-proton sits idle until Chief manually
+      # starts it with `systemctl --user start rclone-proton`. Avoids the
+      # rate-limiter risk on session start when stale credentials are cached.
       Install = {
-        WantedBy = ["default.target"];
+        WantedBy = [];
       };
     };
   };
