@@ -77,6 +77,7 @@
       nix-ld.enable = true;
       yubikey.enable = true;
       "sudo-readonly".enable = true;
+      "known-hosts".enable = true;
       tailscale = {
         enable = true;
         advertiseRoutes = ["192.168.0.0/24"];

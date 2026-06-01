@@ -39,6 +39,7 @@
       nix-ld.enable = true;
       yubikey.enable = true;
       "sudo-readonly".enable = true;
+      "known-hosts".enable = true;
     };
   };
 

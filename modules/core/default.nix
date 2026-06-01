@@ -17,5 +17,6 @@
     ./theme.nix
     ./sudo-readonly.nix
     ./tailscale.nix
+    ./known-hosts.nix
   ];
 }
