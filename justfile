@@ -87,3 +87,7 @@ road-off:
 # Show current road-mode posture (firewall / Bluetooth / Tailscale exit-node)
 road-status:
         @scripts/road-mode.sh status
+
+# Fixture-based unit tests for road-mode helpers (offline, no sudo)
+road-test:
+        @bash scripts/tests/road-mode-test.sh
