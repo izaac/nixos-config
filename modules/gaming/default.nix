@@ -163,7 +163,7 @@ in {
       gamescope = {
         enable = true;
         capSysNice = true;
-        package = pkgs.gamescope_git; # Chaotic-Nyx: bleeding-edge HDR/VRR
+        package = pkgs.gamescope; # nixpkgs fallback (gamescope_git broken)
       };
 
       steam = {

@@ -26,7 +26,6 @@ in {
     goverlay
     vkbasalt
     umu-launcher
-    gamescope_git # Chaotic-Nyx: bleeding-edge HDR/VRR fixes
     (bottles.override {removeWarningPopup = true;})
 
     # Proton (Chaotic-Nyx: microarch-optimized + GE)
@@ -40,7 +39,7 @@ in {
 
     # Emulation
     dolphin-emu
-    shadps4_git # Chaotic-Nyx: PS4 emulator (bleeding-edge)
+    shadps4 # nixpkgs fallback (shadps4_git broken)
   ];
 
   # Custom Desktop Entry for SAM Rewritten

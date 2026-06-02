@@ -49,6 +49,7 @@ in {
 
       # Global overrides
       targets.grub.enable = false; # Handled by boot module
+      targets.kmscon.enable = false; # nixpkgs removed old kmscon options
       targets.nixos-icons.enable = true;
     };
   };
