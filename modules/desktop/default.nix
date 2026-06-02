@@ -78,22 +78,9 @@ in {
 
     # Polkit agent for privileged GUI prompts. niri-flake auto-spawns a KDE
     # polkit agent which races ours and loses every login; mask it so only
-    # the GNOME agent runs.
+    # the GNOME agent runs (via XDG autostart from polkit_gnome package).
     security.polkit.enable = true;
     systemd.user.services.niri-flake-polkit.enable = lib.mkForce false;
-    systemd.user.services.polkit-gnome-authentication-agent-1 = {
-      description = "polkit-gnome-authentication-agent-1";
-      wantedBy = ["graphical-session.target"];
-      wants = ["graphical-session.target"];
-      after = ["graphical-session.target"];
-      serviceConfig = {
-        Type = "simple";
-        ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
-        Restart = "on-failure";
-        RestartSec = 1;
-        TimeoutStopSec = 10;
-      };
-    };
 
     environment = {
       gnome.excludePackages = with pkgs; [

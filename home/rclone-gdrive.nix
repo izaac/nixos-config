@@ -34,7 +34,7 @@ in {
         '';
         ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${mountPoint}";
         Restart = "on-failure";
-        RestartSec = "10";
+        RestartSec = "30";
       };
 
       Install = {
