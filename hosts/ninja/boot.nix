@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+_: {
   boot = {
     loader = {
       systemd-boot = {
@@ -23,7 +23,6 @@
 
     supportedFilesystems = ["exfat"];
 
-    kernelPackages = pkgs.linuxPackages_latest;
     blacklistedKernelModules = [
       "sp5100_tco"
       "eeepc_wmi"
@@ -38,7 +37,6 @@
       "iommu=pt"
       "pcie_ports=native"
       "amd_pstate=active"
-      "preempt=full"
       # Silence split-lock dmesg spam from Steam/Wine games. The mitigation
       # itself is already disabled via kernel.split_lock_mitigate=0 in
       # performance.nix; this just stops the kernel from logging traps.

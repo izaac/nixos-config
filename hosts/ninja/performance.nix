@@ -37,8 +37,6 @@
     kernel.sysctl = {
       "kernel.dmesg_restrict" = 0; # Workstation: allow non-root dmesg for debugging
       "kernel.split_lock_mitigate" = 0; # Performance trade-off on this 16-core CPU
-      "kernel.sched_autogroup_enabled" = 0;
-      "kernel.sched_cfs_bandwidth_slice_us" = 3000;
 
       "net.core.wmem_max" = 67108864;
       "net.core.rmem_max" = 67108864;
