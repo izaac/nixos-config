@@ -24,11 +24,6 @@ inputs.nixpkgs.lib.nixosSystem {
         (import ../overlays/gvfs-no-wsdd.nix)
         inputs.niri-flake.overlays.niri
       ];
-      # Chaotic-Nyx binary cache (kernel + nvidia served from here)
-      nix.settings = {
-        substituters = ["https://nyx-cache.chaotic.cx/"];
-        trusted-public-keys = ["nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="];
-      };
     }
   ];
 }

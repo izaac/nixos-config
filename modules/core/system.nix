@@ -27,21 +27,30 @@ in {
 
     # Nix Maintenance & Settings
     nix = {
-      optimise.automatic = true;
+      optimise.automatic = false; # Replaced by auto-optimise-store (dedup on write)
       settings = {
         experimental-features = ["nix-command" "flakes"];
         trusted-users = ["root" "@wheel"];
         keep-derivations = true;
         keep-outputs = true;
-        # Explicitly lock substituters to prevent rogue cache injection
+        auto-optimise-store = true;
+        accept-flake-config = true;
+        # Explicitly lock substituters to prevent rogue cache injection.
+        # Order matters: nixos first (fastest CDN), then third-party caches.
         substituters = [
           "https://cache.nixos.org"
+          "https://nyx-cache.chaotic.cx/"
           "https://izaac-nix.cachix.org"
         ];
         trusted-public-keys = [
           "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="
           "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
         ];
+        # Harden against slow or dead third-party caches
+        connect-timeout = 5;
+        download-attempts = 3;
+        fallback = true;
         # Ensure sandbox is on (default, but explicit)
         sandbox = true;
       };
