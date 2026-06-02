@@ -13,10 +13,6 @@
     # nvidia-suspend/resume systemd services which conflict with the kernel notifiers.
     powerManagement.enable = false;
     powerManagement.finegrained = false;
-    # Track nixpkgs production branch. Switched from a custom mkDriver pin on
-    # 2026-04-30 once the channel default caught up. Verify
-    # `nvidiaPackages.production.version` is at least the previously running
-    # driver before bumping nixpkgs.
     package = config.boot.kernelPackages.nvidiaPackages.production;
     nvidiaPersistenced = true;
   };

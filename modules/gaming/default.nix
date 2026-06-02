@@ -163,6 +163,7 @@ in {
       gamescope = {
         enable = true;
         capSysNice = true;
+        package = pkgs.gamescope_git; # Chaotic-Nyx: bleeding-edge HDR/VRR
       };
 
       steam = {
@@ -173,7 +174,7 @@ in {
         extraPackages = with pkgs; [
           libvdpau
           libva
-          mangohud
+          mangohud_git
           steamtinkerlaunch
           protonplus
           gamemode

@@ -26,8 +26,13 @@ in {
     goverlay
     vkbasalt
     umu-launcher
-    gamescope
+    gamescope_git # Chaotic-Nyx: bleeding-edge HDR/VRR fixes
     (bottles.override {removeWarningPopup = true;})
+
+    # Proton (Chaotic-Nyx: microarch-optimized + GE)
+    # Installed to home but with lower priority to avoid bin conflicts
+    (lib.setPrio 10 proton-cachyos_x86_64_v4)
+    (lib.setPrio 11 proton-ge-custom)
 
     # Wine / Windows Compatibility
     wineWow64Packages.waylandFull # 32-bit + 64-bit Wine with Wayland support
@@ -35,6 +40,7 @@ in {
 
     # Emulation
     dolphin-emu
+    shadps4_git # Chaotic-Nyx: PS4 emulator (bleeding-edge)
   ];
 
   # Custom Desktop Entry for SAM Rewritten
@@ -62,6 +68,7 @@ in {
   # MangoHud Config
   programs.mangohud = {
     enable = true;
+    package = pkgs.mangohud_git; # Chaotic-Nyx: bleeding-edge
     settings = {
       background_alpha = lib.mkForce 0.4;
       font_size = lib.mkForce 24;

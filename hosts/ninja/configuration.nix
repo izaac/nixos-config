@@ -29,7 +29,7 @@
     ./network.nix
     ./udev-igc-fix.nix
     ./boot.nix
-    ./kernel-slim.nix
+    ./kernel.nix
     ./performance.nix
     ./audio.nix
     ./chromium.nix
