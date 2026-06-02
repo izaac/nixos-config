@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  programs.bash.shellAliases =
+  programs.zsh.shellAliases =
     {
       # --- CORE OVERRIDES ---
       ls = "ls --group-directories-first --color=auto";
@@ -50,8 +50,6 @@
       # --- AUDIO ---
       pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";
     }
-    # Darwin: alias GNU userland over BSD defaults for Linux-parity in the
-    # interactive shell. Scripts still hit BSD tools at /usr/bin.
     // lib.optionalAttrs pkgs.stdenv.isDarwin {
       ls = "${pkgs.coreutils}/bin/ls --group-directories-first --color=auto";
       sed = "${pkgs.gnused}/bin/sed";
@@ -70,7 +68,6 @@
       cp = "${pkgs.coreutils}/bin/cp";
       mv = "${pkgs.coreutils}/bin/mv";
       rm = "${pkgs.coreutils}/bin/rm";
-      # Clipboard + open parity with Linux/Wayland muscle memory.
       wl-copy = "pbcopy";
       wl-paste = "pbpaste";
       xdg-open = "open";

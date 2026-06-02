@@ -1,14 +1,13 @@
 _: let
   cleanPath = "/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin";
 in {
-  programs.bash.initExtra = ''
-    # --- BRUSH COMPATIBILITY FUNCTIONS (replaces chained aliases) ---
+  programs.zsh.initContent = ''
+    # --- FUNCTIONS ---
     ks() { sudo sh -c "sync; echo 1 > /proc/sys/vm/drop_caches" && echo "RAM cache cleared"; }
     ncl-full() { direnv prune && nh clean all --keep 10; }
     gpg-fix() { gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'; }
 
     # --- AI HELPERS ---
-    # monko: ask Antigravity CLI for help in caveman talk
     monko() {
       if [[ $# -eq 0 ]]; then
         echo "Monko need words to think! Use: monko <what is wrong?>"
@@ -17,15 +16,11 @@ in {
       PATH="${cleanPath}" agy -p "Explain this like a caveman named Monko: $*"
     }
 
-    # ask-monko: pipe previous command error to Antigravity CLI
     ask-monko() {
-      local last_cmd=$(history | tail -n 2 | head -n 1 | sed 's/^[ ]*[0-9]*[ ]*//')
+      local last_cmd=$(fc -ln -1)
       echo "Monko looking at: $last_cmd"
       PATH="${cleanPath}" agy -p "I ran '$last_cmd' and it failed. Explain why like a caveman named Monko and suggest a fix."
     }
-
-    # nix-index installs its own command_not_found_handle that suggests
-    # `nix-shell -p <pkg>` for missing binaries; intentionally not overriding.
 
     # --- Copilot Wrapper ---
     ai() {
@@ -37,7 +32,6 @@ in {
     }
 
     # --- Nix Generation Diff ---
-    # Lazy form: $() expands on each call (shell-alias form expanded at init).
     nv-sys() {
       nvd diff "$(command ls -vd /nix/var/nix/profiles/system-*-link | tail -2)"
     }
@@ -64,7 +58,7 @@ in {
       fi
     }
 
-    # --- Recursive Cat (text files only, skips binary via fd) ---
+    # --- Recursive Cat (text files only) ---
     catr() {
       local target="''${1:-.}"
       fd --type f --hidden --exclude .git . "$target" --exec sh -c '

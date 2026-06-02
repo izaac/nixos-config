@@ -13,7 +13,7 @@ in {
     ./shell/init.nix
     ./shell/programs.nix
     ./shell/env.nix
-    ./shell/blesh.nix
+    ./shell/zsh.nix
   ];
 
   home.packages =

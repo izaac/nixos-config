@@ -9,11 +9,13 @@
     # Load ble.sh early (--attach=none defers attach until the end so
     # bash-preexec / atuin / starship can register their hooks first).
     bashrcExtra = lib.mkBefore ''
-      if [[ $- == *i* ]] && [[ -z "''${BLE_VERSION-}" ]]; then
+      if [[ $- == *i* ]] && [[ -z "''${BLE_VERSION-}" ]] && [[ -z "''${NO_BLESH-}" ]]; then
         source ${pkgs.blesh}/share/blesh/ble.sh --attach=none --noinputrc
         # Only show command-elapsed/CPU marker for commands slower than 5s
         # (default ~1s is noisy for routine git/ls/cd output).
         [[ -n "''${BLE_VERSION-}" ]] && bleopt exec_elapsed_enabled='usr+sys>=5000'
+        # Disable kitty keyboard protocol — causes input freeze on kitty + NVIDIA 595.
+        [[ -n "''${BLE_VERSION-}" ]] && bleopt term_modifyOtherKeys_passthrough_kitty_protocol=
         # On macOS, ble.sh's per-prompt `stty` resolves to GNU coreutils stty
         # (from nix, first in PATH). GNU stty re-reads termios after tcsetattr
         # and reports "unable to perform all requested operations" because the

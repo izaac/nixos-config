@@ -6,14 +6,11 @@
       settings = {
         command_timeout = 500;
         add_newline = false;
-        # The default $container module reports "Docker" generically because
-        # /.dockerenv is empty. Distrobox exports $CONTAINER_ID with the real
-        # box name (rhel10, ubu, alpy, ...) — surface it via env_var instead.
         format = "$directory$hostname$git_branch$git_status$env_var$character";
         character = {
-          success_symbol = "[](bold green) ";
-          error_symbol = "[](bold red) ";
-          vimcmd_symbol = "[](bold yellow) ";
+          success_symbol = "[](bold green) ";
+          error_symbol = "[](bold red) ";
+          vimcmd_symbol = "[](bold yellow) ";
         };
         hostname = {
           ssh_only = true;
@@ -34,47 +31,41 @@
 
     atuin = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
       settings = {
         auto_sync = false;
         style = "compact";
         inline_height = 20;
         filter_mode = "global";
-        # Up arrow walks the current directory's history first (most useful
-        # day-to-day); global Ctrl-R search still searches everything.
         filter_mode_shell_up = "directory";
         search_mode = "fuzzy";
-        # Don't auto-run picked commands on Enter — paste to prompt, let
-        # the user press Enter again to execute. Prevents accidental
-        # destructive command replays.
         enter_accept = false;
-        # Auto-scope history per git repo when inside one.
         workspaces = true;
       };
     };
 
     zoxide = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
       options = ["--cmd" "cd"];
     };
 
     yazi = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
       shellWrapperName = "y";
     };
 
     eza = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
       icons = "auto";
       git = true;
     };
 
     fzf = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
       defaultCommand = "fd --type f";
       fileWidgetCommand = "fd --type f";
       changeDirWidgetCommand = "fd --type d";
@@ -112,54 +103,12 @@
 
     nix-index = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
     };
 
     bash = {
       enable = true;
       enableCompletion = true;
-      historySize = 50000;
-      historyFileSize = 100000;
-      historyControl = ["ignoredups" "ignorespace" "erasedups"];
-
-      # --- DISTROBOX SHIELD (Must run before everything else) ---
-      initExtra = pkgs.lib.mkBefore ''
-        if [ -d "/run/host/nix/store" ]; then
-          # 1. Early PATH injection (Host tools first to avoid 'command not found')
-          export PATH="$HOME/.local/share/distrobox/bin:/run/host/run/current-system/sw/bin:/run/host/bin:/run/host/usr/bin:$PATH"
-
-          # Inject host user profile binaries early
-          host_user=$(readlink /run/host/etc/profiles/per-user/$USER)
-          if [ -n "$host_user" ]; then
-            host_user_resolved=$(readlink "/run/host$host_user")
-            [ -z "$host_user_resolved" ] && host_user_resolved="$host_user"
-            export PATH="$PATH:/run/host$host_user_resolved/bin"
-          fi
-          unset host_user host_user_resolved
-
-          # 2. Atuin Container Reset
-          unset ATUIN_NO_MODIFY_DB
-          unset ATUIN_SHLVL
-          unset ATUIN_PREEXEC_BACKEND
-
-          # 3. Scrub PROMPT_COMMAND if it's already haunted
-          _dbx_shield_scrub() {
-            if declare -p PROMPT_COMMAND 2>/dev/null | grep -q "declare -a"; then
-              local i
-              for i in "''${!PROMPT_COMMAND[@]}"; do
-                if [[ "''${PROMPT_COMMAND[$i]}" == *"_dbx_"* ]] || [[ "''${PROMPT_COMMAND[$i]}" == *"__bp_install"* ]]; then
-                  unset 'PROMPT_COMMAND[$i]'
-                fi
-              done
-            fi
-          }
-          _dbx_shield_scrub
-          unset -f _dbx_shield_scrub
-        fi
-      '';
-
-      # EDITOR/VISUAL set by programs.neovim.defaultEditor on Linux; Mac has
-      # no neovim, so leaving them unset there is intentional.
     };
   };
 }

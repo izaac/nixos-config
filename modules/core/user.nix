@@ -18,14 +18,12 @@ in {
       isNormalUser = true;
       description = userConfig.name;
       extraGroups = ["wheel" "input" "video" "render" "dialout" "docker" "audio" "networkmanager" "gamemode" "uinput"];
-      shell = pkgs.bash;
-      # Linger keeps the user manager (systemd --user) alive after logout and
-      # spawns it at boot, so enabled user services like sunshine start
-      # without requiring a graphical login first.
+      shell = pkgs.zsh;
       linger = true;
     };
 
-    # Enable Bash system-wide (Required to use as default shell)
+    # Enable Zsh system-wide (required for default shell)
+    programs.zsh.enable = true;
     programs.bash.enable = true;
 
     # sudo-rs is enabled via core/system.nix (mkForce).
