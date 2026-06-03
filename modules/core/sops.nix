@@ -28,9 +28,18 @@ in {
       age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
       secrets = {
-        sshHost.owner = userConfig.username;
-        geminiProject.owner = userConfig.username;
-        cloudCodeProject.owner = userConfig.username;
+        sshHost = {
+          owner = userConfig.username;
+          mode = "0400";
+        };
+        geminiProject = {
+          owner = userConfig.username;
+          mode = "0400";
+        };
+        cloudCodeProject = {
+          owner = userConfig.username;
+          mode = "0400";
+        };
       };
     };
 

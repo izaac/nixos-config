@@ -9,6 +9,8 @@
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
       X11Forwarding = false;
+      MaxAuthTries = 3;
+      LoginGraceTime = "30s";
     };
   };
 

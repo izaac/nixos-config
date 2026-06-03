@@ -26,7 +26,6 @@ _: {
     blacklistedKernelModules = [
       "sp5100_tco"
       "eeepc_wmi"
-      "joydev"
       "pcspkr"
     ];
 

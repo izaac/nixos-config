@@ -8,6 +8,10 @@
       "*" = {
         AddKeysToAgent = "yes";
         IdentityFile = "~/.ssh/id_ed25519";
+        # Only offer the configured key, never every key the agent holds — stops
+        # leaking unrelated public keys to each host probed.
+        IdentitiesOnly = "yes";
+        HashKnownHosts = "yes";
         PreferredAuthentications = "publickey,keyboard-interactive,password";
         ServerAliveInterval = 60;
         ServerAliveCountMax = 2;

@@ -89,8 +89,20 @@ in {
         Type = "oneshot";
         RemainAfterExit = true;
         ExecStart = "${pkgs.ethtool}/bin/ethtool -K ${cfg.routingInterface} rx-udp-gro-forwarding on rx-gro-list off";
+        NoNewPrivileges = true;
+        ProtectHome = true;
+        ProtectSystem = "strict";
       };
     };
+
+    # Catch a half-configured subnet router early: advertising routes without a
+    # routingInterface silently skips the UDP GRO throughput tuning.
+    assertions = [
+      {
+        assertion = cfg.advertiseRoutes == [] || cfg.routingInterface != null;
+        message = "mySystem.core.tailscale.advertiseRoutes is set but routingInterface is null; set the carrying NIC.";
+      }
+    ];
 
     environment.systemPackages = [pkgs.tailscale];
   };
