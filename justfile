@@ -91,3 +91,7 @@ road-status:
 # Fixture-based unit tests for road-mode helpers (offline, no sudo)
 road-test:
         @bash scripts/tests/road-mode-test.sh
+
+# Verify NOPASSWD sudo set: inert tools + locked wrappers only, no dangerous commands
+validate-sudo:
+        @bash scripts/validate-sudo.sh
