@@ -11,6 +11,9 @@
       TERMINAL = "kitty";
       ATUIN_NO_MODIFY_DB = "true";
       QA_INFRA_DIR = "/home/${userConfig.username}/repos/qa-infra-automation";
+      # Idiomatic single switch so every Electron/Chromium app runs natively
+      # on Wayland (niri) instead of XWayland. Replaces per-app ozone flags.
+      NIXOS_OZONE_WL = "1";
     };
 
     # Propagate user-local bin dirs to every launcher — niri spawn, desktop

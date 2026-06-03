@@ -27,8 +27,9 @@ in {
     ];
 
     # Browser Acceleration Hints
-    environment.sessionVariables = {
-      MOZ_DISABLE_RDD_SANDBOX = "1";
-    };
+    # MOZ_DISABLE_RDD_SANDBOX was previously set here to force Firefox HW
+    # decode, but it weakens the media sandbox for every user. Brave/Chromium
+    # are the primary browsers and get VA-API via nvidia-vaapi-driver, so the
+    # sandbox stays intact.
   };
 }

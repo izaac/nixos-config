@@ -1,11 +1,8 @@
-{
-  lib,
-  userConfig,
-  ...
-}: {
-  # Key-only sshd. core/system.nix disables openssh globally, so override here.
+{userConfig, ...}: {
+  # Key-only sshd. core/system.nix defaults openssh off (mkDefault), so a
+  # plain enable here wins without mkForce.
   services.openssh = {
-    enable = lib.mkForce true;
+    enable = true;
     openFirewall = false;
     settings = {
       PasswordAuthentication = false;

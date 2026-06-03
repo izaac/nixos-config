@@ -36,10 +36,6 @@
     __GL_VRR_ALLOWED = "1";
   };
 
-  environment.systemPackages = with pkgs; [
-    nvtopPackages.nvidia
-  ];
-
   # 5. The Undervolt Service (Clock Locking & Power Limit)
   systemd.services.nvidia-lock-clocks = {
     enable = true;

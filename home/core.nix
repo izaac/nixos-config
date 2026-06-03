@@ -19,5 +19,9 @@
     enableNixpkgsReleaseCheck = false;
   };
 
+  # Manage the XDG base directories and export XDG_*_HOME so the userDirs,
+  # mimeApps and configFile entries declared elsewhere are fully compliant.
+  xdg.enable = true;
+
   programs.home-manager.enable = true;
 }

@@ -27,7 +27,7 @@ with lib; let
       esac
     done
     [ -z "$SENSOR" ] && exit 1
-    rm -f /tmp/thermal-guard.stop
+    rm -f /run/thermal-guard/stop
 
     THROTTLE=${toString (cfg.thermalGuard.throttleTemp * 1000)}
     RECOVER=${toString (cfg.thermalGuard.recoverTemp * 1000)}
@@ -67,7 +67,7 @@ with lib; let
       else
         sleep 5
       fi
-      [ -f /tmp/thermal-guard.stop ] && rm -f /tmp/thermal-guard.stop && exit 0
+      [ -f /run/thermal-guard/stop ] && rm -f /run/thermal-guard/stop && exit 0
     done
   '';
 
@@ -191,7 +191,7 @@ in {
           };
           custom = mkIf (hasTuning || hasGpuTuning) {
             start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${optionalString cfg.thermalGuard.enable " && sudo ${thermal-guard} &"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
-            end = "${pkgs.bash}/bin/bash -c '${optionalString cfg.thermalGuard.enable "touch /tmp/thermal-guard.stop; "}sudo ${gamemode-end} && ${notify} \"GameMode\" \"Efficiency: ${baseDesc}\"'";
+            end = "${pkgs.bash}/bin/bash -c '${optionalString cfg.thermalGuard.enable "touch /run/thermal-guard/stop; "}sudo ${gamemode-end} && ${notify} \"GameMode\" \"Efficiency: ${baseDesc}\"'";
           };
         };
       };
@@ -219,6 +219,14 @@ in {
     ];
 
     boot.kernel.sysctl."vm.max_map_count" = 2147483642;
+
+    # Runtime dir for the thermal-guard stop flag. Owned root:gamemode 0770 so
+    # only gamemode members (the GameMode end hook) can create the flag and
+    # root (the guard loop) can read/remove it. Replaces the world-writable
+    # /tmp path any local user could pre-create to neuter the watchdog.
+    systemd.tmpfiles.rules = mkIf cfg.thermalGuard.enable [
+      "d /run/thermal-guard 0770 root gamemode -"
+    ];
 
     services = {
       scx = {

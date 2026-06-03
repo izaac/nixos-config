@@ -63,7 +63,8 @@ in {
       ntpd-rs.enable = lib.mkForce true;
       timesyncd.enable = lib.mkForce false;
 
-      openssh.enable = false;
+      # mkDefault so hosts re-enable with a plain `enable = true` (no mkForce).
+      openssh.enable = lib.mkDefault false;
 
       fstrim.enable = true;
       # Power management is handled by TLP (windy) or scx_lavd (ninja);
