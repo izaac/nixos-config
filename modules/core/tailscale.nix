@@ -61,6 +61,17 @@ in {
       trustedInterfaces = ["tailscale0"];
     };
 
+    # modules/core/performance.nix forces strict kernel rp_filter (=1) globally
+    # for anti-spoof hardening. On a subnet router that silently drops the
+    # asymmetric tailnet<->LAN return paths this node is meant to forward, so
+    # relax it to loose (=2) only when this host actually advertises routes.
+    # Loose still rejects spoofed sources but permits valid asymmetric routing.
+    # mkOverride 49 wins over the shared module's mkForce (priority 50).
+    boot.kernel.sysctl = mkIf (cfg.advertiseRoutes != []) {
+      "net.ipv4.conf.all.rp_filter" = mkOverride 49 2;
+      "net.ipv4.conf.default.rp_filter" = mkOverride 49 2;
+    };
+
     # This host uses the nftables backend; tell tailscaled to match.
     systemd.services.tailscaled.serviceConfig.Environment = [
       "TS_DEBUG_FIREWALL_MODE=nftables"

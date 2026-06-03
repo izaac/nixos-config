@@ -34,7 +34,11 @@
                   # IMPORTANT: disko does not set neededForBoot on the root filesystem.
                   # Without fileSystems."/".neededForBoot = true in hardware.nix, the
                   # initrd has no fstab entry and systemd hangs after LUKS decrypt.
-                  mountOptions = ["noatime" "nodiratime" "lazytime" "commit=60" "discard"];
+                  # No "discard" mount flag: online discard adds per-delete
+                  # latency on NVMe. Periodic services.fstrim (from
+                  # nixos-hardware common-pc-ssd) plus LUKS allowDiscards above
+                  # handle TRIM without the write-path cost.
+                  mountOptions = ["noatime" "nodiratime" "lazytime" "commit=60"];
                 };
               };
             };
@@ -54,7 +58,8 @@
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/mnt/data";
-                mountOptions = ["rw" "noatime" "commit=60" "nofail" "lazytime" "exec" "discard"];
+                # No "discard": rely on periodic fstrim, not online discard.
+                mountOptions = ["rw" "noatime" "commit=60" "nofail" "lazytime" "exec"];
               };
             };
           };

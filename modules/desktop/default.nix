@@ -47,11 +47,10 @@ in {
     # Do NOT enable xserver — niri runs Wayland natively; xwayland-satellite
     # is launched per-user from home/niri.nix for X11 app compatibility.
 
-    programs.gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-      pinentryPackage = pkgs.pinentry-gnome3;
-    };
+    # GPG agent is owned by home-manager (services.gpg-agent in home/dev.nix);
+    # do not also declare programs.gnupg.agent here or two managers fight over
+    # the same socket. SSH auth is owned by gnome-keyring (below), matching
+    # home-manager's services.gpg-agent.enableSshSupport = false.
 
     # Cross-platform LAN file transfer (auto-opens firewall port 53317).
     programs.localsend.enable = true;
