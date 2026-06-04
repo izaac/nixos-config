@@ -29,6 +29,7 @@ in {
     (nix-packages.brave-origin.override {
       commandLineArgs = waylandFlags;
     })
+    nix-packages.ladybird
     (pkgs.microsoft-edge.override {
       commandLineArgs = waylandFlags;
     })
