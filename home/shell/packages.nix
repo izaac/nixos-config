@@ -1,8 +1,11 @@
 {
   pkgs,
   lib,
+  osConfig ? {},
   ...
-}: {
+}: let
+  hostname = osConfig.networking.hostName or "";
+in {
   home.packages = with pkgs;
     [
       # --- CORE CLI UTILS ---
@@ -72,7 +75,6 @@
       # --- AI CLI TOOLS ---
       github-copilot-cli
       claude-code
-      codex
       ai-trace-scanner
 
       # --- COMPRESSION & ARCHIVING ---
@@ -114,5 +116,8 @@
       watch
       pstree
       lsof
+    ]
+    ++ lib.optionals (hostname == "ninja") [
+      codex
     ];
 }
