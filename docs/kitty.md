@@ -1,14 +1,15 @@
 # Kitty Terminal
 
-> **Hosts**: all — `ninja`, `windy` (Linux) and `Mac` (Apple Silicon laptop)
+> **Hosts**: all (`ninja`, `windy` on Linux and `Mac` on Apple Silicon laptop)
 > **Defined in**:
 >
-> - Linux: [`home/kitty.nix`](../home/kitty.nix) — `programs.kitty`, themed by Stylix
-> - Mac: [`home/darwin/kitty.nix`](../home/darwin/kitty.nix) — raw `kitty.conf`, **no Stylix**
+> - Linux: [`home/kitty.nix`](../home/kitty.nix), `programs.kitty`, themed by Stylix
+> - Mac: [`home/darwin/kitty.nix`](../home/darwin/kitty.nix), raw `kitty.conf`, **no Stylix**
 
-[Kitty](https://sw.kovidgoyal.net/kitty/) is the terminal on every host. `tmux`
-runs inside it for sessions/panes; the kitty binds below are terminal-level and
-sit underneath tmux's own prefix keys.
+[Kitty](https://sw.kovidgoyal.net/kitty/) is the terminal on every host.
+[`tmux`](tmux.md) runs inside it for sessions and panes, and the kitty binds
+below are terminal-level and sit underneath tmux's own prefix keys. For how the
+two layers split the work, see [Kitty + tmux](kitty-tmux.md).
 
 The two hosts use **two separate config files** because the Mac needs macOS-only
 workarounds (shell pinning, Option-as-Alt) and is not themed by Stylix. The
@@ -36,7 +37,7 @@ These are the **custom** binds defined in the config. Kitty's own defaults
 
 Splits and the zoom toggle require `enabled_layouts splits,stack` (set in both
 configs). `Shift+↑/↓` prompt-jumping relies on kitty **shell integration** being
-active (enabled on Linux; loaded manually on the Mac — see below).
+active (enabled on Linux, loaded manually on the Mac, see below).
 
 ### Useful kitty defaults
 
@@ -75,7 +76,7 @@ flags (`--login -i`) so it reads `.bash_profile` → `.bashrc`.
 
 A custom shell disables kitty's **automatic** shell integration, so the Mac uses
 `shell_integration no-rc` (keeps the `KITTY_*` env vars) and sources the
-integration manually from `.bashrc` — ordered after starship/zoxide but before
+integration manually from `.bashrc`, ordered after starship/zoxide but before
 ble.sh attaches. With integration live, kitty can tell an idle prompt from a
 running command, which is what makes `confirm_os_window_close -1` only warn on
 close when a job is actually running.
@@ -89,7 +90,7 @@ mirrors the same laptop accommodation made for [AeroSpace](aerospace.md#laptop-n
 
 ### No collision with AeroSpace
 
-Every kitty bind uses `Ctrl+Shift`, `Ctrl+Tab` or `Shift+Arrow` — **never Alt**.
+Every kitty bind uses `Ctrl+Shift`, `Ctrl+Tab` or `Shift+Arrow`, **never Alt**.
 [AeroSpace](aerospace.md) owns the `Alt`/`Ctrl+Alt` space, so the two never
 clash. Kitty binds also only fire while kitty is focused.
 
@@ -124,6 +125,6 @@ ssh izaac@192.168.0.218 'cd ~/repos/nixos-config && git pull --ff-only \
   && sudo darwin-rebuild switch --flake .#Mac'
 ```
 
-Open kitty windows keep the old config until reloaded — press `⌃⌘,` or open a
+Open kitty windows keep the old config until reloaded, so press `⌃⌘,` or open a
 new window. See [AeroSpace → How to apply](aerospace.md#how-to-apply) for the
 full remote workflow.

@@ -10,7 +10,7 @@ disk. It only lives in `/run/secrets/` (tmpfs) at runtime.
 
 ## Architecture at a glance
 
-```
+```text
                               ┌──────────────────────────┐
                               │     .sops.yaml           │
                               │  (key aliases + rules)   │
@@ -88,7 +88,7 @@ The cleartext only ever exists in:
 
 ## Boot flow: how a NixOS host decrypts at activation
 
-```
+```text
    1.  systemd boots
        │
        ▼
@@ -133,7 +133,7 @@ clear error. Better to fail loud than boot with missing secrets.
 
 ## Editor flow: when you run `sops secrets/common.yaml`
 
-```
+```text
    1.  sops CLI starts
        │
        ▼
@@ -222,10 +222,12 @@ systemd.user.services.example = {
 2. Add it to `.sops.yaml` as a new alias and include in the relevant
    `creation_rules`.
 3. Re-encrypt every affected file (run from a machine that can already decrypt):
+
    ```bash
    sops updatekeys secrets/common.yaml
    sops updatekeys secrets/ninja.yaml   # only if it exists
    ```
+
 4. Commit. The cleartext didn't change; only the encrypted data-key
    header for the new recipient.
 

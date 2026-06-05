@@ -17,6 +17,8 @@
 - [CLI Tools and Comma Integration](cli-tools.md)
 - [Linux Builder (Mac)](linux-builder.md)
 - [Kitty Terminal](kitty.md)
+- [tmux (terminal multiplexer)](tmux.md)
+- [Kitty + tmux integration](kitty-tmux.md)
 - [AeroSpace (Mac tiling WM)](aerospace.md)
 
 ## Agent Instructions
