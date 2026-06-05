@@ -22,7 +22,6 @@
         package = pkgs.papirus-icon-theme;
       };
       gtk4 = {
-        theme = null; # Stylix handles GTK4 theming
         extraConfig.gtk-application-prefer-dark-theme = 1;
       };
       gtk3.extraConfig.gtk-application-prefer-dark-theme = 1;
