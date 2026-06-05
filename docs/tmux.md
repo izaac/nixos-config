@@ -77,6 +77,59 @@ The custom binds above only cover panes, so window management uses tmux defaults
 Open windows show in the middle of the status bar as `index:name` with flags, so
 you can always see which one is current.
 
+### Panes
+
+The custom binds cover splitting and moving between panes. The rest of pane
+management uses tmux defaults, plus the mouse, which is enabled in the config.
+
+| Keys                   | Action                                       |
+| ---------------------- | -------------------------------------------- |
+| `Ctrl+a` `z`           | Zoom the current pane to full screen, toggle |
+| `Ctrl+a` `x`           | Kill the current pane                        |
+| `Ctrl+a` `{` / `}`     | Swap pane with the previous / next one       |
+| `Ctrl+a` `Alt+←/↓/↑/→` | Resize the pane by 5 cells (repeatable)      |
+| Mouse drag border      | Resize a pane by dragging                    |
+| Mouse click pane       | Focus that pane                              |
+
+A zoomed pane shows a `Z` flag next to its window in the status bar. Press
+`Ctrl+a` `z` again to restore the layout.
+
+### Sessions
+
+A session is the top-level container that holds your windows. It keeps running on
+the server even after you detach, which is what makes the
+[SSH auto-attach](#ssh-auto-attach) below work.
+
+| Command or keys    | Action                                    |
+| ------------------ | ----------------------------------------- |
+| `Ctrl+a` `d`       | Detach from the session, it keeps running |
+| `Ctrl+a` `s`       | Pick a session from an interactive tree   |
+| `Ctrl+a` `$`       | Rename the current session                |
+| `Ctrl+a` `(` / `)` | Switch to the previous / next session     |
+| `tmux ls`          | List sessions (run from a plain shell)    |
+| `tmux new -s name` | Start a new named session                 |
+| `tmux a -t name`   | Attach to an existing session by name     |
+
+The session name is shown on the left of the status bar.
+
+### Copy mode
+
+Copy mode lets you scroll back and select text with the keyboard. The config sets
+`keyMode = "vi"`, so movement uses Vim keys, and `set-clipboard on` sends whatever
+you copy out through Kitty to the system clipboard.
+
+| Keys                | Action                                 |
+| ------------------- | -------------------------------------- |
+| `Ctrl+a` `[`        | Enter copy mode                        |
+| `h/j/k/l`, `/`, `?` | Move and search like in Vim            |
+| `Space`             | Start a selection                      |
+| `Enter`             | Copy the selection and leave copy mode |
+| `q`                 | Quit copy mode without copying         |
+
+With the mouse on, you can also just drag to select; releasing copies the text
+straight to the clipboard. There are no custom `v` or `y` binds, so the defaults
+above are what apply.
+
 ## Plugins
 
 | Plugin       | Source                          | Notes                                      |
