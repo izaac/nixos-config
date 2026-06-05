@@ -101,6 +101,13 @@ in {
       # --- SPLITS ---
       bind "\\" split-window -h
       bind v split-window -v
+
+      # --- COPY MODE (Vim Style) ---
+      # `v` begins a selection and `y` yanks like Vim. These live in the
+      # copy-mode-vi key table, so they do not collide with the prefix `v`
+      # split above. Rectangle selection stays on `C-v` (tmux default).
+      bind-key -T copy-mode-vi v send-keys -X begin-selection
+      bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
     '';
   };
 }

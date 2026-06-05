@@ -122,13 +122,14 @@ you copy out through Kitty to the system clipboard.
 | ------------------- | -------------------------------------- |
 | `Ctrl+a` `[`        | Enter copy mode                        |
 | `h/j/k/l`, `/`, `?` | Move and search like in Vim            |
-| `Space`             | Start a selection                      |
-| `Enter`             | Copy the selection and leave copy mode |
+| `v`                 | Start a selection (Vim style)          |
+| `C-v`               | Toggle rectangle (block) selection     |
+| `y`                 | Copy the selection and leave copy mode |
 | `q`                 | Quit copy mode without copying         |
 
 With the mouse on, you can also just drag to select; releasing copies the text
-straight to the clipboard. There are no custom `v` or `y` binds, so the defaults
-above are what apply.
+straight to the clipboard. `v` and `y` are custom binds added in the config, and
+the default `Space` and `Enter` still work too.
 
 ## Plugins
 
