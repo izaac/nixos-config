@@ -58,6 +58,25 @@ When you SSH from a local tmux into a remote one, the outer session swallows the
 prefix. Press `Ctrl+a` `a` to send a literal `Ctrl+a` through to the inner
 session.
 
+### Windows
+
+A tmux window is like a tab: a full-screen workspace that can hold its own panes.
+The custom binds above only cover panes, so window management uses tmux defaults.
+
+| Keys              | Action                     |
+| ----------------- | -------------------------- |
+| `Ctrl+a` `c`      | Create a new window        |
+| `Ctrl+a` `0…9`    | Jump to a window by number |
+| `Ctrl+a` `n`      | Next window                |
+| `Ctrl+a` `p`      | Previous window            |
+| `Ctrl+a` `Ctrl+a` | Toggle the last window     |
+| `Ctrl+a` `,`      | Rename the current window  |
+| `Ctrl+a` `w`      | List and pick a window     |
+| `Ctrl+a` `&`      | Kill the current window    |
+
+Open windows show in the middle of the status bar as `index:name` with flags, so
+you can always see which one is current.
+
 ## Plugins
 
 | Plugin       | Source                          | Notes                                      |
