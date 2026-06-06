@@ -9,6 +9,7 @@
     ./chrome.nix
     ./lazyvim.nix
     ./vscode.nix
+    ./capture-card.nix
   ];
 
   # --- FONTS ---
@@ -31,6 +32,7 @@
     # General Software
     fragments # GTK Torrent Client (Rust)
     clapper # Modern GTK4 Video Player (Rust)
+    mpv # Low-latency player (good for capture card live view)
     snapshot # GTK Camera App (Rust)
     sparrow
     ffmpeg-full
