@@ -99,7 +99,7 @@
       # 4. Open the video. mpv keeps the process in the foreground; on exit the
       #    trap tears down the loopback so nothing lingers.
       ##########################################################################
-      mpv "av://v4l2:$video_dev" --no-audio --profile=low-latency --untimed "$@"
+      mpv "av://v4l2:$video_dev" --no-audio --profile=low-latency --untimed --demuxer-lavf-o=video_size=1920x1080,input_format=nv12,framerate=60 "$@"
     '';
   };
 in {

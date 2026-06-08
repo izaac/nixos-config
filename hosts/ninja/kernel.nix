@@ -14,5 +14,8 @@
   pkgs,
   ...
 }: {
-  boot.kernelPackages = lib.mkForce (pkgs.linuxPackages_cachyos.cachyOverride {mArch = "ZEN4";});
+  boot.kernelPackages = lib.mkForce (pkgs.linuxPackages_cachyos.cachyOverride {
+    mArch = "ZEN4";
+    ticksHz = 1000;
+  });
 }
