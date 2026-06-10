@@ -118,11 +118,13 @@
       "$RUNTIME" exec -it "$TMP_NAME" subscription-manager refresh
 
       echo ">> 5/6  Copying entitlement state to $HOST_DIR"
+      # Clean existing state in case of previous failed runs
+      sudo rm -rf "$HOST_DIR"/rhsm "$HOST_DIR"/pki-entitlement "$HOST_DIR"/pki-consumer "$HOST_DIR"/var-lib-rhsm
       mkdir -p "$HOST_DIR"/rhsm "$HOST_DIR"/pki-entitlement "$HOST_DIR"/pki-consumer "$HOST_DIR"/var-lib-rhsm
-      "$RUNTIME" cp "$TMP_NAME":/etc/rhsm/.            "$HOST_DIR/rhsm/"
-      "$RUNTIME" cp "$TMP_NAME":/etc/pki/entitlement/. "$HOST_DIR/pki-entitlement/"
-      "$RUNTIME" cp "$TMP_NAME":/etc/pki/consumer/.    "$HOST_DIR/pki-consumer/"
-      "$RUNTIME" cp "$TMP_NAME":/var/lib/rhsm/.        "$HOST_DIR/var-lib-rhsm/"
+      "$RUNTIME" exec "$TMP_NAME" tar -cf - -C /etc/rhsm . | tar -xmf - --no-same-owner -C "$HOST_DIR/rhsm/"
+      "$RUNTIME" exec "$TMP_NAME" tar -cf - -C /etc/pki/entitlement . | tar -xmf - --no-same-owner -C "$HOST_DIR/pki-entitlement/"
+      "$RUNTIME" exec "$TMP_NAME" tar -cf - -C /etc/pki/consumer . | tar -xmf - --no-same-owner -C "$HOST_DIR/pki-consumer/"
+      "$RUNTIME" exec "$TMP_NAME" tar -cf - -C /var/lib/rhsm . | tar -xmf - --no-same-owner -C "$HOST_DIR/var-lib-rhsm/"
       "$RUNTIME" rm -f "$TMP_NAME" >/dev/null
 
       echo ">> 6/6  Re-creating rhel10 via distrobox assemble (volumes populated)"
@@ -167,7 +169,7 @@
         codeready-builder-for-rhel-10-x86_64-rpms \
         codeready-builder-for-ubi-10-x86_64-rpms; do
         sudo subscription-manager repos --enable "$REPO" 2>&1 \
-          | grep -v "matches no repositories" || true
+          | grep -Ev "(matches no repositories|does not match a valid repository ID)" || true
       done
 
       if rpm -q epel-release >/dev/null 2>&1; then
@@ -276,15 +278,15 @@
   ];
 
   # Alias to easily create/update these containers
-  programs.bash.shellAliases = {
+  home.shellAliases = {
     db-up = "distrobox assemble create --file /home/${userConfig.username}/.config/distrobox/distrobox.ini";
     db-rm = "distrobox assemble rm --file /home/${userConfig.username}/.config/distrobox/distrobox.ini";
-    db-arch = "distrobox enter archy";
-    db-ubu = "distrobox enter ubu";
-    db-debian = "distrobox enter debi";
-    db-rhel = "distrobox enter rhel10";
+    db-arch = "distrobox enter archy -- zsh";
+    db-ubu = "distrobox enter ubu -- bash";
+    db-debian = "distrobox enter debi -- bash";
+    db-rhel = "distrobox enter rhel10 -- bash";
     db-rhel-bootstrap = "bash /home/${userConfig.username}/.config/distrobox/rhel10-bootstrap.sh";
     db-rhel-init = "distrobox enter rhel10 -- bash /home/${userConfig.username}/.config/distrobox/rhel10-register.sh";
-    db-alpine = "distrobox enter alpy";
+    db-alpine = "distrobox enter alpy -- sh";
   };
 }

@@ -32,6 +32,7 @@
     atuin = {
       enable = true;
       enableZshIntegration = true;
+      enableBashIntegration = false;
       settings = {
         auto_sync = false;
         style = "compact";
@@ -47,18 +48,21 @@
     zoxide = {
       enable = true;
       enableZshIntegration = true;
+      enableBashIntegration = false;
       options = ["--cmd" "cd"];
     };
 
     yazi = {
       enable = true;
       enableZshIntegration = true;
+      enableBashIntegration = false;
       shellWrapperName = "y";
     };
 
     eza = {
       enable = true;
       enableZshIntegration = true;
+      enableBashIntegration = false;
       icons = "auto";
       git = true;
     };
@@ -66,6 +70,7 @@
     fzf = {
       enable = true;
       enableZshIntegration = true;
+      enableBashIntegration = false;
       defaultCommand = "fd --type f";
       fileWidgetCommand = "fd --type f";
       changeDirWidgetCommand = "fd --type d";
@@ -104,6 +109,7 @@
     nix-index = {
       enable = true;
       enableZshIntegration = true;
+      enableBashIntegration = false;
     };
 
     bash = {
