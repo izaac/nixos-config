@@ -4,10 +4,7 @@
   ...
 }: let
   nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
-  waylandFlags = [
-    "--ozone-platform-hint=auto"
-    "--enable-wayland-ime"
-  ];
+  waylandFlags = [];
 in {
   home.packages = [
     (pkgs.google-chrome.override {
