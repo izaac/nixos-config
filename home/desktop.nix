@@ -140,7 +140,14 @@
     };
   };
 
-  services.udiskie.enable = true;
+  services.udiskie = {
+    enable = true;
+    settings = {
+      program_options = {
+        file_manager = "nautilus";
+      };
+    };
+  };
 
   # Suppress xdg-autostart for tray apps: niri's spawn-at-startup launches
   # blueman + nm-applet directly, and pasystray runs on-demand from waybar.
