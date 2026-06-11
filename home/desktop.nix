@@ -144,7 +144,7 @@
     enable = true;
     settings = {
       program_options = {
-        file_manager = "nautilus";
+        file_manager = "nemo";
       };
     };
   };
