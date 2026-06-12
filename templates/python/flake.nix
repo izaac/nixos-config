@@ -19,7 +19,7 @@
           inherit system;
         });
   in {
-    devShells = forEachSystem ({pkgs}: {
+    devShells = forEachSystem ({pkgs, ...}: {
       default = devenv.lib.mkShell {
         inherit inputs pkgs;
         modules = [./devenv.nix];
