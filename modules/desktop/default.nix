@@ -3,17 +3,16 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.desktop;
 in {
   imports = [./nvidia.nix];
 
   options.mySystem.desktop = {
-    enable = mkEnableOption "Desktop Environment configuration";
+    enable = lib.mkEnableOption "Desktop Environment configuration";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # --- Niri (scrollable-tiling Wayland compositor) ---
     # nixosModules.niri enables programs.niri, sets the binary cache,
     # wires the overlay, and auto-imports the home-manager + stylix HM modules.

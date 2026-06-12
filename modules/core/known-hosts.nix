@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core."known-hosts";
 in {
   options.mySystem.core."known-hosts" = {
-    enable = mkEnableOption "pre-pinned SSH host keys to avoid TOFU prompts on first connect";
+    enable = lib.mkEnableOption "pre-pinned SSH host keys to avoid TOFU prompts on first connect";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # Pinning github.com keys means the first `git clone` over SSH never has
     # to prompt for host-key acceptance and is immune to TOFU MITM. Keys
     # sourced from <https://api.github.com/meta>; refresh if GitHub rotates.

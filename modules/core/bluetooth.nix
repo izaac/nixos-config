@@ -3,15 +3,14 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.bluetooth;
 in {
   options.mySystem.core.bluetooth = {
-    enable = mkEnableOption "Bluetooth audio configuration";
+    enable = lib.mkEnableOption "Bluetooth audio configuration";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # Enable high-quality Bluetooth codecs
     environment.systemPackages = with pkgs; [
       bluez

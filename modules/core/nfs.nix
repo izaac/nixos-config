@@ -3,15 +3,14 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.nfs;
 in {
   options.mySystem.core.nfs = {
-    enable = mkEnableOption "NFS Client support";
+    enable = lib.mkEnableOption "NFS Client support";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # NFSv4 client support. rpcbind/portmapper is NOT needed — NFSv4 uses
     # port 2049 only and embeds mount/lock/state in the protocol. NixOS's
     # built-in NFS module unconditionally enables rpcbind when any NFS

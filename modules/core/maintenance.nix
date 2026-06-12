@@ -4,15 +4,14 @@
   lib,
   userConfig,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.maintenance;
 in {
   options.mySystem.core.maintenance = {
-    enable = mkEnableOption "System maintenance tools and scripts";
+    enable = lib.mkEnableOption "System maintenance tools and scripts";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     programs.nh = {
       enable = true;
       clean.enable = true;

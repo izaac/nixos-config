@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.system;
 in {
   options.mySystem.core.system = {
-    enable = mkEnableOption "Core system basics (Time, Locales, Nix settings)";
+    enable = lib.mkEnableOption "Core system basics (Time, Locales, Nix settings)";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     time.timeZone = "America/Phoenix";
     i18n.defaultLocale = "en_US.UTF-8";
 

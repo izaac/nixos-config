@@ -4,15 +4,14 @@
   lib,
   userConfig,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.user;
 in {
   options.mySystem.core.user = {
-    enable = mkEnableOption "User account and groups configuration";
+    enable = lib.mkEnableOption "User account and groups configuration";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # User Account
     users.users.${userConfig.username} = {
       isNormalUser = true;

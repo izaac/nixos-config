@@ -4,8 +4,7 @@
   pkgs,
   userConfig,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core."sudo-readonly";
 
   bin = "/run/current-system/sw/bin";
@@ -69,10 +68,10 @@ with lib; let
   ];
 in {
   options.mySystem.core."sudo-readonly" = {
-    enable = mkEnableOption "NOPASSWD sudo for read-only system diagnostics";
+    enable = lib.mkEnableOption "NOPASSWD sudo for read-only system diagnostics";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = [journalRead nftShow];
 
     security.sudo-rs.extraRules = [

@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.gaming;
   hasTuning = cfg.cpuBoostFreq != 0 && cfg.cpuBaseFreq != 0;
   hasGpuTuning = cfg.gpuBoostClock != 0 && cfg.gpuBaseClock != 0;
@@ -13,8 +12,8 @@ with lib; let
   notify = "${pkgs.libnotify}/bin/notify-send";
 
   # Scripts only reference nvidia-smi when GPU tuning is configured
-  gpuBoostCmd = optionalString (hasNvidia && hasGpuTuning) "${nvidiaSmi} -lgc 210,${toString cfg.gpuBoostClock}";
-  gpuBaseCmd = optionalString (hasNvidia && hasGpuTuning) "${nvidiaSmi} -lgc 210,${toString cfg.gpuBaseClock}";
+  gpuBoostCmd = lib.optionalString (hasNvidia && hasGpuTuning) "${nvidiaSmi} -lgc 210,${toString cfg.gpuBoostClock}";
+  gpuBaseCmd = lib.optionalString (hasNvidia && hasGpuTuning) "${nvidiaSmi} -lgc 210,${toString cfg.gpuBaseClock}";
 
   thermal-guard = pkgs.writeShellScript "thermal-guard" ''
     # Thermal watchdog: throttle at ${toString cfg.thermalGuard.throttleTemp}°C, recover at ${toString cfg.thermalGuard.recoverTemp}°C
@@ -43,12 +42,12 @@ with lib; let
         for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
           echo balance_performance > "$f" 2>/dev/null
         done
-        ${optionalString hasTuning ''
+        ${lib.optionalString hasTuning ''
       for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do
         echo ${toString cfg.cpuBaseFreq} > "$f" 2>/dev/null
       done
     ''}
-        ${optionalString (hasNvidia && hasGpuTuning) "${gpuBaseCmd} 2>/dev/null"}
+        ${lib.optionalString (hasNvidia && hasGpuTuning) "${gpuBaseCmd} 2>/dev/null"}
         sudo -u "#$CALLER_UID" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$CALLER_UID/bus" \
           ${notify} -u critical -t 5000 "Thermal Guard" "''${temp%???}°C — clocks reduced"
         THROTTLED=1
@@ -57,12 +56,12 @@ with lib; let
         for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
           echo performance > "$f" 2>/dev/null
         done
-        ${optionalString hasTuning ''
+        ${lib.optionalString hasTuning ''
       for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do
         echo ${toString cfg.cpuBoostFreq} > "$f" 2>/dev/null
       done
     ''}
-        ${optionalString (hasNvidia && hasGpuTuning) "${gpuBoostCmd} 2>/dev/null"}
+        ${lib.optionalString (hasNvidia && hasGpuTuning) "${gpuBoostCmd} 2>/dev/null"}
         sudo -u "#$CALLER_UID" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$CALLER_UID/bus" \
           ${notify} -t 5000 "Thermal Guard" "''${temp%???}°C — clocks restored"
         THROTTLED=0
@@ -77,86 +76,86 @@ with lib; let
     for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
       echo performance > "$f" 2>/dev/null
     done
-    ${optionalString hasTuning ''
+    ${lib.optionalString hasTuning ''
       for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do
         echo ${toString cfg.cpuBoostFreq} > "$f" 2>/dev/null
       done
     ''}
-    ${optionalString (hasNvidia && hasGpuTuning) gpuBoostCmd}
+    ${lib.optionalString (hasNvidia && hasGpuTuning) gpuBoostCmd}
   '';
 
   gamemode-end = pkgs.writeShellScript "gamemode-end" ''
     for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
       echo balance_performance > "$f" 2>/dev/null
     done
-    ${optionalString hasTuning ''
+    ${lib.optionalString hasTuning ''
       for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq; do
         echo ${toString cfg.cpuBaseFreq} > "$f" 2>/dev/null
       done
     ''}
-    ${optionalString (hasNvidia && hasGpuTuning) gpuBaseCmd}
+    ${lib.optionalString (hasNvidia && hasGpuTuning) gpuBaseCmd}
   '';
 
   boostDesc =
-    (optionalString hasTuning "${toString (cfg.cpuBoostFreq / 1000)}MHz")
-    + (optionalString (hasTuning && hasGpuTuning) " + ")
-    + (optionalString hasGpuTuning "${toString cfg.gpuBoostClock}MHz GPU");
+    (lib.optionalString hasTuning "${toString (cfg.cpuBoostFreq / 1000)}MHz")
+    + (lib.optionalString (hasTuning && hasGpuTuning) " + ")
+    + (lib.optionalString hasGpuTuning "${toString cfg.gpuBoostClock}MHz GPU");
   baseDesc =
-    (optionalString hasTuning "${toString (cfg.cpuBaseFreq / 1000)}MHz")
-    + (optionalString (hasTuning && hasGpuTuning) " + ")
-    + (optionalString hasGpuTuning "${toString cfg.gpuBaseClock}MHz GPU");
+    (lib.optionalString hasTuning "${toString (cfg.cpuBaseFreq / 1000)}MHz")
+    + (lib.optionalString (hasTuning && hasGpuTuning) " + ")
+    + (lib.optionalString hasGpuTuning "${toString cfg.gpuBaseClock}MHz GPU");
 in {
   options.mySystem.gaming = {
-    enable = mkEnableOption "Gaming optimizations and tools";
+    enable = lib.mkEnableOption "Gaming optimizations and tools";
 
-    cpuBoostFreq = mkOption {
-      type = types.int;
+    cpuBoostFreq = lib.mkOption {
+      type = lib.types.int;
       default = 0;
       description = "Max CPU frequency in KHz when GameMode is active (0 = no override)";
     };
 
-    cpuBaseFreq = mkOption {
-      type = types.int;
+    cpuBaseFreq = lib.mkOption {
+      type = lib.types.int;
       default = 0;
       description = "Base CPU frequency in KHz when GameMode is inactive (0 = no override)";
     };
 
-    gpuBoostClock = mkOption {
-      type = types.int;
+    gpuBoostClock = lib.mkOption {
+      type = lib.types.int;
       default = 0;
       description = "Max GPU clock in MHz when GameMode is active (0 = no override, NVIDIA only)";
     };
 
-    gpuBaseClock = mkOption {
-      type = types.int;
+    gpuBaseClock = lib.mkOption {
+      type = lib.types.int;
       default = 0;
       description = "Base GPU clock in MHz when GameMode is inactive (0 = no override, NVIDIA only)";
     };
 
     thermalGuard = {
-      enable = mkOption {
-        type = types.bool;
+      enable = lib.mkOption {
+        type = lib.types.bool;
         default = false;
         description = "Enable thermal watchdog during GameMode";
       };
 
-      throttleTemp = mkOption {
-        type = types.int;
+      throttleTemp = lib.mkOption {
+        type = lib.types.int;
         default = 90;
         description = "Temperature in °C to trigger throttle";
       };
 
-      recoverTemp = mkOption {
-        type = types.int;
+      recoverTemp = lib.mkOption {
+        type = lib.types.int;
         default = 80;
         description = "Temperature in °C to restore boost clocks";
       };
     };
 
-    sunshine.enable = mkEnableOption "Sunshine GameStream host (CUDA/NVENC build, open firewall)";
+    sunshine.enable = lib.mkEnableOption "Sunshine GameStream host (CUDA/NVENC build, open firewall)";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     hardware = {
       steam-hardware.enable = true;
       xpadneo.enable = true;
@@ -193,17 +192,17 @@ in {
             softrealtime = "auto";
             renice = 5;
           };
-          custom = mkIf (hasTuning || hasGpuTuning) {
+          custom = lib.mkIf (hasTuning || hasGpuTuning) {
             # `{ ... & }` keeps the background launch from terminating the
             # && list (a bare `cmd & && next` is a bash syntax error).
-            start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${optionalString cfg.thermalGuard.enable " && { sudo ${thermal-guard} & }"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
-            end = "${pkgs.bash}/bin/bash -c '${optionalString cfg.thermalGuard.enable "touch /run/thermal-guard/stop; "}sudo ${gamemode-end} && ${notify} \"GameMode\" \"Efficiency: ${baseDesc}\"'";
+            start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${lib.optionalString cfg.thermalGuard.enable " && { sudo ${thermal-guard} & }"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
+            end = "${pkgs.bash}/bin/bash -c '${lib.optionalString cfg.thermalGuard.enable "touch /run/thermal-guard/stop; "}sudo ${gamemode-end} && ${notify} \"GameMode\" \"Efficiency: ${baseDesc}\"'";
           };
         };
       };
     };
 
-    security.sudo-rs.extraRules = mkIf (hasTuning || hasGpuTuning) [
+    security.sudo-rs.extraRules = lib.mkIf (hasTuning || hasGpuTuning) [
       {
         groups = ["gamemode"];
         commands =
@@ -217,7 +216,7 @@ in {
               options = ["NOPASSWD"];
             }
           ]
-          ++ optional cfg.thermalGuard.enable {
+          ++ lib.optional cfg.thermalGuard.enable {
             command = toString thermal-guard;
             options = ["NOPASSWD"];
           };
@@ -230,15 +229,15 @@ in {
     # only gamemode members (the GameMode end hook) can create the flag and
     # root (the guard loop) can read/remove it. Replaces the world-writable
     # /tmp path any local user could pre-create to neuter the watchdog.
-    systemd.tmpfiles.rules = mkIf cfg.thermalGuard.enable [
+    systemd.tmpfiles.rules = lib.mkIf cfg.thermalGuard.enable [
       "d /run/thermal-guard 0770 root gamemode -"
     ];
 
     services = {
       scx = {
         enable = true;
-        scheduler = mkDefault "scx_lavd";
-        extraArgs = mkDefault ["--autopilot"];
+        scheduler = lib.mkDefault "scx_lavd";
+        extraArgs = lib.mkDefault ["--autopilot"];
       };
       joycond.enable = false;
       input-remapper.enable = false;
@@ -254,7 +253,7 @@ in {
       # run. capSysAdmin lets sunshine inject keyboard/mouse events.
       # Override the package with cudaSupport so NVENC is compiled in;
       # without this sunshine falls back to libx264 (CPU encoding).
-      sunshine = mkIf cfg.sunshine.enable {
+      sunshine = lib.mkIf cfg.sunshine.enable {
         enable = true;
         autoStart = true;
         openFirewall = true;
@@ -267,7 +266,7 @@ in {
     # default user-service nofile cap (1024) trips this on first
     # NVENC init and the encoder dies with "Too many open files",
     # which Moonlight surfaces as "connection terminated".
-    systemd.user.services.sunshine = mkIf cfg.sunshine.enable {
+    systemd.user.services.sunshine = lib.mkIf cfg.sunshine.enable {
       serviceConfig.LimitNOFILE = 65536;
     };
 
@@ -281,7 +280,7 @@ in {
         STEAM_EXTRA_ARGS = "-no-cef-sandbox";
         STEAM_DISABLE_PH_CLIPPED_VIDEO = "1";
       }
-      // optionalAttrs hasNvidia {
+      // lib.optionalAttrs hasNvidia {
         PROTON_ENABLE_NGX_UPDATER = "1";
         DISABLE_RT_CHECK = "1";
       };

@@ -4,17 +4,16 @@
   lib,
   userConfig,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.sops;
 in {
   options.mySystem.core.sops = {
-    enable = mkEnableOption "SOPS secrets management";
+    enable = lib.mkEnableOption "SOPS secrets management";
   };
 
   imports = [inputs.sops-nix.nixosModules.sops];
 
-  config = mkIf cfg.enable (let
+  config = lib.mkIf cfg.enable (let
     inherit (config.users.users.${userConfig.username}) home;
   in {
     sops = {

@@ -3,15 +3,14 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.nix-ld;
 in {
   options.mySystem.core.nix-ld = {
-    enable = mkEnableOption "nix-ld support for unpatched binaries";
+    enable = lib.mkEnableOption "nix-ld support for unpatched binaries";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     programs.nix-ld.enable = true;
 
     # The "Libraries of Requirement"

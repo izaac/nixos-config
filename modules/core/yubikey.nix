@@ -3,15 +3,14 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.yubikey;
 in {
   options.mySystem.core.yubikey = {
-    enable = mkEnableOption "YubiKey U2F authentication and tooling";
+    enable = lib.mkEnableOption "YubiKey U2F authentication and tooling";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # Smartcard daemon
     services.pcscd.enable = true;
 

@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.audio;
 in {
   options.mySystem.core.audio = {
-    enable = mkEnableOption "Core Audio (Pipewire) configuration";
+    enable = lib.mkEnableOption "Core Audio (Pipewire) configuration";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # Audio (Pipewire)
     services.pulseaudio.enable = false;
     security.rtkit.enable = true;

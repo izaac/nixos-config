@@ -4,17 +4,16 @@
   lib,
   userConfig,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.home-manager;
 in {
   options.mySystem.core.home-manager = {
-    enable = mkEnableOption "Home Manager configuration";
+    enable = lib.mkEnableOption "Home Manager configuration";
   };
 
   imports = [inputs.home-manager.nixosModules.home-manager];
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     home-manager = {
       useGlobalPkgs = true;
       useUserPackages = true;

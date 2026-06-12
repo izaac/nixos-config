@@ -3,15 +3,14 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.codecs;
 in {
   options.mySystem.core.codecs = {
-    enable = mkEnableOption "Core system video and audio codecs";
+    enable = lib.mkEnableOption "Core system video and audio codecs";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       ffmpeg
       libdvdcss

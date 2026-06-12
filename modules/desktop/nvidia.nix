@@ -3,15 +3,14 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.desktop.nvidia;
 in {
   options.mySystem.desktop.nvidia = {
-    enable = mkEnableOption "Shared NVIDIA driver baseline (graphics + open module + VAAPI)";
+    enable = lib.mkEnableOption "Shared NVIDIA driver baseline (graphics + open module + VAAPI)";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     services.xserver.videoDrivers = ["nvidia"];
 
     hardware = {

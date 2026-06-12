@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.virtualization;
 in {
   options.mySystem.core.virtualization = {
-    enable = mkEnableOption "Docker and Distrobox virtualization";
+    enable = lib.mkEnableOption "Docker and Distrobox virtualization";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # 1. Container Virtualization (Docker)
     virtualisation.docker = {
       enable = true;

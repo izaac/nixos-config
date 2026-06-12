@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.performance;
 in {
   options.mySystem.core.performance = {
-    enable = mkEnableOption "Core performance tweaks and kernel tuning";
+    enable = lib.mkEnableOption "Core performance tweaks and kernel tuning";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # --- MEMORY MANAGEMENT (ZRAM) ---
     # Highly recommended for NVMe & high-core systems to prevent disk-thrashing
     zramSwap = {
@@ -24,7 +23,7 @@ in {
     boot = {
       kernel.sysctl = {
         # ZRAM Swappiness (Aggressive swap-to-zram, avoids disk wait)
-        "vm.swappiness" = mkDefault 180;
+        "vm.swappiness" = lib.mkDefault 180;
         "vm.vfs_cache_pressure" = 50; # Keep filesystem cache longer (snappier Nautilus)
         "vm.dirty_ratio" = 10;
         "vm.dirty_background_ratio" = 5;
@@ -39,8 +38,8 @@ in {
         # Kernel hardening (universal — safe on desktop and laptop).
         # mkForce because NixOS sets some of these at mkDefault priority and
         # equal priorities collide; we want the stricter values regardless.
-        "kernel.kptr_restrict" = mkForce 2; # Hide kernel pointers from non-root
-        "kernel.kexec_load_disabled" = mkForce 1; # Prevent hot-loading another kernel
+        "kernel.kptr_restrict" = lib.mkForce 2; # Hide kernel pointers from non-root
+        "kernel.kexec_load_disabled" = lib.mkForce 1; # Prevent hot-loading another kernel
 
         # Network security (universal). `all` and `default` must both be set:
         # - `all` is logical-OR'd with per-interface for receive paths and
@@ -49,19 +48,19 @@ in {
         #   inherits from `default` at creation time.
         # - Existing interfaces keep their initial value, so we mkForce both
         #   scopes to override NixOS defaults.
-        "net.ipv4.conf.all.accept_redirects" = mkForce 0;
-        "net.ipv4.conf.default.accept_redirects" = mkForce 0;
-        "net.ipv4.conf.all.send_redirects" = mkForce 0;
-        "net.ipv4.conf.default.send_redirects" = mkForce 0;
-        "net.ipv4.conf.all.rp_filter" = mkForce 1;
-        "net.ipv4.conf.default.rp_filter" = mkForce 1;
-        "net.ipv4.conf.all.log_martians" = mkForce 1;
+        "net.ipv4.conf.all.accept_redirects" = lib.mkForce 0;
+        "net.ipv4.conf.default.accept_redirects" = lib.mkForce 0;
+        "net.ipv4.conf.all.send_redirects" = lib.mkForce 0;
+        "net.ipv4.conf.default.send_redirects" = lib.mkForce 0;
+        "net.ipv4.conf.all.rp_filter" = lib.mkForce 1;
+        "net.ipv4.conf.default.rp_filter" = lib.mkForce 1;
+        "net.ipv4.conf.all.log_martians" = lib.mkForce 1;
 
         # IPv6 ICMP redirects — workstation has static routes (or RA-based
         # routes via `accept_ra`), so we never need to learn routes via
         # redirects. Closes a LAN-attacker MITM vector.
-        "net.ipv6.conf.all.accept_redirects" = mkForce 0;
-        "net.ipv6.conf.default.accept_redirects" = mkForce 0;
+        "net.ipv6.conf.all.accept_redirects" = lib.mkForce 0;
+        "net.ipv6.conf.default.accept_redirects" = lib.mkForce 0;
       };
 
       # --- GAMING & INPUT LATENCY ---

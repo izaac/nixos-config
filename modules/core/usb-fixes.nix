@@ -2,15 +2,14 @@
   config,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.usb-fixes;
 in {
   options.mySystem.core.usb-fixes = {
-    enable = mkEnableOption "USB hardware quirks and audio fixes";
+    enable = lib.mkEnableOption "USB hardware quirks and audio fixes";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     # 1. Hardware Quirks
     # DJI Mic Mini (g) & Razer Kiyo Pro (k).
     # usbcore.quirks is a single module parameter: repeating it on the

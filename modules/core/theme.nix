@@ -3,15 +3,14 @@
   lib,
   config,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.theme;
 in {
   options.mySystem.core.theme = {
-    enable = mkEnableOption "Stylix system-wide theming";
+    enable = lib.mkEnableOption "Stylix system-wide theming";
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     stylix = {
       enable = true;
       # Pinned to a commit, not `master`: an upstream re-encode/rename would

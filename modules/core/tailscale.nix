@@ -3,15 +3,14 @@
   pkgs,
   lib,
   ...
-}:
-with lib; let
+}: let
   cfg = config.mySystem.core.tailscale;
 in {
   options.mySystem.core.tailscale = {
-    enable = mkEnableOption "Tailscale mesh VPN with Tailscale SSH";
+    enable = lib.mkEnableOption "Tailscale mesh VPN with Tailscale SSH";
 
-    advertiseRoutes = mkOption {
-      type = types.listOf types.str;
+    advertiseRoutes = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
       default = [];
       example = ["192.168.0.0/24"];
       description = ''
@@ -21,8 +20,8 @@ in {
       '';
     };
 
-    routingInterface = mkOption {
-      type = types.nullOr types.str;
+    routingInterface = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
       default = null;
       example = "eno1";
       description = ''
@@ -34,7 +33,7 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
+  config = lib.mkIf cfg.enable {
     services.tailscale = {
       enable = true;
       # Opens the WireGuard UDP port (services.tailscale.port) in the firewall.
@@ -50,8 +49,8 @@ in {
       # local Pi-hole resolver instead of MagicDNS.
       extraUpFlags =
         ["--ssh" "--accept-dns=false"]
-        ++ optional (cfg.advertiseRoutes != [])
-        "--advertise-routes=${concatStringsSep "," cfg.advertiseRoutes}";
+        ++ lib.optional (cfg.advertiseRoutes != [])
+        "--advertise-routes=${lib.concatStringsSep "," cfg.advertiseRoutes}";
     };
 
     # Subnet routing across the tailscale0 interface needs loose reverse-path
@@ -67,9 +66,9 @@ in {
     # relax it to loose (=2) only when this host actually advertises routes.
     # Loose still rejects spoofed sources but permits valid asymmetric routing.
     # mkOverride 49 wins over the shared module's mkForce (priority 50).
-    boot.kernel.sysctl = mkIf (cfg.advertiseRoutes != []) {
-      "net.ipv4.conf.all.rp_filter" = mkOverride 49 2;
-      "net.ipv4.conf.default.rp_filter" = mkOverride 49 2;
+    boot.kernel.sysctl = lib.mkIf (cfg.advertiseRoutes != []) {
+      "net.ipv4.conf.all.rp_filter" = lib.mkOverride 49 2;
+      "net.ipv4.conf.default.rp_filter" = lib.mkOverride 49 2;
     };
 
     # This host uses the nftables backend; tell tailscaled to match.
@@ -80,7 +79,7 @@ in {
     # Subnet routers/exit nodes get a big UDP forwarding throughput boost from
     # enabling rx-udp-gro-forwarding on the carrying NIC. Only meaningful when
     # this host actually routes traffic.
-    systemd.services.tailscale-udp-gro = mkIf (cfg.advertiseRoutes != [] && cfg.routingInterface != null) {
+    systemd.services.tailscale-udp-gro = lib.mkIf (cfg.advertiseRoutes != [] && cfg.routingInterface != null) {
       description = "Enable UDP GRO forwarding on ${cfg.routingInterface} for Tailscale routing";
       after = ["sys-subsystem-net-devices-${cfg.routingInterface}.device"];
       bindsTo = ["sys-subsystem-net-devices-${cfg.routingInterface}.device"];
