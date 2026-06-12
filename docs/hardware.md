@@ -384,11 +384,11 @@ boot.extraModulePackages = [
 ## USB Quirks
 
 ```nix
-# Required quirks for specific devices
+# Required quirks for specific devices. usbcore.quirks must be ONE
+# comma-separated parameter: repeating it keeps only the last value.
 boot.kernelParams = [
-  "usbcore.quirks=2ca3:4011:g"  # 8BitDo controller autosuspend disable
-  "usbcore.quirks=1532:0e05:k"  # Razer Kiyo Pro keep-alive
-  "usbcore.autosuspend=-1"      # Disable global USB autosuspend
+  "usbcore.quirks=2ca3:4011:g,1532:0e05:k"  # DJI Mic Mini + Razer Kiyo Pro
+  "usbcore.autosuspend=-1"                  # Disable global USB autosuspend
 ];
 ```
 

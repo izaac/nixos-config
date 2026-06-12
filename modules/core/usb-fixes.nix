@@ -12,11 +12,13 @@ in {
 
   config = mkIf cfg.enable {
     # 1. Hardware Quirks
-    # DJI Mic Mini (g) & Razer Kiyo Pro (k)
+    # DJI Mic Mini (g) & Razer Kiyo Pro (k).
+    # usbcore.quirks is a single module parameter: repeating it on the
+    # cmdline keeps only the last value, so all quirks go in one
+    # comma-separated entry.
     boot = {
       kernelParams = [
-        "usbcore.quirks=2ca3:4011:g"
-        "usbcore.quirks=1532:0e05:k"
+        "usbcore.quirks=2ca3:4011:g,1532:0e05:k"
       ];
 
       # 2. Block Razer Kiyo Pro Audio (Initrd)
@@ -33,9 +35,6 @@ in {
         options snd-usb-audio skip_validation=1 ignore_ctl_error=1
         options snd_hda_intel power_save=0
       '';
-
-      # 5. Ensure Audio Module Availability
-      kernelModules = [];
     };
     # 4. Udev Rules
     # Force DJI Mic Binding: The DJI Mic reports a Vendor-Specific Class (0xff), so the driver ignores it.
