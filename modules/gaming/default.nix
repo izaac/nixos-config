@@ -152,6 +152,8 @@ in {
         description = "Temperature in °C to restore boost clocks";
       };
     };
+
+    sunshine.enable = mkEnableOption "Sunshine GameStream host (CUDA/NVENC build, open firewall)";
   };
 
   config = mkIf cfg.enable {
@@ -252,7 +254,7 @@ in {
       # run. capSysAdmin lets sunshine inject keyboard/mouse events.
       # Override the package with cudaSupport so NVENC is compiled in;
       # without this sunshine falls back to libx264 (CPU encoding).
-      sunshine = {
+      sunshine = mkIf cfg.sunshine.enable {
         enable = true;
         autoStart = true;
         openFirewall = true;
@@ -265,7 +267,9 @@ in {
     # default user-service nofile cap (1024) trips this on first
     # NVENC init and the encoder dies with "Too many open files",
     # which Moonlight surfaces as "connection terminated".
-    systemd.user.services.sunshine.serviceConfig.LimitNOFILE = 65536;
+    systemd.user.services.sunshine = mkIf cfg.sunshine.enable {
+      serviceConfig.LimitNOFILE = 65536;
+    };
 
     environment.sessionVariables =
       {

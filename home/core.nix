@@ -3,8 +3,7 @@
     ./shell.nix
     ./fastfetch.nix
     ./ssh.nix
-    ./rclone-gdrive.nix
-    ./rclone-proton.nix
+    ./rclone.nix
     ./tmux.nix
     ./theme.nix
     ./whosthere.nix

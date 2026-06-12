@@ -3,8 +3,12 @@
   pkgs,
   lib,
   inputs,
+  osConfig ? {},
   ...
 }: let
+  # ninja-only pieces (monitor layout, Sunshine dummy output) are gated on
+  # the hostname so the laptop does not inherit them.
+  isNinja = (osConfig.networking.hostName or "") == "ninja";
   xwaylandSatellite = inputs.niri-flake.packages.${pkgs.stdenv.hostPlatform.system}.xwayland-satellite-unstable;
   audioSinkMenu = pkgs.writeShellApplication {
     name = "audio-sink-menu";
@@ -189,37 +193,41 @@ in {
       }
     ];
 
-    # LG UltraGear 49" — pin to native 144Hz mode at origin so the dummy
-    # HDMI output (configured far right at x=10000) never auto-stacks on top.
-    outputs."DP-1" = {
-      mode = {
-        width = 3440;
-        height = 1440;
-        refresh = 143.923;
+    # ninja's monitor layout only — windy keeps niri's automatic output
+    # handling for whatever is plugged into its ports.
+    outputs = lib.optionalAttrs isNinja {
+      # LG UltraGear 49" — pin to native 144Hz mode at origin so the dummy
+      # HDMI output (configured far right at x=10000) never auto-stacks on top.
+      "DP-1" = {
+        mode = {
+          width = 3440;
+          height = 1440;
+          refresh = 143.923;
+        };
+        position = {
+          x = 0;
+          y = 0;
+        };
+        variable-refresh-rate = false;
       };
-      position = {
-        x = 0;
-        y = 0;
-      };
-      variable-refresh-rate = false;
-    };
 
-    # Headless dummy HDMI plug for Sunshine streaming. Parked at x=10000 so
-    # the cursor cannot drift onto it during normal desktop use; the main
-    # monitor stays the only practical workspace. Use Mod+M to focus the
-    # dummy (next launched app lands there) and Mod+Shift+M to send the
-    # focused window/column to it.
-    outputs."HDMI-A-1" = {
-      mode = {
-        width = 1920;
-        height = 1080;
-        refresh = 60.0;
+      # Headless dummy HDMI plug for Sunshine streaming. Parked at x=10000 so
+      # the cursor cannot drift onto it during normal desktop use; the main
+      # monitor stays the only practical workspace. Use Mod+M to focus the
+      # dummy (next launched app lands there) and Mod+Shift+M to send the
+      # focused window/column to it.
+      "HDMI-A-1" = {
+        mode = {
+          width = 1920;
+          height = 1080;
+          refresh = 60.0;
+        };
+        position = {
+          x = 10000;
+          y = 0;
+        };
+        variable-refresh-rate = false;
       };
-      position = {
-        x = 10000;
-        y = 0;
-      };
-      variable-refresh-rate = false;
     };
 
     # X11 app compatibility — niri-flake auto-spawns this when the path is set
@@ -312,132 +320,134 @@ in {
 
     binds = with config.lib.niri.actions; let
       sh = spawn "sh" "-c";
-    in {
-      # --- Apps ---
-      "Mod+Return".action = spawn "kitty";
-      "Mod+D".action = spawn "fuzzel";
-      # Alt+Space is the Moonlight-friendly alternative: Mac Cmd forwarding to
-      # Linux Super is unreliable, but Option (Alt) passes through cleanly.
-      "Alt+Space".action = spawn "fuzzel";
-      "Mod+E".action = spawn "nemo";
-      "Mod+B".action = spawn "brave-origin";
-      "Mod+Ctrl+L".action = spawn "swaylock-refocus";
-      "Mod+Shift+P".action = spawn "wlogout" "-b" "2";
-      "Mod+Shift+N".action.spawn = ["makoctl" "mode" "-t" "do-not-disturb"];
-      "Mod+S".action = spawn (lib.getExe audioSinkMenu);
-      "Mod+V".action = sh "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
+    in
+      {
+        # --- Apps ---
+        "Mod+Return".action = spawn "kitty";
+        "Mod+D".action = spawn "fuzzel";
+        # Alt+Space is the Moonlight-friendly alternative: Mac Cmd forwarding to
+        # Linux Super is unreliable, but Option (Alt) passes through cleanly.
+        "Alt+Space".action = spawn "fuzzel";
+        "Mod+E".action = spawn "nemo";
+        "Mod+B".action = spawn "brave-origin";
+        "Mod+Ctrl+L".action = spawn "swaylock-refocus";
+        "Mod+Shift+P".action = spawn "wlogout" "-b" "2";
+        "Mod+Shift+N".action.spawn = ["makoctl" "mode" "-t" "do-not-disturb"];
+        "Mod+S".action = spawn (lib.getExe audioSinkMenu);
+        "Mod+V".action = sh "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy";
 
-      # --- Direct power actions (skip menu) ---
-      "Mod+Ctrl+Shift+S".action = spawn "systemctl" "suspend";
-      "Mod+Ctrl+Shift+R".action = spawn "systemctl" "reboot";
-      "Mod+Ctrl+Shift+Q".action = spawn "systemctl" "poweroff";
+        # --- Direct power actions (skip menu) ---
+        "Mod+Ctrl+Shift+S".action = spawn "systemctl" "suspend";
+        "Mod+Ctrl+Shift+R".action = spawn "systemctl" "reboot";
+        "Mod+Ctrl+Shift+Q".action = spawn "systemctl" "poweroff";
 
-      # --- Window/session ---
-      "Mod+Q".action = close-window;
-      "Mod+Shift+E".action.quit.skip-confirmation = true;
+        # --- Window/session ---
+        "Mod+Q".action = close-window;
+        "Mod+Shift+E".action.quit.skip-confirmation = true;
 
-      # --- Focus ---
-      "Mod+Left".action = focus-column-left;
-      "Mod+Right".action = focus-column-right;
-      "Mod+Down".action = focus-window-down;
-      "Mod+Up".action = focus-window-up;
-      "Mod+H".action = focus-column-left;
-      "Mod+J".action = focus-window-down;
-      "Mod+K".action = focus-window-up;
-      "Mod+L".action = focus-column-right;
+        # --- Focus ---
+        "Mod+Left".action = focus-column-left;
+        "Mod+Right".action = focus-column-right;
+        "Mod+Down".action = focus-window-down;
+        "Mod+Up".action = focus-window-up;
+        "Mod+H".action = focus-column-left;
+        "Mod+J".action = focus-window-down;
+        "Mod+K".action = focus-window-up;
+        "Mod+L".action = focus-column-right;
 
-      # --- Move ---
-      "Mod+Shift+Left".action = move-column-left;
-      "Mod+Shift+Right".action = move-column-right;
-      "Mod+Shift+Down".action = move-window-down;
-      "Mod+Shift+Up".action = move-window-up;
-      "Mod+Shift+H".action = move-column-left;
-      "Mod+Shift+J".action = move-window-down;
-      "Mod+Shift+K".action = move-window-up;
-      "Mod+Shift+L".action = move-column-right;
+        # --- Move ---
+        "Mod+Shift+Left".action = move-column-left;
+        "Mod+Shift+Right".action = move-column-right;
+        "Mod+Shift+Down".action = move-window-down;
+        "Mod+Shift+Up".action = move-window-up;
+        "Mod+Shift+H".action = move-column-left;
+        "Mod+Shift+J".action = move-window-down;
+        "Mod+Shift+K".action = move-window-up;
+        "Mod+Shift+L".action = move-column-right;
 
-      # --- Workspaces ---
-      "Mod+1".action.focus-workspace = 1;
-      "Mod+2".action.focus-workspace = 2;
-      "Mod+3".action.focus-workspace = 3;
-      "Mod+4".action.focus-workspace = 4;
-      "Mod+5".action.focus-workspace = 5;
-      "Mod+6".action.focus-workspace = 6;
-      "Mod+7".action.focus-workspace = 7;
-      "Mod+8".action.focus-workspace = 8;
-      "Mod+9".action.focus-workspace = 9;
-      "Mod+Shift+1".action.move-column-to-workspace = 1;
-      "Mod+Shift+2".action.move-column-to-workspace = 2;
-      "Mod+Shift+3".action.move-column-to-workspace = 3;
-      "Mod+Shift+4".action.move-column-to-workspace = 4;
-      "Mod+Shift+5".action.move-column-to-workspace = 5;
-      "Mod+Shift+6".action.move-column-to-workspace = 6;
-      "Mod+Shift+7".action.move-column-to-workspace = 7;
-      "Mod+Shift+8".action.move-column-to-workspace = 8;
-      "Mod+Shift+9".action.move-column-to-workspace = 9;
-      "Mod+Page_Down".action = focus-workspace-down;
-      "Mod+Page_Up".action = focus-workspace-up;
+        # --- Workspaces ---
+        "Mod+1".action.focus-workspace = 1;
+        "Mod+2".action.focus-workspace = 2;
+        "Mod+3".action.focus-workspace = 3;
+        "Mod+4".action.focus-workspace = 4;
+        "Mod+5".action.focus-workspace = 5;
+        "Mod+6".action.focus-workspace = 6;
+        "Mod+7".action.focus-workspace = 7;
+        "Mod+8".action.focus-workspace = 8;
+        "Mod+9".action.focus-workspace = 9;
+        "Mod+Shift+1".action.move-column-to-workspace = 1;
+        "Mod+Shift+2".action.move-column-to-workspace = 2;
+        "Mod+Shift+3".action.move-column-to-workspace = 3;
+        "Mod+Shift+4".action.move-column-to-workspace = 4;
+        "Mod+Shift+5".action.move-column-to-workspace = 5;
+        "Mod+Shift+6".action.move-column-to-workspace = 6;
+        "Mod+Shift+7".action.move-column-to-workspace = 7;
+        "Mod+Shift+8".action.move-column-to-workspace = 8;
+        "Mod+Shift+9".action.move-column-to-workspace = 9;
+        "Mod+Page_Down".action = focus-workspace-down;
+        "Mod+Page_Up".action = focus-workspace-up;
 
-      # --- Sunshine dummy monitor (HDMI-A-1) ---
-      "Mod+M".action.focus-monitor = "HDMI-A-1";
-      "Mod+Shift+M".action.move-column-to-monitor = "HDMI-A-1";
+        # --- Mouse wheel focus column ---
+        "Mod+WheelScrollDown" = {
+          action = focus-column-right;
+          cooldown-ms = 150;
+        };
+        "Mod+WheelScrollUp" = {
+          action = focus-column-left;
+          cooldown-ms = 150;
+        };
 
-      # --- Mouse wheel focus column ---
-      "Mod+WheelScrollDown" = {
-        action = focus-column-right;
-        cooldown-ms = 150;
+        # --- Layout ---
+        "Mod+R".action = switch-preset-column-width;
+        "Mod+F".action = maximize-column;
+        "Mod+Shift+F".action = fullscreen-window;
+        "Mod+Minus".action = set-column-width "-10%";
+        "Mod+Equal".action = set-column-width "+10%";
+
+        # --- Screenshots (niri defaults) ---
+        "Print".action.screenshot = {};
+        "Ctrl+Print".action.screenshot-screen = {};
+        "Alt+Print".action.screenshot-window = {};
+
+        # --- Screen recording (toggle: press to start, press again to stop) ---
+        "Shift+Print".action = spawn (lib.getExe screenRecord) "region";
+        "Ctrl+Shift+Print".action = spawn (lib.getExe screenRecord) "screen";
+
+        # --- Audio (wpctl + mako OSD) ---
+        "XF86AudioRaiseVolume" = {
+          action = spawn (lib.getExe osdNotify) "volume-up";
+          allow-when-locked = true;
+        };
+        "XF86AudioLowerVolume" = {
+          action = spawn (lib.getExe osdNotify) "volume-down";
+          allow-when-locked = true;
+        };
+        "XF86AudioMute" = {
+          action = spawn (lib.getExe osdNotify) "volume-mute";
+          allow-when-locked = true;
+        };
+        "XF86AudioMicMute" = {
+          action = spawn (lib.getExe osdNotify) "mic-mute";
+          allow-when-locked = true;
+        };
+        "XF86AudioPlay".action = spawn "playerctl" "play-pause";
+        "XF86AudioNext".action = spawn "playerctl" "next";
+        "XF86AudioPrev".action = spawn "playerctl" "previous";
+
+        # --- Brightness (laptops) ---
+        "XF86MonBrightnessUp" = {
+          action = spawn (lib.getExe osdNotify) "brightness-up";
+          allow-when-locked = true;
+        };
+        "XF86MonBrightnessDown" = {
+          action = spawn (lib.getExe osdNotify) "brightness-down";
+          allow-when-locked = true;
+        };
+      }
+      // lib.optionalAttrs isNinja {
+        # --- Sunshine dummy monitor (HDMI-A-1), ninja only ---
+        "Mod+M".action.focus-monitor = "HDMI-A-1";
+        "Mod+Shift+M".action.move-column-to-monitor = "HDMI-A-1";
       };
-      "Mod+WheelScrollUp" = {
-        action = focus-column-left;
-        cooldown-ms = 150;
-      };
-
-      # --- Layout ---
-      "Mod+R".action = switch-preset-column-width;
-      "Mod+F".action = maximize-column;
-      "Mod+Shift+F".action = fullscreen-window;
-      "Mod+Minus".action = set-column-width "-10%";
-      "Mod+Equal".action = set-column-width "+10%";
-
-      # --- Screenshots (niri defaults) ---
-      "Print".action.screenshot = {};
-      "Ctrl+Print".action.screenshot-screen = {};
-      "Alt+Print".action.screenshot-window = {};
-
-      # --- Screen recording (toggle: press to start, press again to stop) ---
-      "Shift+Print".action = spawn (lib.getExe screenRecord) "region";
-      "Ctrl+Shift+Print".action = spawn (lib.getExe screenRecord) "screen";
-
-      # --- Audio (wpctl + mako OSD) ---
-      "XF86AudioRaiseVolume" = {
-        action = spawn (lib.getExe osdNotify) "volume-up";
-        allow-when-locked = true;
-      };
-      "XF86AudioLowerVolume" = {
-        action = spawn (lib.getExe osdNotify) "volume-down";
-        allow-when-locked = true;
-      };
-      "XF86AudioMute" = {
-        action = spawn (lib.getExe osdNotify) "volume-mute";
-        allow-when-locked = true;
-      };
-      "XF86AudioMicMute" = {
-        action = spawn (lib.getExe osdNotify) "mic-mute";
-        allow-when-locked = true;
-      };
-      "XF86AudioPlay".action = spawn "playerctl" "play-pause";
-      "XF86AudioNext".action = spawn "playerctl" "next";
-      "XF86AudioPrev".action = spawn "playerctl" "previous";
-
-      # --- Brightness (laptops) ---
-      "XF86MonBrightnessUp" = {
-        action = spawn (lib.getExe osdNotify) "brightness-up";
-        allow-when-locked = true;
-      };
-      "XF86MonBrightnessDown" = {
-        action = spawn (lib.getExe osdNotify) "brightness-down";
-        allow-when-locked = true;
-      };
-    };
   };
 }
