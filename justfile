@@ -8,9 +8,9 @@ default:
 darwin-build:
         sudo -H darwin-rebuild switch --flake .#Mac
 
-# Build the system (nrb alias)
+# Build the system (nrb alias); on macOS delegates to darwin-build
 build:
-        nh os switch .
+        {{ if os() == "macos" { "just darwin-build" } else { "nh os switch ." } }}
 
 # Dry-run build (match old ndr behavior)
 dry-build:
