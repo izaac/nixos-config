@@ -1,6 +1,12 @@
 # Updating Custom NVIDIA Drivers in NixOS
 
-This guide explains how to update the NVIDIA driver version using the `mkDriver` override, which is currently configured for the `ninja` host to use the open kernel modules for the RTX 50-series.
+> **Current state:** both hosts track nixpkgs driver channels — ninja uses
+> `nvidiaPackages.production`, windy `nvidiaPackages.stable` (open kernel
+> modules, see `hosts/*/nvidia.nix`). No version is pinned; drivers move with
+> the nixpkgs input. The `mkDriver` override below is the **escape hatch** for
+> pinning a version newer than what the channel ships.
+
+This guide explains how to pin an NVIDIA driver version using the `mkDriver` override when the nixpkgs channel lags a release you need (the example versions below are historical).
 
 ## 1. Where to Look for Updates
 

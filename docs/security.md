@@ -15,7 +15,7 @@ This protects data at rest for system partitions.
 
 ## Secrets Management (sops-nix + age)
 
-Secrets are encrypted in-repo (`secrets.yaml`) and decrypted at activation/runtime by `sops-nix`.
+Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activation/runtime by `sops-nix`.
 
 - Module: `modules/core/sops.nix`
 - Key location is derived from the configured user home:
@@ -74,7 +74,7 @@ These are tuned for responsiveness and may be adjusted per-host if threat model 
 
 ## Operational Guidance
 
-- Rotate/reencrypt secrets when adding/removing machines: `sops updatekeys secrets.yaml`
+- Rotate/reencrypt secrets when adding/removing machines: `sops updatekeys secrets/common.yaml`
 - Keep SSH keys and age identities outside the repository
 - Review open firewall ports whenever enabling new services
 - Reassess performance-oriented kernel/network tuning after major NixOS upgrades
