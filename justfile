@@ -46,8 +46,8 @@ up:
         nix flake update
         nh os switch . --update
 
-# Update only browser inputs and switch
-up-browsers:
+# Update only the nixpkgs input (full channel bump) and switch
+up-nixpkgs:
         nix flake update nixpkgs
         nh os switch .
 

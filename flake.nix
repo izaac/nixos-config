@@ -19,6 +19,7 @@
     nix-packages = {
       url = "github:izaac/nix-packages";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
     };
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware/master";
@@ -104,8 +105,8 @@
       in
         extraPkgs
         // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
-          iso = inputs.self.nixosConfigurations.canoe.config.system.build.isoImage;
-          iso-niri = inputs.self.nixosConfigurations.canoe-niri.config.system.build.isoImage;
+          iso = self.nixosConfigurations.canoe.config.system.build.isoImage;
+          iso-niri = self.nixosConfigurations.canoe-niri.config.system.build.isoImage;
         })
     );
 
