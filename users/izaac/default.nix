@@ -6,5 +6,11 @@
   home-manager.users.${userConfig.username}.imports = [
     ../../home/desktop.nix
     ../../home/gaming.nix
+    ../../home/flatpak.nix
+    ../../home/niri.nix
+    ../../home/waybar.nix
+    ../../home/launcher.nix
+    ../../home/notifications.nix
+    ../../home/screenlock.nix
   ];
 }

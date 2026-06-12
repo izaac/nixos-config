@@ -23,17 +23,9 @@ in {
         inputs.nix-flatpak.homeManagerModules.nix-flatpak
       ];
       extraSpecialArgs = {inherit inputs userConfig;};
-      users.${userConfig.username} = {
-        imports = [
-          ../../home/core.nix
-          ../../home/flatpak.nix
-          ../../home/niri.nix
-          ../../home/waybar.nix
-          ../../home/launcher.nix
-          ../../home/notifications.nix
-          ../../home/screenlock.nix
-        ];
-      };
+      # Only the cross-platform base lives here; the desktop/user-specific
+      # composition is the user profile's job (users/<name>/default.nix).
+      users.${userConfig.username}.imports = [../../home/core.nix];
     };
   };
 }
