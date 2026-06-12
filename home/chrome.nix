@@ -4,12 +4,11 @@
   ...
 }: let
   nix-packages = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system};
-  waylandFlags = [];
 in {
+  # Chromium-family browsers run native Wayland via NIXOS_OZONE_WL=1
+  # (home/shell/env.nix); no per-package flags needed.
   home.packages = [
-    (pkgs.google-chrome.override {
-      commandLineArgs = waylandFlags;
-    })
+    pkgs.google-chrome
     (pkgs.ungoogled-chromium.override {
       commandLineArgs = [
         # GPU / hardware-accelerated rendering
@@ -23,12 +22,8 @@ in {
         "--enable-wayland-ime"
       ];
     })
-    (nix-packages.brave-origin.override {
-      commandLineArgs = waylandFlags;
-    })
+    nix-packages.brave-origin
     nix-packages.ladybird
-    (pkgs.microsoft-edge.override {
-      commandLineArgs = waylandFlags;
-    })
+    pkgs.microsoft-edge
   ];
 }

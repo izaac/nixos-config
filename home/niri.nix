@@ -320,7 +320,7 @@ in {
       # Linux Super is unreliable, but Option (Alt) passes through cleanly.
       "Alt+Space".action = spawn "fuzzel";
       "Mod+E".action = spawn "nemo";
-      "Mod+B".action = spawn "brave";
+      "Mod+B".action = spawn "brave-origin";
       "Mod+Ctrl+L".action = spawn "swaylock-refocus";
       "Mod+Shift+P".action = spawn "wlogout" "-b" "2";
       "Mod+Shift+N".action.spawn = ["makoctl" "mode" "-t" "do-not-disturb"];
