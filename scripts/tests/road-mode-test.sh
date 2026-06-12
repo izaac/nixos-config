@@ -244,6 +244,26 @@ assert_eq "empty fields → skipped" "false" "$(bool restore_from_snapshot)"
 rm -rf "$tmpdir"
 
 # ---------------------------------------------------------------------------
+# wait_for_ts_routes_drain — must terminate under set -e (the ((i++))
+# regression aborted road_off whenever routes were still present on the
+# first poll). sleep is shadowed so the stuck case doesn't take 3 s.
+# ---------------------------------------------------------------------------
+section "wait_for_ts_routes_drain"
+
+sleep() { :; }
+
+FIXTURE_NETSTAT=$fixture_default_en0
+assert_eq "routes already gone → returns success" "true" "$(bool wait_for_ts_routes_drain)"
+
+# By design the cap-out path still returns success — the recovery code
+# after it handles either outcome. The regression this guards: ((i++))
+# under set -e aborted the whole script instead of ever reaching the cap.
+FIXTURE_NETSTAT=$fixture_ts_split
+assert_eq "routes never drain → caps out and returns" "true" "$(bool wait_for_ts_routes_drain)"
+
+unset -f sleep
+
+# ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
