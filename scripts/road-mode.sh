@@ -101,7 +101,7 @@ wait_for_ts_routes_drain() {
       return 0
     fi
     sleep 0.1
-    ((i++))
+    i=$((i + 1))
   done
 }
 
@@ -196,7 +196,7 @@ ensure_default_route() {
       return 0
     fi
     sleep 0.3
-    ((i++))
+    i=$((i + 1))
   done
 
   local gw
