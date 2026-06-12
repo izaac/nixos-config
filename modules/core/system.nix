@@ -39,12 +39,10 @@ in {
         # Order matters: nixos first (fastest CDN), then third-party caches.
         substituters = [
           "https://cache.nixos.org"
-          "https://nyx-cache.chaotic.cx/"
           "https://izaac-nix.cachix.org"
         ];
         trusted-public-keys = [
           "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-          "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="
           "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
         ];
         # Harden against slow or dead third-party caches

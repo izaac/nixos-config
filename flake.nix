@@ -3,11 +3,9 @@
 
   nixConfig = {
     extra-substituters = [
-      "https://nyx-cache.chaotic.cx/"
       "https://izaac-nix.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="
       "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
     ];
   };
@@ -42,10 +40,6 @@
     };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    chaotic = {
-      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     darwin = {

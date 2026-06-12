@@ -62,7 +62,6 @@ in {
   # MangoHud Config
   programs.mangohud = {
     enable = true;
-    package = pkgs.mangohud_git; # Chaotic-Nyx: bleeding-edge
     settings = {
       background_alpha = lib.mkForce 0.4;
       font_size = lib.mkForce 24;

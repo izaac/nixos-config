@@ -174,7 +174,7 @@ in {
         extraPackages = with pkgs; [
           libvdpau
           libva
-          mangohud_git
+          mangohud
           steamtinkerlaunch
           protonplus
           gamemode

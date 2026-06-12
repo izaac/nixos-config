@@ -18,7 +18,6 @@ inputs.nixpkgs.lib.nixosSystem {
     {
       nixpkgs.config.allowUnfree = true;
       nixpkgs.overlays = [
-        inputs.chaotic.overlays.default
         (import ../overlays/ai-trace-scanner.nix inputs)
         (import ../overlays/openldap-no-tests.nix)
         (import ../overlays/gvfs-no-wsdd.nix)
