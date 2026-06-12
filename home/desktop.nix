@@ -28,6 +28,7 @@
     monophony
     amberol # Simple Rust Music Player
     shortwave # Rust Internet Radio
+    gnome-sound-recorder # Audio Recorder
 
     # General Software
     fragments # GTK Torrent Client (Rust)
