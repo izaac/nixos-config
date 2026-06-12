@@ -35,6 +35,9 @@ with lib; let
     CALLER_UID="''${SUDO_UID:-1000}"
 
     while true; do
+      # Consume the stop flag BEFORE acting: gamemode-end may have already
+      # applied base clocks, and a late recover would overwrite them.
+      [ -f /run/thermal-guard/stop ] && rm -f /run/thermal-guard/stop && exit 0
       temp=$(cat "$SENSOR" 2>/dev/null || echo 0)
       if [ "$THROTTLED" -eq 0 ] && [ "$temp" -gt "$THROTTLE" ]; then
         for f in /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference; do
@@ -67,7 +70,6 @@ with lib; let
       else
         sleep 5
       fi
-      [ -f /run/thermal-guard/stop ] && rm -f /run/thermal-guard/stop && exit 0
     done
   '';
 
@@ -190,7 +192,9 @@ in {
             renice = 5;
           };
           custom = mkIf (hasTuning || hasGpuTuning) {
-            start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${optionalString cfg.thermalGuard.enable " && sudo ${thermal-guard} &"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
+            # `{ ... & }` keeps the background launch from terminating the
+            # && list (a bare `cmd & && next` is a bash syntax error).
+            start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${optionalString cfg.thermalGuard.enable " && { sudo ${thermal-guard} & }"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
             end = "${pkgs.bash}/bin/bash -c '${optionalString cfg.thermalGuard.enable "touch /run/thermal-guard/stop; "}sudo ${gamemode-end} && ${notify} \"GameMode\" \"Efficiency: ${baseDesc}\"'";
           };
         };
