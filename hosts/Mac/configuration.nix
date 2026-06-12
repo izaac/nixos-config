@@ -74,6 +74,16 @@
   nix.settings = {
     experimental-features = ["nix-command" "flakes"];
     trusted-users = ["root" userConfig.username];
+    # Same pinned cache list as the Linux hosts (modules/core/system.nix);
+    # the flake itself carries no nixConfig.
+    substituters = [
+      "https://cache.nixos.org"
+      "https://izaac-nix.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
+    ];
   };
 
   # nix-darwin has no programs.nh module, so install the CLI directly and let

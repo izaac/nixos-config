@@ -44,8 +44,6 @@
     };
 
     stylix = {
-      # Tracking nixos-unstable; Stylix master may sit on a newer release label.
-      enableReleaseChecks = false;
       targets = {
         qt.enable = false; # Handled by kvantum manually
       };

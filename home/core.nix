@@ -15,8 +15,6 @@
   home = {
     inherit (userConfig) username;
     stateVersion = "25.11";
-    # Tracking nixos-unstable; HM master may sit on a newer release label.
-    enableNixpkgsReleaseCheck = false;
   };
 
   # Manage the XDG base directories and export XDG_*_HOME so the userDirs,

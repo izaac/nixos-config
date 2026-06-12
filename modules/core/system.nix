@@ -34,7 +34,9 @@ in {
         keep-derivations = true;
         keep-outputs = true;
         auto-optimise-store = true;
-        accept-flake-config = true;
+        # false (default): third-party flakes must not inject their own
+        # substituters/keys — that would bypass the pinned lists below.
+        accept-flake-config = false;
         # Explicitly lock substituters to prevent rogue cache injection.
         # Order matters: nixos first (fastest CDN), then third-party caches.
         substituters = [

@@ -1,20 +1,15 @@
 {
   description = "Izaac NVIDIA NixOS and Darwin Configuration";
 
-  nixConfig = {
-    extra-substituters = [
-      "https://izaac-nix.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
-    ];
-  };
+  # No nixConfig block: accept-flake-config is off (see modules/core/system.nix),
+  # so flake-provided settings would be ignored with a warning anyway. The
+  # binary caches are pinned in each host's nix.settings instead.
 
   inputs = {
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     home-manager = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
@@ -25,13 +20,16 @@
       url = "github:izaac/nix-packages";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
-      url = "github:danth/stylix";
+      url = "github:danth/stylix/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri-flake = {
@@ -43,7 +41,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     darwin = {
-      url = "github:LnL7/nix-darwin";
+      # Repo moved from LnL7 to the nix-darwin org; release branch must
+      # match the nixpkgs release.
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     ai-trace-scanner = {
