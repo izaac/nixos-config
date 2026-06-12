@@ -15,15 +15,49 @@
     ];
   };
 
-  # Required by current nix-darwin for user-scoped options (Touch ID, etc.).
-  system.primaryUser = userConfig.username;
+  environment = {
+    # macOS doesn't export LANG over SSH (Terminal.app sets it locally only),
+    # so shell integrations warn on every remote login. Export a UTF-8 locale
+    # system-wide so non-interactive and SSH shells get it too.
+    variables = {
+      LANG = "en_US.UTF-8";
+      LC_ALL = "en_US.UTF-8";
+    };
 
-  # macOS doesn't export LANG over SSH (Terminal.app sets it locally only),
-  # which makes ble.sh warn on every remote login. Export a UTF-8 locale
-  # system-wide so non-interactive and SSH shells get it too.
-  environment.variables = {
-    LANG = "en_US.UTF-8";
-    LC_ALL = "en_US.UTF-8";
+    shells = [pkgs.zsh pkgs.bashInteractive];
+
+    # System profile holds only Mac-specific tools. Shared CLI tooling (git,
+    # jq, eza, fzf, kubectl, …) and the GNU userland (coreutils, findutils,
+    # gawk, gnused, gnutar, gnugrep) come from home/shell/packages.nix —
+    # single source, not duplicated here.
+    systemPackages = with pkgs; [
+      ansifilter
+      bashInteractive
+      blueutil
+      bottom
+      broot
+      cheat
+      chezmoi
+      curlie
+      emacs
+      indent
+      govc
+      lazygit
+      lld
+      mcfly
+      nh
+      pipenv
+      python3
+      shfmt
+      terraform
+      tmuxinator
+      tree
+      vim
+      wimlib
+      yamllint
+      yarn
+      yt-dlp
+    ];
   };
 
   # Enable Touch ID for sudo (New syntax for nix-darwin).
@@ -33,86 +67,53 @@
     reattach = true;
   };
 
-  # System profile holds only Mac-specific tools and the GNU userland that
-  # replaces macOS's BSD utils. Shared CLI tooling (git, jq, eza, fzf, gcc,
-  # kubectl, etc.) is installed once via home-manager, not duplicated here.
-  # GNU userland (coreutils, findutils, gawk, gnused, gnutar, gnugrep) comes
-  # from home/shell/packages.nix — single source, not duplicated here.
-  environment.systemPackages = with pkgs; [
-    ansifilter
-    bashInteractive
-    blueutil
-    bottom
-    broot
-    cheat
-    chezmoi
-    curlie
-    emacs
-    indent
-    govc
-    lazygit
-    lld
-    mcfly
-    nh
-    pipenv
-    python3
-    shfmt
-    terraform
-    tmuxinator
-    tree
-    vim
-    wimlib
-    yamllint
-    yarn
-    yt-dlp
-  ];
+  nix = {
+    settings = {
+      experimental-features = ["nix-command" "flakes"];
+      trusted-users = ["root" userConfig.username];
+      # Same pinned cache list as the Linux hosts (modules/core/system.nix);
+      # the flake itself carries no nixConfig.
+      substituters = [
+        "https://cache.nixos.org"
+        "https://izaac-nix.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
+      ];
+    };
 
-  # Nix daemon settings
-  nix.package = pkgs.nix;
-  nix.settings = {
-    experimental-features = ["nix-command" "flakes"];
-    trusted-users = ["root" userConfig.username];
-    # Same pinned cache list as the Linux hosts (modules/core/system.nix);
-    # the flake itself carries no nixConfig.
-    substituters = [
-      "https://cache.nixos.org"
-      "https://izaac-nix.cachix.org"
-    ];
-    trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "izaac-nix.cachix.org-1:ff3lZcS/eWO6i3+BXAds6MbSnEzDe2HMWvTY2bcoXDk="
-    ];
-  };
+    # nix-darwin has no programs.nh module, so install the CLI directly and
+    # let the daemon handle scheduled GC + dedup (nh clean is run by hand).
+    gc = {
+      automatic = true;
+      options = "--delete-older-than 30d";
+    };
+    optimise.automatic = true;
 
-  # nix-darwin has no programs.nh module, so install the CLI directly and let
-  # the daemon handle scheduled GC + dedup (nh clean is then run by hand).
-  nix.gc = {
-    automatic = true;
-    options = "--delete-older-than 30d";
-  };
-  nix.optimise.automatic = true;
-
-  # Local Linux build VM (via Apple Virtualization). Lets this arm64 Mac build
-  # Linux closures without a remote builder; it registers itself in
-  # nix.buildMachines automatically. binfmt adds QEMU user-mode emulation so it
-  # can also build x86_64-linux (for ninja / windy) — correct but slow, and the
-  # VM disk grows with x86_64 store paths as they are built.
-  nix.linux-builder = {
-    enable = true;
-    maxJobs = 4;
-    # binfmt teaches the guest VM to *run* x86_64 via QEMU; systems advertises
-    # x86_64-linux in /etc/nix/machines so the Mac's nix actually offloads
-    # those builds to it (binfmt alone is necessary but not sufficient).
-    systems = ["aarch64-linux" "x86_64-linux"];
-    config.boot.binfmt.emulatedSystems = ["x86_64-linux"];
+    # Local Linux build VM (via Apple Virtualization). Lets this arm64 Mac
+    # build Linux closures without a remote builder; it registers itself in
+    # nix.buildMachines automatically. binfmt adds QEMU user-mode emulation so
+    # it can also build x86_64-linux (for ninja / windy) — correct but slow,
+    # and the VM disk grows with x86_64 store paths as they are built.
+    linux-builder = {
+      enable = true;
+      maxJobs = 4;
+      # binfmt teaches the guest VM to *run* x86_64 via QEMU; systems
+      # advertises x86_64-linux in /etc/nix/machines so the Mac's nix actually
+      # offloads those builds to it (binfmt alone is necessary but not
+      # sufficient).
+      systems = ["aarch64-linux" "x86_64-linux"];
+      config.boot.binfmt.emulatedSystems = ["x86_64-linux"];
+    };
   };
 
   # zsh is the login shell; /etc/zshrc gets the nix-darwin environment hooks.
   # bash stays enabled for scripts and as a fallback shell.
-  programs.zsh.enable = true;
-  programs.bash.enable = true;
-
-  environment.shells = [pkgs.zsh pkgs.bashInteractive];
+  programs = {
+    zsh.enable = true;
+    bash.enable = true;
+  };
 
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
@@ -123,105 +124,113 @@
   # this Mac can reach ninja over Tailscale SSH.
   services.tailscale.enable = true;
 
-  # Silence the boot chime — no startup bong on power-on.
-  system.startup.chime = false;
+  system = {
+    # Required by current nix-darwin for user-scoped options (Touch ID, etc.).
+    primaryUser = userConfig.username;
 
-  # Declarative macOS preferences. Only the keys listed here are managed;
-  # every other System Settings value is left as-is. This writes `defaults`,
-  # it never touches application data — Tunnelblick et al. are unaffected.
-  system.defaults = {
-    NSGlobalDomain = {
-      AppleInterfaceStyle = "Dark"; # match the Catppuccin-dark theme on the other hosts
-      AppleShowAllExtensions = true;
-      ApplePressAndHoldEnabled = false; # hold key = repeat, not the accent popup
-      InitialKeyRepeat = 15;
-      KeyRepeat = 2;
-      NSAutomaticCapitalizationEnabled = false;
-      NSAutomaticSpellingCorrectionEnabled = false;
-      NSNavPanelExpandedStateForSaveMode = true; # expanded save dialogs by default
+    # Used for backwards compatibility
+    stateVersion = 5;
 
-      # Snappier UI — strip window/focus animations and make resizes near-instant.
-      NSAutomaticWindowAnimationsEnabled = false;
-      NSWindowResizeTime = 0.001;
-      NSUseAnimatedFocusRing = false;
-      "com.apple.springing.delay" = 0.0; # no delay before folders spring open
+    # Silence the boot chime — no startup bong on power-on.
+    startup.chime = false;
 
-      # Scroll direction matches Windows/Linux mouse convention — content
-      # follows finger movement instead of macOS "natural" inversion.
-      "com.apple.swipescrolldirection" = false;
-      AppleShowScrollBars = "Always"; # persistent scrollbars, not auto-hide
-      AppleMeasurementUnits = "Centimeters";
-      AppleMetricUnits = 1;
-      AppleTemperatureUnit = "Celsius";
-      AppleICUForce24HourTime = true;
-    };
-    menuExtraClock = {
-      Show24Hour = true;
-      ShowDate = 1; # 0=when space allows, 1=always, 2=never
-      ShowDayOfWeek = true;
-      ShowSeconds = false;
-    };
-    spaces.spans-displays = false; # each monitor has its own Spaces (AeroSpace-friendly)
-    finder = {
-      AppleShowAllFiles = true; # show dotfiles
-      ShowPathbar = true;
-      ShowStatusBar = true;
-      FXPreferredViewStyle = "Nlsv"; # list view
-      _FXShowPosixPathInTitle = true;
-      FXEnableExtensionChangeWarning = false;
-      CreateDesktop = false; # hide desktop icons (AeroSpace tiling stays clean)
-      FXDefaultSearchScope = "SCcf"; # search current folder by default, not whole Mac
-      # NewWindowTarget = "Other" is required whenever NewWindowTargetPath is set;
-      # "Home" alone would also work, but the explicit path survives a username change.
-      NewWindowTarget = "Other";
-      NewWindowTargetPath = "file:///Users/${userConfig.username}/";
-    };
-    dock = {
-      autohide = true;
-      autohide-delay = 0.0; # Dock appears the instant the cursor hits the edge
-      autohide-time-modifier = 0.0; # no slide animation on show/hide
-      launchanim = false; # no bouncing icon when launching apps
-      expose-animation-duration = 0.1; # faster Mission Control transition
-      minimize-to-application = true; # minimized windows fold into the app icon
-      show-recents = false;
-      mru-spaces = false; # don't auto-rearrange Spaces
-      tilesize = 48;
-      orientation = "bottom";
-      mineffect = "scale"; # cheaper than the default genie warp
-      # Hot corners: 1=disabled, 2=Mission Control, 3=App Windows, 4=Desktop,
-      # 5=Start Screen Saver, 6=Disable Screen Saver, 10=Sleep Display,
-      # 11=Launchpad, 12=Notification Center, 13=Lock Screen, 14=Quick Note.
-      # All disabled — bumping a corner mid-aim should never trigger anything.
-      wvous-tl-corner = 1;
-      wvous-tr-corner = 1;
-      wvous-bl-corner = 1;
-      wvous-br-corner = 1;
-    };
-    screencapture = {
-      location = "/Users/${userConfig.username}/Screenshots";
-      type = "png";
-      disable-shadow = true; # no drop-shadow border on window screenshots
-    };
-    trackpad = {
-      Clicking = true; # tap to click
-      TrackpadThreeFingerDrag = true;
-    };
-    loginwindow.GuestEnabled = false;
+    # Declarative macOS preferences. Only the keys listed here are managed;
+    # every other System Settings value is left as-is. This writes `defaults`,
+    # it never touches application data — Tunnelblick et al. are unaffected.
+    defaults = {
+      NSGlobalDomain = {
+        AppleInterfaceStyle = "Dark"; # match the Catppuccin-dark theme on the other hosts
+        AppleShowAllExtensions = true;
+        ApplePressAndHoldEnabled = false; # hold key = repeat, not the accent popup
+        InitialKeyRepeat = 15;
+        KeyRepeat = 2;
+        NSAutomaticCapitalizationEnabled = false;
+        NSAutomaticSpellingCorrectionEnabled = false;
+        NSNavPanelExpandedStateForSaveMode = true; # expanded save dialogs by default
 
-    # Universal Access — reduceTransparency / reduceMotion would help here,
-    # but writing com.apple.universalaccess via `defaults` is TCC-gated:
-    # darwin-rebuild fails unless the terminal running it has Full Disk
-    # Access. Skipped to keep `just darwin-build` runnable without that
-    # manual grant; toggle in System Settings → Accessibility → Display if
-    # wanted (or grant FDA to kitty and re-enable here).
+        # Snappier UI — strip window/focus animations and make resizes near-instant.
+        NSAutomaticWindowAnimationsEnabled = false;
+        NSWindowResizeTime = 0.001;
+        NSUseAnimatedFocusRing = false;
+        "com.apple.springing.delay" = 0.0; # no delay before folders spring open
 
-    # Disable App Nap for the Moonlight bundle: ensures macOS never throttles
-    # the streaming client if the window briefly loses focus (e.g. Cmd-Tab to
-    # check a chat). In fullscreen App Nap normally stays off anyway; this is
-    # belt-and-suspenders for the windowed case.
-    CustomUserPreferences = {
-      "com.moonlight-stream.Moonlight" = {
-        NSAppSleepDisabled = true;
+        # Scroll direction matches Windows/Linux mouse convention — content
+        # follows finger movement instead of macOS "natural" inversion.
+        "com.apple.swipescrolldirection" = false;
+        AppleShowScrollBars = "Always"; # persistent scrollbars, not auto-hide
+        AppleMeasurementUnits = "Centimeters";
+        AppleMetricUnits = 1;
+        AppleTemperatureUnit = "Celsius";
+        AppleICUForce24HourTime = true;
+      };
+      menuExtraClock = {
+        Show24Hour = true;
+        ShowDate = 1; # 0=when space allows, 1=always, 2=never
+        ShowDayOfWeek = true;
+        ShowSeconds = false;
+      };
+      spaces.spans-displays = false; # each monitor has its own Spaces (AeroSpace-friendly)
+      finder = {
+        AppleShowAllFiles = true; # show dotfiles
+        ShowPathbar = true;
+        ShowStatusBar = true;
+        FXPreferredViewStyle = "Nlsv"; # list view
+        _FXShowPosixPathInTitle = true;
+        FXEnableExtensionChangeWarning = false;
+        CreateDesktop = false; # hide desktop icons (AeroSpace tiling stays clean)
+        FXDefaultSearchScope = "SCcf"; # search current folder by default, not whole Mac
+        # NewWindowTarget = "Other" is required whenever NewWindowTargetPath is set;
+        # "Home" alone would also work, but the explicit path survives a username change.
+        NewWindowTarget = "Other";
+        NewWindowTargetPath = "file:///Users/${userConfig.username}/";
+      };
+      dock = {
+        autohide = true;
+        autohide-delay = 0.0; # Dock appears the instant the cursor hits the edge
+        autohide-time-modifier = 0.0; # no slide animation on show/hide
+        launchanim = false; # no bouncing icon when launching apps
+        expose-animation-duration = 0.1; # faster Mission Control transition
+        minimize-to-application = true; # minimized windows fold into the app icon
+        show-recents = false;
+        mru-spaces = false; # don't auto-rearrange Spaces
+        tilesize = 48;
+        orientation = "bottom";
+        mineffect = "scale"; # cheaper than the default genie warp
+        # Hot corners: 1=disabled, 2=Mission Control, 3=App Windows, 4=Desktop,
+        # 5=Start Screen Saver, 6=Disable Screen Saver, 10=Sleep Display,
+        # 11=Launchpad, 12=Notification Center, 13=Lock Screen, 14=Quick Note.
+        # All disabled — bumping a corner mid-aim should never trigger anything.
+        wvous-tl-corner = 1;
+        wvous-tr-corner = 1;
+        wvous-bl-corner = 1;
+        wvous-br-corner = 1;
+      };
+      screencapture = {
+        location = "/Users/${userConfig.username}/Screenshots";
+        type = "png";
+        disable-shadow = true; # no drop-shadow border on window screenshots
+      };
+      trackpad = {
+        Clicking = true; # tap to click
+        TrackpadThreeFingerDrag = true;
+      };
+      loginwindow.GuestEnabled = false;
+
+      # Universal Access — reduceTransparency / reduceMotion would help here,
+      # but writing com.apple.universalaccess via `defaults` is TCC-gated:
+      # darwin-rebuild fails unless the terminal running it has Full Disk
+      # Access. Skipped to keep `just darwin-build` runnable without that
+      # manual grant; toggle in System Settings → Accessibility → Display if
+      # wanted (or grant FDA to kitty and re-enable here).
+
+      # Disable App Nap for the Moonlight bundle: ensures macOS never throttles
+      # the streaming client if the window briefly loses focus (e.g. Cmd-Tab to
+      # check a chat). In fullscreen App Nap normally stays off anyway; this is
+      # belt-and-suspenders for the windowed case.
+      CustomUserPreferences = {
+        "com.moonlight-stream.Moonlight" = {
+          NSAppSleepDisabled = true;
+        };
       };
     };
   };
@@ -280,9 +289,6 @@
     brews = [];
     masApps = {};
   };
-
-  # Used for backwards compatibility
-  system.stateVersion = 5;
 
   # Use Home Manager
   home-manager = {

@@ -55,7 +55,6 @@
   outputs = inputs @ {
     self,
     nixpkgs,
-    darwin,
     ...
   }: let
     systems = ["x86_64-linux" "aarch64-darwin"];
@@ -69,6 +68,10 @@
     userConfig = import ./lib/user.nix;
 
     mkSystem = import ./lib/mkSystem.nix {
+      inherit inputs userConfig;
+    };
+
+    mkDarwin = import ./lib/mkDarwin.nix {
       inherit inputs userConfig;
     };
 
@@ -92,22 +95,7 @@
     };
 
     darwinConfigurations = {
-      Mac = darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        specialArgs = {inherit inputs userConfig;};
-        # No system-level stylix module: this host only uses the HM-level
-        # stylix import (see hosts/Mac/configuration.nix).
-        modules = [
-          ./hosts/Mac/configuration.nix
-          inputs.home-manager.darwinModules.home-manager
-          {
-            nixpkgs.config.allowUnfree = true;
-            nixpkgs.overlays = [
-              (import ./overlays/ai-trace-scanner.nix inputs)
-            ];
-          }
-        ];
-      };
+      Mac = mkDarwin "Mac";
     };
 
     packages = forEachSystem (
