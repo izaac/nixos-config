@@ -6,7 +6,7 @@
 # (Cmd+Q/W/1-9 etc.), so the niri "Mod+" muscle memory maps to "alt+" here.
 # Keybinds mirror home/niri.nix: hjkl focus, Shift+hjkl move, Alt+1-9 workspace,
 # Alt+Shift+1-9 move-to-workspace, Alt+PgUp/PgDn switch workspace.
-{
+{config, ...}: {
   programs.aerospace = {
     enable = true;
     # Run and supervise AeroSpace via a Home Manager launchd agent so it starts
@@ -16,12 +16,16 @@
     settings = {
       # Match niri: no macOS Spaces animation, gaps of 8px.
       gaps = {
-        inner.horizontal = 8;
-        inner.vertical = 8;
-        outer.left = 8;
-        outer.right = 8;
-        outer.top = 8;
-        outer.bottom = 8;
+        inner = {
+          horizontal = 8;
+          vertical = 8;
+        };
+        outer = {
+          left = 8;
+          right = 8;
+          top = 8;
+          bottom = 8;
+        };
       };
 
       default-root-container-layout = "tiles";
@@ -55,7 +59,10 @@
 
       mode.main.binding = {
         # --- Apps ---
-        alt-enter = "exec-and-forget open -na kitty";
+        # Launch the Home Manager-managed kitty.app explicitly: a leftover
+        # manually-installed /Applications/kitty.app would otherwise be an
+        # ambiguous `open -na kitty` target.
+        alt-enter = "exec-and-forget open -na '${config.home.homeDirectory}/Applications/Home Manager Apps/kitty.app'";
 
         # --- Focus (vim hjkl + Ctrl+Option+Arrow) ---
         # Arrows use Ctrl+Option, NOT plain Option: Option+Arrow /

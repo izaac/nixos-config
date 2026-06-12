@@ -6,7 +6,9 @@
 }: {
   users.users.${userConfig.username} = {
     home = "/Users/${userConfig.username}";
-    shell = pkgs.bashInteractive;
+    # zsh is the primary shell repo-wide; all aliases and tool integrations
+    # (atuin, zoxide, fzf, eza) live in the Home Manager zsh config.
+    shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
       # ninja
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKsLkTQ0VLpDXXQV3bLXouWWdBbhmkY01s2s6uvJYlBV izaac 2.0"
@@ -34,6 +36,8 @@
   # System profile holds only Mac-specific tools and the GNU userland that
   # replaces macOS's BSD utils. Shared CLI tooling (git, jq, eza, fzf, gcc,
   # kubectl, etc.) is installed once via home-manager, not duplicated here.
+  # GNU userland (coreutils, findutils, gawk, gnused, gnutar, gnugrep) comes
+  # from home/shell/packages.nix — single source, not duplicated here.
   environment.systemPackages = with pkgs; [
     ansifilter
     bashInteractive
@@ -42,16 +46,10 @@
     broot
     cheat
     chezmoi
-    coreutils
     curlie
     emacs
-    findutils
-    gawk
     indent
-    gnused
-    gnutar
     govc
-    gnugrep
     lazygit
     lld
     mcfly
@@ -109,11 +107,12 @@
     config.boot.binfmt.emulatedSystems = ["x86_64-linux"];
   };
 
-  # Enable Bash at system level
+  # zsh is the login shell; /etc/zshrc gets the nix-darwin environment hooks.
+  # bash stays enabled for scripts and as a fallback shell.
+  programs.zsh.enable = true;
   programs.bash.enable = true;
-  programs.zsh.enable = false;
 
-  environment.shells = [pkgs.bashInteractive];
+  environment.shells = [pkgs.zsh pkgs.bashInteractive];
 
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
@@ -289,7 +288,8 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    backupFileExtension = "before-nix";
+    # Same suffix as the Linux hosts (modules/core/home-manager.nix).
+    backupFileExtension = "hm-backup";
     extraSpecialArgs = {inherit inputs userConfig;};
     users.${userConfig.username} = {
       imports = [
@@ -297,6 +297,7 @@
         ../../home/darwin/aerospace.nix
         ../../home/darwin/hammerspoon.nix
         ../../home/darwin/kitty.nix
+        ../../home/darwin/screenshots.nix
         inputs.stylix.homeModules.stylix
       ];
       # stylix.enable is off on this host, so the Darwin module never injects
@@ -305,10 +306,7 @@
       # sets nixpkgs.overlays, which useGlobalPkgs ignores and warns about.
       # Disable it explicitly (matches stylix's own useGlobalPkgs handling).
       stylix.overlays.enable = false;
-      home = {
-        homeDirectory = pkgs.lib.mkForce "/Users/${userConfig.username}";
-        stateVersion = "25.11";
-      };
+      # homeDirectory and stateVersion come from users.users + home/core.nix.
     };
   };
 }

@@ -1,20 +1,24 @@
 {
+  config,
   lib,
   pkgs,
-  userConfig,
   ...
 }: {
   home = {
-    sessionVariables = {
-      PAGER = "less";
-      DIRENV_LOG_FORMAT = "";
-      TERMINAL = "kitty";
-      ATUIN_NO_MODIFY_DB = "true";
-      QA_INFRA_DIR = "/home/${userConfig.username}/repos/qa-infra-automation";
-      # Idiomatic single switch so every Electron/Chromium app runs natively
-      # on Wayland (niri) instead of XWayland. Replaces per-app ozone flags.
-      NIXOS_OZONE_WL = "1";
-    };
+    sessionVariables =
+      {
+        PAGER = "less";
+        DIRENV_LOG_FORMAT = "";
+        TERMINAL = "kitty";
+        ATUIN_NO_MODIFY_DB = "true";
+        QA_INFRA_DIR = "${config.home.homeDirectory}/repos/qa-infra-automation";
+      }
+      // lib.optionalAttrs pkgs.stdenv.isLinux {
+        # Idiomatic single switch so every Electron/Chromium app runs natively
+        # on Wayland (niri) instead of XWayland. Replaces per-app ozone flags.
+        # Linux-only: meaningless on macOS.
+        NIXOS_OZONE_WL = "1";
+      };
 
     # Propagate user-local bin dirs to every launcher — niri spawn, desktop
     # entries, systemd user units — not just interactive bash.

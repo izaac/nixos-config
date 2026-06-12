@@ -95,19 +95,15 @@
       Mac = darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         specialArgs = {inherit inputs userConfig;};
+        # No system-level stylix module: this host only uses the HM-level
+        # stylix import (see hosts/Mac/configuration.nix).
         modules = [
           ./hosts/Mac/configuration.nix
           inputs.home-manager.darwinModules.home-manager
-          inputs.stylix.darwinModules.stylix
           {
             nixpkgs.config.allowUnfree = true;
             nixpkgs.overlays = [
               (import ./overlays/ai-trace-scanner.nix inputs)
-              (_final: prev: {
-                direnv = prev.direnv.overrideAttrs (_old: {
-                  doCheck = false;
-                });
-              })
             ];
           }
         ];
