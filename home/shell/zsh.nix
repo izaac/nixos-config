@@ -32,12 +32,7 @@
       # Autocd
       setopt autocd
 
-      # GPG TTY FIX
-      current_tty=$(tty 2>/dev/null)
-      if [[ "$current_tty" != "not a tty" ]]; then
-        export GPG_TTY="$current_tty"
-      fi
-      unset current_tty
+      ${builtins.readFile ./gpg-tty.sh}
 
       # SSH → persistent tmux session
       if [[ $- == *i* && -n "''${SSH_TTY-}" && -z "''${TMUX-}" && -z "''${VSCODE_INJECTION-}" ]]; then

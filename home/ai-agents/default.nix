@@ -1,16 +1,12 @@
 {
+  config,
   pkgs,
   lib,
-  userConfig,
   ...
 }: let
   globalMd = builtins.readFile ./global.md;
   cavemanMd = builtins.readFile ./caveman.md;
-  homeDir =
-    if pkgs.stdenv.isDarwin
-    then "/Users/${userConfig.username}"
-    else "/home/${userConfig.username}";
-  geminiMd = "${homeDir}/.gemini/GEMINI.md";
+  geminiMd = "${config.home.homeDirectory}/.gemini/GEMINI.md";
 
   cavemanSrc = pkgs.fetchFromGitHub {
     owner = "JuliusBrussee";
@@ -79,10 +75,12 @@ in {
       # Register MCP servers for AI agents. Antigravity CLI MCP migration is
       # a one-time manual step: `agy plugin import` pulls existing
       # ~/.gemini/settings.json mcpServers entries into agy's mcp_config.json.
+      # Versions pinned (no @latest): npx caches the pin and a server bump
+      # can't silently change what runs. Bump alongside other updates.
       ai-mcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
         if command -v claude >/dev/null 2>&1; then
-          claude mcp add --scope user context7 --transport stdio -- npx -y @upstash/context7-mcp@latest 2>/dev/null || true
-          claude mcp add --scope user sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null || true
+          claude mcp add --scope user context7 --transport stdio -- npx -y @upstash/context7-mcp@3.2.0 2>/dev/null || true
+          claude mcp add --scope user sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking@2025.12.18 2>/dev/null || true
         fi
       '';
     };

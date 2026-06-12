@@ -14,8 +14,10 @@ in {
   config = mkIf cfg.enable {
     stylix = {
       enable = true;
+      # Pinned to a commit, not `master`: an upstream re-encode/rename would
+      # otherwise break every fresh build with a hash mismatch.
       image = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/orangci/walls-catppuccin-mocha/master/black-hole.png";
+        url = "https://raw.githubusercontent.com/orangci/walls-catppuccin-mocha/7bfdf10d16ad3a689f9f0cf3a0930da3d1a245a8/black-hole.png";
         sha256 = "0nq4qxx3i4s84v4srxvggzlvp15sc2wgf4vc4awaijwdzqy79nfr";
       };
       base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
@@ -48,9 +50,11 @@ in {
       };
 
       # Global overrides
-      targets.grub.enable = false; # Handled by boot module
-      targets.kmscon.enable = false; # nixpkgs removed old kmscon options
-      targets.nixos-icons.enable = true;
+      targets = {
+        grub.enable = false; # Handled by boot module
+        kmscon.enable = false; # nixpkgs removed old kmscon options
+        nixos-icons.enable = true;
+      };
     };
   };
 }

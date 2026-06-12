@@ -33,8 +33,9 @@
         [ -e "$d" ] || continue
         info=$(v4l2-ctl -d "$d" --info 2>/dev/null) || continue
         echo "$info" | grep -qi "$vmatch" || continue
-        echo "$info" | grep -qiE 'Device Caps|Video Capture' || true
-        # Must support video capture and expose at least one format.
+        # Must advertise video-capture capability …
+        echo "$info" | grep -qiE 'Device Caps|Video Capture' || continue
+        # … and expose at least one format.
         v4l2-ctl -d "$d" --list-formats 2>/dev/null \
           | grep -qiE '\[[0-9]+\]|Pixel Format' || continue
         # Reject pure metadata nodes (no width/height capability).
@@ -67,14 +68,16 @@
       #    link actually attached to the card source (the historical bug was
       #    pw-loopback silently falling back to the default mic).
       ##########################################################################
-      pw-loopback -C "$audio_node" </dev/null >/tmp/cardview-loopback.log 2>&1 &
+      # Log lands in the user-private runtime dir, not world-writable /tmp.
+      loop_log="''${XDG_RUNTIME_DIR:-/tmp}/cardview-loopback.log"
+      pw-loopback -C "$audio_node" </dev/null >"$loop_log" 2>&1 &
       loop_pid=$!
       trap 'kill "$loop_pid" 2>/dev/null || true' EXIT INT TERM
 
       linked=0
       for _ in 1 2 3 4 5 6 7 8 9 10; do
         if ! kill -0 "$loop_pid" 2>/dev/null; then
-          die "pw-loopback died. Log: $(cat /tmp/cardview-loopback.log)"
+          die "pw-loopback died. Log: $(cat "$loop_log")"
         fi
         if pw-link -l 2>/dev/null \
           | grep -A1 "input.pw-loopback-$loop_pid" \
@@ -84,7 +87,7 @@
         fi
         sleep 0.5
       done
-      [ "$linked" -eq 1 ] || die "audio failed to link to the card (wrong source captured). Log: $(cat /tmp/cardview-loopback.log)"
+      [ "$linked" -eq 1 ] || die "audio failed to link to the card (wrong source captured). Log: $(cat "$loop_log")"
 
       # Make sure the destination (default sink) is audible.
       default_sink=$(wpctl status 2>/dev/null | awk '/Sinks:/{f=1} f&&/\*/{print; exit}')

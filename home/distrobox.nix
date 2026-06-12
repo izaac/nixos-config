@@ -1,6 +1,6 @@
 {
+  config,
   pkgs,
-  userConfig,
   ...
 }: {
   home = {
@@ -39,7 +39,7 @@
     # Placed in distrobox/bin which is first in PATH, ahead of host sudo.
     "distrobox/sudo-fix.sh".text = ''
       #!/bin/sh
-      SUDO_BIN="/home/${userConfig.username}/.local/share/distrobox/bin/sudo"
+      SUDO_BIN="${config.home.homeDirectory}/.local/share/distrobox/bin/sudo"
       mkdir -p "$(dirname "$SUDO_BIN")"
       cat > "$SUDO_BIN" <<'WRAPPER'
       #!/bin/sh
@@ -207,7 +207,7 @@
       additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
       init=false
       nvidia=true
-      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
       shell=/bin/bash
       # === Ubuntu Gaming Container (The "Golden Recipe" for NixOS + NVIDIA) ===
       # This container uses ~/.config/distrobox/nvidia-setup.sh to automatically
@@ -218,7 +218,7 @@
       additional_packages="neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
       init=false
       nvidia=true
-      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh && sh /home/${userConfig.username}/.config/distrobox/nvidia-setup.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/nvidia-setup.sh"
       shell=/bin/bash
 
       [debi]
@@ -227,7 +227,7 @@
       additional_packages="git curl wget neovim ripgrep lsd fastfetch"
       init=false
       nvidia=true
-      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
       shell=/bin/bash
 
       # === Alpine OpenRC Sandbox ===
@@ -241,7 +241,7 @@
       init=false
       nvidia=false
       shell=/bin/bash
-      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
 
       # === RHEL 10 (UBI image + real Red Hat subscription) ===
       # Persists subscription state across db-rm/db-up via host volume mounts.
@@ -257,8 +257,8 @@
       init=false
       nvidia=true
       shell=/bin/bash
-      volume="/home/${userConfig.username}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement /home/${userConfig.username}/.local/share/distrobox/rhel10/pki-consumer:/etc/pki/consumer /home/${userConfig.username}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
-      init_hooks="sh /home/${userConfig.username}/.config/distrobox/sudo-fix.sh && sh /home/${userConfig.username}/.config/distrobox/rhel10-epel.sh"
+      volume="${config.home.homeDirectory}/.local/share/distrobox/rhel10/rhsm:/etc/rhsm ${config.home.homeDirectory}/.local/share/distrobox/rhel10/pki-entitlement:/etc/pki/entitlement ${config.home.homeDirectory}/.local/share/distrobox/rhel10/pki-consumer:/etc/pki/consumer ${config.home.homeDirectory}/.local/share/distrobox/rhel10/var-lib-rhsm:/var/lib/rhsm"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/rhel10-epel.sh"
     '';
   };
 
@@ -279,14 +279,14 @@
 
   # Alias to easily create/update these containers
   home.shellAliases = {
-    db-up = "distrobox assemble create --file /home/${userConfig.username}/.config/distrobox/distrobox.ini";
-    db-rm = "distrobox assemble rm --file /home/${userConfig.username}/.config/distrobox/distrobox.ini";
+    db-up = "distrobox assemble create --file ${config.home.homeDirectory}/.config/distrobox/distrobox.ini";
+    db-rm = "distrobox assemble rm --file ${config.home.homeDirectory}/.config/distrobox/distrobox.ini";
     db-arch = "distrobox enter archy -- zsh";
     db-ubu = "distrobox enter ubu -- bash";
     db-debian = "distrobox enter debi -- bash";
     db-rhel = "distrobox enter rhel10 -- bash";
-    db-rhel-bootstrap = "bash /home/${userConfig.username}/.config/distrobox/rhel10-bootstrap.sh";
-    db-rhel-init = "distrobox enter rhel10 -- bash /home/${userConfig.username}/.config/distrobox/rhel10-register.sh";
+    db-rhel-bootstrap = "bash ${config.home.homeDirectory}/.config/distrobox/rhel10-bootstrap.sh";
+    db-rhel-init = "distrobox enter rhel10 -- bash ${config.home.homeDirectory}/.config/distrobox/rhel10-register.sh";
     db-alpine = "distrobox enter alpy -- sh";
   };
 }

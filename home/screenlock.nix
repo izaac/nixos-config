@@ -4,10 +4,16 @@
   # mouses to DP-1. Wrap swaylock so the focus is explicitly returned to DP-1
   # the moment the user unlocks. The wrapper depends on `daemonize = false`
   # so the chained niri command runs AFTER unlock, not immediately.
-  swaylock-refocus = pkgs.writeShellScriptBin "swaylock-refocus" ''
-    ${pkgs.swaylock-effects}/bin/swaylock "$@"
-    niri msg action focus-monitor DP-1 || true
-  '';
+  # writeShellApplication for shellcheck + pinned swaylock; focus restore
+  # must run even if swaylock exits non-zero, hence the explicit || true.
+  swaylock-refocus = pkgs.writeShellApplication {
+    name = "swaylock-refocus";
+    runtimeInputs = [pkgs.swaylock-effects];
+    text = ''
+      swaylock "$@" || true
+      niri msg action focus-monitor DP-1 || true
+    '';
+  };
 in {
   home.packages = [swaylock-refocus];
 
