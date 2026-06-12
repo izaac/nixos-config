@@ -53,8 +53,6 @@
       "net.core.netdev_budget_usecs" = 4000;
       "net.ipv4.tcp_max_syn_backlog" = 8192;
     };
-
-    tmp.useTmpfs = true;
   };
 
   services = {
@@ -67,7 +65,6 @@
       NAutoVTs = 0; # Don't autospawn gettys — greetd handles login
     };
 
-    flatpak.enable = true;
     fwupd.enable = false;
     acpid.enable = lib.mkForce false;
   };

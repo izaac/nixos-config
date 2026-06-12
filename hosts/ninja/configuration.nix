@@ -37,6 +37,7 @@
     ../../modules/core
     ../../modules/gaming
     ../../modules/desktop
+    ../../modules/profiles/workstation.nix
     ../../users/izaac
     # nixos-hardware: AMD pstate, NVIDIA (nonprime/desktop), SSD trim
     inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate
@@ -44,11 +45,11 @@
     inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
 
-  # --- CORE FEATURES ---
-  # Enabling the modular components that make up this system's identity.
+  # --- HOST DELTAS ---
+  # The shared baseline lives in modules/profiles/workstation.nix; only
+  # ninja-specific settings remain here.
   mySystem = {
     gaming = {
-      enable = true;
       # GameStream host for the Mac's Moonlight client — ninja only; the
       # laptop is a thin client and gets no CUDA build or open firewall.
       sunshine.enable = true;
@@ -62,36 +63,12 @@
         recoverTemp = 80;
       };
     };
-    desktop.enable = true;
-    core = {
-      audio.enable = true;
-      bluetooth.enable = true;
-      codecs.enable = true;
-      virtualization.enable = true;
-      nfs.enable = false;
-      maintenance.enable = true;
-      performance.enable = true;
-      sops.enable = true;
-      system.enable = true;
-      usb-fixes.enable = true;
-      user.enable = true;
-      theme.enable = true;
-      home-manager.enable = true;
-      nix-ld.enable = true;
-      yubikey.enable = true;
-      "sudo-readonly".enable = true;
-      "known-hosts".enable = true;
-      tailscale = {
-        enable = true;
-        advertiseRoutes = ["192.168.0.0/24"];
-        routingInterface = "eno1";
-      };
+    core.tailscale = {
+      enable = true;
+      advertiseRoutes = ["192.168.0.0/24"];
+      routingInterface = "eno1";
     };
   };
-
-  # --- DRIVERS & FIRMWARE ---
-  # Including all firmware to ensure the 9950X3D and NVIDIA GPU have everything they need.
-  hardware.enableAllFirmware = true;
 
   # --- TOOLS OF THE TRADE ---
   # Essential CLI utilities for system management and audio debugging.

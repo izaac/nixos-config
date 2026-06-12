@@ -10,6 +10,7 @@
     ../../modules/core
     ../../modules/gaming
     ../../modules/desktop
+    ../../modules/profiles/workstation.nix
     ../../users/izaac
     # nixos-hardware: Intel CPU, NVIDIA Prime offload, laptop power, SSD trim
     inputs.nixos-hardware.nixosModules.common-cpu-intel
@@ -18,48 +19,12 @@
     inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
 
-  # Custom Feature Flags
-  mySystem = {
-    gaming.enable = true;
-    desktop.enable = true;
-    core = {
-      audio.enable = true;
-      bluetooth.enable = true;
-      codecs.enable = true;
-      virtualization.enable = true;
-      nfs.enable = false;
-      maintenance.enable = true;
-      performance.enable = true;
-      sops.enable = true;
-      system.enable = true;
-      usb-fixes.enable = true;
-      user.enable = true;
-      home-manager.enable = true;
-      theme.enable = true;
-      nix-ld.enable = true;
-      yubikey.enable = true;
-      "sudo-readonly".enable = true;
-      "known-hosts".enable = true;
-    };
-  };
-
-  # Bootloader
+  # Shared baseline (mySystem flags, bootloader, exfat, tmpfs, flatpak,
+  # firmware) comes from modules/profiles/workstation.nix; windy keeps
+  # only its laptop deltas.
   boot = {
-    loader = {
-      systemd-boot = {
-        enable = true;
-        configurationLimit = 10;
-      };
-      efi.canTouchEfiVariables = true;
-    };
-
-    # File Systems
-    supportedFilesystems = ["exfat"];
-
     # --- KERNEL ---
     kernelPackages = pkgs.linuxPackages_latest;
-
-    tmp.useTmpfs = true;
 
     # --- CORE HARDWARE TWEAKS ---
     kernelParams = [
@@ -70,9 +35,6 @@
       "acpi_backlight=vendor"
     ];
   };
-
-  # System-level Flatpak (required by nix-flatpak home module)
-  services.flatpak.enable = true;
 
   # Laptop-specific Power Management
   services = {
@@ -95,16 +57,12 @@
     colord.enable = false;
   };
 
-  # Hardware Firmware
-  hardware.enableAllFirmware = true;
   # System Packages
   environment.systemPackages = with pkgs; [
     powertop # Monitor laptop power usage
     acpi # Battery/Thermal info
     # brightnessctl + libnotify live in home/niri.nix (shared HM module)
   ];
-
-  systemd.services.ModemManager.enable = false;
 
   system.stateVersion = "25.11";
 }

@@ -1,13 +1,11 @@
 _: {
   boot = {
+    # systemd-boot enable/limit + EFI vars come from the workstation profile.
     loader = {
       systemd-boot = {
-        enable = true;
-        configurationLimit = 10;
         editor = false;
         consoleMode = "max";
       };
-      efi.canTouchEfiVariables = true;
       grub.enable = false;
     };
 
@@ -20,8 +18,6 @@ _: {
         tpm2.enable = false;
       };
     };
-
-    supportedFilesystems = ["exfat"];
 
     blacklistedKernelModules = [
       "sp5100_tco"
