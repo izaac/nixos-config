@@ -1,5 +1,7 @@
-# Declarative disk layout for ninja — mirrors hardware.nix
-# Not currently wired into the NixOS build (kept for disko reinstall/reference)
+# Declarative disk layout for ninja. This file IS live config: it is
+# imported by configuration.nix and (with disko's default enableConfig)
+# generates the fileSystems."/"/"/boot"/"/mnt/data" and LUKS initrd
+# entries at eval time, besides driving disko-format on reinstall.
 {
   disko.devices = {
     disk = {

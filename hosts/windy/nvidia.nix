@@ -26,17 +26,7 @@
     };
   };
 
-  # Enable advanced tuning (Clock offsets / Fan control)
-  services.xserver.deviceSection = ''
-    Option "Coolbits" "28"
-  '';
-
   environment.systemPackages = with pkgs; [
     nvtopPackages.full
   ];
-
-  # Intel-specific env vars for better performance
-  environment.sessionVariables = {
-    VDPAU_DRIVER = "va_gl";
-  };
 }

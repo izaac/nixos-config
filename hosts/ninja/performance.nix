@@ -17,17 +17,21 @@
 
     oomd.enable = true;
 
-    services.nix-daemon.serviceConfig = lib.mkForce {
-      Nice = 19;
+    # Resource caps merge with the nixpkgs-managed unit instead of mkForce
+    # wiping it (scheduling policies have first-class nix.* options below).
+    services.nix-daemon.serviceConfig = {
       CPUWeight = 1;
       IOWeight = 1;
       MemoryMax = "40G";
       MemoryHigh = "36G";
       AllowedCPUs = "8-15,24-31";
-      CPUSchedulingPolicy = "idle";
-      IOSchedulingClass = "idle";
       OOMScoreAdjust = 1000;
     };
+  };
+
+  nix = {
+    daemonCPUSchedPolicy = "idle";
+    daemonIOSchedClass = "idle";
   };
 
   boot = {
