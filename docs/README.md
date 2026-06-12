@@ -5,7 +5,6 @@
 - [Hardware Configuration (ninja)](hardware.md)
 - [Host Notes (windy)](windy.md)
 - [NVIDIA Driver Updates](nvidia-driver-updates.md)
-- [Slim Kernel (ninja)](kernel-slim.md)
 - [Security & Hardening](security.md)
 - [Secret Management](secrets.md)
 - [GitHub SSH Host Key Pinning](known-hosts.md)

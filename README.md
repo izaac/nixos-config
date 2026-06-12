@@ -1,22 +1,23 @@
 # NixOS Configuration
 
-Personal NixOS flake managing two hosts (`ninja`, `windy`). Tracks **nixos-unstable**.
-Custom packages live in a separate [nix-packages](https://github.com/izaac/nix-packages) repo consumed as a flake input.
+Personal flake managing two NixOS hosts (`ninja`, `windy`) and a nix-darwin Mac.
+Tracks **nixos-26.05 stable**. Custom packages live in a separate
+[nix-packages](https://github.com/izaac/nix-packages) repo consumed as a flake input.
 
 ## Overview
 
-- **OS:** NixOS (Branch: 25.11)
+- **OS:** NixOS 26.05 (stable) + nix-darwin 26.05 (Mac)
 - **DM:** tuigreet (greetd) with YubiKey U2F
-- **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake) — unstable channel for xwayland-satellite
+- **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake)
 - **Shell of the desktop:** Waybar (bar) + fuzzel (launcher) + mako (notifications) + swaylock-effects/swayidle (lock) + wlogout (power menu)
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
 - **Theme:** Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix)
-- **Shell:** Bash + Ble.sh + Starship + Atuin + Zoxide
+- **Shell:** Zsh + Starship + Atuin + Zoxide (all hosts, Mac included)
 - **Terminal:** Kitty + tmux
 - **Editor:** LazyVim (Neovim distribution)
-- **Security:** dbus-broker, sops-nix + age, YubiKey (U2F)
+- **Security:** dbus-broker, sops-nix + age, YubiKey (U2F), pinned binary caches
 - **Gaming:** Steam (NVIDIA Optimized), Lutris, Bottles, GameMode, sched-ext
-- **Kernel (ninja):** Linux 7.0.10 pinned + slim config (see [docs/kernel-slim.md](docs/kernel-slim.md))
+- **Kernel (ninja):** nixpkgs `linux_latest` built with `-march=native` (X86_NATIVE_CPU) + 1000Hz — see `hosts/ninja/kernel.nix`
 
 ## Structure
 
@@ -47,7 +48,6 @@ Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) an
 
 - [Hardware (ninja)](docs/hardware.md) | [Hardware (windy)](docs/windy.md)
 - [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
-- [Slim Kernel (ninja)](docs/kernel-slim.md)
 - [Security & Hardening](docs/security.md) | [Secrets](docs/secrets.md)
 - [Disaster Recovery & Disko](docs/disko-rebuild.md)
 - [CLI Tools](docs/cli-tools.md) | [Just Commands](docs/just-commands.md)
