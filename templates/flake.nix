@@ -34,7 +34,7 @@
     in {
       # --- PYTHON ---
       python = pkgs.mkShell {
-        packages = [pkgs.python3 pkgs.uv];
+        packages = [(pkgs.python3.withPackages (ps: [ps.tkinter])) pkgs.uv];
         shellHook = "echo 'Python (Default) Shell'";
       };
       python_310 = pkgs.mkShell {
@@ -91,6 +91,69 @@
       node_20 = mkNodeShell pkgs.nodejs_20;
       node_22 = mkNodeShell pkgs.nodejs_22;
       node_24 = mkNodeShell pkgs.nodejs_24;
+
+      # --- QA-INFRA-AUTOMATION (tofu + ansible + k8s tooling) ---
+      # Use from the work repo via an (uncommitted) .envrc:
+      #   use flake ~/nixos-config/templates#qa-infra --no-pure-eval
+      qa-infra = let
+        # The repo's playbooks are tested against the versions pinned in its
+        # requirements.txt/requirements.yml. nixpkgs currently ships ansible-core
+        # 2.20, whose 2.19+ data-tagging breaks community.general.json_query
+        # ("invalid type ... received: unknown"), and a kubernetes/urllib3 combo
+        # that trips "'HTTPResponse' object has no attribute 'getheaders'".
+        # So instead of a nixpkgs python env we bootstrap a pip venv pinned to
+        # ansible-core < 2.19 plus the libraries the playbooks import. Nix only
+        # provides the interpreter used to build the venv.
+        bootstrapPython = pkgs.python312;
+        cacheRoot = "\${XDG_CACHE_HOME:-$HOME/.cache}/qa-infra";
+        venvDir = "${cacheRoot}/venv";
+        collectionsPath = "${cacheRoot}/ansible-collections";
+      in
+        pkgs.mkShell {
+          packages = [
+            pkgs.opentofu # `tofu` 1.6+
+            pkgs.kubernetes-helm # Helm (Rancher deploy)
+            pkgs.kubectl
+            pkgs.awscli2
+            pkgs.git
+            bootstrapPython # builds and runs the pinned ansible venv
+            # The repo Makefile hardcodes `SHELL := /bin/bash`, which doesn't exist
+            # on NixOS. This wrapper forces a real bash via a command-line override
+            # (command-line assignment beats the Makefile's SHELL :=).
+            (pkgs.writeShellScriptBin "make" ''
+              exec ${pkgs.gnumake}/bin/make SHELL=${pkgs.bashInteractive}/bin/bash "$@"
+            '')
+          ];
+          ANSIBLE_HOST_KEY_CHECKING = "False";
+          shellHook = ''
+            export ANSIBLE_COLLECTIONS_PATH="${collectionsPath}"
+            # Build the pinned ansible venv once (outside the repo, idempotent).
+            if [ ! -x "${venvDir}/bin/ansible-playbook" ]; then
+              echo "[shell] Building pinned ansible venv -> ${venvDir}"
+              ${bootstrapPython}/bin/python -m venv "${venvDir}"
+              "${venvDir}/bin/pip" install --quiet --upgrade pip
+              # ansible-core < 2.19 avoids the json_query data-tagging regression.
+              "${venvDir}/bin/pip" install --quiet \
+                "ansible-core>=2.18,<2.19" \
+                "pyyaml==6.0.2" \
+                "jmespath>=1.0.1" \
+                "kubernetes>=29.0.0" \
+                "boto3>=1.34.0" \
+                "botocore>=1.34.0"
+            fi
+            # Prepend the venv so its ansible* CLIs win over anything else.
+            export PATH="${venvDir}/bin:$PATH"
+            # Install pinned galaxy collections once (idempotent, outside the repo).
+            if [ -f requirements.yml ] && [ ! -d "$ANSIBLE_COLLECTIONS_PATH/ansible_collections/kubernetes" ]; then
+              echo "[shell] Installing Ansible collections -> $ANSIBLE_COLLECTIONS_PATH"
+              ansible-galaxy collection install -r requirements.yml -p "$ANSIBLE_COLLECTIONS_PATH"
+            fi
+            echo "qa-infra-automation shell"
+            tofu version | head -1
+            ansible --version | head -1
+            echo "helm $(helm version --short 2>/dev/null)"
+          '';
+        };
     });
 
     # 2. TEMPLATES (Project scaffolding with devenv)
