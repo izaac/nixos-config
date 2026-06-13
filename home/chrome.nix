@@ -23,7 +23,6 @@ in {
       ];
     })
     nix-packages.brave-origin
-    nix-packages.ladybird
     pkgs.microsoft-edge
   ];
 }

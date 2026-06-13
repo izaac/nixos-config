@@ -37,7 +37,7 @@ Automatically bumps package versions and hashes for packages defined in a flake.
 cd ~/nix-packages
 
 # Auto-detect latest version and update
-nix-update --flake ethereal-waves
+nix-update --flake brush-shell
 
 # Pin to a specific version
 nix-update --flake --version=0.4.0 brush-shell
