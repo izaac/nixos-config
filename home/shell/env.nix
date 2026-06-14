@@ -12,6 +12,7 @@
         TERMINAL = "kitty";
         ATUIN_NO_MODIFY_DB = "true";
         QA_INFRA_DIR = "${config.home.homeDirectory}/repos/qa-infra-automation";
+        PROTON_PASS_KEY_PROVIDER = "fs";
       }
       // lib.optionalAttrs pkgs.stdenv.isLinux {
         # Idiomatic single switch so every Electron/Chromium app runs natively
