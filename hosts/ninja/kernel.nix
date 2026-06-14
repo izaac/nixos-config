@@ -18,6 +18,25 @@
 #   - hardware.nvidia.package follows boot.kernelPackages, so the NVIDIA open
 #     module rebuilds against this kernel automatically.
 #
+# Desktop-responsiveness / gaming additions (all pure-nixpkgs, no patches):
+#   - LRU_GEN + LRU_GEN_ENABLED: Multi-Gen LRU, enabled by default. Better page
+#     reclaim under memory pressure — snappier with the 100% zstd zram swap.
+#   - RCU_EXPERT: gates the RCU latency knobs below (not a behaviour change by
+#     itself, just unhides RCU_BOOST / RCU_NOCB_CPU).
+#   - RCU_BOOST + RCU_BOOST_DELAY=0: priority-boost preempted RCU readers
+#     immediately, lowering tail latency under load. Valid because
+#     PREEMPT_DYNAMIC selects PREEMPT_RCU and RT_MUTEXES is on.
+#   - RCU_NOCB_CPU + RCU_NOCB_CPU_DEFAULT_ALL: offload RCU callback processing
+#     to dedicated rcuop/rcuog kthreads on every CPU, removing RCU softirq
+#     jitter from cores running game threads → smoother frametimes. Costs a
+#     little call_rcu() overhead, negligible on this 16-core Zen 5 part.
+#   - RCU_LAZY: batch lazy callbacks so the offloaded grace periods fire in
+#     fewer, larger sweeps (fewer wakeups, lower power).
+#
+# Deliberately NOT done: -O3 builds and BORE/EEVDF scheduler tweaks are CachyOS
+# *patches* absent from vanilla, and scx_lavd already replaces the in-kernel CPU
+# scheduler at runtime — so out-of-tree scheduler patches would be redundant.
+#
 # Note: boot.kernelPatches.extraStructuredConfig was removed from nixpkgs —
 # kernel.override { structuredExtraConfig = ...; } is the supported way.
 {
@@ -32,6 +51,20 @@
         HZ = freeform "1000";
         HZ_1000 = yes; # 1000Hz tick
         NTSYNC = module; # NT sync primitives (Wine/Proton)
+
+        # Desktop responsiveness: Multi-Gen LRU, on by default.
+        LRU_GEN = yes;
+        LRU_GEN_ENABLED = yes;
+
+        # Latency: unlock + enable RCU priority boosting (boost immediately).
+        RCU_EXPERT = yes;
+        RCU_BOOST = yes;
+        RCU_BOOST_DELAY = freeform "0";
+
+        # Frametime smoothness: offload RCU callbacks off every CPU, batch them.
+        RCU_NOCB_CPU = yes;
+        RCU_NOCB_CPU_DEFAULT_ALL = yes;
+        RCU_LAZY = yes;
       };
       ignoreConfigErrors = false; # fail loud if an option vanishes on a bump
     }

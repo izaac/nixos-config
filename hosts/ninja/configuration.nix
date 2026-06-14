@@ -80,6 +80,16 @@
     libpulseaudio # Compatibility library
     ddcutil # Monitor brightness control via DDC/CI
     # btop lives in modules/core/maintenance.nix (TTY rescue baseline)
+
+    # Rust uutils coreutils, PATH-level only. hiPrio shadows the GNU
+    # coreutils-full symlinks in /run/current-system/sw/bin for the binaries
+    # uutils ships (ls, cp, mv, cat, ...). Tools uutils lacks (e.g. stdbuf)
+    # still resolve to GNU at normal priority — best of both.
+    #
+    # Scope is deliberately PATH-only: every nixpkgs package pins its own GNU
+    # coreutils by store path at build time, so this does NOT touch the canoe /
+    # canoe-niri live ISOs, the installer, nixos-rebuild, nh, docker, etc.
+    (lib.hiPrio uutils-coreutils-noprefix)
   ];
 
   # Allow ddcutil to access I2C devices
