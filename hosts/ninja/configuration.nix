@@ -79,6 +79,7 @@
     alsa-utils # CLI audio tools (aplay, amixer)
     libpulseaudio # Compatibility library
     ddcutil # Monitor brightness control via DDC/CI
+    sbctl # Secure Boot key management (Limine signing/enroll)
     # btop lives in modules/core/maintenance.nix (TTY rescue baseline)
 
     # Rust uutils coreutils, PATH-level only. hiPrio shadows the GNU

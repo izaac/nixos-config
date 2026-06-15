@@ -1,12 +1,24 @@
-_: {
+{lib, ...}: {
   boot = {
-    # systemd-boot enable/limit + EFI vars come from the workstation profile.
+    # EFI vars come from the workstation profile. systemd-boot is replaced by
+    # Limine to gain Secure Boot (sbctl-signed) support; the profile enables
+    # systemd-boot at mkDefault, so disable it with mkForce here.
     loader = {
-      systemd-boot = {
-        editor = false;
-        consoleMode = "max";
-      };
+      systemd-boot.enable = lib.mkForce false;
       grub.enable = false;
+      limine = {
+        enable = true;
+        efiSupport = true;
+        # Boot-entry editor allows `init=/bin/sh` -> root. Must stay false for
+        # Secure Boot to be meaningful.
+        enableEditor = false;
+        maxGenerations = 10;
+        # Keys created + enrolled (sbctl, PK/KEK/db present). This signs the
+        # Limine EFI binary at install time. Enforce Secure Boot in BIOS
+        # (OS Type -> Windows UEFI) only after this builds and `sbctl verify`
+        # is clean.
+        secureBoot.enable = true;
+      };
     };
 
     # No Plymouth, no quiet — plain systemd-initrd handles the LUKS prompt.
