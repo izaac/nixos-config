@@ -13,6 +13,7 @@
       # --- LANGUAGES & TOOLCHAINS ---
       docker-compose
       nodejs
+      python3
 
       # --- DATA & FORMATTING ---
       sqlite
