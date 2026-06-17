@@ -41,6 +41,7 @@ in {
       doggo
       lftp
       mosh
+      cloudflared
 
       # --- BENCHMARKING ---
       hyperfine
@@ -76,6 +77,7 @@ in {
       github-copilot-cli
       claude-code
       ai-trace-scanner
+      opencode
 
       # --- COMPRESSION & ARCHIVING ---
       ouch
