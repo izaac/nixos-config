@@ -103,7 +103,9 @@
       system: let
         extraPkgs = inputs.nix-packages.packages.${system} or {};
       in
-        extraPkgs
+        # Drop proton-drive-cli: upstream meta only lists x86_64-linux,
+        # which breaks `nix flake check` on aarch64-darwin.
+        nixpkgs.lib.filterAttrs (name: _: name != "proton-drive-cli") extraPkgs
         // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
           iso = self.nixosConfigurations.canoe.config.system.build.isoImage;
           iso-niri = self.nixosConfigurations.canoe-niri.config.system.build.isoImage;

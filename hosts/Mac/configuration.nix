@@ -119,10 +119,12 @@
     nerd-fonts.jetbrains-mono
   ];
 
-  # Tailscale client daemon (managed via launchd). Installs the CLI and starts
-  # tailscaled; run `sudo tailscale up` once to join the tailnet, after which
-  # this Mac can reach ninja over Tailscale SSH.
-  services.tailscale.enable = true;
+  # Tailscale: use the native macOS app (Network Extension) instead of the CLI
+  # daemon. The GUI app properly handles exit-node routing via Apple's NEX
+  # framework — the CLI-only tailscaled cannot install the /1+/1 split-tunnel
+  # routes needed for exit nodes on macOS. The CLI binary from the app bundle
+  # is symlinked into PATH automatically.
+  services.tailscale.enable = false;
 
   system = {
     # Required by current nix-darwin for user-scoped options (Touch ID, etc.).
@@ -280,6 +282,7 @@
       "telegram"
       "timemachineeditor"
       "unetbootin"
+      "tailscale"
       "visual-studio-code"
       "vlc"
       "windows-app"
