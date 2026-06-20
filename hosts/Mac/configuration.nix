@@ -284,7 +284,6 @@
       "visual-studio-code"
       "vlc"
       "windows-app"
-
     ];
     brews = [];
     masApps = {};

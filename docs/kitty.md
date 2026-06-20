@@ -87,7 +87,6 @@ The built-in MacBook keyboard has **no physical PageUp/PageDown keys** (they are
 `Fn+↑` / `Fn+↓`). The PageUp/PageDown tab binds are kept for an external
 keyboard, but the day-to-day tab cycle is `Ctrl+Tab` / `Ctrl+Shift+Tab`.
 
-
 ---
 
 ## Changing the font size

@@ -84,13 +84,13 @@ FIXTURE_TS_JSON=""
 tailscale() {
   case "$1" in
     status)
-      if [[ "${2:-}" == "--json" ]]; then
+      if [[ ${2:-} == "--json" ]]; then
         printf '%s' "$FIXTURE_TS_JSON"
       else
         printf '%s' "$FIXTURE_TS_STATUS"
       fi
       ;;
-    set) return 0 ;;  # no-op for tests
+    set) return 0 ;; # no-op for tests
   esac
 }
 

@@ -56,7 +56,7 @@ verify_exit_node_up() {
   local i=0
   while ((i < 30)); do
     if tailscale status 2>/dev/null \
-        | grep -E '; exit node' | grep -qvE '; offers exit node'; then
+      | grep -E '; exit node' | grep -qvE '; offers exit node'; then
       printf '  Exit-node active ✓\n'
       return 0
     fi
@@ -74,7 +74,7 @@ wait_for_exit_node_clear() {
   local i=0
   while ((i < 30)); do
     if ! tailscale status 2>/dev/null \
-        | grep -E '; exit node' | grep -qvE '; offers exit node'; then
+      | grep -E '; exit node' | grep -qvE '; offers exit node'; then
       return 0
     fi
     sleep 0.1
