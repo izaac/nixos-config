@@ -51,6 +51,7 @@ in {
       kubernetes-helm
       kubectl
       k9s
+      k3d
       lazydocker
       skopeo
       rclone

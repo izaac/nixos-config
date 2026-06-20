@@ -171,7 +171,7 @@
         ShowDayOfWeek = true;
         ShowSeconds = false;
       };
-      spaces.spans-displays = false; # each monitor has its own Spaces (AeroSpace-friendly)
+      spaces.spans-displays = false; # each monitor has its own Spaces
       finder = {
         AppleShowAllFiles = true; # show dotfiles
         ShowPathbar = true;
@@ -179,7 +179,7 @@
         FXPreferredViewStyle = "Nlsv"; # list view
         _FXShowPosixPathInTitle = true;
         FXEnableExtensionChangeWarning = false;
-        CreateDesktop = false; # hide desktop icons (AeroSpace tiling stays clean)
+        CreateDesktop = false; # hide desktop icons
         FXDefaultSearchScope = "SCcf"; # search current folder by default, not whole Mac
         # NewWindowTarget = "Other" is required whenever NewWindowTargetPath is set;
         # "Home" alone would also work, but the explicit path survives a username change.
@@ -201,9 +201,8 @@
         # Hot corners: 1=disabled, 2=Mission Control, 3=App Windows, 4=Desktop,
         # 5=Start Screen Saver, 6=Disable Screen Saver, 10=Sleep Display,
         # 11=Launchpad, 12=Notification Center, 13=Lock Screen, 14=Quick Note.
-        # All disabled — bumping a corner mid-aim should never trigger anything.
-        wvous-tl-corner = 1;
-        wvous-tr-corner = 1;
+        wvous-tl-corner = 2; # Mission Control
+        wvous-tr-corner = 4; # Desktop
         wvous-bl-corner = 1;
         wvous-br-corner = 1;
       };
@@ -214,7 +213,7 @@
       };
       trackpad = {
         Clicking = true; # tap to click
-        TrackpadThreeFingerDrag = true;
+        TrackpadThreeFingerDrag = false; # off so 3-finger swipe triggers Mission Control
       };
       loginwindow.GuestEnabled = false;
 
@@ -260,8 +259,7 @@
       upgrade = false;
       cleanup = "none";
     };
-    # SwipeAeroSpace lives in a third-party tap, not homebrew-cask core.
-    taps = ["mediosz/tap"];
+    taps = [];
     casks = [
       "cyberduck"
       "docker-desktop"
@@ -282,12 +280,11 @@
       "telegram"
       "timemachineeditor"
       "unetbootin"
-      "tailscale"
+      "tailscale-app"
       "visual-studio-code"
       "vlc"
       "windows-app"
-      # 3-finger trackpad swipe to change AeroSpace workspaces (laptop niri feel).
-      "mediosz/tap/swipeaerospace"
+
     ];
     brews = [];
     masApps = {};
@@ -303,7 +300,7 @@
     users.${userConfig.username} = {
       imports = [
         ../../home/core.nix
-        ../../home/darwin/aerospace.nix
+
         ../../home/darwin/hammerspoon.nix
         ../../home/darwin/kitty.nix
         ../../home/darwin/screenshots.nix

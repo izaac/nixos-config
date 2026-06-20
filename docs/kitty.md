@@ -85,14 +85,8 @@ close when a job is actually running.
 
 The built-in MacBook keyboard has **no physical PageUp/PageDown keys** (they are
 `Fn+↑` / `Fn+↓`). The PageUp/PageDown tab binds are kept for an external
-keyboard, but the day-to-day tab cycle is `Ctrl+Tab` / `Ctrl+Shift+Tab`. This
-mirrors the same laptop accommodation made for [AeroSpace](aerospace.md#laptop-note-workspace-navigation).
+keyboard, but the day-to-day tab cycle is `Ctrl+Tab` / `Ctrl+Shift+Tab`.
 
-### No collision with AeroSpace
-
-Every kitty bind uses `Ctrl+Shift`, `Ctrl+Tab` or `Shift+Arrow`, **never Alt**.
-[AeroSpace](aerospace.md) owns the `Alt`/`Ctrl+Alt` space, so the two never
-clash. Kitty binds also only fire while kitty is focused.
 
 ---
 

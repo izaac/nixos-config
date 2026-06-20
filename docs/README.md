@@ -18,7 +18,6 @@
 - [Kitty Terminal](kitty.md)
 - [tmux (terminal multiplexer)](tmux.md)
 - [Kitty + tmux integration](kitty-tmux.md)
-- [AeroSpace (Mac tiling WM)](aerospace.md)
 
 ## Agent Instructions
 
