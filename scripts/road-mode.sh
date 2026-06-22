@@ -40,12 +40,12 @@ bt_set() {
 ts_exit_node() {
   local node=$1
   if [[ -z $node ]]; then
-    tailscale set --exit-node= --accept-dns=false
+    tailscale set --exit-node= --accept-dns=false --accept-routes=true
   else
     # --accept-dns=true routes DNS through the exit node via MagicDNS.
     # --exit-node-allow-lan-access=false prevents DNS leaks to local router.
     # The GUI app's Network Extension handles the actual routing.
-    tailscale set --exit-node="$node" --exit-node-allow-lan-access=false --accept-dns=true
+    tailscale set --exit-node="$node" --exit-node-allow-lan-access=false --accept-dns=true --accept-routes=true
   fi
 }
 

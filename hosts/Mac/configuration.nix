@@ -201,8 +201,8 @@
         # Hot corners: 1=disabled, 2=Mission Control, 3=App Windows, 4=Desktop,
         # 5=Start Screen Saver, 6=Disable Screen Saver, 10=Sleep Display,
         # 11=Launchpad, 12=Notification Center, 13=Lock Screen, 14=Quick Note.
-        wvous-tl-corner = 2; # Mission Control
-        wvous-tr-corner = 4; # Desktop
+        wvous-tl-corner = 1; # disabled
+        wvous-tr-corner = 1; # disabled
         wvous-bl-corner = 1;
         wvous-br-corner = 1;
       };
@@ -231,6 +231,15 @@
       CustomUserPreferences = {
         "com.moonlight-stream.Moonlight" = {
           NSAppSleepDisabled = true;
+        };
+        # Hot corner modifiers — require Ctrl (262144) so corners don't
+        # trigger from accidental bumps. nix-darwin dock module lacks
+        # these keys, so we set them here.
+        "com.apple.dock" = {
+          wvous-tl-corner-modifier = 0;
+          wvous-tr-corner-modifier = 0;
+          wvous-bl-corner-modifier = 0;
+          wvous-br-corner-modifier = 0;
         };
       };
     };
