@@ -316,6 +316,14 @@ in {
         ];
         open-fullscreen = true;
       }
+      # SILENT HILL f: Steam/Proton sometimes opens tiled under niri.
+      {
+        matches = [
+          {app-id = "^steam_app_2947440$";}
+          {title = "^SILENT HILL f.*";}
+        ];
+        open-fullscreen = true;
+      }
     ];
 
     binds = with config.lib.niri.actions; let
