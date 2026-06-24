@@ -104,7 +104,7 @@
   # Trade-off: the external HDMI/DisplayPort outputs are wired to the dGPU and
   # are disabled while it is hidden from the seat.
   services.udev.extraRules = ''
-    SUBSYSTEM=="drm", KERNEL=="card*", ATTRS{vendor}=="0x10de", TAG-="master-of-seat"
+    SUBSYSTEM=="drm", KERNEL=="card*", ATTRS{vendor}=="0x10de", TAG-="master-of-seat", TAG-="uaccess", TAG-="seat"
   '';
 
   # System Packages
