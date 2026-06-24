@@ -7,8 +7,13 @@
   # modules/desktop/nvidia.nix. This file adds laptop-specific overrides.
   mySystem.desktop.nvidia.enable = true;
 
-  # Add Intel QuickSync alongside the shared NVIDIA VAAPI stack.
-  hardware.graphics.extraPackages = [pkgs.intel-media-driver];
+  # Use the modern Intel media-driver VAAPI stack (Gen12+/QuickSync). This
+  # also disables nixos-hardware's legacy Intel path, which would otherwise
+  # pull in `intel-ocl` (SRB5.0) whose upstream source download is dead
+  # (HTTP 403), breaking the build. intel-media-driver and
+  # intel-compute-runtime are added automatically by the nixos-hardware
+  # common-cpu-intel module.
+  hardware.intelgpu.vaapiDriver = "intel-media-driver";
 
   hardware.nvidia = {
     powerManagement.enable = true; # Recommended for laptops to help with battery
