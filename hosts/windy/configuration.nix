@@ -58,6 +58,13 @@
     colord.enable = false;
   };
 
+  # Disable SOPS on windy: its SSH host key is not enrolled as a sops-nix
+  # recipient (and no user age key is present), so secret decryption fails
+  # at activation. None of windy's system services consume these secrets,
+  # so skip the whole stack here. Re-enable by enrolling windy's host age
+  # key in .sops.yaml and re-encrypting the secrets.
+  mySystem.core.sops.enable = false;
+
   # System Packages
   environment.systemPackages = with pkgs; [
     powertop # Monitor laptop power usage
