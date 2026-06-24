@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   ...
@@ -32,9 +33,23 @@
       "boot.shell_on_fail"
       "iommu=pt"
       "usbcore.autosuspend=-1"
-      # Fix for some Intel/NVIDIA laptop backlight issues
-      "acpi_backlight=vendor"
+      # The internal OLED panel (card1-eDP-1) is driven by Intel i915, so use
+      # the native GPU backlight interface. acpi_backlight=vendor suppressed
+      # the i915 backlight without providing a working vendor interface,
+      # leaving /sys/class/backlight empty (no brightness control) and
+      # disabling the ACPI brightness key events. native registers
+      # intel_backlight and restores the Fn brightness keys.
+      "acpi_backlight=native"
     ];
+
+    # opengigabyte HID module: the keyboard sends vendor-specific raw reports
+    # for Fn+F3/F4 (brightness) that the kernel does not map, so the keys are
+    # dead. This driver translates them into standard XF86MonBrightness events.
+    # Built against this host's kernel; needs intel_backlight (acpi_backlight=native).
+    extraModulePackages = [
+      (config.boot.kernelPackages.callPackage "${inputs.nix-packages}/pkgs/opengigabyte" {})
+    ];
+    kernelModules = ["gigabytekbd"];
   };
 
   # Laptop-specific Power Management
@@ -64,6 +79,11 @@
   # so skip the whole stack here. Re-enable by enrolling windy's host age
   # key in .sops.yaml and re-encrypting the secrets.
   mySystem.core.sops.enable = false;
+
+  # Allow members of the video group to write screen brightness via
+  # brightnessctl (installs the packages udev rules that chgrp/chmod the
+  # backlight sysfs nodes). Required for the Fn brightness keys to work.
+  services.udev.packages = [pkgs.brightnessctl];
 
   # System Packages
   environment.systemPackages = with pkgs; [
