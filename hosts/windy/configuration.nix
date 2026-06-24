@@ -7,6 +7,7 @@
     ./hardware.nix
     ./nvidia.nix
     ./network.nix
+    ./ssh.nix
     ../../modules/core
     ../../modules/gaming
     ../../modules/desktop
