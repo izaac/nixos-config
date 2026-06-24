@@ -45,11 +45,11 @@ in {
     enable = true;
     timeouts = [
       {
-        timeout = 300;
+        timeout = 480;
         command = "${swaylock-refocus}/bin/swaylock-refocus";
       }
       {
-        timeout = 600;
+        timeout = 720;
         command = "niri msg action power-off-monitors";
         resumeCommand = "niri msg action power-on-monitors";
       }
