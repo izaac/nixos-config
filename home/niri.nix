@@ -179,6 +179,16 @@ in {
   programs.niri.settings = {
     prefer-no-csd = true;
 
+    # On windy (Intel + NVIDIA hybrid) force niri to composite on the Intel
+    # iGPU, which already drives the internal panel (card1/renderD128). Without
+    # this niri picks the NVIDIA dGPU and keeps the RTX 3080 powered on around
+    # the clock, which runs hot and spins the fans up constantly. Compositing
+    # on Intel lets the dGPU runtime-suspend (PRIME offload still routes games
+    # to it on demand). ninja is NVIDIA-only, so it must keep niri's default.
+    debug = lib.mkIf (!isNinja) {
+      render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
+    };
+
     # Screenshots land in a single dated folder instead of niri's default
     # scatter pattern. Path is expanded by niri itself; ~ → $HOME.
     screenshot-path = "~/Pictures/Screenshots/Screenshot %Y-%m-%d %H-%M-%S.png";
