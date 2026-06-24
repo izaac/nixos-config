@@ -62,6 +62,17 @@
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
         CPU_ENERGY_PERF_POLICY_ON_AC = "power";
         CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+        # Disable Intel Turbo Boost. The i9-11980HK bursts to ~5GHz on the
+        # slightest load, which spikes package temperature and ramps the fans
+        # even at idle. Capping at the base frequency keeps the laptop quiet
+        # for everyday use at a modest peak-performance cost. GameMode does not
+        # re-enable turbo, so heavy gaming also stays capped here.
+        CPU_BOOST_ON_AC = 0;
+        CPU_BOOST_ON_BAT = 0;
+        # Cap sustained CPU load so a single busy core cannot push the whole
+        # package hot enough to trigger the loud fan curve.
+        CPU_MAX_PERF_ON_AC = 80;
+        CPU_MAX_PERF_ON_BAT = 60;
         # Helps with Intel-specific power savings
         INTEL_GPU_MIN_FREQ_ON_AC = 800;
         INTEL_GPU_MIN_FREQ_ON_BAT = 300;
