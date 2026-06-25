@@ -1,0 +1,161 @@
+*PPD-Adobe: "4.3"
+*FormatVersion: "4.3"
+*FileVersion: "2.4"
+*LanguageVersion: English
+*LanguageEncoding: ISOLatin1
+*PSVersion: "(3010.000) 0"
+*LanguageLevel: "3"
+*FileSystem: False
+*PCFileName: "ippeve.ppd"
+*Manufacturer: "CNLBP113/LBP913"
+*ModelName: "Printer"
+*Product: "(Printer)"
+*NickName: "Printer - IPP Everywhere"
+*ShortNickName: "Printer - IPP Everywhere"
+*ColorDevice: False
+*cupsVersion: 2.4
+*cupsSNMPSupplies: False
+*cupsLanguages: "en_US en"
+*APSupplies: "http://192.168.0.147:80/airprint.html"
+*cupsFilter2: "image/jpeg image/jpeg 0 -"
+*cupsFilter2: "application/vnd.cups-pdf application/pdf 10 -"
+*cupsFilter2: "image/urf image/urf 100 -"
+*cupsUrfSupported: "V1.4,W8,RS300,IS1,OB10,CP255,IFU0,PQ4"
+*OpenUI *PageSize: PickOne
+*OrderDependency: 10 AnySetup *PageSize
+*DefaultPageSize: Letter
+*PageSize 206x337mm: "<</PageSize[583.937007874016 955.275590551181]>>setpagedevice"
+*PageSize 215x345mm: "<</PageSize[609.448818897638 977.952755905512]>>setpagedevice"
+*PageSize 3x5: "<</PageSize[216 360]>>setpagedevice"
+*PageSize 8.5x12.5: "<</PageSize[612 900]>>setpagedevice"
+*PageSize 8.5x13.5: "<</PageSize[612 972]>>setpagedevice"
+*PageSize 8x10.5: "<</PageSize[576 756]>>setpagedevice"
+*PageSize 8x13: "<</PageSize[576 936]>>setpagedevice"
+*PageSize A4: "<</PageSize[595.275590551181 841.889763779528]>>setpagedevice"
+*PageSize A5: "<</PageSize[419.527559055118 595.275590551181]>>setpagedevice"
+*PageSize B5: "<</PageSize[515.905511811024 728.503937007874]>>setpagedevice"
+*PageSize Env10: "<</PageSize[296.985826771654 684]>>setpagedevice"
+*PageSize EnvC5: "<</PageSize[459.212598425197 649.133858267717]>>setpagedevice"
+*PageSize EnvDL: "<</PageSize[311.811023622047 623.622047244094]>>setpagedevice"
+*PageSize EnvMonarch: "<</PageSize[278.985826771654 540]>>setpagedevice"
+*PageSize Executive: "<</PageSize[522 756]>>setpagedevice"
+*PageSize FanFoldGermanLegal: "<</PageSize[612 936]>>setpagedevice"
+*PageSize Legal: "<</PageSize[612 1008]>>setpagedevice"
+*PageSize Letter: "<</PageSize[612 792]>>setpagedevice"
+*PageSize Oficio: "<</PageSize[612 964.8]>>setpagedevice"
+*PageSize Statement: "<</PageSize[396 612]>>setpagedevice"
+*CloseUI: *PageSize
+*OpenUI *PageRegion: PickOne
+*OrderDependency: 10 AnySetup *PageRegion
+*DefaultPageRegion: Letter
+*PageRegion 206x337mm: "<</PageSize[583.937007874016 955.275590551181]>>setpagedevice"
+*PageRegion 215x345mm: "<</PageSize[609.448818897638 977.952755905512]>>setpagedevice"
+*PageRegion 3x5: "<</PageSize[216 360]>>setpagedevice"
+*PageRegion 8.5x12.5: "<</PageSize[612 900]>>setpagedevice"
+*PageRegion 8.5x13.5: "<</PageSize[612 972]>>setpagedevice"
+*PageRegion 8x10.5: "<</PageSize[576 756]>>setpagedevice"
+*PageRegion 8x13: "<</PageSize[576 936]>>setpagedevice"
+*PageRegion A4: "<</PageSize[595.275590551181 841.889763779528]>>setpagedevice"
+*PageRegion A5: "<</PageSize[419.527559055118 595.275590551181]>>setpagedevice"
+*PageRegion B5: "<</PageSize[515.905511811024 728.503937007874]>>setpagedevice"
+*PageRegion Env10: "<</PageSize[296.985826771654 684]>>setpagedevice"
+*PageRegion EnvC5: "<</PageSize[459.212598425197 649.133858267717]>>setpagedevice"
+*PageRegion EnvDL: "<</PageSize[311.811023622047 623.622047244094]>>setpagedevice"
+*PageRegion EnvMonarch: "<</PageSize[278.985826771654 540]>>setpagedevice"
+*PageRegion Executive: "<</PageSize[522 756]>>setpagedevice"
+*PageRegion FanFoldGermanLegal: "<</PageSize[612 936]>>setpagedevice"
+*PageRegion Legal: "<</PageSize[612 1008]>>setpagedevice"
+*PageRegion Letter: "<</PageSize[612 792]>>setpagedevice"
+*PageRegion Oficio: "<</PageSize[612 964.8]>>setpagedevice"
+*PageRegion Statement: "<</PageSize[396 612]>>setpagedevice"
+*CloseUI: *PageRegion
+*DefaultImageableArea: Letter
+*DefaultPaperDimension: Letter
+*ImageableArea 206x337mm: "14.173228346457 14.173228346457 569.763779527559 941.102362204724"
+*PaperDimension 206x337mm: "583.937007874016 955.275590551181"
+*ImageableArea 215x345mm: "14.173228346457 14.173228346457 595.275590551181 963.779527559055"
+*PaperDimension 215x345mm: "609.448818897638 977.952755905512"
+*ImageableArea 3x5: "14.173228346457 14.173228346457 201.826771653543 345.826771653543"
+*PaperDimension 3x5: "216 360"
+*ImageableArea 8.5x12.5: "14.173228346457 14.173228346457 597.826771653543 885.826771653543"
+*PaperDimension 8.5x12.5: "612 900"
+*ImageableArea 8.5x13.5: "14.173228346457 14.173228346457 597.826771653543 957.826771653543"
+*PaperDimension 8.5x13.5: "612 972"
+*ImageableArea 8x10.5: "14.173228346457 14.173228346457 561.826771653543 741.826771653543"
+*PaperDimension 8x10.5: "576 756"
+*ImageableArea 8x13: "14.173228346457 14.173228346457 561.826771653543 921.826771653543"
+*PaperDimension 8x13: "576 936"
+*ImageableArea A4: "14.173228346457 14.173228346457 581.102362204724 827.716535433071"
+*PaperDimension A4: "595.275590551181 841.889763779528"
+*ImageableArea A5: "14.173228346457 14.173228346457 405.354330708661 581.102362204724"
+*PaperDimension A5: "419.527559055118 595.275590551181"
+*ImageableArea B5: "14.173228346457 14.173228346457 501.732283464567 714.330708661417"
+*PaperDimension B5: "515.905511811024 728.503937007874"
+*ImageableArea Env10: "28.346456692913 28.346456692913 268.63937007874 655.653543307087"
+*PaperDimension Env10: "296.985826771654 684"
+*ImageableArea EnvC5: "28.346456692913 28.346456692913 430.866141732283 620.787401574803"
+*PaperDimension EnvC5: "459.212598425197 649.133858267717"
+*ImageableArea EnvDL: "28.346456692913 28.346456692913 283.464566929134 595.275590551181"
+*PaperDimension EnvDL: "311.811023622047 623.622047244094"
+*ImageableArea EnvMonarch: "28.346456692913 28.346456692913 250.63937007874 511.653543307087"
+*PaperDimension EnvMonarch: "278.985826771654 540"
+*ImageableArea Executive: "14.173228346457 14.173228346457 507.826771653543 741.826771653543"
+*PaperDimension Executive: "522 756"
+*ImageableArea FanFoldGermanLegal: "14.173228346457 14.173228346457 597.826771653543 921.826771653543"
+*PaperDimension FanFoldGermanLegal: "612 936"
+*ImageableArea Legal: "14.173228346457 14.173228346457 597.826771653543 993.826771653543"
+*PaperDimension Legal: "612 1008"
+*ImageableArea Letter: "14.173228346457 14.173228346457 597.826771653543 777.826771653543"
+*PaperDimension Letter: "612 792"
+*ImageableArea Oficio: "14.173228346457 14.173228346457 597.826771653543 950.626771653543"
+*PaperDimension Oficio: "612 964.8"
+*ImageableArea Statement: "14.173228346457 14.173228346457 381.826771653543 597.826771653543"
+*PaperDimension Statement: "396 612"
+*HWMargins: "28.346456692913 28.346456692913 28.346456692913 28.346456692913"
+*ParamCustomPageSize Width: 1 points 216 612
+*ParamCustomPageSize Height: 2 points 360 1008
+*ParamCustomPageSize WidthOffset: 3 points 0 0
+*ParamCustomPageSize HeightOffset: 4 points 0 0
+*ParamCustomPageSize Orientation: 5 int 0 3
+*CustomPageSize True: "pop pop pop <</PageSize[5 -2 roll]/ImagingBBox null>>setpagedevice"
+*DefaultResolution: 300dpi
+*OpenUI *cupsPrintQuality: PickOne
+*OrderDependency: 10 AnySetup *cupsPrintQuality
+*en_US.Translation cupsPrintQuality/Print Quality: ""
+*DefaultcupsPrintQuality: Normal
+*cupsPrintQuality Draft: "<</HWResolution[300 150]>>setpagedevice"
+*en_US.cupsPrintQuality Draft/Draft: ""
+*cupsPrintQuality Normal: "<</HWResolution[300 300]>>setpagedevice"
+*en_US.cupsPrintQuality Normal/Normal: ""
+*CloseUI: *cupsPrintQuality
+*% ColorModel from urf-supported
+*OpenUI *ColorModel: PickOne
+*OrderDependency: 10 AnySetup *ColorModel
+*en_US.Translation ColorModel/Color Mode: ""
+*ColorModel Gray: "<</cupsColorSpace 18/cupsBitsPerColor 8/cupsColorOrder 0/cupsCompression 0>>setpagedevice"
+*en_US.ColorModel Gray/Grayscale: ""
+*DefaultColorModel: Gray
+*CloseUI: *ColorModel
+*APPrinterPreset Gray_with_Paper_Auto-Detect_-_Draft/Draft B&W: "
+  *cupsPrintQuality Draft *ColorModel Gray
+  com.apple.print.preset.graphicsType General
+  com.apple.print.preset.quality low
+  com.apple.print.preset.media-front-coating autodetect
+  com.apple.print.preset.output-mode monochrome"
+*End
+*APPrinterPreset Gray_with_Paper_Auto-Detect/Black and White: "
+  *cupsPrintQuality Normal *ColorModel Gray
+  com.apple.print.preset.graphicsType General
+  com.apple.print.preset.quality mid
+  com.apple.print.preset.media-front-coating autodetect
+  com.apple.print.preset.output-mode monochrome"
+*End
+*OpenUI *OutputBin: PickOne
+*OrderDependency: 10 AnySetup *OutputBin
+*DefaultOutputBin: FaceDown
+*DefaultOutputOrder: Normal
+*OutputBin FaceDown: ""
+*en_US.OutputBin FaceDown/Face Down: ""
+*PageStackOrder FaceDown: Normal
+*CloseUI: *OutputBin
+*cupsSingleFile: true

@@ -67,13 +67,14 @@
       };
 
     userConfig = import ./lib/user.nix;
+    siteConfig = import ./lib/site.nix;
 
     mkSystem = import ./lib/mkSystem.nix {
-      inherit inputs userConfig;
+      inherit inputs userConfig siteConfig;
     };
 
     mkDarwin = import ./lib/mkDarwin.nix {
-      inherit inputs userConfig;
+      inherit inputs userConfig siteConfig;
     };
 
     treefmtEval =
@@ -85,12 +86,12 @@
       windy = mkSystem "windy" "x86_64-linux";
       canoe = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit inputs userConfig;};
+        specialArgs = {inherit inputs userConfig siteConfig;};
         modules = [./hosts/canoe/minimal.nix];
       };
       canoe-niri = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = {inherit inputs userConfig;};
+        specialArgs = {inherit inputs userConfig siteConfig;};
         modules = [./hosts/canoe/niri.nix];
       };
     };

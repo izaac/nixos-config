@@ -1,11 +1,12 @@
 {
   inputs,
   userConfig,
+  siteConfig,
 }: hostname: system:
 inputs.nixpkgs.lib.nixosSystem {
   inherit system;
   specialArgs = {
-    inherit inputs userConfig;
+    inherit inputs userConfig siteConfig;
   };
 
   # sops wiring lives in modules/core (default.nix -> sops.nix), which every

@@ -2,6 +2,7 @@
   pkgs,
   lib,
   inputs,
+  siteConfig,
   ...
 }: {
   # --- VIRTUALIZATION VARIANT ---
@@ -65,7 +66,7 @@
     };
     core.tailscale = {
       enable = true;
-      advertiseRoutes = ["192.168.0.0/24"];
+      advertiseRoutes = [siteConfig.subnet];
       routingInterface = "eno1";
     };
   };

@@ -2,10 +2,11 @@
 {
   inputs,
   userConfig,
+  siteConfig,
 }: hostname:
 inputs.darwin.lib.darwinSystem {
   system = "aarch64-darwin";
-  specialArgs = {inherit inputs userConfig;};
+  specialArgs = {inherit inputs userConfig siteConfig;};
 
   modules = [
     ../hosts/${hostname}/configuration.nix
