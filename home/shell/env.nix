@@ -23,10 +23,14 @@
 
     # Propagate user-local bin dirs to every launcher — niri spawn, desktop
     # entries, systemd user units — not just interactive bash.
-    sessionPath = [
-      "$HOME/.local/bin"
-      "$HOME/bin"
-    ];
+    sessionPath =
+      lib.optionals pkgs.stdenv.isDarwin [
+        "/opt/homebrew/bin"
+      ]
+      ++ [
+        "$HOME/.local/bin"
+        "$HOME/bin"
+      ];
   };
 
   xdg = {

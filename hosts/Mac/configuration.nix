@@ -264,11 +264,13 @@
   homebrew = {
     enable = true;
     onActivation = {
-      autoUpdate = false;
-      upgrade = false;
+      autoUpdate = true;
+      upgrade = true;
       cleanup = "none";
     };
-    taps = [];
+    taps = [
+      "mediosz/tap"
+    ];
     casks = [
       "cyberduck"
       "docker-desktop"
