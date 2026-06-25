@@ -8,6 +8,10 @@
       audio.enable = lib.mkDefault true;
       bluetooth.enable = lib.mkDefault true;
       codecs.enable = lib.mkDefault true;
+      printing = {
+        enable = lib.mkDefault true;
+        networkPrinter.enable = lib.mkDefault true;
+      };
       virtualization.enable = lib.mkDefault true;
       nfs.enable = lib.mkDefault false;
       maintenance.enable = lib.mkDefault true;
