@@ -98,8 +98,19 @@
   # --- DNS CONFIGURATION ---
   # Using systemd-resolved but DISABLING DNSSEC.
   # Local DNS (Pi-hole) often strips signatures, causing validation hangs.
+  #
+  # Cache=no-negative: do not cache NXDOMAIN/negative answers. Ephemeral
+  # hostnames (cloudflared quick tunnels *.trycloudflare.com, wildcard
+  # *.sslip.io, *.qa.rancher.space) are queried the instant they are created,
+  # before the upstream record has propagated. A cached negative answer would
+  # then persist for the SOA negative TTL and make the name appear permanently
+  # unresolvable to getent/NSS even after propagation. Disabling negative
+  # caching lets each lookup re-query Pi-hole, which resolves these fine.
   services.resolved = {
     enable = true;
-    settings.Resolve.DNSSEC = "no";
+    settings.Resolve = {
+      DNSSEC = "no";
+      Cache = "no-negative";
+    };
   };
 }
