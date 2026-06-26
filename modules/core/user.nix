@@ -16,7 +16,7 @@ in {
     users.users.${userConfig.username} = {
       isNormalUser = true;
       description = userConfig.name;
-      extraGroups = ["wheel" "input" "video" "render" "dialout" "docker" "audio" "networkmanager" "gamemode" "uinput"];
+      extraGroups = ["wheel" "input" "video" "render" "dialout" "audio" "networkmanager" "gamemode" "uinput"];
       shell = pkgs.zsh;
       linger = true;
     };

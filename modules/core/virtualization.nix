@@ -6,13 +6,25 @@
   cfg = config.mySystem.core.virtualization;
 in {
   options.mySystem.core.virtualization = {
-    enable = lib.mkEnableOption "Docker and Distrobox virtualization";
+    enable = lib.mkEnableOption "Podman and Distrobox virtualization";
   };
 
   config = lib.mkIf cfg.enable {
-    # 1. Container Virtualization (Docker)
-    virtualisation.docker = {
+    # 1. Container Virtualization (Podman)
+    # Docker 29 defaults to the containerd-snapshotter ("overlayfs") storage
+    # driver, which races distrobox's devpts setup and throws
+    # "openat dev/ptmx: no such device" on first container creation. Podman is
+    # distrobox's reference runtime and sidesteps that regression.
+    virtualisation.podman = {
       enable = true;
+      # Provide a `docker` CLI shim (symlink) so muscle-memory `docker ...`
+      # commands resolve to Podman. The matching API socket is intentionally
+      # the ROOTLESS user socket (configured in home/distrobox.nix), not the
+      # rootful system socket: distrobox runs rootless, and a container escape
+      # then lands as the unprivileged user instead of host root.
+      dockerCompat = true;
+      # Rootless containers need DNS resolution on the default network.
+      defaultNetwork.settings.dns_enabled = true;
     };
 
     hardware.nvidia-container-toolkit.enable = lib.elem "nvidia" config.services.xserver.videoDrivers;
