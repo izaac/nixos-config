@@ -461,6 +461,22 @@ in {
           action = spawn (lib.getExe osdNotify) "brightness-down";
           allow-when-locked = true;
         };
+
+        # --- Compact-keyboard fallbacks (no media/Print keys) ---
+        # The Fn layer already emits XF86Audio{Mute,LowerVolume,RaiseVolume}
+        # (Fn+F8/F9/F10), so volume stays handled above. These cover the rest.
+        "Mod+F4" = {
+          action = spawn (lib.getExe osdNotify) "mic-mute";
+          allow-when-locked = true;
+        };
+        "Mod+F5".action = spawn "playerctl" "play-pause";
+        "Mod+F6".action = spawn "playerctl" "previous";
+        "Mod+F7".action = spawn "playerctl" "next";
+        "Mod+F8".action.screenshot = {};
+        "Mod+F9".action.screenshot-screen = {};
+        "Mod+F10".action.screenshot-window = {};
+        "Mod+F11".action = spawn (lib.getExe screenRecord) "region";
+        "Mod+F12".action = spawn (lib.getExe screenRecord) "screen";
       }
       // lib.optionalAttrs isNinja {
         # --- Sunshine dummy monitor (HDMI-A-1), ninja only ---

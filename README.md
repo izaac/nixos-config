@@ -51,6 +51,7 @@ Custom packages live in [nix-packages](https://github.com/izaac/nix-packages) an
 - [Security & Hardening](docs/security.md) | [Secrets](docs/secrets.md)
 - [Disaster Recovery & Disko](docs/disko-rebuild.md)
 - [CLI Tools](docs/cli-tools.md) | [Just Commands](docs/just-commands.md)
+- [Niri Keybindings & UX](docs/niri.md)
 - [Full Index](docs/README.md)
 
 ## Quick Start
