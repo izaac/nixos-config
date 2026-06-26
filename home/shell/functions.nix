@@ -1,5 +1,8 @@
 _: let
   cleanPath = "/run/wrappers/bin:/etc/profiles/per-user/$USER/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin:/usr/bin:/bin";
+  # Data disk mount (hosts/ninja/disko.nix). _smart_eza drops slow git
+  # status when listing under it.
+  dataMount = "/mnt/data";
 in {
   programs.zsh.initContent = ''
     # --- FUNCTIONS ---
@@ -47,7 +50,7 @@ in {
 
     # --- Smart Eza ---
     _smart_eza() {
-      if [[ "$PWD" == *"/mnt/storage"* ]] || [[ "$*" == *"/mnt/storage"* ]]; then
+      if [[ "$PWD" == *"${dataMount}"* ]] || [[ "$*" == *"${dataMount}"* ]]; then
         local args=()
         for arg in "$@"; do
           [[ "$arg" != "--git" ]] && [[ "$arg" != "-g" ]] && args+=("$arg")

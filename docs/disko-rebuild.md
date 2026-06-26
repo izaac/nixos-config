@@ -166,11 +166,9 @@ rm -f ninja.qcow2
 |                 |                                            |      | Root (rest) | ext4   | `/`         | LUKS      |
 | WD BLACK SN850X | `nvme-WD_BLACK_SN850X_4000GB_24032G801549` | 4TB  | Data (100%) | ext4   | `/mnt/data` | No        |
 
-The NFS mount (`/mnt/storage` → `192.168.0.173:/storage`) is defined in `hardware.nix` and auto-mounts on access after the system is running.
-
 ## How It Works
 
-Disko owns all local disk mounts (`/`, `/boot`, `/mnt/data`). The `hardware.nix` file only declares hardware modules (kernel modules, microcode, kernel params) and the NFS network mount (`/mnt/storage`), which disko does not manage. Disko is always the single source of truth for local disk layout.
+Disko owns all local disk mounts (`/`, `/boot`, `/mnt/data`). The `hardware.nix` file only declares hardware modules (kernel modules, microcode, kernel params). Disko is always the single source of truth for local disk layout.
 
 ### neededForBoot Workaround
 

@@ -15,9 +15,10 @@ is no manual Catppuccin block in the config. Only the status-bar layout is set b
 hand.
 
 The module loads on all hosts through
+[`home/core.nix`](../home/core.nix), which is imported via
 [`modules/core/home-manager.nix`](../modules/core/home-manager.nix) on Linux and
-directly from [`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix) on
-the Mac.
+via the home-manager block in
+[`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix) on the Mac.
 
 ## Core behavior
 

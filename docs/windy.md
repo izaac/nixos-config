@@ -14,7 +14,7 @@
 | **CPU**          | Intel Core i9-11980HK                       | 8-Core, 16-Thread @ 2.60GHz            |
 | **GPU (Hybrid)** | NVIDIA RTX 3080 Mobile + Intel UHD Graphics | NVIDIA Prime Offload enabled           |
 | **RAM**          | 64GB DDR4                                   | 2x 32GB DIMMs                          |
-| **Display**      | 15.6" OLED                                  | Backlight fix: `acpi_backlight=vendor` |
+| **Display**      | 15.6" OLED                                  | Backlight fix: `acpi_backlight=native` |
 
 ---
 
@@ -47,7 +47,7 @@
 
 ### Display Optimizations
 
-- **Kernel Param**: `acpi_backlight=vendor` (Restores GNOME brightness slider).
+- **Kernel Param**: `acpi_backlight=native` (Restores GNOME brightness slider).
 - **Renderer**: `GSK_RENDERER=ngl` (Fixes OpenGL initialization on some apps).
 
 ---
@@ -87,7 +87,7 @@
 
 ### Missing Brightness Slider
 
-- **Fix**: Re-added `acpi_backlight=vendor` to `boot.kernelParams`.
+- **Fix**: Re-added `acpi_backlight=native` to `boot.kernelParams`.
 
 ---
 

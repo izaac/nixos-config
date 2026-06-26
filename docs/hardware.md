@@ -64,12 +64,6 @@
 
 > **Important**: M.2_2 slot shares PCIe lanes with PCIEX16_1 via bifurcation. When populated, GPU drops from x16 to x8 mode. **Currently M.2_2 is empty, so GPU runs at full x16 speed.**
 
-### Network Storage
-
-| Name             | Protocol | Usage           | Notes                        |
-| ---------------- | -------- | --------------- | ---------------------------- |
-| **/mnt/storage** | NFS4     | General Storage | Network share with automount |
-
 ### Current Configuration (Optimized)
 
 **GPU at full x16 bandwidth (256 GB/s)**

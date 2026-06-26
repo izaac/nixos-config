@@ -56,30 +56,29 @@ active (enabled on Linux, loaded manually on the Mac, see below).
 
 The Mac config diverges from the Linux one in a few deliberate ways:
 
-| Area             | Linux (`home/kitty.nix`)                          | Mac (`home/darwin/kitty.nix`)                                           |
-| ---------------- | ------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Theming**      | Stylix → Catppuccin Mocha, JetBrainsMono, size 13 | **Not themed** (Stylix off); kitty defaults + `font_size 14`            |
-| **Shell**        | Default `$SHELL`                                  | Pinned to the nix `bash --login -i` (see below)                         |
-| **Shell integ.** | `shellIntegration.mode = "enabled"`               | `shell_integration no-rc`, integration sourced from `.bashrc`           |
-| **Option key**   | n/a                                               | `macos_option_as_alt yes` so Option+Arrow word-motion works             |
-| **Close/quit**   | `confirm_os_window_close = 0`                     | `confirm_os_window_close -1` + `macos_quit_when_last_window_closed yes` |
-| **Tab cycle**    | PageUp/PageDown only                              | **adds `Ctrl+Tab` / `Ctrl+Shift+Tab`** (laptop, no PageUp/Down keys)    |
-| **Look**         | 0.90 opacity, 8px padding, powerline tab bar      | `background_opacity 0.90` (matches ninja); padding/tab-bar left default |
+| Area             | Linux (`home/kitty.nix`)                                    | Mac (`home/darwin/kitty.nix`)                                           |
+| ---------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Theming**      | Stylix → Catppuccin Mocha, JetBrainsMono Nerd Font, size 13 | **Not themed** (Stylix off); kitty defaults + `font_size 14`            |
+| **Shell**        | Default `$SHELL`                                            | Pinned to the nix `zsh --login` (see below)                             |
+| **Shell integ.** | `shellIntegration.mode = "enabled"`                         | `shellIntegration.mode = "enabled"` (kitty auto-detects zsh)            |
+| **Option key**   | n/a                                                         | `macos_option_as_alt yes` so Option+Arrow word-motion works             |
+| **Close/quit**   | `confirm_os_window_close = 0`                               | `confirm_os_window_close -1` + `macos_quit_when_last_window_closed yes` |
+| **Tab cycle**    | PageUp/PageDown only                                        | **adds `Ctrl+Tab` / `Ctrl+Shift+Tab`** (laptop, no PageUp/Down keys)    |
+| **Look**         | 0.90 opacity, 8px padding, powerline tab bar                | `background_opacity 0.90` (matches ninja); padding/tab-bar left default |
 
 ### Why the Mac pins the shell
 
-macOS ships bash 3.2, but `~/.bashrc` uses bash-5 features (Ble.sh, `globstar`,
-`[[ -v ]]`). The macOS GUI launchd session can leave `$SHELL` pointing at the
-stale `/bin/bash`, so a fresh kitty window would fall back to 3.2 and choke on
-the rc file. The Mac config therefore pins kitty to the nix bash with explicit
-flags (`--login -i`) so it reads `.bash_profile` → `.bashrc`.
+The macOS GUI launchd session can leave `$SHELL` pointing at a stale login shell
+(e.g. the system `/bin/zsh` or an old `/bin/bash`), so a fresh kitty window would
+not pick up the nix-managed shell. The Mac config therefore pins kitty to the nix
+`zsh` with `--login` so it reads `.zprofile` → `.zshrc` from the managed
+environment.
 
-A custom shell disables kitty's **automatic** shell integration, so the Mac uses
-`shell_integration no-rc` (keeps the `KITTY_*` env vars) and sources the
-integration manually from `.bashrc`, ordered after starship/zoxide but before
-ble.sh attaches. With integration live, kitty can tell an idle prompt from a
-running command, which is what makes `confirm_os_window_close -1` only warn on
-close when a job is actually running.
+Because kitty detects `zsh` by basename, `shellIntegration.mode = "enabled"`
+injects its shell integration automatically (the `KITTY_*` env vars and prompt
+marking). With integration live, kitty can tell an idle prompt from a running
+command, which is what makes `confirm_os_window_close -1` only warn on close when
+a job is actually running.
 
 ### Why no PageUp/PageDown on the Mac
 

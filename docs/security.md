@@ -27,20 +27,22 @@ Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activatio
 
 ## SSH and Privilege Defaults
 
-System-level SSH defaults are hardened in `modules/core/system.nix`:
+`modules/core/system.nix` disables sshd by default (`services.openssh.enable = lib.mkDefault false`); each host opts in and hardens it in its own `ssh.nix`:
 
-- `services.openssh.enable = true`
-- `PasswordAuthentication = false` (default)
-- `KbdInteractiveAuthentication = false` (default)
+- `hosts/ninja/ssh.nix` / `hosts/windy/ssh.nix`:
+  - `services.openssh.enable = true`
+  - `PasswordAuthentication = false`
+  - `KbdInteractiveAuthentication = false`
+  - `PermitRootLogin = "no"`
 
-Privilege escalation is configured in `modules/core/user.nix`:
+Privilege escalation uses the memory-safe Rust `sudo-rs` (C `sudo` is `mkForce`-disabled in `modules/core/system.nix`):
 
-- `security.sudo.enable = true`
-- `security.sudo.wheelNeedsPassword = true`
+- `modules/core/system.nix`: `security.sudo-rs.enable = lib.mkForce true`
+- `modules/core/user.nix`: `security.sudo-rs.wheelNeedsPassword = true`
 
 ## Firewall and Network Exposure
 
-Host firewall policy is enabled in `hosts/ninja/network.nix`:
+Host firewall policy on ninja is enabled in `hosts/ninja/network.nix` (windy enables `networking.firewall.enable = true` in its own `network.nix`):
 
 - `networking.firewall.enable = true`
 - Explicit TCP port `22` (SSH)

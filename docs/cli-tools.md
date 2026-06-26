@@ -23,7 +23,7 @@ The following tools are integrated and aliased by default:
 - **`rip` (rm-improved):** A safe replacement for `rm`. Instead of immediate deletion, files are moved to a temporary "shredder" directory from which they can be recovered.
 - **`bat`:** A replacement for `cat` that provides syntax highlighting and Git integration.
 - **`eza`:** A feature-rich replacement for `ls` with support for icons, color formatting, and integrated Git status.
-- **`zoxide` (`z`):** A smart directory jumper that learns your most-used paths to enable rapid navigation.
+- **`zoxide` (`cd`):** A smart directory jumper that learns your most-used paths to enable rapid navigation. Configured with `--cmd cd`, so it replaces the `cd` command.
 - **`btop`:** A graphical system monitor for real-time tracking of CPU, memory, and network usage.
 - **`yazi` (`y`):** A terminal-based file manager with high-performance image previews and intuitive navigation.
 
