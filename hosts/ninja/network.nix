@@ -24,8 +24,18 @@
         }
       ];
       # Trust the local NAS/Plex server (NFS callbacks and discovery)
+      #
+      # Allow container DNS (aardvark-dns) on every Podman/netavark bridge.
+      # NixOS only auto-opens port 53 on the default `podman0` bridge, so any
+      # additional network (podman1, podman2, k3d-created bridges, ...) has its
+      # container->gateway DNS queries silently dropped by the `policy drop`
+      # INPUT chain. This breaks container-name resolution (e.g. k3d's serverlb
+      # nginx resolving `k3d-<cluster>-server-0`). The `podman*` wildcard covers
+      # all current and future netavark bridges.
       extraInputRules = ''
         ip saddr 192.168.0.173 accept
+        iifname "podman*" udp dport 53 accept
+        iifname "podman*" tcp dport 53 accept
       '';
     };
   };

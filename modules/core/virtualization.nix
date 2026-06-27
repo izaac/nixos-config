@@ -17,6 +17,7 @@ in {
     # distrobox's reference runtime and sidesteps that regression.
     virtualisation.podman = {
       enable = true;
+      dockerSocket.enable = true;
       # Provide a `docker` CLI shim (symlink) so muscle-memory `docker ...`
       # commands resolve to Podman. The matching API socket is intentionally
       # the ROOTLESS user socket (configured in home/distrobox.nix), not the
