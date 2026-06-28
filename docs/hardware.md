@@ -16,13 +16,13 @@
 
 ## System Overview
 
-| Component       | Model                                           | Notes                             |
-| --------------- | ----------------------------------------------- | --------------------------------- |
-| **Motherboard** | ASUS ROG STRIX X670E-F GAMING WIFI              | BIOS: 3304 (2025-09-19)           |
-| **CPU**         | AMD Ryzen 9 9950X3D                             | 16-Core, 32-Thread @ 4.3 GHz      |
-| **GPU**         | NVIDIA GeForce RTX 5060 Ti 16GB (MSI Ventus 2X) | PCIe 5.0 x16 @ **full x16 speed** |
-| **RAM**         | 64GB DDR5                                       | 2x 32GB DIMMs (Slots 1 & 3)       |
-| **Chipset**     | AMD X670E                                       | Dual chipset design               |
+| Component       | Model                                           | Notes                                        |
+| --------------- | ----------------------------------------------- | -------------------------------------------- |
+| **Motherboard** | ASUS ROG STRIX X670E-F GAMING WIFI              | BIOS: 3304 (2025-09-19)                      |
+| **CPU**         | AMD Ryzen 9 9950X3D                             | 16-Core, 32-Thread; PBO Eco 105W + Curve -15 |
+| **GPU**         | NVIDIA GeForce RTX 5060 Ti 16GB (MSI Ventus 2X) | PCIe 5.0 x16 @ **full x16 speed**            |
+| **RAM**         | 64GB DDR5                                       | 2x 32GB DIMMs (Slots 1 & 3)                  |
+| **Chipset**     | AMD X670E                                       | Dual chipset design                          |
 
 ---
 
@@ -51,7 +51,46 @@
 
 ---
 
-## Storage Configuration
+## CPU Power & Thermal Tuning
+
+The 9950X3D is tuned for low heat output and quiet operation in a warm room,
+trading a small amount of peak multi-core performance for much lower socket
+power and temperatures.
+
+### BIOS settings (ASUS ROG STRIX X670E-F)
+
+Set under `Ai Tweaker → Precision Boost Overdrive`:
+
+| Setting             | Value     | Effect                                         |
+| ------------------- | --------- | ---------------------------------------------- |
+| **PBO Mode**        | Eco Mode  | Caps socket power (PPT) for the 105W class     |
+| **Eco Mode TDP**    | 105W      | PPT ceiling ~142W (vs ~200W stock)             |
+| **Curve Optimizer** | -15 (all) | All-core undervolt; cooler and slightly faster |
+
+> The Curve Optimizer offset is a mild -15. If long stress runs or games ever
+> crash/freeze hours in, back off toward -10. Validate with a sustained
+> all-core load after any change.
+
+### Linux-side cap (NixOS)
+
+Independent of BIOS, NixOS caps boost frequency (the two stack):
+
+- `hosts/ninja/performance.nix`: `scaling_max_freq = 4500000` (4.5 GHz boost cap)
+- GameMode lifts the cap to the full 5.7 GHz only while a game runs
+  (`hosts/ninja/configuration.nix`: `cpuBoostFreq`/`cpuBaseFreq`)
+- `amd_pstate=active` (`hosts/ninja/boot.nix`)
+
+Note: PPT/TDP and Curve Optimizer are BIOS-only on desktop AM5 — `ryzenadj`
+does not apply to desktop Zen 5, so the power cap must be set in firmware.
+
+### Measured (Eco 105W + Curve -15, 4.5 GHz cap)
+
+| State         | Package power | Tctl  |
+| ------------- | ------------- | ----- |
+| Idle          | ~36W          | ~45°C |
+| All-core load | ~80W          | ~47°C |
+
+---
 
 ### M.2 NVMe Drives
 
