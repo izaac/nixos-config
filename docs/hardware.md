@@ -83,6 +83,40 @@ Independent of BIOS, NixOS caps boost frequency (the two stack):
 Note: PPT/TDP and Curve Optimizer are BIOS-only on desktop AM5 — `ryzenadj`
 does not apply to desktop Zen 5, so the power cap must be set in firmware.
 
+### How the two caps interact
+
+There are two independent ceilings. Both are active at all times, and the
+**lower one wins** at any given moment:
+
+1. **Power cap (BIOS, PPT ~142W)** — a hard wall on socket power. Under load
+   the CPU ramps power up to this limit automatically, but never past it.
+2. **Frequency cap (NixOS, 4.5 GHz)** — a hard wall on boost clock for normal
+   tasks. GameMode lifts it to 5.7 GHz only while a game runs.
+
+Key consequence: unlocking 5.7 GHz (GameMode) only grants _permission_ to
+boost. The chip reaches 5.7 GHz only if doing so fits within the ~142W power
+budget. That is true for light/few-threaded work (most games), but a full
+all-core load cannot afford 5.7 GHz at 142W, so clocks settle lower to stay
+within the power cap.
+
+| Workload                         | Power behaviour       | Clock reached           |
+| -------------------------------- | --------------------- | ----------------------- |
+| Light / few threads (games)      | Well under 142W       | Near 5.7 GHz (GameMode) |
+| Heavy all-core (compile, render) | Ramps up to ~142W cap | Settles ~4.5–4.7 GHz    |
+| Normal desktop (browse, VM)      | Low                   | ≤ 4.5 GHz (Nix cap)     |
+
+### Approximate all-core clock vs power cap
+
+| PPT cap              | Sustained all-core | Multi-core perf |
+| -------------------- | ------------------ | --------------- |
+| Stock (~200W)        | ~5.0–5.2 GHz       | 100%            |
+| **105W Eco (~142W)** | **~4.5–4.7 GHz**   | **~90–95%**     |
+| 65W Eco (~88W)       | ~3.8–4.0 GHz       | ~78–82%         |
+
+The 105W Eco point is the efficiency sweet spot: ~5–10% multi-core loss for
+~30% less power and far lower temperatures. Single/light-thread performance
+(games) is barely affected because it fits inside the power budget.
+
 ### Measured (Eco 105W + Curve -15, 4.5 GHz cap)
 
 | State         | Package power | Tctl  |
