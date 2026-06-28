@@ -80,7 +80,7 @@ Independent of BIOS, NixOS caps boost frequency (the two stack):
   (`hosts/ninja/configuration.nix`: `cpuBoostFreq`/`cpuBaseFreq`)
 - `amd_pstate=active` (`hosts/ninja/boot.nix`)
 
-Note: PPT/TDP and Curve Optimizer are BIOS-only on desktop AM5 — `ryzenadj`
+Note: PPT/TDP and Curve Optimizer are BIOS-only on desktop AM5 - `ryzenadj`
 does not apply to desktop Zen 5, so the power cap must be set in firmware.
 
 ### How the two caps interact
@@ -88,9 +88,9 @@ does not apply to desktop Zen 5, so the power cap must be set in firmware.
 There are two independent ceilings. Both are active at all times, and the
 **lower one wins** at any given moment:
 
-1. **Power cap (BIOS, PPT ~142W)** — a hard wall on socket power. Under load
+1. **Power cap (BIOS, PPT ~142W)** - a hard wall on socket power. Under load
    the CPU ramps power up to this limit automatically, but never past it.
-2. **Frequency cap (NixOS, 4.5 GHz)** — a hard wall on boost clock for normal
+2. **Frequency cap (NixOS, 4.5 GHz)** - a hard wall on boost clock for normal
    tasks. GameMode lifts it to 5.7 GHz only while a game runs.
 
 Key consequence: unlocking 5.7 GHz (GameMode) only grants _permission_ to
@@ -102,18 +102,18 @@ within the power cap.
 | Workload                         | Power behaviour       | Clock reached           |
 | -------------------------------- | --------------------- | ----------------------- |
 | Light / few threads (games)      | Well under 142W       | Near 5.7 GHz (GameMode) |
-| Heavy all-core (compile, render) | Ramps up to ~142W cap | Settles ~4.5–4.7 GHz    |
+| Heavy all-core (compile, render) | Ramps up to ~142W cap | Settles ~4.5-4.7 GHz    |
 | Normal desktop (browse, VM)      | Low                   | ≤ 4.5 GHz (Nix cap)     |
 
 ### Approximate all-core clock vs power cap
 
 | PPT cap              | Sustained all-core | Multi-core perf |
 | -------------------- | ------------------ | --------------- |
-| Stock (~200W)        | ~5.0–5.2 GHz       | 100%            |
-| **105W Eco (~142W)** | **~4.5–4.7 GHz**   | **~90–95%**     |
-| 65W Eco (~88W)       | ~3.8–4.0 GHz       | ~78–82%         |
+| Stock (~200W)        | ~5.0-5.2 GHz       | 100%            |
+| **105W Eco (~142W)** | **~4.5-4.7 GHz**   | **~90-95%**     |
+| 65W Eco (~88W)       | ~3.8-4.0 GHz       | ~78-82%         |
 
-The 105W Eco point is the efficiency sweet spot: ~5–10% multi-core loss for
+The 105W Eco point is the efficiency sweet spot: ~5-10% multi-core loss for
 ~30% less power and far lower temperatures. Single/light-thread performance
 (games) is barely affected because it fits inside the power budget.
 
@@ -212,7 +212,7 @@ The 105W Eco point is the efficiency sweet spot: ~5–10% multi-core loss for
 - **Model**: GB206 (rev a1) (Device ID: 10de:2d04)
 - **Vendor**: MSI Ventus 2X (Subsystem ID: 1462:5351)
 - **PCIe**: 5.0 x16 @ **full x16 speed** (256 GB/s) - **VRAM**: 16GB GDDR7
-- **Power**: 150-180W (default 180W); undervolt service locks to 150W / 210-2000MHz
+- **Power**: 150-180W (default 180W); service caps to 150W power limit + 210-2700MHz clock ceiling. The 150W cap is the active limiter under load. Values validated with real in-game benchmarking: ~2610MHz @ ~142W @ 74°C at 99% utilization (the prior 2000MHz lock left ~58W of budget and clock headroom unused at only 63°C)
 - **Driver**: NVIDIA Open Kernel Module 595.71.05
 - **Features**:
   - SR-IOV capable (1 VF supported)
