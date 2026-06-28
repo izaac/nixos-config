@@ -16,13 +16,13 @@
 
 ## System Overview
 
-| Component       | Model                              | Notes                             |
-| --------------- | ---------------------------------- | --------------------------------- |
-| **Motherboard** | ASUS ROG STRIX X670E-F GAMING WIFI | BIOS: 3304 (2025-09-19)           |
-| **CPU**         | AMD Ryzen 9 9950X3D                | 16-Core, 32-Thread @ 4.3 GHz      |
-| **GPU**         | NVIDIA GeForce RTX 5070 Ti (PNY)   | PCIe 5.0 x16 @ **full x16 speed** |
-| **RAM**         | 64GB DDR5                          | 2x 32GB DIMMs (Slots 1 & 3)       |
-| **Chipset**     | AMD X670E                          | Dual chipset design               |
+| Component       | Model                                           | Notes                             |
+| --------------- | ----------------------------------------------- | --------------------------------- |
+| **Motherboard** | ASUS ROG STRIX X670E-F GAMING WIFI              | BIOS: 3304 (2025-09-19)           |
+| **CPU**         | AMD Ryzen 9 9950X3D                             | 16-Core, 32-Thread @ 4.3 GHz      |
+| **GPU**         | NVIDIA GeForce RTX 5060 Ti 16GB (MSI Ventus 2X) | PCIe 5.0 x16 @ **full x16 speed** |
+| **RAM**         | 64GB DDR5                                       | 2x 32GB DIMMs (Slots 1 & 3)       |
+| **Chipset**     | AMD X670E                                       | Dual chipset design               |
 
 ---
 
@@ -32,7 +32,7 @@
 
 | Slot          | Type     | Speed    | Device             | Bandwidth               |
 | ------------- | -------- | -------- | ------------------ | ----------------------- |
-| **PCIEX16_1** | x16      | PCIe 5.0 | NVIDIA RTX 5070 Ti | **256 GB/s** (full x16) |
+| **PCIEX16_1** | x16      | PCIe 5.0 | NVIDIA RTX 5060 Ti | **256 GB/s** (full x16) |
 | **PCIEX16_2** | x16 (x4) | PCIe 4.0 | Empty              | -                       |
 | **PCIEX1**    | x1       | PCIe 3.0 | Empty              | -                       |
 
@@ -134,16 +134,17 @@
 
 ### Primary GPU
 
-**NVIDIA GeForce RTX 5070 Ti**
+**NVIDIA GeForce RTX 5060 Ti 16GB**
 
-- **Model**: GB203 (rev a1)
-- **Vendor**: PNY (Device ID: 196e:143c)
+- **Model**: GB206 (rev a1) (Device ID: 10de:2d04)
+- **Vendor**: MSI Ventus 2X (Subsystem ID: 1462:5351)
 - **PCIe**: 5.0 x16 @ **full x16 speed** (256 GB/s) - **VRAM**: 16GB GDDR7
-- **Driver**: NVIDIA Open Kernel Module 590.48.01
+- **Power**: 150-180W (default 180W); undervolt service locks to 150W / 210-2000MHz
+- **Driver**: NVIDIA Open Kernel Module 595.71.05
 - **Features**:
   - SR-IOV capable (1 VF supported)
   - VF BAR sizes: 256KB, 256MB, 32MB
-  - HDMI/DisplayPort audio (HDA 10de:22e9)
+  - HDMI/DisplayPort audio (HDA 10de:22eb)
 
 ### Video Outputs
 
@@ -268,7 +269,7 @@ sensors nvme-pci-0800  # WD Black SN850X
 ```text
 00:00.0 Host bridge: AMD Raphael/Granite Ridge Root Complex
 00:01.1 PCIe Root Port [GPU] x16 @ PCIe 5.0
-    `-01:00.0 NVIDIA RTX 5070 Ti (full x16 bandwidth)
+    `-01:00.0 NVIDIA RTX 5060 Ti (full x16 bandwidth)
        `-01:00.1 NVIDIA HDA Audio
 
 00:01.2 PCIe Root Port [M.2_1]
@@ -319,7 +320,7 @@ boot.extraModulePackages = [
 
 - **nct6775** module is essential for fan monitoring and control
 - Module must be loaded before ACPI WMI (motherboard-specific)
-- GPU uses open-source NVIDIA kernel module (590.48.01)
+- GPU uses open-source NVIDIA kernel module (595.71.05)
 
 ---
 
@@ -447,7 +448,7 @@ watch -n 1 sensors
 
 - [ASUS ROG STRIX X670E-F Product Page](https://rog.asus.com/motherboards/rog-strix/rog-strix-x670e-f-gaming-wifi-model/)
 - [AMD Ryzen 9 9950X3D Specifications](https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x3d.html)
-- [NVIDIA RTX 5070 Ti Specifications](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5070-ti-5070/)
+- [NVIDIA RTX 5060 Ti Specifications](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5060-ti-5060/)
 - [NixOS Hardware Configuration](https://nixos.wiki/wiki/Laptops/ASUS)
 
 ---

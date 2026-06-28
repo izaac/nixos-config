@@ -37,6 +37,9 @@
   };
 
   # 5. The Undervolt Service (Clock Locking & Power Limit)
+  # Tuned for RTX 5060 Ti 16GB (Ventus 2X). Card limits: power 150-180W
+  # (default 180W), max graphics clock 3090MHz. We run at the 150W power floor
+  # with a summer-friendly 2000MHz clock ceiling for maximum undervolt.
   systemd.services.nvidia-lock-clocks = {
     enable = true;
     description = "Lock NVIDIA GPU Clocks and Power Limit for stability and undervolting";
@@ -44,8 +47,8 @@
     wantedBy = ["graphical.target"];
     serviceConfig = {
       Type = "oneshot";
-      # Set Power Limit to 250W (hardware minimum) and Lock Clocks to 210-2100MHz (summer-friendly ceiling)
-      ExecStart = "${pkgs.bash}/bin/bash -c '${config.hardware.nvidia.package.bin}/bin/nvidia-smi -pl 250 && ${config.hardware.nvidia.package.bin}/bin/nvidia-smi -lgc 210,2100'";
+      # Set Power Limit to 150W (hardware minimum) and Lock Clocks to 210-2000MHz (summer-friendly ceiling)
+      ExecStart = "${pkgs.bash}/bin/bash -c '${config.hardware.nvidia.package.bin}/bin/nvidia-smi -pl 150 && ${config.hardware.nvidia.package.bin}/bin/nvidia-smi -lgc 210,2000'";
       RemainAfterExit = true;
       NoNewPrivileges = true;
       ProtectHome = true;
