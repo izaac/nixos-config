@@ -1,12 +1,13 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.mySystem.core.virtualization;
 in {
   options.mySystem.core.virtualization = {
-    enable = lib.mkEnableOption "Podman and Distrobox virtualization";
+    enable = lib.mkEnableOption "Podman, Distrobox, and Quickemu virtualization";
   };
 
   config = lib.mkIf cfg.enable {
@@ -33,7 +34,15 @@ in {
     # 2. Delegate all cgroup controllers to user sessions (containers, Gamescope, etc.)
     systemd.services."user@".serviceConfig.Delegate = "cpuset cpu io memory pids";
 
-    # 3. Performance & Environment Tweaks
+    # 3. Packages
+    environment.systemPackages = with pkgs; [
+      quickemu
+      quickgui
+      virt-viewer
+      remmina
+    ];
+
+    # 4. Performance & Environment Tweaks
     environment.sessionVariables = {
       EGL_PLATFORM = "wayland";
     };

@@ -334,6 +334,25 @@ in {
         ];
         open-fullscreen = true;
       }
+      # SPICE Viewer (virt-viewer, spicy) and Remmina session: open wider than default
+      {
+        matches = [
+          {app-id = "^(remote-viewer|spicy)$";}
+          {app-id = "^org\.remmina\.Remmina$";}
+        ];
+        excludes = [{title = "^Remmina Remote Desktop Client$";}];
+        default-column-width = {proportion = 3.0 / 4.0;};
+      }
+      # Remmina main menu: open narrow
+      {
+        matches = [
+          {
+            app-id = "^org\.remmina\.Remmina$";
+            title = "^Remmina Remote Desktop Client$";
+          }
+        ];
+        default-column-width = {proportion = 1.0 / 3.0;};
+      }
     ];
 
     binds = with config.lib.niri.actions; let
