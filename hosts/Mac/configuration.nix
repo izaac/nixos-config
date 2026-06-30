@@ -314,6 +314,7 @@
         ../../home/darwin/hammerspoon.nix
         ../../home/darwin/kitty.nix
         ../../home/darwin/screenshots.nix
+        ../../home/lazyvim.nix
         inputs.stylix.homeModules.stylix
       ];
       # stylix.enable is off on this host, so the Darwin module never injects
