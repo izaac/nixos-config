@@ -44,12 +44,12 @@ clean:
 # Update the whole jungle (Flake Update)
 up:
         nix flake update
-        nh os switch . --update
+        {{ if os() == "macos" { "nh darwin switch .#Mac --update" } else { "nh os switch . --update" } }}
 
 # Update only the nixpkgs input (full channel bump) and switch
 up-nixpkgs:
         nix flake update nixpkgs
-        nh os switch .
+        {{ if os() == "macos" { "nh darwin switch .#Mac" } else { "nh os switch ." } }}
 
 # Activate git pre-commit hooks
 setup-hooks:
