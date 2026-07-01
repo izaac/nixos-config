@@ -45,10 +45,11 @@ in {
         then "server"
         else "client";
       # Flags applied on `tailscale up`. --ssh enables Tailscale SSH (auth via
-      # tailnet ACLs, no extra ports). --accept-dns=false keeps this host on its
-      # local Pi-hole resolver instead of MagicDNS.
+      # tailnet ACLs, no extra ports). --accept-dns=true enables MagicDNS;
+      # tailnet names resolve while all other queries forward to the Pi-hole
+      # override nameserver configured in the Tailscale admin console.
       extraUpFlags =
-        ["--ssh" "--accept-dns=false"]
+        ["--ssh" "--accept-dns=true"]
         ++ lib.optional (cfg.advertiseRoutes != [])
         "--advertise-routes=${lib.concatStringsSep "," cfg.advertiseRoutes}";
     };
