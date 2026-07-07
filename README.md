@@ -7,9 +7,9 @@ Tracks **nixos-26.05 stable**. Custom packages live in a separate
 ## Overview
 
 - **OS:** NixOS 26.05 (stable) + nix-darwin 26.05 (Mac)
-- **DM:** tuigreet (greetd) with YubiKey U2F
+- **DM:** noctalia-greeter (greetd) with YubiKey U2F
 - **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake)
-- **Shell of the desktop:** Waybar (bar) + fuzzel (launcher) + mako (notifications) + swaylock-effects/swayidle (lock) + wlogout (power menu)
+- **Shell of the desktop:** [Noctalia](https://github.com/noctalia-dev/noctalia) v5 (bar, launcher, notifications, control center, lock, OSDs, clipboard, session panel). Native Wayland + OpenGL ES, no Qt or GTK.
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
 - **Theme:** Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix)
 - **Shell:** Zsh + Starship + Atuin + Zoxide (all hosts, Mac included)
@@ -27,14 +27,11 @@ lib/               # mkSystem helper, user config
 hosts/             # Per-host configuration.nix + hardware
 modules/           # Reusable NixOS modules (mySystem.* options)
   core/            # Audio, codecs, nix-ld, performance, sops, maintenance
-  desktop/         # Niri compositor, tuigreet greeter, NVIDIA glue
+  desktop/         # Niri compositor, noctalia-greeter, NVIDIA glue
   gaming/          # Steam, GameMode, sched-ext (SCX)
 home/              # Home Manager modules (per-app .nix files)
   niri.nix         # Compositor config, keybinds, spawn-at-startup
-  waybar.nix       # Status bar
-  launcher.nix     # fuzzel launcher (+ dmenu picks)
-  notifications.nix # mako
-  screenlock.nix   # swaylock + swayidle
+  noctalia.nix     # Noctalia shell (bar, launcher, notifications, lock)
   shell/           # Split shell config (aliases, functions, packages)
 users/             # Per-user profile composition
 overlays/          # Package overrides

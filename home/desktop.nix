@@ -152,10 +152,9 @@
     };
   };
 
-  # Suppress xdg-autostart for tray apps: niri's spawn-at-startup launches
-  # blueman + nm-applet directly, and pasystray runs on-demand from waybar.
-  # The systemd-xdg-autostart-generator otherwise double-starts them and
-  # fails because the first instance already owns the tray slot.
+  # Suppress xdg-autostart for the GVFS volume monitor; Noctalia owns the
+  # tray, network, bluetooth, and audio surfaces, so the old tray applets are
+  # no longer installed or autostarted.
   xdg.configFile = let
     hidden = ''
       [Desktop Entry]
@@ -164,8 +163,5 @@
     '';
   in {
     "autostart/gvfs-goa-volume-monitor.desktop".text = hidden;
-    "autostart/blueman.desktop".text = hidden;
-    "autostart/nm-applet.desktop".text = hidden;
-    "autostart/pasystray.desktop".text = hidden;
   };
 }
