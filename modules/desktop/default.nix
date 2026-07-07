@@ -2,42 +2,43 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }: let
   cfg = config.mySystem.desktop;
 in {
-  imports = [./nvidia.nix];
+  imports = [
+    ./nvidia.nix
+    inputs.noctalia-greeter.nixosModules.default
+  ];
 
   options.mySystem.desktop = {
     enable = lib.mkEnableOption "Desktop Environment configuration";
   };
 
   config = lib.mkIf cfg.enable {
-    # --- Niri (scrollable-tiling Wayland compositor) ---
-    # nixosModules.niri enables programs.niri, sets the binary cache,
-    # wires the overlay, and auto-imports the home-manager + stylix HM modules.
-    programs.niri = {
-      enable = true;
-      # Unstable required for xwayland-satellite integration.
-      package = pkgs.niri-unstable;
-    };
-
-    # --- Display Manager: tuigreet on greetd ---
-    services.greetd = {
-      enable = true;
-      settings = {
-        default_session = {
-          command = builtins.concatStringsSep " " [
-            "${pkgs.tuigreet}/bin/tuigreet"
-            "--time"
-            "--asterisks"
-            "--remember"
-            "--remember-user-session"
-            "--cmd niri-session"
-          ];
-          user = "greeter";
-        };
+    programs = {
+      # --- Niri (scrollable-tiling Wayland compositor) ---
+      # nixosModules.niri enables programs.niri, sets the binary cache,
+      # wires the overlay, and auto-imports the home-manager + stylix HM modules.
+      niri = {
+        enable = true;
+        # Unstable required for xwayland-satellite integration.
+        package = pkgs.niri-unstable;
       };
+
+      # --- Display Manager: noctalia-greeter on greetd ---
+      # The noctalia-greeter NixOS module enables greetd and sets the session
+      # command to its bundled wlroots compositor. Point it at the niri session
+      # by default; the greeter still lists any other wayland-session it finds.
+      # The greeter login user is set in the services block below.
+      noctalia-greeter = {
+        enable = true;
+        greeter-args = "--session niri";
+      };
+
+      # Cross-platform LAN file transfer (auto-opens firewall port 53317).
+      localsend.enable = true;
     };
 
     # Ensure pam_systemd registers the greeter session as type 'wayland'.
@@ -51,16 +52,20 @@ in {
     # the same socket. SSH auth is owned by gnome-keyring (below), matching
     # home-manager's services.gpg-agent.enableSshSupport = false.
 
-    # Cross-platform LAN file transfer (auto-opens firewall port 53317).
-    programs.localsend.enable = true;
+    services = {
+      # noctalia-greeter enables greetd itself; just pick the login user.
+      greetd.settings.default_session.user = "greeter";
 
-    # Auto-mount removable media (USB drives, optical) for udiskie + Nemo.
-    services.udisks2.enable = true;
+      # Auto-mount removable media (USB drives, optical) for udiskie + Nemo.
+      udisks2.enable = true;
+
+      # Noctalia's battery and power widgets read UPower over D-Bus.
+      upower.enable = true;
+    };
 
     security.pam.services = {
       greetd.enableGnomeKeyring = true;
       login.enableGnomeKeyring = true;
-      swaylock = {};
     };
 
     # Portals — niri's nixos module enables xdg-desktop-portal-gnome.

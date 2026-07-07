@@ -28,7 +28,7 @@ in {
     security.pam.services = {
       login.u2fAuth = true;
       sudo.u2fAuth = true;
-      # Enable U2F for greetd (tuigreet) login
+      # Enable U2F for greetd (noctalia-greeter) login
       greetd.u2fAuth = true;
     };
 

@@ -100,7 +100,6 @@ in {
     ++ lib.optionals pkgs.stdenv.isLinux [
       appimage-run
       wl-clipboard
-      cliphist
       dwarfs
       fuse3
       nvtopPackages.nvidia

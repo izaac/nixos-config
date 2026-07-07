@@ -24,15 +24,15 @@ the `Ctrl+a` tmux prefix.
 | Keys          | Action                                  |
 | ------------- | --------------------------------------- |
 | `Mod+Return`  | Launch Kitty (terminal)                 |
-| `Mod+D`       | App launcher (fuzzel)                   |
+| `Mod+D`       | App launcher (Noctalia)                 |
 | `Alt+Space`   | App launcher (Moonlight-friendly alias) |
 | `Mod+E`       | File manager (nemo)                     |
 | `Mod+B`       | Browser (brave-origin)                  |
-| `Mod+S`       | Audio sink menu                         |
-| `Mod+V`       | Clipboard history (cliphist + fuzzel)   |
-| `Mod+Ctrl+L`  | Lock screen                             |
-| `Mod+Shift+P` | Power menu (wlogout)                    |
-| `Mod+Shift+N` | Toggle do-not-disturb (mako)            |
+| `Mod+S`       | Control center (Noctalia)               |
+| `Mod+V`       | Clipboard history (Noctalia)            |
+| `Mod+Ctrl+L`  | Lock screen (Noctalia)                  |
+| `Mod+Shift+P` | Session panel (Noctalia)                |
+| `Mod+Shift+N` | Toggle do-not-disturb (Noctalia)        |
 | `Mod+Q`       | Close window                            |
 | `Mod+Shift+E` | Quit niri (no confirmation)             |
 
@@ -85,7 +85,7 @@ the `Ctrl+a` tmux prefix.
 
 These fire on the dedicated `XF86Audio*` keys (a laptop Fn layer typically maps
 them to `Fn+F8/F9/F10` for mute / down / up). Volume changes show a single
-replacing mako OSD bubble and work even when the screen is locked.
+replacing Noctalia OSD bubble and work even when the screen is locked.
 
 | Keys                   | Action                |
 | ---------------------- | --------------------- |
@@ -121,13 +121,6 @@ actions are mirrored here.
 | `Mod+F10` | Screenshot window        |
 | `Mod+F11` | Screen recording, region |
 | `Mod+F12` | Screen recording, screen |
-
-### Host-specific (`ninja` only)
-
-| Keys          | Action                                        |
-| ------------- | --------------------------------------------- |
-| `Mod+M`       | Focus the Sunshine dummy monitor (`HDMI-A-1`) |
-| `Mod+Shift+M` | Move column to the Sunshine dummy monitor     |
 
 ---
 
