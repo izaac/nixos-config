@@ -128,7 +128,6 @@ in {
 
   home.packages = with pkgs; [
     brightnessctl # Screen brightness control
-    swaybg # Wallpaper daemon
     # wl-clipboard lives in home/shell/packages.nix
     grim # Screen capture
     slurp # Region picker
@@ -223,7 +222,6 @@ in {
       # Noctalia shell: bar, launcher, notifications, control center, lock,
       # OSDs, clipboard history, and session panel (see home/noctalia.nix).
       {command = ["noctalia"];}
-      {command = ["swaybg" "-i" "${config.stylix.image}" "-m" "fill"];}
     ];
 
     window-rules = [
