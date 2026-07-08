@@ -8,7 +8,7 @@ compositor on both Linux hosts, wired in through
 [niri-flake](https://github.com/sodiboo/niri-flake). It owns the outermost layer
 of the desktop: monitors, workspaces, windows and global hotkeys. The terminal
 stack ([Kitty](kitty.md) with [tmux](tmux.md) inside it) lives one level down,
-launched by niri and never competing for the same keys — see
+launched by niri and never competing for the same keys. See
 [How niri, Kitty and tmux interact](#how-niri-kitty-and-tmux-interact).
 
 `Mod` is the **Super** (logo) key. Most window and workspace binds use it, so it
@@ -145,7 +145,7 @@ keypress is never ambiguous.
 In day-to-day use the flow is top-down: niri launches a Kitty window with
 `Mod+Return`, and tmux comes up inside that terminal for sessions and panes.
 Because niri leads with `Mod`, Kitty leads with `Ctrl+Shift`, and tmux goes
-through its `Ctrl+a` prefix, the three key spaces never collide — a shortcut is
+through its `Ctrl+a` prefix, the three key spaces never collide; a shortcut is
 always handled by exactly one layer.
 
 In practice the responsibilities split cleanly: niri arranges windows on screen,
