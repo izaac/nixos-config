@@ -133,6 +133,8 @@ in {
       # Noctalia shell: bar, launcher, notifications, control center, lock,
       # OSDs, clipboard history, and session panel (see home/noctalia.nix).
       {command = ["noctalia"];}
+      # Keep clipboard data alive when source window loses focus.
+      {command = ["wl-clip-persist" "--clipboard" "regular"];}
     ];
 
     window-rules = [

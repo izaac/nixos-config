@@ -102,6 +102,7 @@ in {
     ++ lib.optionals pkgs.stdenv.isLinux [
       appimage-run
       wl-clipboard
+      wl-clip-persist
       dwarfs
       fuse3
       nvtopPackages.nvidia
