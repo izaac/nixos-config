@@ -68,7 +68,14 @@
         ];
       };
 
-      # Allow the volume controls to go above 100% (up to 150%), matching the
+      # Widen the media widget for wide displays. max_length is a cap, not a
+      # fixed size: the widget only grows to fit the current track title, up to
+      # this limit. Titles longer than the cap scroll on hover.
+      widget.media = {
+        max_length = 400;
+        title_scroll = "on_hover";
+      };
+
       # previous wpctl "-l 1.5" cap now that noctalia owns the media keys.
       audio.enable_overdrive = true;
 
