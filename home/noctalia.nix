@@ -45,6 +45,29 @@
         font = "JetBrainsMono Nerd Font";
       };
 
+      # Top bar layout. This mirrors noctalia's default arrangement with two
+      # changes: the "network" (wifi) indicator is dropped from the end cluster
+      # (network/wifi is still managed from the control center system tab), and
+      # a "cpu" system-monitor readout is added. "cpu" is a built-in named
+      # widget (type sysmon, stat cpu_usage), so it needs no widget definition.
+      bar.main = {
+        start = ["launcher" "wallpaper" "workspaces"];
+        center = ["clock"];
+        end = [
+          "media"
+          "cpu"
+          "tray"
+          "notifications"
+          "clipboard"
+          "bluetooth"
+          "volume"
+          "brightness"
+          "battery"
+          "control-center"
+          "session"
+        ];
+      };
+
       # Allow the volume controls to go above 100% (up to 150%), matching the
       # previous wpctl "-l 1.5" cap now that noctalia owns the media keys.
       audio.enable_overdrive = true;
