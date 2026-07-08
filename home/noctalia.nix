@@ -28,6 +28,15 @@
       shell = {
         font = "JetBrainsMono Nerd Font";
       };
+
+      # Auto-lock on idle only. screen-off (DPMS) and any suspend stay
+      # untouched, so this never powers the display or system down; suspend
+      # remains a manual action from the session/logout panel.
+      idle.behavior.lock = {
+        enabled = true;
+        timeout = 600;
+        command = "noctalia:session lock";
+      };
     };
   };
 }
