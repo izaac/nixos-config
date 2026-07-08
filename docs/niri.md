@@ -36,6 +36,11 @@ the `Ctrl+a` tmux prefix.
 | `Mod+Q`       | Close window                            |
 | `Mod+Shift+E` | Quit niri (no confirmation)             |
 
+The `Noctalia` binds above open a Noctalia surface; the keys used _inside_
+those surfaces (launcher search, arrow navigation, `Enter`, `Esc` to cancel)
+are Noctalia's own defaults and are not set in this repo. See the
+[Noctalia v5 docs](https://docs.noctalia.dev/v5/) for that in-panel behavior.
+
 ### Direct power actions
 
 | Keys               | Action    |
