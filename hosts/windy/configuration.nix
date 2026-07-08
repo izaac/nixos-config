@@ -92,15 +92,17 @@
   mySystem.core.sops.enable = false;
 
   # Allow members of the video group to write screen brightness via
-  # brightnessctl (installs the packages udev rules that chgrp/chmod the
-  # backlight sysfs nodes). Required for the Fn brightness keys to work.
+  # brightnessctl's udev rules (they chgrp/chmod the backlight sysfs nodes).
+  # Required for the Fn brightness keys, which now drive brightness through
+  # noctalia's IPC writing directly to those nodes.
   services.udev.packages = [pkgs.brightnessctl];
 
   # System Packages
   environment.systemPackages = with pkgs; [
     powertop # Monitor laptop power usage
     acpi # Battery/Thermal info
-    # brightnessctl + libnotify live in home/niri.nix (shared HM module)
+    # libnotify lives in home/niri.nix (shared HM module); brightnessctl is
+    # installed above only for its udev rules, not as a user command.
   ];
 
   system.stateVersion = "25.11";

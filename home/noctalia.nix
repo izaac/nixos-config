@@ -76,6 +76,7 @@
         title_scroll = "on_hover";
       };
 
+      # Allow the volume controls to go above 100% (up to 150%), matching the
       # previous wpctl "-l 1.5" cap now that noctalia owns the media keys.
       audio.enable_overdrive = true;
 
