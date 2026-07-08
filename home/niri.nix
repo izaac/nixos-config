@@ -10,92 +10,6 @@
   # the hostname so the laptop does not inherit them.
   isNinja = (osConfig.networking.hostName or "") == "ninja";
   xwaylandSatellite = inputs.niri-flake.packages.${pkgs.stdenv.hostPlatform.system}.xwayland-satellite-unstable;
-  osdNotify = pkgs.writeShellApplication {
-    name = "osd-notify";
-    runtimeInputs = with pkgs; [wireplumber brightnessctl libnotify gawk coreutils gnugrep];
-    text = ''
-      # Single-bubble OSD via Noctalia notifications: same sync tag replaces
-      # the prior notification, so spinning the volume wheel updates one bubble
-      # instead of stacking.
-      bar() {
-        # tr is byte-oriented and mangles multibyte chars, so build the bar
-        # one glyph at a time to keep the output valid UTF-8.
-        local pct=$1 filled empty i out=""
-        filled=$((pct / 5))
-        [ "$filled" -gt 20 ] && filled=20
-        empty=$((20 - filled))
-        for ((i = 0; i < filled; i++)); do out+="█"; done
-        for ((i = 0; i < empty;  i++)); do out+="░"; done
-        printf '%s' "$out"
-      }
-
-      notify() {
-        # $1=sync-tag $2=icon $3=title $4=value(0-100) $5=body-extra
-        notify-send \
-          -h "string:x-canonical-private-synchronous:$1" \
-          -h "int:value:$4" \
-          -t 1500 \
-          -i "$2" \
-          "$3" "$(bar "$4")  $4%  $5"
-      }
-
-      volume() {
-        wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ "$1" >/dev/null
-        read -r _ raw muted < <(wpctl get-volume @DEFAULT_AUDIO_SINK@)
-        pct=$(awk -v v="$raw" 'BEGIN{printf "%d", v*100}')
-        if [ "$muted" = "[MUTED]" ]; then
-          notify volume audio-volume-muted "Volume" "$pct" "(muted)"
-        else
-          icon=audio-volume-high
-          [ "$pct" -lt 66 ] && icon=audio-volume-medium
-          [ "$pct" -lt 33 ] && icon=audio-volume-low
-          notify volume "$icon" "Volume" "$pct" ""
-        fi
-      }
-
-      mute_sink() {
-        wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
-        read -r _ raw muted < <(wpctl get-volume @DEFAULT_AUDIO_SINK@)
-        pct=$(awk -v v="$raw" 'BEGIN{printf "%d", v*100}')
-        if [ "$muted" = "[MUTED]" ]; then
-          notify volume audio-volume-muted "Volume" "$pct" "(muted)"
-        else
-          notify volume audio-volume-high "Volume" "$pct" ""
-        fi
-      }
-
-      mute_source() {
-        wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-        if wpctl get-volume @DEFAULT_AUDIO_SOURCE@ | grep -q MUTED; then
-          notify-send -h string:x-canonical-private-synchronous:mic \
-                      -t 1500 -i microphone-sensitivity-muted \
-                      "Microphone" "Muted"
-        else
-          notify-send -h string:x-canonical-private-synchronous:mic \
-                      -t 1500 -i microphone-sensitivity-high \
-                      "Microphone" "Unmuted"
-        fi
-      }
-
-      brightness() {
-        brightnessctl set "$1" >/dev/null
-        cur=$(brightnessctl get)
-        max=$(brightnessctl max)
-        pct=$(( cur * 100 / max ))
-        notify brightness display-brightness "Brightness" "$pct" ""
-      }
-
-      case "$1" in
-        volume-up)    volume "5%+" ;;
-        volume-down)  volume "5%-" ;;
-        volume-mute)  mute_sink ;;
-        mic-mute)     mute_source ;;
-        brightness-up)   brightness "5%+" ;;
-        brightness-down) brightness "5%-" ;;
-        *) echo "usage: osd-notify {volume-up|volume-down|volume-mute|mic-mute|brightness-up|brightness-down}" >&2; exit 2 ;;
-      esac
-    '';
-  };
   screenRecord = pkgs.writeShellApplication {
     name = "screen-record";
     runtimeInputs = with pkgs; [wf-recorder slurp libnotify coreutils procps];
@@ -127,13 +41,10 @@ in {
   stylix.targets.niri.enable = true;
 
   home.packages = with pkgs; [
-    brightnessctl # Screen brightness control
     # wl-clipboard lives in home/shell/packages.nix
-    grim # Screen capture
-    slurp # Region picker
+    slurp # Region picker (screen recorder)
     wf-recorder # Screen recorder (Wayland)
-    playerctl # MPRIS media control
-    libnotify # notify-send for keybind feedback
+    libnotify # notify-send for screen-record feedback
   ];
 
   programs.niri.settings = {
@@ -382,34 +293,34 @@ in {
       "Shift+Print".action = spawn (lib.getExe screenRecord) "region";
       "Ctrl+Shift+Print".action = spawn (lib.getExe screenRecord) "screen";
 
-      # --- Audio (wpctl + Noctalia OSD) ---
+      # --- Audio (noctalia native IPC, shows its own OSD) ---
       "XF86AudioRaiseVolume" = {
-        action = spawn (lib.getExe osdNotify) "volume-up";
+        action = spawn "noctalia" "msg" "volume-up";
         allow-when-locked = true;
       };
       "XF86AudioLowerVolume" = {
-        action = spawn (lib.getExe osdNotify) "volume-down";
+        action = spawn "noctalia" "msg" "volume-down";
         allow-when-locked = true;
       };
       "XF86AudioMute" = {
-        action = spawn (lib.getExe osdNotify) "volume-mute";
+        action = spawn "noctalia" "msg" "volume-mute";
         allow-when-locked = true;
       };
       "XF86AudioMicMute" = {
-        action = spawn (lib.getExe osdNotify) "mic-mute";
+        action = spawn "noctalia" "msg" "mic-mute";
         allow-when-locked = true;
       };
-      "XF86AudioPlay".action = spawn "playerctl" "play-pause";
-      "XF86AudioNext".action = spawn "playerctl" "next";
-      "XF86AudioPrev".action = spawn "playerctl" "previous";
+      "XF86AudioPlay".action = spawn "noctalia" "msg" "media" "toggle";
+      "XF86AudioNext".action = spawn "noctalia" "msg" "media" "next";
+      "XF86AudioPrev".action = spawn "noctalia" "msg" "media" "previous";
 
-      # --- Brightness (laptops) ---
+      # --- Brightness (laptops; noctalia native IPC + OSD) ---
       "XF86MonBrightnessUp" = {
-        action = spawn (lib.getExe osdNotify) "brightness-up";
+        action = spawn "noctalia" "msg" "brightness-up";
         allow-when-locked = true;
       };
       "XF86MonBrightnessDown" = {
-        action = spawn (lib.getExe osdNotify) "brightness-down";
+        action = spawn "noctalia" "msg" "brightness-down";
         allow-when-locked = true;
       };
 
@@ -417,12 +328,12 @@ in {
       # The Fn layer already emits XF86Audio{Mute,LowerVolume,RaiseVolume}
       # (Fn+F8/F9/F10), so volume stays handled above. These cover the rest.
       "Mod+F4" = {
-        action = spawn (lib.getExe osdNotify) "mic-mute";
+        action = spawn "noctalia" "msg" "mic-mute";
         allow-when-locked = true;
       };
-      "Mod+F5".action = spawn "playerctl" "play-pause";
-      "Mod+F6".action = spawn "playerctl" "previous";
-      "Mod+F7".action = spawn "playerctl" "next";
+      "Mod+F5".action = spawn "noctalia" "msg" "media" "toggle";
+      "Mod+F6".action = spawn "noctalia" "msg" "media" "previous";
+      "Mod+F7".action = spawn "noctalia" "msg" "media" "next";
       "Mod+F8".action.screenshot = {};
       "Mod+F9".action.screenshot-screen = {};
       "Mod+F10".action.screenshot-window = {};
