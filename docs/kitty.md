@@ -25,15 +25,17 @@ These are the **custom** binds defined in the config. Kitty's own defaults
 
 | Keys                          | Action                               | Linux | Mac |
 | ----------------------------- | ------------------------------------ | :---: | :-: |
-| `Ctrl+Shift+T`                | New tab                              |  ✅   | ✅  |
-| `Ctrl+Shift+1…4`              | Go to tab 1–4                        |  ✅   | ✅  |
-| `Ctrl+Shift+PageUp/PageDown`  | Previous / next tab                  |  ✅   | ✅  |
-| `Ctrl+Tab` / `Ctrl+Shift+Tab` | Next / previous tab (laptop cycle)   |   —   | ✅  |
-| `Ctrl+Shift+N`                | Split horizontally (`hsplit`)        |  ✅   | ✅  |
-| `Ctrl+Shift+\`                | Split vertically (`vsplit`)          |  ✅   | ✅  |
-| `Ctrl+Shift+←/→/↑/↓`          | Move focus between splits            |  ✅   | ✅  |
-| `Ctrl+Shift+F`                | Toggle zoom (`stack` layout)         |  ✅   | ✅  |
-| `Shift+↑` / `Shift+↓`         | Jump to previous / next shell prompt |  ✅   | ✅  |
+| `Ctrl+Shift+T`                | New tab                              |  Yes  | Yes |
+| `Ctrl+Shift+X`                | Close tab                            |  Yes  | Yes |
+| `⌘W`                          | Close tab (Mac)                      |  No   | Yes |
+| `Ctrl+Shift+1…4`              | Go to tab 1–4                        |  Yes  | Yes |
+| `Ctrl+Shift+PageUp/PageDown`  | Previous / next tab                  |  Yes  | Yes |
+| `Ctrl+Tab` / `Ctrl+Shift+Tab` | Next / previous tab (laptop cycle)   |  No   | Yes |
+| `Ctrl+Shift+N`                | Split horizontally (`hsplit`)        |  Yes  | Yes |
+| `Ctrl+Shift+\`                | Split vertically (`vsplit`)          |  Yes  | Yes |
+| `Ctrl+Shift+←/→/↑/↓`          | Move focus between splits            |  Yes  | Yes |
+| `Ctrl+Shift+F`                | Toggle zoom (`stack` layout)         |  Yes  | Yes |
+| `Shift+↑` / `Shift+↓`         | Jump to previous / next shell prompt |  Yes  | Yes |
 
 Splits and the zoom toggle require `enabled_layouts splits,stack` (set in both
 configs). `Shift+↑/↓` prompt-jumping relies on kitty **shell integration** being
