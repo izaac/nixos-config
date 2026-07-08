@@ -51,6 +51,20 @@ suspend are left untouched, so there is no idle autosuspend; suspend stays a
 manual action (`Mod+Ctrl+Shift+S`). Unlock with a YubiKey touch or your
 password. Manual lock is `Mod+Ctrl+L`.
 
+### Wallpaper & theming
+
+Noctalia draws the wallpaper itself (the old `swaybg` daemon is gone). It scans
+`~/Pictures/Wallpapers`, an out-of-store symlink to the `~/repos/wallpapers`
+git checkout, so adding images needs no rebuild. Switch backgrounds live from
+the control center (`Mod+S`) or with `noctalia msg wallpaper-random`.
+
+The Noctalia shell palette is generated from the current wallpaper
+(`[theme] source = "wallpaper"`, `wallpaper_scheme = "m3-tonal-spot"`), so the
+bar, panels, launcher, and lock screen recolor whenever the wallpaper changes.
+Stylix still owns application colors (see [kitty](kitty.md), [tmux](tmux.md)),
+so terminals and GTK apps stay on the static Catppuccin Mocha palette; only
+Noctalia's own surfaces follow the wallpaper.
+
 ### Focus & move
 
 | Keys                      | Action                    |
@@ -91,8 +105,10 @@ password. Manual lock is `Mod+Ctrl+L`.
 ### Audio & media
 
 These fire on the dedicated `XF86Audio*` keys (a laptop Fn layer typically maps
-them to `Fn+F8/F9/F10` for mute / down / up). Volume changes show a single
-replacing Noctalia OSD bubble and work even when the screen is locked.
+them to `Fn+F8/F9/F10` for mute / down / up). They call Noctalia's native IPC
+(`noctalia msg volume-*`, `mic-mute`, `media *`), which shows its own OSD and
+works even when the screen is locked. Output volume can reach 150 percent
+(`[audio] enable_overdrive`).
 
 | Keys                   | Action                |
 | ---------------------- | --------------------- |
@@ -104,6 +120,9 @@ replacing Noctalia OSD bubble and work even when the screen is locked.
 | `XF86AudioNext/Prev`   | Next / previous track |
 
 ### Brightness (laptops)
+
+Backed by Noctalia's native brightness IPC (`noctalia msg brightness-*`, kernel
+backlight), which draws its own OSD.
 
 | Keys                    | Action          |
 | ----------------------- | --------------- |

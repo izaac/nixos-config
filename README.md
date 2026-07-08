@@ -11,7 +11,7 @@ Tracks **nixos-26.05 stable**. Custom packages live in a separate
 - **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake)
 - **Shell of the desktop:** [Noctalia](https://github.com/noctalia-dev/noctalia) v5 (bar, launcher, notifications, control center, lock, OSDs, clipboard, session panel). Native Wayland + OpenGL ES, no Qt or GTK.
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
-- **Theme:** Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix)
+- **Theme:** App colors are Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix); the Noctalia shell palette is generated from the current wallpaper
 - **Shell:** Zsh + Starship + Atuin + Zoxide (all hosts, Mac included)
 - **Terminal:** Kitty + tmux
 - **Editor:** LazyVim (Neovim distribution)
