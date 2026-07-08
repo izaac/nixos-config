@@ -29,10 +29,16 @@
     validateConfig = false;
 
     settings = {
+      # The shell palette is generated from the current wallpaper instead of a
+      # fixed builtin, so switching wallpapers (control center, wallpaper-random,
+      # etc.) recolors the bar, panels, launcher, and lock screen live. Stylix
+      # still owns app colors (kitty, tmux, gtk), so those stay catppuccin; only
+      # noctalia's own surfaces follow the wallpaper. Swap wallpaper_scheme for a
+      # different generator (see docs: m3-tonal-spot, vibrant, muted, etc.).
       theme = {
         mode = "dark";
-        source = "builtin";
-        builtin = "Catppuccin";
+        source = "wallpaper";
+        wallpaper_scheme = "m3-tonal-spot";
       };
 
       shell = {
