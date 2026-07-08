@@ -29,14 +29,17 @@
         font = "JetBrainsMono Nerd Font";
       };
 
-      # Auto-lock on idle only. screen-off (DPMS) and any suspend stay
-      # untouched, so this never powers the display or system down; suspend
-      # remains a manual action from the session/logout panel.
+      # Auto-lock on idle only. screen-off (DPMS) and suspend are left
+      # untouched by timers, so this never powers the display or system down;
+      # suspend stays a manual action from the session panel. suspend is
+      # pinned off explicitly so a future noctalia default can't silently
+      # enable idle autosuspend.
       idle.behavior.lock = {
         enabled = true;
         timeout = 600;
         command = "noctalia:session lock";
       };
+      idle.behavior.suspend.enabled = false;
     };
   };
 }
