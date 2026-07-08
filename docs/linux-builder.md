@@ -1,7 +1,7 @@
 # Linux Builder (Mac)
 
 > **Host**: `Mac` (Apple Silicon, arm64)
-> **Defined in**: [`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix) — `nix.linux-builder`
+> **Defined in**: [`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix), `nix.linux-builder`
 
 A local NixOS virtual machine (Apple Virtualization framework) that lets the
 arm64 Mac **build Linux Nix closures** without a remote build server. Nix
@@ -28,7 +28,7 @@ automatically offloads any Linux derivation to it.
 **Use it for building/testing Linux Nix packages from the Mac:**
 
 - Iterating on a NixOS module or a package from the `nix-packages` repo.
-- Building a closure for the Linux hosts (`ninja`, `windy` — both `x86_64-linux`).
+- Building a closure for the Linux hosts (`ninja`, `windy`, both `x86_64-linux`).
 - Cross-checking that a change evaluates and builds on Linux before pushing.
 
 **Do NOT use it for:**
@@ -44,21 +44,21 @@ automatically offloads any Linux derivation to it.
 
 ## How to use it
 
-Nix routes Linux builds to the builder automatically — no flags needed. Just
+Nix routes Linux builds to the builder automatically, no flags needed. Just
 ask for a Linux output:
 
 ```bash
-# aarch64-linux — native speed in the VM
+# aarch64-linux: native speed in the VM
 nix build nixpkgs#legacyPackages.aarch64-linux.hello
 
-# x86_64-linux — works, but emulated and slow
+# x86_64-linux: works, but emulated and slow
 nix build nixpkgs#legacyPackages.x86_64-linux.hello
 
 # Build a closure for one of the Linux hosts (x86_64-linux)
 nix build .#nixosConfigurations.ninja.config.system.build.toplevel
 ```
 
-**Confirm it offloaded** — look for this line in the build log:
+**Confirm it offloaded**: look for this line in the build log:
 
 ```text
 building '/nix/store/….drv' on 'ssh-ng://builder@linux-builder'...
@@ -80,7 +80,7 @@ nix build .#nixosConfigurations.ninja.config.system.build.toplevel --no-link --p
 ```
 
 The Linux build offloads to the VM. A green build means the config **evaluates
-and every package compiles** — safe to apply on ninja. Runtime behaviour
+and every package compiles**, safe to apply on ninja. Runtime behaviour
 (services starting, GPU, boot, Wayland) is still only proven on ninja itself.
 
 ### 2. Cross-compile a single x86_64 Linux binary
@@ -95,12 +95,12 @@ file /tmp/hello/bin/hello
 
 The build runs on the builder VM (`building … on 'ssh-ng://builder@linux-builder'`)
 and the x86_64 result is copied back to the Mac's store. Running it on macOS
-gives `Exec format error` — expected; it is a Linux binary.
+gives `Exec format error`, expected; it is a Linux binary.
 
 ### 3. The reverse does not work (build Darwin on Linux)
 
 There is **no symmetric path**: a Linux host cannot build the Mac's closure,
-because macOS cannot be emulated (no `binfmt`/QEMU for Darwin — it needs the
+because macOS cannot be emulated (no `binfmt`/QEMU for Darwin, it needs the
 Apple SDK and a real macOS kernel).
 
 ```bash
@@ -111,7 +111,7 @@ nix build .#darwinConfigurations.Mac.config.system.build.toplevel          # ❌
 
 Linux can _evaluate_ the Darwin config (catches syntax/eval errors) but cannot
 _build_ its store paths. The only way to offload Darwin builds is to register a
-real Mac as an `aarch64-darwin` remote builder — delegation to Apple hardware,
+real Mac as an `aarch64-darwin` remote builder, delegation to Apple hardware,
 not emulation.
 
 ---
@@ -133,10 +133,10 @@ not emulation.
 The VM boots a **persistent disk** at `/var/lib/linux-builder/nixos.qcow2`,
 seeded once from the VM image. Changing `nix.linux-builder.config` (for example
 `boot.binfmt.emulatedSystems`) and running `darwin-rebuild switch` updates the
-host-side launchd job **but not the already-seeded disk** — the VM keeps booting
+host-side launchd job **but not the already-seeded disk**, the VM keeps booting
 the old guest system.
 
-To apply a guest-config change, recreate the disk (safe and self-healing — it
+To apply a guest-config change, recreate the disk (safe and self-healing, it
 just re-copies cached store paths on the next build):
 
 ```bash
@@ -146,7 +146,7 @@ sudo launchctl bootstrap system /Library/LaunchDaemons/org.nixos.linux-builder.p
 ```
 
 The fresh `nixos.qcow2` is reseeded from the updated image. A plain
-`systems`/`maxJobs` change (host-side only) does **not** need this — just switch.
+`systems`/`maxJobs` change (host-side only) does **not** need this, just switch.
 
 ---
 

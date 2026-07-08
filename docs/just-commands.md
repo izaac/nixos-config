@@ -37,7 +37,7 @@ just <command>
 > **`test-host` + the Mac builder:** running `just test-host ninja` on the Mac
 > builds ninja's whole closure and offloads the Linux build to the
 > [linux-builder](linux-builder.md). A green build means the config evaluates and
-> every package compiles — safe to apply on ninja. See the builder doc for the
+> every package compiles, safe to apply on ninja. See the builder doc for the
 > when/why and the disk-recreation gotcha behind `builder-reset`.
 
 ## Remote Installation (nixos-anywhere)

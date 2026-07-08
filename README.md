@@ -17,12 +17,12 @@ Tracks **nixos-26.05 stable**. Custom packages live in a separate
 - **Editor:** LazyVim (Neovim distribution)
 - **Security:** dbus-broker, sops-nix + age, YubiKey (U2F), pinned binary caches
 - **Gaming:** Steam (NVIDIA Optimized), Lutris, Bottles, GameMode, sched-ext
-- **Kernel (ninja):** nixpkgs `linux_latest` built with `-march=native` (X86_NATIVE_CPU) + 1000Hz — see `hosts/ninja/kernel.nix`
+- **Kernel (ninja):** nixpkgs `linux_latest` built with `-march=native` (X86_NATIVE_CPU) + 1000Hz, see `hosts/ninja/kernel.nix`
 
 ## Structure
 
 ```text
-flake.nix          # Entry point — defines inputs, hosts, devShells, checks
+flake.nix          # Entry point: defines inputs, hosts, devShells, checks
 lib/               # mkSystem helper, user config
 hosts/             # Per-host configuration.nix + hardware
 modules/           # Reusable NixOS modules (mySystem.* options)

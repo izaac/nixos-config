@@ -1,10 +1,10 @@
 # System Rebuild: Ninja Recovery with Disko
 
-Complete disaster-recovery guide for the `ninja` workstation — from building the rescue ISO to a fully working system.
+Complete disaster-recovery guide for the `ninja` workstation, from building the rescue ISO to a fully working system.
 
 ## 1. Build the Recovery ISO
 
-The flake includes a minimal recovery image called **canoe**. It has NetworkManager (with iwd for WiFi), firmware blobs, disk tools, and your user account — no desktop environment.
+The flake includes a minimal recovery image called **canoe**. It has NetworkManager (with iwd for WiFi), firmware blobs, disk tools, and your user account, no desktop environment.
 
 ```bash
 # From any machine with Nix installed
@@ -23,7 +23,7 @@ sudo dd if=result/iso/nixos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
 ## 2. Boot and Connect
 
 1. Boot the target machine from the USB drive (UEFI mode, Secure Boot off).
-2. Log in as your user — the ISO includes your account from `users/izaac/`.
+2. Log in as your user, the ISO includes your account from `users/izaac/`.
 3. Network should auto-connect via DHCP on Ethernet.
 4. For WiFi:
 
@@ -101,7 +101,7 @@ mkdir -p ~/.config/sops/age
 # Copy your age key from backup to ~/.config/sops/age/keys.txt
 
 # Option B: YubiKey
-# Just plug it in — sops-nix will use it automatically if configured
+# Just plug it in, sops-nix will use it automatically if configured
 ```
 
 Verify secrets are working:
@@ -184,7 +184,7 @@ If this line is ever removed the system will appear to freeze immediately after 
 
 ## Remote Install with nixos-anywhere
 
-[nixos-anywhere](https://github.com/nix-community/nixos-anywhere) can install NixOS on a remote machine over SSH — no USB drive needed. The target just needs to be booted into any Linux with SSH access (e.g., a rescue system from your hosting provider, or a live USB on another machine).
+[nixos-anywhere](https://github.com/nix-community/nixos-anywhere) can install NixOS on a remote machine over SSH, no USB drive needed. The target just needs to be booted into any Linux with SSH access (e.g., a rescue system from your hosting provider, or a live USB on another machine).
 
 ### Different Disk Layout
 

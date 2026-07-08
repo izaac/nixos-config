@@ -1,6 +1,6 @@
 # Agent Troubleshooting
 
-> Tier 2 doc — loaded on demand when debugging.
+> Tier 2 doc: loaded on demand when debugging.
 
 ---
 
@@ -19,10 +19,10 @@
 
 ## Token / Context Issues
 
-| Symptom                    | Cause                                    | Fix                                                                          |
-| -------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
-| Agent ignores instructions | AGENTS.md/CLAUDE.md too long             | Prune to essentials, move details to linked docs                             |
-| Slow responses             | Context window near full                 | `/compact` or `/clear` and restart                                           |
-| Repeated mistakes          | Failed approaches polluting context      | `/clear`, write better initial prompt                                        |
-| Cache not hitting          | Format changed between requests          | Keep prompt structure identical across calls                                 |
-| High token spend           | Loading irrelevant context every session | Use tiered architecture — see [agent-token-shield.md](agent-token-shield.md) |
+| Symptom                    | Cause                                    | Fix                                                                         |
+| -------------------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
+| Agent ignores instructions | AGENTS.md/CLAUDE.md too long             | Prune to essentials, move details to linked docs                            |
+| Slow responses             | Context window near full                 | `/compact` or `/clear` and restart                                          |
+| Repeated mistakes          | Failed approaches polluting context      | `/clear`, write better initial prompt                                       |
+| Cache not hitting          | Format changed between requests          | Keep prompt structure identical across calls                                |
+| High token spend           | Loading irrelevant context every session | Use tiered architecture, see [agent-token-shield.md](agent-token-shield.md) |

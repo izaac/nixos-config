@@ -1,6 +1,6 @@
 # Updating Custom NVIDIA Drivers in NixOS
 
-> **Current state:** both hosts track nixpkgs driver channels — ninja uses
+> **Current state:** both hosts track nixpkgs driver channels, ninja uses
 > `nvidiaPackages.production`, windy `nvidiaPackages.stable` (open kernel
 > modules, see `hosts/*/nvidia.nix`). No version is pinned; drivers move with
 > the nixpkgs input. The `mkDriver` override below is the **escape hatch** for
