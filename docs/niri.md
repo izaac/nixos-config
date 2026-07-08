@@ -44,6 +44,13 @@ the `Ctrl+a` tmux prefix.
 | `Mod+Ctrl+Shift+R` | Reboot    |
 | `Mod+Ctrl+Shift+Q` | Power off |
 
+### Idle & lock
+
+Noctalia locks the screen after 10 minutes idle. Screen power (DPMS) and
+suspend are left untouched, so there is no idle autosuspend; suspend stays a
+manual action (`Mod+Ctrl+Shift+S`). Unlock with a YubiKey touch or your
+password. Manual lock is `Mod+Ctrl+L`.
+
 ### Focus & move
 
 | Keys                      | Action                    |
