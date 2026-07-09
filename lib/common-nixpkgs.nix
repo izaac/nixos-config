@@ -6,6 +6,7 @@ inputs: {
     config.allowUnfree = true;
     overlays = [
       (import ../overlays/ai-trace-scanner.nix inputs)
+      (import ../overlays/opencode-unstable.nix inputs)
     ];
   };
 }
