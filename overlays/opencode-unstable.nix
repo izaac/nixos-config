@@ -3,5 +3,5 @@
 # unstable; the rest of the system stays on the stable channel. The package
 # is evaluated against unstable's own pkgs set so there is no stdenv mixing.
 inputs: final: _prev: {
-  opencode = inputs.nixpkgs-unstable.legacyPackages.${final.system}.opencode;
+  opencode = inputs.nixpkgs-unstable.legacyPackages.${final.stdenv.hostPlatform.system}.opencode;
 }
