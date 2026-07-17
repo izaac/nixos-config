@@ -1,4 +1,10 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  inputs,
+  ...
+}: let
+  system = pkgs.stdenv.hostPlatform.system;
+in {
   imports = [
     ./distrobox.nix
     ./kitty.nix
@@ -37,7 +43,7 @@
     clapper # Modern GTK4 Video Player (Rust)
     mpv # Low-latency player (good for capture card live view)
     snapshot # GTK Camera App (Rust)
-    sparrow
+    inputs.nix-packages.packages.${system}.sparrow
     ffmpeg-full
 
     # File manager + archives + preview thumbnailers
