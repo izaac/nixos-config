@@ -60,6 +60,12 @@
       url = "github:izaac/ai-trace-scanner/v0.8.0";
       flake = false;
     };
+    claude-skills = {
+      # Private repo, fetched over ssh so it stays private. Skill files
+      # only, not a flake.
+      url = "git+ssh://git@github.com/izaac/claude-skills";
+      flake = false;
+    };
   };
 
   outputs = inputs @ {

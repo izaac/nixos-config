@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }: let
   globalMd = builtins.readFile ./global.md;
@@ -29,10 +30,25 @@
       value = {source = "${cavemanSrc}/skills/${s}";};
     })
     claudeSkills);
+
+  # Own skills, private repo pinned in flake.lock.
+  ownSkills = [
+    "pw-local-runner"
+    "pw-failure-triage"
+    "nixos-managing"
+    "rancher-qa-plan"
+    "rancher-cross-version-perf"
+  ];
+  ownSkillFiles = lib.listToAttrs (map (s: {
+      name = ".claude/skills/${s}";
+      value = {source = "${inputs.claude-skills}/skills/${s}";};
+    })
+    ownSkills);
 in {
   home = {
     file =
       skillFiles
+      // ownSkillFiles
       // {
         # Claude Code: ~/.claude/CLAUDE.md
         ".claude/CLAUDE.md".text = ''

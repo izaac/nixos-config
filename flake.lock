@@ -85,6 +85,22 @@
         "type": "github"
       }
     },
+    "claude-skills": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784564714,
+        "narHash": "sha256-6Vz+dbyXqcq2RhElOx3aNmdBoF2ze6GGcgBTekFHCvA=",
+        "ref": "refs/heads/main",
+        "rev": "373e95e926af2c48bd43f963c72c1662edc90c98",
+        "revCount": 3,
+        "type": "git",
+        "url": "ssh://git@github.com/izaac/claude-skills"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/izaac/claude-skills"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -450,6 +466,7 @@
     "root": {
       "inputs": {
         "ai-trace-scanner": "ai-trace-scanner",
+        "claude-skills": "claude-skills",
         "darwin": "darwin",
         "disko": "disko",
         "home-manager": "home-manager",
