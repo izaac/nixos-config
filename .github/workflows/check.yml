@@ -1,17 +1,20 @@
 name: Cave-Check
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
       - "**/*.nix"
       - "**/*.md"
       - "flake.lock"
+      - ".github/workflows/check.yml"
   pull_request:
     branches: [main]
     paths:
       - "**/*.nix"
       - "**/*.md"
       - "flake.lock"
+      - ".github/workflows/check.yml"
 
 jobs:
   check-stones:
