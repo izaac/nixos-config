@@ -130,35 +130,37 @@
     '';
   };
 
-  # Ensure host directories exist for shared Distrobox state.
-  systemd.user.tmpfiles.rules = [
-    "d %h/.local/share/distrobox/bin 0755 - - - -"
-  ];
+  # Host directories & systemd user services for Podman/Distrobox
+  systemd.user = {
+    tmpfiles.rules = [
+      "d %h/.local/share/distrobox/bin 0755 - - - -"
+    ];
 
-  # Rootless Podman API socket (Docker-compatible) for docker-compose /
-  # lazydocker. Socket-activated: connecting starts the user service on demand.
-  systemd.user.sockets.podman = {
-    Unit.Description = "Podman API socket (rootless, docker-compatible)";
-    Socket = {
-      ListenStream = "%t/podman/podman.sock";
-      SocketMode = "0660";
+    # Rootless Podman API socket (Docker-compatible) for docker-compose /
+    # lazydocker. Socket-activated: connecting starts the user service on demand.
+    sockets.podman = {
+      Unit.Description = "Podman API socket (rootless, docker-compatible)";
+      Socket = {
+        ListenStream = "%t/podman/podman.sock";
+        SocketMode = "0660";
+      };
+      Install.WantedBy = ["sockets.target"];
     };
-    Install.WantedBy = ["sockets.target"];
-  };
 
-  systemd.user.services.podman = {
-    Unit = {
-      Description = "Podman API service (rootless)";
-      Requires = ["podman.socket"];
-      After = ["podman.socket"];
-      Documentation = ["man:podman-system-service(1)"];
+    services.podman = {
+      Unit = {
+        Description = "Podman API service (rootless)";
+        Requires = ["podman.socket"];
+        After = ["podman.socket"];
+        Documentation = ["man:podman-system-service(1)"];
+      };
+      Service = {
+        Type = "exec";
+        KillMode = "process";
+        ExecStart = "${pkgs.podman}/bin/podman system service --time=0";
+      };
+      Install.Also = ["podman.socket"];
     };
-    Service = {
-      Type = "exec";
-      KillMode = "process";
-      ExecStart = "${pkgs.podman}/bin/podman system service --time=0";
-    };
-    Install.Also = ["podman.socket"];
   };
 
   # Alias to easily create/update these containers
