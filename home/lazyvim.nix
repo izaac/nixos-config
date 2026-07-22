@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   # LazyVim ships its own colorscheme (tokyonight); skip stylix's neovim
   # target so the two don't fight at startup.
   stylix.targets.neovim.enable = false;
@@ -169,5 +173,31 @@
         },
       }
     '';
+  };
+
+  # The neovim package ships an nvim.desktop with Terminal=true, but niri has
+  # no default terminal for the file manager to resolve, so "Open with Neovim"
+  # silently fails. Override it with an entry that launches Kitty explicitly,
+  # matching the yazi/btop pattern in home/shell/env.nix.
+  xdg.desktopEntries = lib.mkIf pkgs.stdenv.isLinux {
+    nvim = {
+      name = "Neovim wrapper";
+      genericName = "Text Editor";
+      comment = "Edit text files";
+      exec = "kitty nvim %F";
+      icon = "nvim";
+      terminal = false;
+      categories = ["Utility" "TextEditor" "Development"];
+      mimeType = [
+        "text/plain"
+        "text/markdown"
+        "text/x-log"
+        "application/x-shellscript"
+        "text/x-c"
+        "text/x-c++"
+        "text/x-python"
+      ];
+      settings.Keywords = "Text;editor;vim;neovim;";
+    };
   };
 }
