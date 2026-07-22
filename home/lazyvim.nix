@@ -175,11 +175,23 @@
     '';
   };
 
-  # The neovim package ships an nvim.desktop with Terminal=true, but niri has
-  # no default terminal for the file manager to resolve, so "Open with Neovim"
-  # silently fails. Override it with an entry that launches Kitty explicitly,
-  # matching the yazi/btop pattern in home/shell/env.nix.
-  xdg.desktopEntries = lib.mkIf pkgs.stdenv.isLinux {
+  # The neovim package ships nvim.desktop with Terminal=true, and the vim
+  # package ships vim.desktop the same way, but niri has no default terminal
+  # for the file manager to resolve, so "Open with" silently fails. Override
+  # both entries to launch Kitty explicitly, matching the yazi/btop pattern in
+  # home/shell/env.nix. The vim alias resolves to Neovim (viAlias/vimAlias), so
+  # both entries open the same editor.
+  xdg.desktopEntries = lib.mkIf pkgs.stdenv.isLinux (let
+    editorMimeTypes = [
+      "text/plain"
+      "text/markdown"
+      "text/x-log"
+      "application/x-shellscript"
+      "text/x-c"
+      "text/x-c++"
+      "text/x-python"
+    ];
+  in {
     nvim = {
       name = "Neovim wrapper";
       genericName = "Text Editor";
@@ -188,16 +200,19 @@
       icon = "nvim";
       terminal = false;
       categories = ["Utility" "TextEditor" "Development"];
-      mimeType = [
-        "text/plain"
-        "text/markdown"
-        "text/x-log"
-        "application/x-shellscript"
-        "text/x-c"
-        "text/x-c++"
-        "text/x-python"
-      ];
+      mimeType = editorMimeTypes;
       settings.Keywords = "Text;editor;vim;neovim;";
     };
-  };
+    vim = {
+      name = "Vim";
+      genericName = "Text Editor";
+      comment = "Edit text files";
+      exec = "kitty vim %F";
+      icon = "gvim";
+      terminal = false;
+      categories = ["Utility" "TextEditor"];
+      mimeType = editorMimeTypes;
+      settings.Keywords = "Text;editor;vim;";
+    };
+  });
 }
