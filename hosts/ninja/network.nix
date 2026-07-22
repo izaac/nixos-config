@@ -32,10 +32,15 @@
       # INPUT chain. This breaks container-name resolution (e.g. k3d's serverlb
       # nginx resolving `k3d-<cluster>-server-0`). The `podman*` wildcard covers
       # all current and future netavark bridges.
+      # Allow the LAN to reach VLC's Chromecast stream server (default TCP
+      # 8010) so casting a video to the Sony Bravia works. VLC serves the
+      # file over HTTP and the TV connects back to fetch it; the default
+      # drop policy would otherwise block that inbound connection.
       extraInputRules = ''
         ip saddr 192.168.0.173 accept
         iifname "podman*" udp dport 53 accept
         iifname "podman*" tcp dport 53 accept
+        ip saddr 192.168.0.0/24 tcp dport 8010 accept
       '';
     };
   };
