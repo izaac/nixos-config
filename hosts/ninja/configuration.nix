@@ -34,6 +34,7 @@
     ./performance.nix
     ./audio.nix
     ./chromium.nix
+    ./plex.nix
     ./ssh.nix
     ../../modules/core
     ../../modules/gaming
