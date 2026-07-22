@@ -45,7 +45,7 @@ press the key.
 | `Ctrl+a` `h/j/k/l` | Move focus left / down / up / right (Vim)   |
 | `Ctrl+a` `←/↓/↑/→` | Move focus by arrow (same as h/j/k/l)       |
 | `Ctrl+a` `Ctrl+a`  | Jump to the **last window** (Alt-Tab style) |
-| `Ctrl+a` `a`       | Send a literal prefix, for **nested** tmux  |
+| `Ctrl+a` `a`       | Send a literal `Ctrl+a` to the inner app    |
 | `Ctrl+a` `m`       | Open the **tmux-menus** popup               |
 
 The `\` and `v` splits are deliberate: the default `\` split is moved aside so it
@@ -53,11 +53,20 @@ does not fight the menu trigger. All the usual tmux pane binds still work on top
 of these, including `%` and `"` for splits, `z` to zoom, `x` to kill, `c` for a
 new window and `[` for copy mode.
 
-### Nested tmux
+### Sending a literal Ctrl+a
 
-When you SSH from a local tmux into a remote one, the outer session swallows the
-prefix. Press `Ctrl+a` `a` to send a literal `Ctrl+a` through to the inner
-session.
+Because `Ctrl+a` is the prefix, it never reaches whatever is running in the pane.
+Press `Ctrl+a` `a` (the `send-prefix` bind) to forward one literal `Ctrl+a`
+through to the inner app. This covers three cases:
+
+- **Nested tmux**: SSH from a local tmux into a remote one and the outer session
+  swallows the prefix, so `Ctrl+a` `a` drives the inner session.
+- **Neovim**: the editor's native `Ctrl+a` (increment number) is shadowed.
+  `Ctrl+a` `a` triggers it, though the config also binds `+` / `-` for a
+  prefix-free increment and decrement (see
+  [LazyVim](lazyvim.md#shadowed-keys)).
+- **Shell**: `Ctrl+a` (start of line) at a bare prompt likewise needs
+  `Ctrl+a` `a`.
 
 ### Windows
 

@@ -78,6 +78,17 @@
       vim.g.mapleader = " "
     '';
 
+    # Prefix-free increment/decrement. Neovim's native Ctrl+A is swallowed by
+    # the tmux prefix (see docs/lazyvim.md), so bind + and - instead. Their
+    # native line-motion is redundant with j/k and Enter, so reclaiming them
+    # costs nothing and reads as plus = increment, minus = decrement.
+    "nvim/lua/config/keymaps.lua".text = ''
+      vim.keymap.set("n", "+", "<C-a>", { desc = "Increment number" })
+      vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement number" })
+      vim.keymap.set("x", "+", "g<C-a>", { desc = "Increment sequence" })
+      vim.keymap.set("x", "-", "g<C-x>", { desc = "Decrement sequence" })
+    '';
+
     "nvim/lua/plugins/colorscheme.lua".text = ''
       return {
         { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
