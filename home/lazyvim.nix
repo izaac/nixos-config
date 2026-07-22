@@ -16,11 +16,42 @@
       # LazyVim-specific deps. ripgrep/fd/gnumake/gcc/unzip/tree-sitter live
       # on user PATH via home/dev.nix + home/shell/packages.nix — neovim
       # finds them there, so no need to duplicate into the wrapper.
+      #
+      # Because Mason is disabled (see disable-mason.lua below), every tool the
+      # enabled language extras expect must be on this wrapper PATH, otherwise
+      # the extra errors when it tries to spawn a missing binary. The LSPs we
+      # already share come from home/dev.nix (nixd, gopls, taplo); the rest are
+      # bundled here. DAP debuggers (delve, debugpy, js-debug) are intentionally
+      # omitted since no nvim-dap extra is imported.
       lazygit
 
-      # Language servers / Formatters not shared with other tools
+      # Lua (not an extra, but fully wired)
       lua-language-server
       stylua
+
+      # Go extra (lang.go): linter and formatters. gopls is on PATH via
+      # home/dev.nix. goimports ships inside gotools.
+      golangci-lint
+      gofumpt
+      gotools
+
+      # TypeScript extra (lang.typescript): vtsls is the LSP the extra selects
+      # by default and force-enables over ts_ls.
+      vtsls
+
+      # Python extra (lang.python): pyright is the default LSP, ruff the linter
+      # and formatter.
+      pyright
+      ruff
+
+      # Markdown extra (lang.markdown): marksman is the LSP, markdownlint-cli2
+      # the linter, prettier and markdown-toc the formatters. markdownlint-cli2
+      # and prettier match the versions the repo's own treefmt and pre-commit
+      # hooks use.
+      marksman
+      markdownlint-cli2
+      prettier
+      markdown-toc
     ];
   };
 
@@ -109,6 +140,33 @@
         { "mason-org/mason-lspconfig.nvim", enabled = false },
         { "WhoIsSethDaniel/mason-tool-installer.nvim", enabled = false },
         { "jay-babu/mason-nvim-dap.nvim", enabled = false },
+      }
+    '';
+
+    # Align the Nix tooling with the rest of the repo. The lang.nix extra
+    # defaults to the nil_ls language server and the nixfmt formatter, but the
+    # CLI, treefmt and pre-commit hooks all use nixd (eval-aware, installed via
+    # home/dev.nix) and alejandra. Point the editor at the same pair so an
+    # in-editor save formats a file identically to `nix fmt`, with no churn.
+    "nvim/lua/plugins/nix-tools.lua".text = ''
+      return {
+        {
+          "neovim/nvim-lspconfig",
+          opts = {
+            servers = {
+              nixd = {},
+              nil_ls = { enabled = false },
+            },
+          },
+        },
+        {
+          "stevearc/conform.nvim",
+          optional = true,
+          opts = function(_, opts)
+            opts.formatters_by_ft = opts.formatters_by_ft or {}
+            opts.formatters_by_ft.nix = { "alejandra" }
+          end,
+        },
       }
     '';
   };

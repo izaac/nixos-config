@@ -60,23 +60,34 @@ Language support is declared in `home/lazyvim.nix` as LazyVim
 treesitter parsers, plugins and LSP wiring, and the matching server has to be on
 `$PATH` (see [Adding a language](#adding-a-language)).
 
-| Extra             | Language | Server on `$PATH`                                                |
-| ----------------- | -------- | ---------------------------------------------------------------- |
-| `lang.nix`        | Nix      | `nixd` ([`home/dev.nix`](../home/dev.nix))                       |
-| `lang.go`         | Go       | `gopls` ([`home/dev.nix`](../home/dev.nix))                      |
-| `lang.typescript` | JS / TS  | `typescript-language-server` ([`home/dev.nix`](../home/dev.nix)) |
-| `lang.python`     | Python   | see note below                                                   |
-| `lang.toml`       | TOML     | `taplo` ([`home/dev.nix`](../home/dev.nix))                      |
-| `lang.markdown`   | Markdown | `marksman` (add if you want the LSP)                             |
+| Extra             | Language | Server     | Provided by                                   |
+| ----------------- | -------- | ---------- | --------------------------------------------- |
+| `lang.nix`        | Nix      | `nixd`     | [`home/dev.nix`](../home/dev.nix)             |
+| `lang.go`         | Go       | `gopls`    | [`home/dev.nix`](../home/dev.nix)             |
+| `lang.typescript` | JS / TS  | `vtsls`    | wrapper `extraPackages` in `home/lazyvim.nix` |
+| `lang.python`     | Python   | `pyright`  | wrapper `extraPackages` in `home/lazyvim.nix` |
+| `lang.toml`       | TOML     | `taplo`    | [`home/dev.nix`](../home/dev.nix)             |
+| `lang.markdown`   | Markdown | `marksman` | wrapper `extraPackages` in `home/lazyvim.nix` |
 
-Lua is not an extra but is fully wired: `lua-language-server` and the `stylua`
-formatter are bundled into the Neovim wrapper (`extraPackages` in
-`home/lazyvim.nix`) rather than the shared `$PATH`, since nothing else uses them.
+Because Mason is off, every linter and formatter an extra spawns also has to be
+present, not just the LSP. The extras pull in more than the language server, so
+the wrapper bundles the rest through `extraPackages` in `home/lazyvim.nix`:
 
-> **Python note**: the `lang.python` extra normally expects `basedpyright` and
-> `ruff`, which Mason would fetch. With Mason off they are not present yet. Add
-> `basedpyright` and `ruff` to [`home/dev.nix`](../home/dev.nix) if you want the
-> Python LSP and linter live.
+| Extra           | Also bundled                                        |
+| --------------- | --------------------------------------------------- |
+| `lang.go`       | `golangci-lint`, `gofumpt`, `goimports` (`gotools`) |
+| `lang.python`   | `ruff` (linter and formatter)                       |
+| `lang.markdown` | `markdownlint-cli2`, `prettier`, `markdown-toc`     |
+
+Lua is not an extra but is fully wired the same way: `lua-language-server` and
+the `stylua` formatter are bundled into the wrapper rather than the shared
+`$PATH`, since nothing else uses them.
+
+> **Nix note**: the `lang.nix` extra defaults to the `nil_ls` server and the
+> `nixfmt` formatter, but this repo standardises on `nixd` and `alejandra`
+> everywhere (CLI, treefmt, pre-commit). `nvim/lua/plugins/nix-tools.lua`
+> overrides the extra so an in-editor save formats a file identically to
+> `nix fmt`, with no churn against the hooks.
 
 ---
 
@@ -207,12 +218,14 @@ Because Mason is off, adding a language is two steps:
 1. Add the LazyVim extra to the `spec` list in
    [`home/lazyvim.nix`](../home/lazyvim.nix), for example
    `{ import = "lazyvim.plugins.extras.lang.rust" }`.
-2. Add its language server (and any formatter or linter) to
-   [`home/dev.nix`](../home/dev.nix) so it lands on `$PATH`, for example
-   `rust-analyzer`.
+2. Add its language server, and any formatter or linter the extra spawns, so
+   they land on a `$PATH` Neovim can see. Either put them in
+   [`home/dev.nix`](../home/dev.nix) if they are useful to the shell too, or in
+   the wrapper `extraPackages` in [`home/lazyvim.nix`](../home/lazyvim.nix) to
+   keep them editor-only, for example `rust-analyzer`.
 
 Rebuild, and `nvim-lspconfig` picks the server up automatically. Skipping step 2
-leaves the extra installed but the LSP silent.
+leaves the extra installed but the LSP silent, and Mason will not fill the gap.
 
 ---
 
