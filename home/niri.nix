@@ -182,6 +182,15 @@ in {
         ];
         open-fullscreen = true;
       }
+      # Lords of the Fallen: opens windowed/tiled under niri; force fullscreen
+      # so it owns the whole output.
+      {
+        matches = [
+          {app-id = "^steam_app_1501750$";}
+          {title = "^Lords of the Fallen.*";}
+        ];
+        open-fullscreen = true;
+      }
       # SPICE Viewer (virt-viewer, spicy) and Remmina session: open wider than default
       {
         matches = [
