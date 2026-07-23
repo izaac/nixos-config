@@ -26,6 +26,11 @@
       top = "btop";
       sysls = "systemctl --type=service --state=running";
 
+      # --- PLEX (on-demand) ---
+      plex-start = "systemctl start plex";
+      plex-stop = "systemctl stop plex";
+      plex-status = "systemctl status plex";
+
       # --- NAVIGATION & FILE OPS ---
       cpv = "rsync -ahP --size-only";
       rcp = "rclone sync --progress --fast-list --drive-chunk-size 64M --transfers 8 --checkers 16 --size-only";

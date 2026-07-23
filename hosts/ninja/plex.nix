@@ -1,4 +1,4 @@
-_: {
+{lib, ...}: {
   # Plex Media Server. The Sony Bravia runs the Plex app, so this serves the
   # local library to the TV (and any other Plex client) with native mkv
   # playback and audio/subtitle track selection. openFirewall opens the Plex
@@ -13,6 +13,24 @@ _: {
     enable = true;
     openFirewall = true;
   };
+
+  # On-demand only. Clearing wantedBy keeps Plex from starting at boot; it is
+  # started manually with `plex-start` (systemctl start plex) when needed and
+  # stopped with `plex-stop`.
+  systemd.services.plex.wantedBy = lib.mkForce [];
+
+  # Let wheel users start and stop plex.service through systemctl without a
+  # sudo/polkit password prompt, so the `plex-start`/`plex-stop` aliases work
+  # unprivileged.
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.freedesktop.systemd1.manage-units" &&
+          action.lookup("unit") == "plex.service" &&
+          subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
 
   # NVENC hardware transcoding. Plex's bundled FFmpeg needs the NVIDIA
   # userspace libraries (libnvidia-encode, libnvcuvid, libcuda), which live in
