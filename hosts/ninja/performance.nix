@@ -69,6 +69,16 @@
     acpid.enable = lib.mkForce false;
   };
 
+  # Rescue console. NAutoVTs = 0 means no getty is autospawned, so the niri
+  # session on tty1 is the only login by default. Keep one always-live getty
+  # on tty2 as a local fallback if the graphical session wedges (for example
+  # while testing DPMS blanking). Reach it with Ctrl+Alt+F2; SSH and tailscale
+  # remain the primary remote rescue path.
+  systemd.services."getty@tty2" = {
+    enable = true;
+    wantedBy = ["multi-user.target"];
+  };
+
   nix.settings = {
     max-jobs = 6;
     cores = 8;
