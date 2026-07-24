@@ -92,6 +92,12 @@
       };
       idle.behavior.suspend.enabled = false;
 
+      # Let an empty password submit at the lock screen so a YubiKey (U2F,
+      # via the `login` PAM stack) unlocks with just a tap: press Enter on an
+      # empty field and PAM cues the key. Typing the account password still
+      # works as usual; this only unblocks the empty-submit path.
+      lockscreen.allow_empty_password = true;
+
       # Wallpaper is drawn by noctalia's own engine now (swaybg is gone). It
       # scans ~/Pictures/Wallpapers (symlinked to the wallpaper repo) so the
       # control center can switch backgrounds live. The initial background is
