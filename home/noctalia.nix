@@ -80,15 +80,22 @@
       # previous wpctl "-l 1.5" cap now that noctalia owns the media keys.
       audio.enable_overdrive = true;
 
-      # Auto-lock on idle only. screen-off (DPMS) and suspend are left
-      # untouched by timers, so this never powers the display or system down;
-      # suspend stays a manual action from the session panel. suspend is
-      # pinned off explicitly so a future noctalia default can't silently
-      # enable idle autosuspend.
+      # Idle timers. Lock the session after 8 minutes idle, then power the
+      # display off (DPMS) after 12 minutes. screen-off must set action
+      # explicitly because each [idle.behavior.*] entry is parsed fresh (the
+      # builtin defaults are not merged in), and the action pairs an automatic
+      # screen-on resume so any input wakes the display. suspend stays disabled
+      # so idle never powers the system down; suspend remains a manual action
+      # from the session panel.
       idle.behavior.lock = {
         enabled = true;
-        timeout = 600;
+        timeout = 480;
         command = "noctalia:session lock";
+      };
+      idle.behavior."screen-off" = {
+        enabled = true;
+        timeout = 720;
+        action = "screen_off";
       };
       idle.behavior.suspend.enabled = false;
 
