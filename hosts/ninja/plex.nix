@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  lib,
+  userConfig,
+  ...
+}: {
   # Plex Media Server. The Sony Bravia runs the Plex app, so this serves the
   # local library to the TV (and any other Plex client) with native mkv
   # playback and audio/subtitle track selection. openFirewall opens the Plex
@@ -41,12 +45,12 @@
   systemd.services.plex.environment.LD_LIBRARY_PATH = "/run/opengl-driver/lib";
 
   # Plex runs as its own `plex` user. Add it to the `users` group so it can
-  # read the shared media library that izaac fills.
+  # read the shared media library that ${userConfig.username} fills.
   users.users.plex.extraGroups = ["users"];
 
   # Media library on the big data disk. Setgid (2775) so files and folders
   # dropped in keep the `users` group, keeping them readable by plex.
   systemd.tmpfiles.rules = [
-    "d /mnt/data/media 2775 izaac users -"
+    "d /mnt/data/media 2775 ${userConfig.username} users -"
   ];
 }
