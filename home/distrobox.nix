@@ -127,6 +127,17 @@
       nvidia=false
       shell=/bin/bash
       init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
+
+      # === openSUSE Leap 16.0 ===
+      [suse]
+      image=registry.opensuse.org/opensuse/leap:16.0
+      pull=true
+      additional_packages="git curl wget neovim ripgrep fastfetch"
+      init=false
+      nvidia=true
+      shell=/bin/bash
+      pre_init_hooks="zypper ref && zypper -n install -y bash-completion bc bzip2 curl diffutils findutils glibc-locale glibc-locale-base gnupg hostname iputils keyutils less lsof shadow || true"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
     '';
   };
 
@@ -171,5 +182,6 @@
     db-ubu = "distrobox enter ubu -- bash";
     db-debian = "distrobox enter debi -- bash";
     db-alpine = "distrobox enter alpy -- sh";
+    db-suse = "distrobox enter suse -- bash";
   };
 }
