@@ -521,8 +521,8 @@ watch -n 1 sensors
 
 - [ASUS ROG STRIX X670E-F Product Page](https://rog.asus.com/motherboards/rog-strix/rog-strix-x670e-f-gaming-wifi-model/)
 - [AMD Ryzen 9 9950X3D Specifications](https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x3d.html)
-- [NVIDIA RTX 5060 Ti Specifications](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5060-ti-5060/)
-- [NixOS Hardware Configuration](https://nixos.wiki/wiki/Laptops/ASUS)
+- [NVIDIA RTX 50 Series Specifications](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/#specs)
+- [NixOS Hardware Configuration](https://wiki.nixos.org/wiki/Hardware/Asus)
 
 ---
 
