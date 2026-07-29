@@ -1,5 +1,38 @@
 {config, ...}: {
   stylix.targets.firefox.enable = false;
+
+  home.sessionVariables = {
+    MOZ_ENABLE_WAYLAND = "0";
+  };
+
+  # Override desktop entry so launcher runs Firefox under XWayland (fixes NVIDIA popups)
+  xdg.desktopEntries.firefox = {
+    name = "Firefox Web Browser";
+    exec = "env MOZ_ENABLE_WAYLAND=0 firefox %U";
+    icon = "firefox";
+    type = "Application";
+    categories = ["Network" "WebBrowser"];
+    terminal = false;
+    mimeType = [
+      "text/html"
+      "text/xml"
+      "application/xhtml+xml"
+      "application/vnd.mozilla.xul+xml"
+      "x-scheme-handler/http"
+      "x-scheme-handler/https"
+    ];
+    actions = {
+      "new-window" = {
+        name = "Open a New Window";
+        exec = "env MOZ_ENABLE_WAYLAND=0 firefox --new-window %U";
+      };
+      "new-private-window" = {
+        name = "Open a New Private Window";
+        exec = "env MOZ_ENABLE_WAYLAND=0 firefox --private-window %U";
+      };
+    };
+  };
+
   programs.firefox = {
     enable = true;
     configPath = "${config.xdg.configHome}/mozilla/firefox";
@@ -42,8 +75,12 @@
           Value = true;
           Status = "locked";
         };
-        "layers.acceleration.force-enabled" = {
-          Value = true;
+        "gfx.webrender.compositor" = {
+          Value = false;
+          Status = "locked";
+        };
+        "widget.wayland.opaque-region.enabled" = {
+          Value = false;
           Status = "locked";
         };
         "media.ffmpeg.vaapi.enabled" = {
@@ -55,14 +92,6 @@
           Status = "locked";
         };
         "media.av1.enabled" = {
-          Value = true;
-          Status = "locked";
-        };
-        "gfx.x11-egl.force-enabled" = {
-          Value = true;
-          Status = "locked";
-        };
-        "widget.dmabuf.force-enabled" = {
           Value = true;
           Status = "locked";
         };
