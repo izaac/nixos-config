@@ -6,6 +6,7 @@
     window_padding_width = 8;
     scrollback_lines = 10000;
     copy_on_select = "clipboard";
+    clipboard_control = "write-clipboard write-primary read-clipboard read-primary";
     mouse_hide_wait = "3.0";
 
     # The tab indicator we came back for: terminal-drawn powerline tabs.

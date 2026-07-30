@@ -18,6 +18,7 @@ in {
     ./vscode.nix
     ./capture-card.nix
     ./firefox.nix
+    ./zathura.nix
   ];
 
   # --- FONTS ---
@@ -69,7 +70,6 @@ in {
 
     # GTK Apps (Rust-based replacements)
     loupe # Image Viewer (Rust)
-    (papers.override {supportNautilus = false;}) # PDF/Document Viewer (Rust)
     newsflash # GTK4/Libadwaita RSS Reader (Rust)
     drawing # GTK image editor (MS Paint-like)
     gnome-calculator # GTK4/libadwaita scientific + programming calculator
@@ -134,8 +134,8 @@ in {
         "audio/x-mp3" = ["io.bassi.Amberol.desktop"];
 
         # Documents / Images
-        "application/pdf" = ["org.gnome.Papers.desktop"];
-        "application/epub+zip" = ["org.gnome.Papers.desktop"];
+        "application/pdf" = ["org.pwmt.zathura.desktop"];
+        "application/epub+zip" = ["org.pwmt.zathura.desktop"];
         "image/png" = ["org.gnome.Loupe.desktop"];
         "image/jpeg" = ["org.gnome.Loupe.desktop"];
         "image/webp" = ["org.gnome.Loupe.desktop"];

@@ -20,6 +20,7 @@
 - [tmux (terminal multiplexer)](tmux.md)
 - [Kitty + tmux integration](kitty-tmux.md)
 - [LazyVim (Neovim)](lazyvim.md)
+- [Zathura PDF Viewer](zathura.md)
 
 ## Agent Instructions
 
