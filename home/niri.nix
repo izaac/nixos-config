@@ -36,6 +36,17 @@
       esac
     '';
   };
+  audioSinkMenu = pkgs.writeShellApplication {
+    name = "audio-sink-menu";
+    runtimeInputs = with pkgs; [pulseaudio fuzzel gawk coreutils];
+    text = ''
+      sel=$(pactl list sinks | awk '
+        /^Sink #/      { id=$2; sub("#","",id) }
+        /Description:/ { sub(/^[[:space:]]*Description: /,""); print id"\t"$0 }
+      ' | fuzzel --dmenu --prompt "Audio: ")
+      [ -n "$sel" ] && pactl set-default-sink "$(echo "$sel" | cut -f1)"
+    '';
+  };
 in {
   # Apply Stylix theme tokens to niri config.
   stylix.targets.niri.enable = true;
@@ -223,6 +234,7 @@ in {
       "Mod+Shift+P".action = spawn "noctalia" "msg" "panel-toggle" "session";
       "Mod+Shift+N".action = spawn "noctalia" "msg" "notification-dnd-toggle";
       "Mod+S".action = spawn "noctalia" "msg" "panel-toggle" "control-center";
+      "Mod+Shift+S".action = spawn (lib.getExe audioSinkMenu);
       "Mod+V".action = spawn "noctalia" "msg" "panel-toggle" "clipboard";
 
       # --- Direct power actions (skip menu) ---
