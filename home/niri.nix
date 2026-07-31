@@ -58,6 +58,8 @@ in {
     libnotify # notify-send for screen-record feedback
   ];
 
+  programs.fuzzel.enable = true;
+
   programs.niri.settings = {
     prefer-no-csd = true;
 
