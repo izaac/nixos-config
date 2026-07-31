@@ -67,7 +67,7 @@ in {
       # supports OSC 52 clipboard relay and RGB color; tell tmux so yanks
       # reach the Wayland clipboard and color rendering stays true.
       set -ga terminal-overrides ",*-256color:Tc"
-      set -as terminal-features ',*:RGB'
+      set -as terminal-features ',*:RGB:clipboard'
       set -s set-clipboard on
 
       # Forward focus events to apps inside tmux (fixes nvim autoread,
