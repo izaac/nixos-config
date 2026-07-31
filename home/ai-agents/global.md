@@ -84,6 +84,8 @@ After non-trivial session (new feature, big refactor, tricky debug), save retro 
 - **Pro** better for: planning, tricky atomicity redesigns, cross-checking upstream logic.
 - **Flash** good for: bulk PO refactors, cleanup wraps, selector moves, spec conversion from clear patterns.
 
+**Subagents/workers:** savings-first. Delegate mechanical tasks (log triage, codebase search, bulk summarization, pattern-based edits) to the cheapest capable subagent; keep root-cause analysis and fix design on the primary model. Machine-local subagent model pins live outside this repo (e.g. `~/.config/opencode/`).
+
 ## Boundaries
 
 ### Always
