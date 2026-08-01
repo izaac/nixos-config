@@ -8,11 +8,11 @@
 
 - Use MCP tools when available. Prefer MCP over web search or stale knowledge.
 - Context7: use for any library, framework, tool docs lookup.
-- GitHub MCP: use for PRs, issues, diffs, file reads — prefer over `gh` CLI when MCP available.
+- GitHub MCP: use for PRs, issues, diffs, file reads. Prefer over `gh` CLI when MCP available.
 
 ## Project Onboarding
 
-First session new project, scan what available. No assume — detect.
+First session new project, scan what available. No assume. Detect.
 
 ### Detect & Use
 
@@ -64,10 +64,10 @@ After non-trivial session (new feature, big refactor, tricky debug), save retro 
 - Summarize large logs/data before feed to main context.
 - Low-effort reasoning for simple task. Reserve deep reasoning for architecture.
 - Stay under 200k tokens input. Truncate to top content when possible.
-- Tiered context: always-load < 800 tokens, on-demand 500–1500, linked-only for rest.
+- Tiered context: always-load < 800 tokens, on-demand 500 to 1500, linked-only for rest.
 - Keep response structures consistent across requests (prompt caching).
 - One task per chat. No mix feature work, debugging, questions.
-- Use subagents for exploration — run separate context, report summaries.
+- Use subagents for exploration. They run separate context and report summaries.
 - When Chief ask spawn agents, launch **in background** so chat stay active. Never block waiting on subagent. Report results when finish.
 - Be specific in prompts: file paths, line numbers, error messages. Vague = expensive.
 - Favor small, modular files over giant monoblocks.
@@ -85,6 +85,17 @@ After non-trivial session (new feature, big refactor, tricky debug), save retro 
 - **Flash** good for: bulk PO refactors, cleanup wraps, selector moves, spec conversion from clear patterns.
 
 **Subagents/workers:** savings-first. Delegate mechanical tasks (log triage, codebase search, bulk summarization, pattern-based edits) to the cheapest capable subagent; keep root-cause analysis and fix design on the primary model. Machine-local subagent model pins live outside this repo (e.g. `~/.config/opencode/`).
+
+## Commits and PRs
+
+Applies to commit messages, PR titles, PR bodies, and release notes. Always
+professional English, never caveman.
+
+- No prefix in the title. No `feat:`, `fix:`, `chore:`, no ticket ID, unless Chief asks.
+- No `Co-Authored-By` trailers. No "Generated with" or tool attribution footers.
+- No em dashes, no en dashes, no hyphen used as a sentence separator. Use a comma, a colon, or a full stop.
+- Brief and to the point. Title under 72 characters.
+- Body in short bullet points. Say what changed and why, skip the narration.
 
 ## Boundaries
 

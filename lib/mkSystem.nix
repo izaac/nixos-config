@@ -23,6 +23,7 @@ inputs.nixpkgs.lib.nixosSystem {
         (import ../overlays/openldap-no-tests.nix)
         (import ../overlays/gvfs-no-wsdd.nix)
         (import ../overlays/dwarfs-skip-affinity-test.nix)
+        (import ../overlays/copilot-cli-bash-path.nix)
         inputs.niri-flake.overlays.niri
       ];
     }
