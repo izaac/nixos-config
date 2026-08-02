@@ -60,9 +60,8 @@
       networks."40-eno1" = {
         matchConfig.Name = "eno1";
 
-        # Modern 25.11 Simplified Syntax
-        address = ["192.168.0.230/24"];
-        gateway = ["192.168.0.1"];
+        # DHCP enabled via Pi-hole reservation (192.168.0.10)
+        DHCP = "ipv4";
         dns = ["192.168.0.96"];
         domains = ["~."]; # Route ALL DNS traffic through this interface (Pi-hole)
 
