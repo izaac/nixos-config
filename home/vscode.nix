@@ -8,6 +8,7 @@
     };
     profiles.default.userSettings = {
       "editor.minimap.enabled" = false;
+      "telemetry.telemetryLevel" = "off";
     };
   };
 }
