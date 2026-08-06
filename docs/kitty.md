@@ -97,23 +97,6 @@ keyboard, but the day-to-day tab cycle is `Ctrl+Tab` / `Ctrl+Shift+Tab`.
 - **Mac**: edit `font_size` in [`home/darwin/kitty.nix`](../home/darwin/kitty.nix)
   and re-apply. For a quick, non-persistent change use `⌘+` / `⌘-` / `⌘0`.
 
-### Customizing font size bindings
-
-To change the default zoom bindings, add `change_font_size` to `keybindings` in [`home/kitty-common.nix`](../home/kitty-common.nix) (for Linux) or [`home/darwin/kitty.nix`](../home/darwin/kitty.nix) (for Mac, using `cmd`):
-
-```nix
-keybindings = {
-  # Linux (kitty-common.nix)
-  "ctrl+plus" = "change_font_size all +2.0";
-  "ctrl+minus" = "change_font_size all -2.0";
-  "ctrl+0" = "change_font_size all 0";
-  
-  # Mac (darwin/kitty.nix)
-  "cmd+plus" = "change_font_size all +2.0";
-  "cmd+minus" = "change_font_size all -2.0";
-  "cmd+0" = "change_font_size all 0";
-};
-```
 
 ---
 
