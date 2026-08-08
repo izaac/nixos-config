@@ -63,6 +63,15 @@ in {
   programs.niri.settings = {
     prefer-no-csd = true;
 
+    # niri inherits its environment from whatever launched the session, so a
+    # variable changed in home.sessionVariables keeps leaking its old value
+    # into every spawned child until the next logout. Re-asserting them here
+    # overrides the stale inherited values on a live config reload, which
+    # keeps xdg-open and any $BROWSER/$TERMINAL consumer in sync.
+    environment = {
+      inherit (config.home.sessionVariables) BROWSER TERMINAL;
+    };
+
     # On windy (Intel + NVIDIA hybrid) force niri to composite on the Intel
     # iGPU, which already drives the internal panel (card1/renderD128). Without
     # this niri picks the NVIDIA dGPU and keeps the RTX 3080 powered on around
