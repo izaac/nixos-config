@@ -2,10 +2,8 @@
   pkgs,
   lib,
   inputs,
-  osConfig ? {},
   ...
 }: let
-  hostname = osConfig.networking.hostName or "";
   system = pkgs.stdenv.hostPlatform.system;
 in {
   home.packages = with pkgs;
@@ -125,8 +123,5 @@ in {
     ++ [
       inputs.nix-packages.packages.${system}.proton-drive-cli
       inputs.nix-packages.packages.${system}.pd
-    ]
-    ++ lib.optionals (hostname == "ninja") [
-      codex
     ];
 }
