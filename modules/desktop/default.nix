@@ -35,6 +35,7 @@ in {
       noctalia-greeter = {
         enable = true;
         greeter-args = "--session niri";
+        settings.auth.allow_empty_password = true;
       };
 
       # Cross-platform LAN file transfer (auto-opens firewall port 53317).

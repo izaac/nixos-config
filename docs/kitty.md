@@ -97,7 +97,6 @@ keyboard, but the day-to-day tab cycle is `Ctrl+Tab` / `Ctrl+Shift+Tab`.
 - **Mac**: edit `font_size` in [`home/darwin/kitty.nix`](../home/darwin/kitty.nix)
   and re-apply. For a quick, non-persistent change use `⌘+` / `⌘-` / `⌘0`.
 
-
 ---
 
 ## How to apply
