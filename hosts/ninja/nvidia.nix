@@ -13,7 +13,27 @@
     # nvidia-suspend/resume systemd services which conflict with the kernel notifiers.
     powerManagement.enable = false;
     powerManagement.finegrained = false;
-    package = config.boot.kernelPackages.nvidiaPackages.production;
+
+    # Hand-pinned to NVIDIA's New Feature Branch, which is ahead of every
+    # attribute nixpkgs currently ships (production 595.71.05, new_feature
+    # 590.48.01). This is deliberately not the production branch: NFB carries
+    # the current Blackwell fixes for the RTX 5060 Ti, at the cost of a shorter
+    # support window and faster churn.
+    #
+    # Nothing updates these hashes automatically, so this pin holds the driver
+    # back once nixpkgs catches up. Drop the whole mkDriver block and go back to
+    # nvidiaPackages.production as soon as it reaches 610 or newer.
+    #
+    # To bump by hand: take the version from
+    # https://www.nvidia.com/en-us/drivers/unix/ and refresh all four hashes
+    # (aarch64 is intentionally omitted, ninja is x86_64 only).
+    package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
+      version = "610.57.04";
+      sha256_64bit = "sha256-suk1xmuDuwDAyFe8jg7g/VLekoa0DJzB7sKafOfrEW0=";
+      openSha256 = "sha256-rQHOOOY4KL92Ww3KDwh+j4eGU7oNAH8LutZC5wmFnPo=";
+      settingsSha256 = "sha256-ZEMo8I8Zc2Tq6RVDNYpAH+f094dUaZiBqO+5f6lIjRI=";
+      persistencedSha256 = "sha256-aXmD2VY1RLlgAnlHhOUMWzvMyhI6JTClcFLm4imF/mA=";
+    };
     nvidiaPersistenced = true;
   };
 
