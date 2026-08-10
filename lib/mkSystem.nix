@@ -24,6 +24,8 @@ inputs.nixpkgs.lib.nixosSystem {
         (import ../overlays/gvfs-no-wsdd.nix)
         (import ../overlays/dwarfs-skip-affinity-test.nix)
         (import ../overlays/copilot-cli-bash-path.nix)
+        (import ../overlays/ashell-unstable.nix inputs)
+        (import ../overlays/stash-unstable.nix inputs)
         inputs.niri-flake.overlays.niri
       ];
     }

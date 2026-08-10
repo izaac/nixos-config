@@ -7,11 +7,12 @@ Tracks **nixos-26.05 stable**. Custom packages live in a separate
 ## Overview
 
 - **OS:** NixOS 26.05 (stable) + nix-darwin 26.05 (Mac)
-- **DM:** noctalia-greeter (greetd) with YubiKey U2F
+- **DM:** [ReGreet](https://github.com/rharish101/ReGreet) (greetd, in cage) with YubiKey U2F
 - **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake)
-- **Shell of the desktop:** [Noctalia](https://github.com/noctalia-dev/noctalia) v5 (bar, launcher, notifications, control center, lock, OSDs, clipboard, session panel). Native Wayland + OpenGL ES, no Qt or GTK.
+- **Shell of the desktop:** [ashell](https://github.com/MalpenZibo/ashell) on `ninja` (bar, control center, notifications, OSD; Rust + iced), with fuzzel, swaylock, swayidle, [stash](https://github.com/NotAShelf/stash) and wlogout filling the gaps. `windy` still runs [Noctalia](https://github.com/noctalia-dev/noctalia) v5 until it is migrated.
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
-- **Theme:** App colors are Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix); the Noctalia shell palette is generated from the current wallpaper
+- **Theme:** App colors are Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix); the desktop shell palette is generated from the current wallpaper by [matugen](https://github.com/InioX/matugen)
+- **Wallpaper:** [awww](https://codeberg.org/LGFae/awww) daemon, driven by the `set-wallpaper` helper
 - **Shell:** Zsh + Starship + Atuin + Zoxide (all hosts, Mac included)
 - **Terminal:** Kitty + tmux
 - **Editor:** LazyVim (Neovim distribution)
@@ -27,11 +28,13 @@ lib/               # mkSystem helper, user config
 hosts/             # Per-host configuration.nix + hardware
 modules/           # Reusable NixOS modules (mySystem.* options)
   core/            # Audio, codecs, nix-ld, performance, sops, maintenance
-  desktop/         # Niri compositor, noctalia-greeter, NVIDIA glue
+  desktop/         # Niri compositor, ReGreet greeter, NVIDIA glue
   gaming/          # Steam, GameMode, sched-ext (SCX)
 home/              # Home Manager modules (per-app .nix files)
-  niri.nix         # Compositor config, keybinds, spawn-at-startup
-  noctalia.nix     # Noctalia shell (bar, launcher, notifications, lock)
+  niri.nix         # Compositor config, shell-agnostic keybinds
+  ashell.nix       # ashell shell + matugen theming + wallpaper (ninja)
+  lock.nix         # swaylock, swayidle, wlogout (ninja)
+  noctalia.nix     # Noctalia shell + its niri binds (windy)
   shell/           # Split shell config (aliases, functions, packages)
 users/             # Per-user profile composition
 overlays/          # Package overrides

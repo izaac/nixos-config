@@ -15,7 +15,7 @@ in {
     ./chrome.nix
 
     ./lazyvim.nix
-    ./vscode.nix
+    ./zed.nix
     ./capture-card.nix
     ./firefox.nix
     ./zathura.nix
@@ -159,9 +159,9 @@ in {
     };
   };
 
-  # Suppress xdg-autostart for the GVFS volume monitor; Noctalia owns the
-  # tray, network, bluetooth, and audio surfaces, so the old tray applets are
-  # no longer installed or autostarted.
+  # Suppress xdg-autostart for the GVFS volume monitor; the desktop shell owns
+  # the tray, network, bluetooth, and audio surfaces, so the old tray applets
+  # are no longer installed or autostarted.
   xdg.configFile = let
     hidden = ''
       [Desktop Entry]
