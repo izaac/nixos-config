@@ -31,8 +31,8 @@ in {
 
       address = lib.mkOption {
         type = lib.types.str;
-        default = siteConfig.printerIp;
-        description = "IP address of the Canon LBP113/LBP913 on the LAN.";
+        default = siteConfig.printerAddress;
+        description = "Address (hostname or IP) of the Canon LBP113/LBP913 on the LAN.";
       };
     };
   };

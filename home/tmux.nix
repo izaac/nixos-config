@@ -59,9 +59,9 @@ in {
       set -g window-status-format " #I:#W#F "
       set -g window-status-current-format " #[bold]#I:#W#F#[nobold] "
 
-      # Right: weekday, date, time
-      set -g status-right " %a %d %b  %H:%M "
-      set -g status-right-length 60
+      # Right: minimal clock — ashell bar already shows full date.
+      set -g status-right " %H:%M "
+      set -g status-right-length 10
 
       # 1. TrueColor Override + modern terminal feature flags. Kitty
       # supports OSC 52 clipboard relay and RGB color; tell tmux so yanks
@@ -97,6 +97,18 @@ in {
       bind Down  select-pane -D
       bind Up    select-pane -U
       bind Right select-pane -R
+
+      # --- TMUX-NAVIGATOR (seamless Ctrl+HJKL across vim splits and tmux panes) ---
+      is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+        | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?\\.?(view|l?n?vim?x?|fzf)(diff)?$'"
+      bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
+      bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
+      bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
+      bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
+      bind-key -T copy-mode-vi 'C-h' select-pane -L
+      bind-key -T copy-mode-vi 'C-j' select-pane -D
+      bind-key -T copy-mode-vi 'C-k' select-pane -U
+      bind-key -T copy-mode-vi 'C-l' select-pane -R
 
       # --- SPLITS ---
       bind "\\" split-window -h

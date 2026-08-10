@@ -15,7 +15,7 @@ in {
     ./chrome.nix
 
     ./lazyvim.nix
-    ./vscode.nix
+    ./zed.nix
     ./capture-card.nix
     ./firefox.nix
     ./zathura.nix
@@ -33,7 +33,7 @@ in {
     telegram-desktop
 
     # Audio Tools
-    pulsemixer
+    wiremix # was pulsemixer (Python) → wiremix (Rust)
     monophony
     amberol # Simple Rust Music Player
     shortwave # Rust Internet Radio
@@ -68,11 +68,12 @@ in {
     boxbuddy
     gearlever
 
-    # GTK Apps (Rust-based replacements)
+    # GTK Apps (Rust-based replacements + Viewers)
     loupe # Image Viewer (Rust)
     newsflash # GTK4/Libadwaita RSS Reader (Rust)
     drawing # GTK image editor (MS Paint-like)
     gnome-calculator # GTK4/libadwaita scientific + programming calculator
+    evince # Lightweight GTK document/PDF viewer
   ];
 
   xdg = {
@@ -159,9 +160,9 @@ in {
     };
   };
 
-  # Suppress xdg-autostart for the GVFS volume monitor; Noctalia owns the
-  # tray, network, bluetooth, and audio surfaces, so the old tray applets are
-  # no longer installed or autostarted.
+  # Suppress xdg-autostart for the GVFS volume monitor; the desktop shell owns
+  # the tray, network, bluetooth, and audio surfaces, so the old tray applets
+  # are no longer installed or autostarted.
   xdg.configFile = let
     hidden = ''
       [Desktop Entry]

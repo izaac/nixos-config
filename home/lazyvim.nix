@@ -173,6 +173,22 @@
         },
       }
     '';
+
+    # Seamless Ctrl+HJKL navigation across Neovim splits and tmux panes.
+    # Paired with the is_vim detection in home/tmux.nix.
+    "nvim/lua/plugins/tmux-navigator.lua".text = ''
+      return {
+        {
+          "christoomey/vim-tmux-navigator",
+          keys = {
+            { "<C-h>", "<cmd>TmuxNavigateLeft<cr>",  desc = "Navigate left" },
+            { "<C-j>", "<cmd>TmuxNavigateDown<cr>",  desc = "Navigate down" },
+            { "<C-k>", "<cmd>TmuxNavigateUp<cr>",    desc = "Navigate up" },
+            { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Navigate right" },
+          },
+        },
+      }
+    '';
   };
 
   # The neovim package ships nvim.desktop with Terminal=true, and the vim

@@ -121,4 +121,76 @@
       };
     };
   };
+
+  # Shell-specific wiring. home/niri.nix keeps only what is shell-agnostic, so
+  # ninja and windy can run different shells off the same compositor config.
+  programs.niri.settings = {
+    spawn-at-startup = [
+      {command = ["noctalia"];}
+    ];
+
+    # Only the toast namespace carries message content worth hiding from OBS
+    # and xdg-desktop-portal captures.
+    layer-rules = [
+      {
+        matches = [{namespace = "^noctalia-notification";}];
+        block-out-from = "screencast";
+      }
+    ];
+
+    binds = {
+      # --- Shell panels ---
+      "Mod+D".action.spawn = ["noctalia" "msg" "panel-toggle" "launcher"];
+      # Alt+Space is the Moonlight-friendly alias: Mac Cmd forwarding to Linux
+      # Super is unreliable, but Option (Alt) passes through cleanly.
+      "Alt+Space".action.spawn = ["noctalia" "msg" "panel-toggle" "launcher"];
+      "Mod+Ctrl+L".action.spawn = ["noctalia" "msg" "session" "lock"];
+      "Mod+Shift+P".action.spawn = ["noctalia" "msg" "panel-toggle" "session"];
+      "Mod+Shift+N".action.spawn = ["noctalia" "msg" "notification-dnd-toggle"];
+      "Mod+S".action.spawn = ["noctalia" "msg" "panel-toggle" "control-center"];
+      "Mod+V".action.spawn = ["noctalia" "msg" "panel-toggle" "clipboard"];
+
+      # --- Audio (noctalia native IPC, shows its own OSD) ---
+      "XF86AudioRaiseVolume" = {
+        action.spawn = ["noctalia" "msg" "volume-up"];
+        allow-when-locked = true;
+      };
+      "XF86AudioLowerVolume" = {
+        action.spawn = ["noctalia" "msg" "volume-down"];
+        allow-when-locked = true;
+      };
+      "XF86AudioMute" = {
+        action.spawn = ["noctalia" "msg" "volume-mute"];
+        allow-when-locked = true;
+      };
+      "XF86AudioMicMute" = {
+        action.spawn = ["noctalia" "msg" "mic-mute"];
+        allow-when-locked = true;
+      };
+      "XF86AudioPlay".action.spawn = ["noctalia" "msg" "media" "toggle"];
+      "XF86AudioNext".action.spawn = ["noctalia" "msg" "media" "next"];
+      "XF86AudioPrev".action.spawn = ["noctalia" "msg" "media" "previous"];
+
+      # --- Brightness (laptops; noctalia native IPC + OSD) ---
+      "XF86MonBrightnessUp" = {
+        action.spawn = ["noctalia" "msg" "brightness-up"];
+        allow-when-locked = true;
+      };
+      "XF86MonBrightnessDown" = {
+        action.spawn = ["noctalia" "msg" "brightness-down"];
+        allow-when-locked = true;
+      };
+
+      # --- Compact-keyboard fallbacks (no media keys) ---
+      # The Fn layer already emits XF86Audio{Mute,LowerVolume,RaiseVolume}, so
+      # only the rest needs mirroring.
+      "Mod+F4" = {
+        action.spawn = ["noctalia" "msg" "mic-mute"];
+        allow-when-locked = true;
+      };
+      "Mod+F5".action.spawn = ["noctalia" "msg" "media" "toggle"];
+      "Mod+F6".action.spawn = ["noctalia" "msg" "media" "previous"];
+      "Mod+F7".action.spawn = ["noctalia" "msg" "media" "next"];
+    };
+  };
 }

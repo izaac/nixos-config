@@ -6,7 +6,6 @@
   subnet = "192.168.0.0/24";
 
   # Canon LBP113/LBP913 network laser printer.
-  # Pinned to .50 via a Pi-hole DHCP reservation (MAC c4:ac:59:a9:5f:8c),
-  # below the dynamic pool (.97-.240) so it never collides with a lease.
-  printerIp = "192.168.0.50";
+  # Resolved via Pi-hole local DNS (printer.local).
+  printerAddress = "printer.local";
 }

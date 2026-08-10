@@ -148,7 +148,7 @@
     ];
 
     # Rootless Podman API socket (Docker-compatible) for docker-compose /
-    # lazydocker. Socket-activated: connecting starts the user service on demand.
+    # oxker. Socket-activated: connecting starts the user service on demand.
     sockets.podman = {
       Unit.Description = "Podman API socket (rootless, docker-compatible)";
       Socket = {

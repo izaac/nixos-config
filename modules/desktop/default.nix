@@ -2,14 +2,12 @@
   config,
   pkgs,
   lib,
-  inputs,
   ...
 }: let
   cfg = config.mySystem.desktop;
 in {
   imports = [
     ./nvidia.nix
-    inputs.noctalia-greeter.nixosModules.default
   ];
 
   options.mySystem.desktop = {
@@ -27,15 +25,12 @@ in {
         package = pkgs.niri-unstable;
       };
 
-      # --- Display Manager: noctalia-greeter on greetd ---
-      # The noctalia-greeter NixOS module enables greetd and sets the session
-      # command to its bundled wlroots compositor. Point it at the niri session
-      # by default; the greeter still lists any other wayland-session it finds.
-      # The greeter login user is set in the services block below.
-      noctalia-greeter = {
+      # --- Display Manager: ReGreet on greetd ---
+      # The only greetd greeter with both a NixOS module and a Stylix target, so
+      # it inherits the palette, wallpaper, cursor and fonts with no custom CSS.
+      regreet = {
         enable = true;
-        greeter-args = "--session niri";
-        settings.auth.allow_empty_password = true;
+        settings.GTK.application_prefer_dark_theme = true;
       };
 
       # Cross-platform LAN file transfer (auto-opens firewall port 53317).
@@ -54,13 +49,13 @@ in {
     # home-manager's services.gpg-agent.enableSshSupport = false.
 
     services = {
-      # noctalia-greeter enables greetd itself; just pick the login user.
+      # programs.regreet enables greetd itself; just pick the login user.
       greetd.settings.default_session.user = "greeter";
 
       # Auto-mount removable media (USB drives, optical) for udiskie + Nemo.
       udisks2.enable = true;
 
-      # Noctalia's battery and power widgets read UPower over D-Bus.
+      # Battery and power widgets read UPower over D-Bus.
       upower.enable = true;
     };
 
