@@ -25,7 +25,7 @@ in {
 
       # --- DISK & FILE USAGE ---
       dust
-      gdu
+      gdu # diskonaut not in nixpkgs; gdu kept
       duf
 
       # --- VIEWERS & PAGERS ---
@@ -38,7 +38,7 @@ in {
       # --- NETWORK & DIAGNOSTICS ---
       trippy
       gping
-      doggo
+      doggo # dog (rust) removed from nixpkgs as unmaintained+insecure
       lftp
       mosh
       cloudflared
@@ -50,9 +50,9 @@ in {
       gh
       kubernetes-helm
       kubectl
-      k9s
+      kdash # was k9s (Go) → kdash (Rust)
       k3d
-      lazydocker
+      oxker # was lazydocker (Go) → oxker (Rust)
       skopeo
       rclone
       rsync

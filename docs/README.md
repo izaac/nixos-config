@@ -16,6 +16,7 @@
 - [CLI Tools and Comma Integration](cli-tools.md)
 - [Linux Builder (Mac)](linux-builder.md)
 - [Niri Compositor](niri.md)
+- [ashell Desktop Shell](ashell.md)
 - [Kitty Terminal](kitty.md)
 - [tmux (terminal multiplexer)](tmux.md)
 - [Kitty + tmux integration](kitty-tmux.md)

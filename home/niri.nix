@@ -17,7 +17,7 @@
       mode="''${1:-region}"
       outdir="$HOME/Videos"
       mkdir -p "$outdir"
-      if pgrep -x wf-recorder >/dev/null; then
+      if pgrep -x wf-recorder > /dev/null; then
         pkill -INT -x wf-recorder
         notify-send "Screen recording" "Stopped"
         exit 0
@@ -54,7 +54,7 @@ in {
   home.packages = with pkgs; [
     # wl-clipboard lives in home/shell/packages.nix
     slurp # Region picker (screen recorder)
-    wf-recorder # Screen recorder (Wayland)
+    wf-recorder # Screen recorder (Wayland; wl-screenrec needs VA-API XR24 not supported on NVIDIA)
     libnotify # notify-send for screen-record feedback
   ];
 
@@ -85,16 +85,6 @@ in {
     # Screenshots land in a single dated folder instead of niri's default
     # scatter pattern. Path is expanded by niri itself; ~ → $HOME.
     screenshot-path = "~/Pictures/Screenshots/Screenshot %Y-%m-%d %H-%M-%S.png";
-
-    # Privacy: hide notifications from screencast/recording sinks. Noctalia
-    # toasts use the `noctalia-notification` layer namespace; password-manager
-    # style toasts stay out of OBS/xdg-desktop-portal captures.
-    layer-rules = [
-      {
-        matches = [{namespace = "^noctalia-notification";}];
-        block-out-from = "screencast";
-      }
-    ];
 
     # ninja's monitor layout only — windy keeps niri's automatic output
     # handling for whatever is plugged into its ports.
@@ -135,7 +125,7 @@ in {
 
     layout = {
       gaps = 8;
-      center-focused-column = "never";
+      center-focused-column = "on-overflow";
       preset-column-widths = [
         {proportion = 1.0 / 3.0;}
         {proportion = 0.5;}
@@ -151,11 +141,8 @@ in {
 
     hotkey-overlay.skip-at-startup = true;
 
-    spawn-at-startup = [
-      # Noctalia shell: bar, launcher, notifications, control center, lock,
-      # OSDs, clipboard history, and session panel (see home/noctalia.nix).
-      {command = ["noctalia"];}
-    ];
+    # spawn-at-startup and the shell-specific binds live in the shell module
+    # (home/ashell.nix or home/noctalia.nix) so this file stays shared.
 
     window-rules = [
       # Picture-in-Picture: float by default (Firefox + Chromium-based)
@@ -233,20 +220,14 @@ in {
     ];
 
     binds = with config.lib.niri.actions; {
+      # Launcher, lock, session, clipboard, media and brightness binds come from
+      # the shell module: home/ashell.nix on ninja, home/noctalia.nix on windy.
+
       # --- Apps ---
       "Mod+Return".action = spawn "kitty";
-      "Mod+D".action = spawn "noctalia" "msg" "panel-toggle" "launcher";
-      # Alt+Space is the Moonlight-friendly alternative: Mac Cmd forwarding to
-      # Linux Super is unreliable, but Option (Alt) passes through cleanly.
-      "Alt+Space".action = spawn "noctalia" "msg" "panel-toggle" "launcher";
       "Mod+E".action = spawn "nemo";
-      "Mod+B".action = spawn "brave-origin";
-      "Mod+Ctrl+L".action = spawn "noctalia" "msg" "session" "lock";
-      "Mod+Shift+P".action = spawn "noctalia" "msg" "panel-toggle" "session";
-      "Mod+Shift+N".action = spawn "noctalia" "msg" "notification-dnd-toggle";
-      "Mod+S".action = spawn "noctalia" "msg" "panel-toggle" "control-center";
+      "Mod+B".action = spawn "firefox";
       "Mod+Shift+S".action = spawn (lib.getExe audioSinkMenu);
-      "Mod+V".action = spawn "noctalia" "msg" "panel-toggle" "clipboard";
 
       # --- Direct power actions (skip menu) ---
       "Mod+Ctrl+Shift+S".action = spawn "systemctl" "suspend";
@@ -255,7 +236,7 @@ in {
 
       # --- Window/session ---
       "Mod+Q".action = close-window;
-      "Mod+Shift+E".action.quit.skip-confirmation = true;
+      "Mod+Shift+E".action = quit;
 
       # --- Focus ---
       "Mod+Left".action = focus-column-left;
@@ -298,6 +279,8 @@ in {
       "Mod+Shift+9".action.move-column-to-workspace = 9;
       "Mod+Page_Down".action = focus-workspace-down;
       "Mod+Page_Up".action = focus-workspace-up;
+      "Mod+Shift+Page_Down".action = move-column-to-workspace-down;
+      "Mod+Shift+Page_Up".action = move-column-to-workspace-up;
 
       # --- Mouse wheel focus column ---
       "Mod+WheelScrollDown" = {
@@ -315,6 +298,17 @@ in {
       "Mod+Shift+F".action = fullscreen-window;
       "Mod+Minus".action = set-column-width "-10%";
       "Mod+Equal".action = set-column-width "+10%";
+      "Mod+Shift+Minus".action = set-window-height "-10%";
+      "Mod+Shift+Equal".action = set-window-height "+10%";
+      "Mod+C".action = center-column;
+
+      # --- Column management ---
+      "Mod+Comma".action = consume-or-expel-window-left;
+      "Mod+Period".action = consume-or-expel-window-right;
+
+      # --- Floating ---
+      "Mod+Shift+Space".action = toggle-window-floating;
+      "Mod+Shift+Tab".action = switch-focus-between-floating-and-tiling;
 
       # --- Screenshots (niri defaults) ---
       "Print".action.screenshot = {};
@@ -325,47 +319,8 @@ in {
       "Shift+Print".action = spawn (lib.getExe screenRecord) "region";
       "Ctrl+Shift+Print".action = spawn (lib.getExe screenRecord) "screen";
 
-      # --- Audio (noctalia native IPC, shows its own OSD) ---
-      "XF86AudioRaiseVolume" = {
-        action = spawn "noctalia" "msg" "volume-up";
-        allow-when-locked = true;
-      };
-      "XF86AudioLowerVolume" = {
-        action = spawn "noctalia" "msg" "volume-down";
-        allow-when-locked = true;
-      };
-      "XF86AudioMute" = {
-        action = spawn "noctalia" "msg" "volume-mute";
-        allow-when-locked = true;
-      };
-      "XF86AudioMicMute" = {
-        action = spawn "noctalia" "msg" "mic-mute";
-        allow-when-locked = true;
-      };
-      "XF86AudioPlay".action = spawn "noctalia" "msg" "media" "toggle";
-      "XF86AudioNext".action = spawn "noctalia" "msg" "media" "next";
-      "XF86AudioPrev".action = spawn "noctalia" "msg" "media" "previous";
-
-      # --- Brightness (laptops; noctalia native IPC + OSD) ---
-      "XF86MonBrightnessUp" = {
-        action = spawn "noctalia" "msg" "brightness-up";
-        allow-when-locked = true;
-      };
-      "XF86MonBrightnessDown" = {
-        action = spawn "noctalia" "msg" "brightness-down";
-        allow-when-locked = true;
-      };
-
-      # --- Compact-keyboard fallbacks (no media/Print keys) ---
-      # The Fn layer already emits XF86Audio{Mute,LowerVolume,RaiseVolume}
-      # (Fn+F8/F9/F10), so volume stays handled above. These cover the rest.
-      "Mod+F4" = {
-        action = spawn "noctalia" "msg" "mic-mute";
-        allow-when-locked = true;
-      };
-      "Mod+F5".action = spawn "noctalia" "msg" "media" "toggle";
-      "Mod+F6".action = spawn "noctalia" "msg" "media" "previous";
-      "Mod+F7".action = spawn "noctalia" "msg" "media" "next";
+      # --- Compact-keyboard fallbacks (no Print key) ---
+      # Mod+F4..F7 (mic and media transport) belong to the shell module.
       "Mod+F8".action.screenshot = {};
       "Mod+F9".action.screenshot-screen = {};
       "Mod+F10".action.screenshot-window = {};

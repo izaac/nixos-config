@@ -1,0 +1,123 @@
+--- a/src/services/network/mod.rs
++++ b/src/services/network/mod.rs
+@@ -181,11 +181,17 @@
+ }
+ 
+ enum State {
+-    Init,
++    Init(u32),
+     Active(zbus::Connection, BackendChoice),
+-    Error,
++    Error(u32),
++    Disabled,
+ }
+ 
++/// Base delay before retrying a failed connection, doubled on each attempt.
++const RETRY_BASE_SECS: u64 = 5;
++/// Attempts before concluding no supported backend exists on this system.
++const MAX_RETRIES: u32 = 6;
++
+ impl ReadOnlyService for NetworkService {
+     type UpdateEvent = NetworkEvent;
+     type Error = ();
+@@ -281,7 +287,7 @@
+     fn subscribe() -> Subscription<ServiceEvent<Self>> {
+         Subscription::run_with(TypeId::of::<Self>(), |_| {
+             channel(50, async |mut output| {
+-                let mut state = State::Init;
++                let mut state = State::Init(0);
+ 
+                 loop {
+                     state = NetworkService::start_listening(state, &mut output).await;
+@@ -415,7 +421,7 @@
+ impl NetworkService {
+     async fn start_listening(state: State, output: &mut Sender<ServiceEvent<Self>>) -> State {
+         match state {
+-            State::Init => match zbus::Connection::system().await {
++            State::Init(attempt) => match zbus::Connection::system().await {
+                 Ok(conn) => {
+                     // get first backend that is available
+                     info!("Connecting to backend");
+@@ -468,14 +474,14 @@
+                             } else {
+                                 error!("Failed to initialize network service: {err}");
+                             }
+-                            State::Error
++                            State::Error(attempt)
+                         }
+                     }
+                 }
+                 Err(err) => {
+                     error!("Failed to connect to system bus: {err}");
+ 
+-                    State::Error
++                    State::Error(attempt)
+                 }
+             },
+             State::Active(conn, choice) => {
+@@ -488,7 +494,7 @@
+                             Ok(nm) => nm,
+                             Err(e) => {
+                                 error!("Failed to create NetworkDbus: {e}");
+-                                return State::Error;
++                                return State::Error(0);
+                             }
+                         };
+ 
+@@ -513,7 +519,7 @@
+                             Err(err) => {
+                                 error!("Failed to listen for network events: {err}");
+ 
+-                                State::Error
++                                State::Error(0)
+                             }
+                         }
+                     }
+@@ -522,7 +528,7 @@
+                             Ok(iwd) => iwd,
+                             Err(err) => {
+                                 error!("Failed to create IwdDbus: {err}");
+-                                return State::Error;
++                                return State::Error(0);
+                             }
+                         };
+                         match iwd.subscribe_events().await {
+@@ -543,18 +549,33 @@
+                             Err(err) => {
+                                 error!("Failed to listen for network events: {err}");
+ 
+-                                State::Error
++                                State::Error(0)
+                             }
+                         }
+                     }
+                 }
+             }
+-            State::Error => {
+-                error!("Network service error, retrying in 5 seconds");
++            State::Error(attempt) => {
++                if attempt + 1 >= MAX_RETRIES {
++                    error!(
++                        "Network service unavailable after {MAX_RETRIES} attempts; \
++                         no NetworkManager or iwd on this system, giving up"
++                    );
++
++                    return State::Disabled;
++                }
+ 
+-                sleep(Duration::from_secs(5)).await;
++                let delay = RETRY_BASE_SECS << attempt.min(6);
++                error!("Network service error, retrying in {delay} seconds");
++
++                sleep(Duration::from_secs(delay)).await;
++
++                State::Init(attempt + 1)
++            }
++            State::Disabled => {
++                std::future::pending::<()>().await;
+ 
+-                State::Init
++                State::Disabled
+             }
+         }
+     }

@@ -2,13 +2,13 @@
   stylix.targets.firefox.enable = false;
 
   home.sessionVariables = {
-    MOZ_ENABLE_WAYLAND = "0";
+    MOZ_ENABLE_WAYLAND = "1";
   };
 
-  # Override desktop entry so launcher runs Firefox under XWayland (fixes NVIDIA popups)
+  # Override desktop entry so launcher runs Firefox under native Wayland
   xdg.desktopEntries.firefox = {
     name = "Firefox Web Browser";
-    exec = "env MOZ_ENABLE_WAYLAND=0 firefox %U";
+    exec = "firefox %U";
     icon = "firefox";
     type = "Application";
     categories = ["Network" "WebBrowser"];
@@ -24,11 +24,11 @@
     actions = {
       "new-window" = {
         name = "Open a New Window";
-        exec = "env MOZ_ENABLE_WAYLAND=0 firefox --new-window %U";
+        exec = "firefox --new-window %U";
       };
       "new-private-window" = {
         name = "Open a New Private Window";
-        exec = "env MOZ_ENABLE_WAYLAND=0 firefox --private-window %U";
+        exec = "firefox --private-window %U";
       };
     };
   };

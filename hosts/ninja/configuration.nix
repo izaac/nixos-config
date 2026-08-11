@@ -52,9 +52,9 @@
   # ninja-specific settings remain here.
   mySystem = {
     gaming = {
-      # GameStream host for the Mac's Moonlight client — ninja only; the
-      # laptop is a thin client and gets no CUDA build or open firewall.
-      sunshine.enable = true;
+      # GameStream host for the Mac's Moonlight client, disabled while unused:
+      # the CUDA build and the open firewall are not worth carrying.
+      sunshine.enable = false;
       cpuBoostFreq = 5756452; # 5.7 GHz
       cpuBaseFreq = 4500000; # 4.5 GHz
       gpuBoostClock = 2475; # RTX 5070 Ti gaming
