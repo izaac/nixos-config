@@ -77,9 +77,14 @@
       "s" = "cycle sub-visibility";
       "S" = "cycle sub";
 
-      # --- WINDOW ---
+      # --- WINDOW & NAVIGATION ---
       "f" = "cycle fullscreen";
       "o" = "show-progress";
+      "O" = "script-binding uosc/open-file";
+      "Ctrl+o" = "script-binding uosc/open-file";
+      "P" = "script-binding uosc/playlist";
+      "C" = "script-binding uosc/chapters";
+      "menu" = "script-binding uosc/menu";
       "i" = "script-binding stats/display-stats-toggle";
 
       # --- SCREENSHOTS ---

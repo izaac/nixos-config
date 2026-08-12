@@ -67,14 +67,18 @@ Keybinds use direct single keys (Vim-style `hjkl` for seek and volume) without m
 | `s`         | Toggle subtitle visibility           |
 | `S`         | Cycle available subtitle tracks      |
 
-### Window, OSD & Screenshots
+### Window, Navigation & Screenshots
 
-| Keys | Action                                                |
-| ---- | ----------------------------------------------------- |
-| `f`  | Toggle fullscreen                                     |
-| `o`  | Show playback progress                                |
-| `i`  | Toggle technical stats (codecs, FPS, drop frames)     |
-| `p`  | Take screenshot (`~/Pictures/Screenshots/mpv-...png`) |
+| Keys           | Action                                                |
+| -------------- | ----------------------------------------------------- |
+| `f`            | Toggle fullscreen                                     |
+| `o`            | Show playback progress                                |
+| `O` / `Ctrl+o` | Open `uosc` in-player **file browser**                |
+| `P`            | Open `uosc` **playlist browser**                      |
+| `C`            | Open `uosc` **chapter list**                          |
+| `Menu`         | Open full `uosc` menu                                 |
+| `i`            | Toggle technical stats (codecs, FPS, drop frames)     |
+| `p`            | Take screenshot (`~/Pictures/Screenshots/mpv-...png`) |
 
 ---
 
