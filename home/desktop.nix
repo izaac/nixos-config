@@ -17,6 +17,7 @@ in {
     ./lazyvim.nix
     ./zed.nix
     ./capture-card.nix
+    ./mpv.nix
     ./firefox.nix
     ./zathura.nix
   ];
@@ -43,7 +44,6 @@ in {
     fragments # GTK Torrent Client (Rust)
     clapper # Modern GTK4 Video Player (Rust)
     vlc # General media player; also a DLNA/UPnP client for the Plex library
-    mpv # Low-latency player (good for capture card live view)
     snapshot # GTK Camera App (Rust)
     inputs.nix-packages.packages.${system}.sparrow
     ffmpeg-full

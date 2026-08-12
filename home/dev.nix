@@ -137,6 +137,16 @@
       mutableTrust = true;
     };
 
+    # --- GITHUB CLI ---
+    gh = {
+      enable = true;
+      settings = {
+        git_protocol = "ssh";
+        editor = "nvim";
+      };
+      gitCredentialHelper.enable = true;
+    };
+
     # --- DIRENV ---
     direnv = {
       enable = true;

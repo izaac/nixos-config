@@ -52,7 +52,7 @@
       ai-scan-wip = "ai-trace-scan --unstaged";
 
       # --- AUDIO ---
-      pw-lowlat = "PIPEWIRE_LATENCY='512/48000'";
+      pw-lowlat = "PIPEWIRE_LATENCY='512/48000' ";
     }
     // lib.optionalAttrs pkgs.stdenv.isDarwin {
       ls = "${pkgs.coreutils}/bin/ls --group-directories-first --color=auto";

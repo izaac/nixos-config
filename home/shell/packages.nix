@@ -47,7 +47,6 @@ in {
       hyperfine
 
       # --- CLOUD & CONTAINERS ---
-      gh
       kubernetes-helm
       kubectl
       kdash # was k9s (Go) → kdash (Rust)

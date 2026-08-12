@@ -36,6 +36,7 @@ in {
     # @menus_use_cache BEFORE plugin init (Nix store is read-only).
     plugins = with pkgs.tmuxPlugins; [
       sensible
+      vim-tmux-navigator
     ];
 
     # --- KEYBINDS & MANUAL CONFIG ---
@@ -99,16 +100,7 @@ in {
       bind Right select-pane -R
 
       # --- TMUX-NAVIGATOR (seamless Ctrl+HJKL across vim splits and tmux panes) ---
-      is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
-        | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?\\.?(view|l?n?vim?x?|fzf)(diff)?$'"
-      bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
-      bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
-      bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
-      bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
-      bind-key -T copy-mode-vi 'C-h' select-pane -L
-      bind-key -T copy-mode-vi 'C-j' select-pane -D
-      bind-key -T copy-mode-vi 'C-k' select-pane -U
-      bind-key -T copy-mode-vi 'C-l' select-pane -R
+      # vim-tmux-navigator plugin handles seamless Ctrl+HJKL across vim/tmux panes.
 
       # --- SPLITS ---
       bind "\\" split-window -h
