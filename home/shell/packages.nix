@@ -51,7 +51,7 @@ in {
       kubectl
       kdash # was k9s (Go) → kdash (Rust)
       k3d
-      oxker # was lazydocker (Go) → oxker (Rust)
+      (oxker.overrideAttrs (old: { doCheck = false; })) # skip broken macOS snapshot tests
       skopeo
       rclone
       rsync
