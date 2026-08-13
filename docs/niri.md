@@ -19,16 +19,14 @@ the `Ctrl+a` tmux prefix.
 
 `home/niri.nix` only holds bindings that are the same whichever desktop shell is
 running. Anything that talks to the shell (launcher, lock, session menu,
-clipboard, media and brightness keys) is defined by the shell module itself, so
-the two hosts can differ:
+clipboard, media and brightness keys) is defined by the shell module itself:
 
-| Host    | Shell module                                                                  | Shell                                                   |
-| ------- | ----------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `ninja` | [`home/ashell.nix`](../home/ashell.nix) + [`home/lock.nix`](../home/lock.nix) | [ashell](https://github.com/MalpenZibo/ashell)          |
-| `windy` | [`home/noctalia.nix`](../home/noctalia.nix)                                   | [Noctalia](https://github.com/noctalia-dev/noctalia) v5 |
+| Host              | Shell module                                                                  | Shell                                          |
+| ----------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
+| `ninja` / `windy` | [`home/ashell.nix`](../home/ashell.nix) + [`home/lock.nix`](../home/lock.nix) | [ashell](https://github.com/MalpenZibo/ashell) |
 
-The tables below document the `ninja` (ashell) bindings. `windy` keeps the
-previous Noctalia bindings unchanged; see `home/noctalia.nix`.
+Both hosts run the same bindings; the tables below document them. `windy` adds
+the battery and brightness indicators, which `ninja` has no hardware for.
 
 ---
 

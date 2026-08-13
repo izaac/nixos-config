@@ -29,7 +29,7 @@ mpv is tuned for zero-latency, high-quality video playback on modern Vulkan and 
 The setup bundles three essential mpv scripts:
 
 1. **`uosc`** ([`pkgs.mpvScripts.uosc`](https://github.com/tomasklaen/uosc)): Modern, minimal UI replacement for the default OSC with smooth timeline controls.
-2. **`mpris`** ([`pkgs.mpvScripts.mpris`](https://github.com/tumpay/mpv-mpris)): Exposes mpv controls over MPRIS2, allowing media keys, lock screen controls, and `playerctl` / desktop status bars (`ashell` / `noctalia`) to control playback.
+2. **`mpris`** ([`pkgs.mpvScripts.mpris`](https://github.com/tumpay/mpv-mpris)): Exposes mpv controls over MPRIS2, allowing media keys, lock screen controls, and `playerctl` / the `ashell` status bar to control playback.
 3. **`thumbfast`** ([`pkgs.mpvScripts.thumbfast`](https://github.com/po5/thumbfast)): On-hover thumbnail previews on the timeline seek bar.
 
 ---
