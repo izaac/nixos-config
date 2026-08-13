@@ -432,6 +432,12 @@ in {
   # stash ships a native clipboard watcher, so no wl-paste wrapper is needed.
   # The history is an unencrypted SQLite file and defaults to keeping entries
   # forever, so every password ever copied would accumulate in it; cap it.
+  #
+  # No --mime-type here on purpose. Only "text" and "image" are meaningful to
+  # stash; any other value (including "text/plain") falls through to the same
+  # default heuristic, so passing it only implied a filter that never existed.
+  # The default picks text/plain over a source's HTML and URI flavours while
+  # still capturing images, which "text" would silently drop.
   systemd.user.services.stash = {
     Unit = {
       Description = "stash clipboard history watcher";
@@ -440,7 +446,7 @@ in {
     };
     Service = {
       Type = "simple";
-      ExecStart = "${lib.getExe pkgs.stash-clipboard} --max-items 500 watch --mime-type text/plain --persist";
+      ExecStart = "${lib.getExe pkgs.stash-clipboard} --max-items 500 watch --persist";
       Restart = "on-failure";
       RestartSec = 2;
     };
