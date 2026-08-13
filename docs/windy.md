@@ -71,9 +71,38 @@
 
 ## Power Management
 
-- **TLP**: Enabled (Optimized for Intel performance/powersave switching)
+windy is tuned as the inverse of ninja. ninja compiles a bespoke low-latency
+kernel and boots it `preempt=full`; windy stays on the cached
+`linuxPackages_latest` and trades responsiveness for idle power. A
+`structuredExtraConfig` would defeat the binary cache and turn every kernel bump
+into a multi-hour local compile on a laptop with turbo disabled, costing far more
+energy than the config could save.
+
+- **TLP**: Enabled. Governor `powersave` on both AC and battery, turbo off,
+  sustained load capped at 80% (AC) / 60% (battery). Runtime PM set to `auto`,
+  PCIe ASPM `powersupersave` on battery, USB autosuspend on, Wi-Fi power save on
+  battery, audio codec power save, SATA `min_power`, platform profile
+  `low-power`. Charge thresholds 75-80% for battery longevity.
 - **Thermald**: Enabled (Intel-specific thermal monitoring)
 - **ZRAM**: 64GB Compressed Swap (100% memory priority)
+- **Kernel parameters**: `preempt=voluntary`, `pcie_aspm.policy=powersupersave`,
+  `nvme.noacpi=1`. USB autosuspend is left at the kernel default; ninja opts out
+  of it for input latency in `hosts/ninja/performance.nix`.
+- **Sysctl**: `vm.laptop_mode=5`, dirty writeback and expiry stretched to 60s so
+  the disk batches flushes, `kernel.nmi_watchdog=0`.
+
+### Deliberately not installed
+
+Each of these ran a daemon that polls or holds hardware awake, so they are off
+on windy and live on ninja instead:
+
+| Dropped                   | Why                                                           |
+| ------------------------- | ------------------------------------------------------------- |
+| Podman / docker shim      | Also removes distrobox, quickemu and the NVIDIA CDI generator |
+| CUPS, cups-browsed, avahi | Both browse the network continuously to find printers         |
+| `scx_lavd`                | Latency scheduler that keeps cores awake; TLP owns power here |
+
+Tailscale is enabled: `tailscaled` is event-driven and idles cheaply.
 
 ---
 

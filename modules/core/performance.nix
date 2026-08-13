@@ -69,8 +69,10 @@ in {
         # to opt-in, reducing TLB misses without the overhead of 'always'.
         "transparent_hugepage=madvise"
 
-        # Disable USB autosuspend to eliminate tiny wake-up delays for mice/keyboards.
-        "usbcore.autosuspend=-1"
+        # USB autosuspend is deliberately NOT disabled here. Pinning every USB
+        # device awake shaves a little input wake-up latency but costs constant
+        # power, which is the wrong trade on a laptop. ninja opts into it in
+        # hosts/ninja/performance.nix.
       ];
     };
 

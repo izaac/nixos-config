@@ -38,6 +38,12 @@
     # Universal hardening + dirty-page tuning live in modules/core/performance.nix.
     # Keys here are workstation-specific (high-core scheduling, big NIC buffers,
     # debug-friendly dmesg) and override mkDefault values from the shared module.
+
+    # Disable USB autosuspend to eliminate tiny wake-up delays for mice and
+    # keyboards. Desktop-only: it holds every USB device at full power, so
+    # windy leaves the kernel default in place.
+    kernelParams = ["usbcore.autosuspend=-1"];
+
     kernel.sysctl = {
       "kernel.dmesg_restrict" = 0; # Workstation: allow non-root dmesg for debugging
       "kernel.split_lock_mitigate" = 0; # Performance trade-off on this 16-core CPU

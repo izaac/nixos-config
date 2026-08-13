@@ -1,8 +1,15 @@
 {
   config,
   pkgs,
+  lib,
+  osConfig ? {},
   ...
-}: {
+}:
+# distrobox drives rootless Podman, so this whole module is dead weight on a
+# host that does not run Podman: the user socket would point at nothing and the
+# `docker` shim in DOCKER_HOST would dangle. Follow the system-level switch
+# (mySystem.core.virtualization) rather than naming hosts here.
+lib.mkIf (osConfig.virtualisation.podman.enable or false) {
   home = {
     packages = [pkgs.distrobox];
 

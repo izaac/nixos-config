@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  lib,
   inputs,
   ...
 }: {
@@ -32,7 +33,6 @@
     kernelParams = [
       "boot.shell_on_fail"
       "iommu=pt"
-      "usbcore.autosuspend=-1"
       # The internal OLED panel (card1-eDP-1) is driven by Intel i915, so use
       # the native GPU backlight interface. acpi_backlight=vendor suppressed
       # the i915 backlight without providing a working vendor interface,
@@ -40,6 +40,30 @@
       # disabling the ACPI brightness key events. native registers
       # intel_backlight and restores the Fn brightness keys.
       "acpi_backlight=native"
+
+      # --- ENERGY EFFICIENCY ---
+      # The inverse of ninja, which compiles a bespoke low-latency kernel and
+      # boots it with preempt=full. windy stays on the cached linuxPackages_latest
+      # (a structuredExtraConfig would defeat the binary cache and make every
+      # kernel bump a multi-hour local compile on a laptop, costing far more
+      # energy than the config could save) and tunes for power at boot instead.
+      #
+      # PREEMPT_DYNAMIC lets the preemption model be chosen on the command line.
+      # voluntary preempts at fewer points than full, so the scheduler runs less
+      # often and the CPU reaches its idle states more readily. Interactive
+      # latency is slightly worse, which is the right trade here.
+      "preempt=voluntary"
+
+      # Let the PCIe link drop into its deepest sleep state between transfers.
+      # This is the single largest idle win on a laptop of this generation.
+      "pcie_aspm.policy=powersupersave"
+
+      # Skip the ACPI-mediated NVMe power path, which on many Intel laptops
+      # blocks the controller from reaching APST's deeper idle states.
+      "nvme.noacpi=1"
+
+      # USB autosuspend is left at the kernel default. ninja opts out of it in
+      # hosts/ninja/performance.nix for input latency; a laptop wants the sleep.
     ];
 
     # opengigabyte HID module: the keyboard sends vendor-specific raw reports
@@ -52,9 +76,29 @@
     kernelModules = ["gigabytekbd"];
   };
 
+  # Laptop sysctl deltas. modules/core/performance.nix tunes dirty-page
+  # writeback for a desktop that is always plugged in; a laptop wants the
+  # opposite, so writeback batches into fewer, larger flushes and the disk
+  # stays idle for longer stretches. mkForce because the shared module sets
+  # these at normal priority.
+  boot.kernel.sysctl = {
+    "vm.laptop_mode" = 5;
+    "vm.dirty_writeback_centisecs" = lib.mkForce 6000;
+    "vm.dirty_expire_centisecs" = lib.mkForce 6000;
+    # The NMI watchdog wakes every core on a timer purely to detect hard
+    # lockups. Real cost on idle power, no value on a personal laptop.
+    "kernel.nmi_watchdog" = 0;
+  };
+
   # Laptop-specific Power Management
   services = {
     thermald.enable = true;
+
+    # The gaming module defaults scx_lavd on for every host that enables it.
+    # scx_lavd optimises for frame latency by keeping cores awake, which fights
+    # TLP for control of this machine's power. TLP wins here.
+    scx.enable = lib.mkForce false;
+
     tlp = {
       enable = true;
       settings = {
@@ -78,10 +122,65 @@
         INTEL_GPU_MIN_FREQ_ON_BAT = 300;
         INTEL_GPU_BOOST_FREQ_ON_AC = 1300;
         INTEL_GPU_BOOST_FREQ_ON_BAT = 800;
+
+        # --- Runtime power management ---
+        # Let idle PCIe devices (NVMe, Wi-Fi, Thunderbolt, the NVIDIA GPU)
+        # suspend themselves. finegrained NVIDIA power management in
+        # hosts/windy/nvidia.nix depends on runtime PM being allowed.
+        RUNTIME_PM_ON_AC = "auto";
+        RUNTIME_PM_ON_BAT = "auto";
+        PCIE_ASPM_ON_AC = "default";
+        PCIE_ASPM_ON_BAT = "powersupersave";
+
+        # USB autosuspend, now that the kernel parameter no longer forbids it.
+        # The deny list keeps input devices responsive; anything else may sleep.
+        USB_AUTOSUSPEND = 1;
+        USB_EXCLUDE_BTUSB = 0;
+        USB_EXCLUDE_PHONE = 1;
+
+        # Wi-Fi radio power saving costs a little latency on wake, which is
+        # invisible for browsing and worth several hundred milliwatts.
+        WIFI_PWR_ON_AC = "off";
+        WIFI_PWR_ON_BAT = "on";
+
+        # Power down the audio codec after a second of silence. Some codecs
+        # pop on transition; this one does not.
+        SOUND_POWER_SAVE_ON_AC = 0;
+        SOUND_POWER_SAVE_ON_BAT = 1;
+
+        # Aggressive SATA link power management for the secondary drive.
+        SATA_LINKPWR_ON_AC = "med_power_with_dipm";
+        SATA_LINKPWR_ON_BAT = "min_power";
+
+        # Firmware-level power hints (Intel platform profile).
+        PLATFORM_PROFILE_ON_AC = "balanced";
+        PLATFORM_PROFILE_ON_BAT = "low-power";
+
+        # Stop charging at 80% and only start again below 75%. Far and away the
+        # biggest lever on long-term battery health for a laptop that mostly
+        # lives on AC.
+        START_CHARGE_THRESH_BAT0 = 75;
+        STOP_CHARGE_THRESH_BAT0 = 80;
       };
     };
     # Disable unnecessary services
     colord.enable = false;
+  };
+
+  # --- PRUNED FOR IDLE POWER ---
+  mySystem.core = {
+    # Podman, the docker CLI shim, quickemu/quickgui/virt-viewer/remmina and the
+    # nvidia-container-toolkit CDI generator. Containers belong on ninja.
+    virtualization.enable = false;
+
+    # CUPS, cups-browsed, avahi-daemon and the declarative queue. cups-browsed
+    # and avahi both poll the network continuously to discover printers, which
+    # is pure drain on a machine that leaves the LAN. Print from ninja.
+    printing.enable = false;
+
+    # Mesh VPN and Tailscale SSH, matching ninja. tailscaled is event-driven
+    # and idles cheaply, so it stays.
+    tailscale.enable = true;
   };
 
   # Disable SOPS on windy: its SSH host key is not enrolled as a sops-nix
