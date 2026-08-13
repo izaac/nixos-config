@@ -5,7 +5,7 @@
   # LAN subnet, advertised by the Tailscale subnet router.
   subnet = "192.168.0.0/24";
 
-  # Canon LBP113/LBP913 network laser printer.
-  # Resolved via Pi-hole local DNS (printer.local).
-  printerAddress = "printer.local";
+  # Canon LBP113/LBP913 network laser printer on LAN.
+  # Fixed IP avoids mDNS (.local) resolution failures with systemd-resolved.
+  printerAddress = "192.168.0.168";
 }
