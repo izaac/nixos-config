@@ -196,6 +196,26 @@
   # ashell's IPC writing directly to those nodes.
   services.udev.packages = [pkgs.brightnessctl];
 
+  # Disable KMS on the dGPU. modules/desktop/nvidia.nix turns modesetting on,
+  # and the nixpkgs module also forces nvidia-drm.modeset=1 whenever PRIME
+  # offload is enabled, which registers /dev/dri/card0 for the dGPU. niri
+  # composites on the Intel iGPU (render-drm-device in home/niri.nix), but the
+  # card node still sits on the login seat and something opens it at session
+  # start, pinning the GPU awake: runtime_suspended_time stayed at 0 across a
+  # whole uptime while the card burned ~12.5W in P8, over half the machine's
+  # idle draw. With modeset=0 the dGPU exposes only its render node, so nothing
+  # can hold the KMS device and it reaches D3cold. PRIME render offload runs off
+  # the render node and is unaffected, so games still use the dGPU on demand.
+  #
+  # Trade-off: the external HDMI/DisplayPort outputs are wired to the dGPU and
+  # stay dark. Previously attempted with a udev rule that stripped the seat tags
+  # (541facc), which left niri unable to start at all; overriding the module
+  # parameter is the supported knob and leaves the seat untouched.
+  hardware.nvidia.moduleParams."nvidia-drm" = {
+    modeset = lib.mkForce 0;
+    fbdev = lib.mkForce 0;
+  };
+
   # System Packages
   environment.systemPackages = with pkgs; [
     powertop # Monitor laptop power usage
