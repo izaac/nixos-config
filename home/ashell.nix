@@ -113,7 +113,7 @@
         logout_cmd = "${lib.getExe niri} msg action quit --skip-confirmation";
         audio_sinks_more_cmd = "${lib.getExe pkgs.wiremix}";
         audio_sources_more_cmd = "${lib.getExe pkgs.wiremix}";
-        # Above 100 enables overdrive, matching noctalia's enable_overdrive.
+        # Above 100 enables overdrive, so the media keys can push past unity.
         max_volume = 150;
         volume_step = 5;
         indicators =

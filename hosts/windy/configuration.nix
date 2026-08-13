@@ -93,8 +93,8 @@
 
   # Allow members of the video group to write screen brightness via
   # brightnessctl's udev rules (they chgrp/chmod the backlight sysfs nodes).
-  # Required for the Fn brightness keys, which now drive brightness through
-  # noctalia's IPC writing directly to those nodes.
+  # Required for the Fn brightness keys, which drive brightness through
+  # ashell's IPC writing directly to those nodes.
   services.udev.packages = [pkgs.brightnessctl];
 
   # System Packages

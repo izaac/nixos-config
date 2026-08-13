@@ -9,7 +9,7 @@ Tracks **nixos-26.05 stable**. Custom packages live in a separate
 - **OS:** NixOS 26.05 (stable) + nix-darwin 26.05 (Mac)
 - **DM:** [ReGreet](https://github.com/rharish101/ReGreet) (greetd, in cage) with YubiKey U2F
 - **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via [niri-flake](https://github.com/sodiboo/niri-flake)
-- **Shell of the desktop:** [ashell](https://github.com/MalpenZibo/ashell) on `ninja` (bar, control center, notifications, OSD; Rust + iced), with fuzzel, swaylock, swayidle, [stash](https://github.com/NotAShelf/stash) and wlogout filling the gaps. `windy` still runs [Noctalia](https://github.com/noctalia-dev/noctalia) v5 until it is migrated.
+- **Shell of the desktop:** [ashell](https://github.com/MalpenZibo/ashell) on every Linux host (bar, control center, notifications, OSD; Rust + iced), with fuzzel, swaylock, swayidle, [stash](https://github.com/NotAShelf/stash) and wlogout filling the gaps.
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
 - **Theme:** App colors are Catppuccin Mocha Blue, system-wide via [Stylix](https://github.com/danth/stylix); the desktop shell palette is generated from the current wallpaper by [matugen](https://github.com/InioX/matugen)
 - **Wallpaper:** [awww](https://codeberg.org/LGFae/awww) daemon, driven by the `set-wallpaper` helper
@@ -32,9 +32,8 @@ modules/           # Reusable NixOS modules (mySystem.* options)
   gaming/          # Steam, GameMode, sched-ext (SCX)
 home/              # Home Manager modules (per-app .nix files)
   niri.nix         # Compositor config, shell-agnostic keybinds
-  ashell.nix       # ashell shell + matugen theming + wallpaper (ninja)
-  lock.nix         # swaylock, swayidle, wlogout (ninja)
-  noctalia.nix     # Noctalia shell + its niri binds (windy)
+  ashell.nix       # ashell shell + matugen theming + wallpaper
+  lock.nix         # swaylock, swayidle, wlogout
   shell/           # Split shell config (aliases, functions, packages)
 users/             # Per-user profile composition
 overlays/          # Package overrides

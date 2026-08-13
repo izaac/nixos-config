@@ -142,7 +142,7 @@ in {
     hotkey-overlay.skip-at-startup = true;
 
     # spawn-at-startup and the shell-specific binds live in the shell module
-    # (home/ashell.nix or home/noctalia.nix) so this file stays shared.
+    # (home/ashell.nix) so this file stays shared.
 
     window-rules = [
       # Picture-in-Picture: float by default (Firefox + Chromium-based)
@@ -221,7 +221,7 @@ in {
 
     binds = with config.lib.niri.actions; {
       # Launcher, lock, session, clipboard, media and brightness binds come from
-      # the shell module: home/ashell.nix on ninja, home/noctalia.nix on windy.
+      # the shell module: home/ashell.nix.
 
       # --- Apps ---
       "Mod+Return".action = spawn "kitty";
