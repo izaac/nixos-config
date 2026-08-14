@@ -233,8 +233,15 @@ in {
   # The rule matches this one PCI function, so the internal codec on
   # 0000:00:1f.3 (card0, speakers and mic) keeps its own driver and behaviour.
   services.udev = {
+    # ACTION=="bind" rather than "add": on an add event the device has only
+    # just appeared on the bus and DRIVER is still empty, so an add rule that
+    # also matches DRIVER=="snd_hda_intel" can never fire. bind is emitted once
+    # the driver has actually attached, which is the moment worth undoing.
+    # The unbind is deferred through systemd-run because writing to the driver's
+    # unbind node from inside the bind event's own handler can deadlock on the
+    # device lock that the bind still holds.
     extraRules = ''
-      ACTION=="add", SUBSYSTEM=="pci", KERNEL=="${nvidiaAudioFn}", DRIVER=="snd_hda_intel", RUN+="${pkgs.bash}/bin/sh -c 'echo ${nvidiaAudioFn} > /sys/bus/pci/drivers/snd_hda_intel/unbind'"
+      ACTION=="bind", SUBSYSTEM=="pci", KERNEL=="${nvidiaAudioFn}", DRIVER=="snd_hda_intel", RUN+="${pkgs.systemd}/bin/systemd-run --no-block ${pkgs.bash}/bin/sh -c 'echo ${nvidiaAudioFn} > /sys/bus/pci/drivers/snd_hda_intel/unbind'"
     '';
 
     # Allow members of the video group to write screen brightness via
