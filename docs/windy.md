@@ -142,6 +142,52 @@ decoder and mpv already uses it (`hwdec = "auto-safe"` in `home/mpv.nix`).
 Waking a 12 W GPU to decode a film costs far more power than the iGPU path and
 gains nothing.
 
+Firefox had to be told this explicitly, twice. It decodes in a separate RDD
+process, where VA-API takes its DRM fd from `DMABufDevice`, which reads
+`MOZ_DRM_DEVICE` first and otherwise falls back to whichever device the glxtest
+probe reported. Setting that variable moved decoding to the iGPU, but the RDD
+process still loaded `libEGL_nvidia` and held `/dev/nvidia0`, `/dev/nvidiactl`
+and the dGPU render node open, because Firefox's EGL device display reads
+`gfxVars::DrmRenderDevice()` directly and ignores `MOZ_DRM_DEVICE`.
+
+Those leftover handles cost no power, the card still reached D3cold, but they
+break system suspend. See
+[Suspend and the discrete GPU](#suspend-and-the-discrete-gpu) below.
+
+`home/firefox.nix` therefore wraps the browser with `MOZ_DRM_DEVICE` plus
+`__EGL_VENDOR_LIBRARY_FILENAMES`, `__GLX_VENDOR_LIBRARY_NAME` and
+`VK_LOADER_DRIVERS_DISABLE`, leaving it no NVIDIA driver to open. The render
+node is derived from `hardware.nvidia.prime.intelBusId` and the whole wrapper is
+applied only where PRIME offload is enabled, so ninja keeps stock Firefox. The
+last three are deliberately set on the wrapper rather than in
+`home.sessionVariables`: they are not Firefox-specific, and session-wide they
+would strip the dGPU from games too, breaking `nvidia-offload`.
+
+Symptom to watch for: the `RDD Process` appearing in the holder scan above.
+
+### Suspend and the discrete GPU
+
+Resuming from suspend while any process holds the dGPU open fails NVIDIA's GSP
+firmware boot and leaves the card unusable until reboot:
+
+```text
+NVRM: gpuPowerManagementResume: GSP boot failed at resume (bootMode 0x1): 0x62
+NVRM: Xid (PCI:0000:01:00): 154, GPU recovery action changed to 0x1 (GPU Reset Required)
+WARNING: nvidia/nv.c:4564 at nv_restore_user_channels
+```
+
+`nvidia-smi` then reports `[GPU requires reset]` and nonsense values such as
+752 W. Confirmed by testing both cases on driver 595.71.05: suspending with the
+card idle resumes cleanly, suspending with Firefox running reproduces the
+failure every time. Note the card does not need to be _awake_ for this; it was
+in D3cold with `runtime_usage=0` both times, merely holding open file
+descriptors was enough.
+
+This is why the Firefox wrapper matters beyond power: with nothing holding the
+dGPU, suspend and resume are reliable. If a future application starts opening
+the NVIDIA nodes, expect this failure to come back, and check the holder scan
+above before blaming the driver.
+
 ### Display Optimizations
 
 - **Kernel Param**: `acpi_backlight=native` (Restores GNOME brightness slider).
