@@ -4,7 +4,16 @@
   lib,
   inputs,
   ...
-}: {
+}: let
+  # "PCI:1:0:0" -> "0000:01:00.1", the PCI address of the audio function that
+  # sits alongside the dGPU. Derived from the PRIME bus id in ./nvidia.nix so
+  # the two cannot drift apart. Function 1 is the HDA controller; the GPU
+  # itself is function 0.
+  nvidiaAudioFn = let
+    parts = lib.splitString ":" (lib.removePrefix "PCI:" config.hardware.nvidia.prime.nvidiaBusId);
+    pad = lib.fixedWidthString 2 "0";
+  in "0000:${pad (builtins.elemAt parts 0)}:${pad (builtins.elemAt parts 1)}.1";
+in {
   imports = [
     ./hardware.nix
     ./nvidia.nix
@@ -54,9 +63,10 @@
       # latency is slightly worse, which is the right trade here.
       "preempt=voluntary"
 
-      # Let the PCIe link drop into its deepest sleep state between transfers.
-      # This is the single largest idle win on a laptop of this generation.
-      "pcie_aspm.policy=powersupersave"
+      # PCIe ASPM is left to TLP (PCIE_ASPM_ON_BAT below). Setting
+      # pcie_aspm.policy here only fixes the boot-time value: TLP rewrites the
+      # policy on every power-source change, so on AC the kernel parameter was
+      # silently replaced by "default" within seconds of boot.
 
       # Skip the ACPI-mediated NVMe power path, which on many Intel laptops
       # blocks the controller from reaching APST's deeper idle states.
@@ -74,20 +84,20 @@
       (config.boot.kernelPackages.callPackage "${inputs.nix-packages}/pkgs/opengigabyte" {})
     ];
     kernelModules = ["gigabytekbd"];
-  };
 
-  # Laptop sysctl deltas. modules/core/performance.nix tunes dirty-page
-  # writeback for a desktop that is always plugged in; a laptop wants the
-  # opposite, so writeback batches into fewer, larger flushes and the disk
-  # stays idle for longer stretches. mkForce because the shared module sets
-  # these at normal priority.
-  boot.kernel.sysctl = {
-    "vm.laptop_mode" = 5;
-    "vm.dirty_writeback_centisecs" = lib.mkForce 6000;
-    "vm.dirty_expire_centisecs" = lib.mkForce 6000;
-    # The NMI watchdog wakes every core on a timer purely to detect hard
-    # lockups. Real cost on idle power, no value on a personal laptop.
-    "kernel.nmi_watchdog" = 0;
+    # Laptop sysctl deltas. modules/core/performance.nix tunes dirty-page
+    # writeback for a desktop that is always plugged in; a laptop wants the
+    # opposite, so writeback batches into fewer, larger flushes and the disk
+    # stays idle for longer stretches. mkForce because the shared module sets
+    # these at normal priority.
+    kernel.sysctl = {
+      "vm.laptop_mode" = 5;
+      "vm.dirty_writeback_centisecs" = lib.mkForce 6000;
+      "vm.dirty_expire_centisecs" = lib.mkForce 6000;
+      # The NMI watchdog wakes every core on a timer purely to detect hard
+      # lockups. Real cost on idle power, no value on a personal laptop.
+      "kernel.nmi_watchdog" = 0;
+    };
   };
 
   # Laptop-specific Power Management
@@ -126,35 +136,27 @@
         # --- Runtime power management ---
         # Let idle PCIe devices (NVMe, Wi-Fi, Thunderbolt, the NVIDIA GPU)
         # suspend themselves. finegrained NVIDIA power management in
-        # hosts/windy/nvidia.nix depends on runtime PM being allowed.
+        # hosts/windy/nvidia.nix depends on runtime PM being allowed, and TLP
+        # otherwise pins everything on over AC. ON_BAT already defaults to auto.
         RUNTIME_PM_ON_AC = "auto";
-        RUNTIME_PM_ON_BAT = "auto";
-        PCIE_ASPM_ON_AC = "default";
         PCIE_ASPM_ON_BAT = "powersupersave";
 
-        # USB autosuspend, now that the kernel parameter no longer forbids it.
-        # The deny list keeps input devices responsive; anything else may sleep.
-        USB_AUTOSUSPEND = 1;
-        USB_EXCLUDE_BTUSB = 0;
+        # Let non-input USB devices sleep. TLP already autosuspends by default;
+        # the phone exclusion is the delta, so charging a handset over USB is
+        # not interrupted.
         USB_EXCLUDE_PHONE = 1;
 
-        # Wi-Fi radio power saving costs a little latency on wake, which is
-        # invisible for browsing and worth several hundred milliwatts.
-        WIFI_PWR_ON_AC = "off";
-        WIFI_PWR_ON_BAT = "on";
+        # Wi-Fi power saving on battery matches TLP's default and is left to it.
 
-        # Power down the audio codec after a second of silence. Some codecs
-        # pop on transition; this one does not.
+        # Power down the internal audio codec after a period of silence on
+        # battery only. Left on over AC because this codec pops quietly when it
+        # transitions. Only card0 (the PCH codec, speakers and mic) is affected:
+        # the dGPU's HDA controller is unbound entirely, see below.
         SOUND_POWER_SAVE_ON_AC = 0;
-        SOUND_POWER_SAVE_ON_BAT = 1;
 
-        # Aggressive SATA link power management for the secondary drive.
-        SATA_LINKPWR_ON_AC = "med_power_with_dipm";
-        SATA_LINKPWR_ON_BAT = "min_power";
-
-        # Firmware-level power hints (Intel platform profile).
-        PLATFORM_PROFILE_ON_AC = "balanced";
-        PLATFORM_PROFILE_ON_BAT = "low-power";
+        # SATA link power management is omitted: both drives are NVMe, there is
+        # no SATA controller on this machine. Likewise PLATFORM_PROFILE, which
+        # needs /sys/firmware/acpi/platform_profile; this firmware exposes none.
 
         # Stop charging at 80% and only start again below 75%. Far and away the
         # biggest lever on long-term battery health for a laptop that mostly
@@ -202,20 +204,45 @@
     # Mesh VPN and Tailscale SSH, matching ninja. tailscaled is event-driven
     # and idles cheaply, so it stays.
     tailscale.enable = true;
+
+    # windy's SSH host key is not enrolled as a sops-nix recipient (and no user
+    # age key is present), so secret decryption fails at activation. None of
+    # windy's system services consume these secrets, so skip the whole stack.
+    # Re-enable by enrolling windy's host age key in .sops.yaml and
+    # re-encrypting the secrets.
+    sops.enable = false;
   };
 
-  # Disable SOPS on windy: its SSH host key is not enrolled as a sops-nix
-  # recipient (and no user age key is present), so secret decryption fails
-  # at activation. None of windy's system services consume these secrets,
-  # so skip the whole stack here. Re-enable by enrolling windy's host age
-  # key in .sops.yaml and re-encrypting the secrets.
-  mySystem.core.sops.enable = false;
+  # Detach the dGPU's HDMI audio controller so the GPU can reach D3cold.
+  #
+  # ${nvidiaAudioFn} is the audio function of the discrete GPU. A
+  # multi-function PCI device cannot runtime-suspend until every function is
+  # suspended, and snd_hda_intel keeps its controller awake: on AC, TLP sets
+  # power_save=0, and neither that nor power_save_controller re-arms an
+  # already-bound controller at runtime. The GPU then sits at runtime_usage=1
+  # for the whole session with no userspace holder, which is the ~12.5W idle
+  # this host was fixed for in the first place.
+  #
+  # Disabling the card in wireplumber is not enough; that only stops userspace
+  # opening it, while the kernel driver stays bound and powered. Unbinding is
+  # what actually lets the function suspend, confirmed by hand:
+  # both functions report "suspended" immediately afterwards.
+  #
+  # Safe because the card is unreachable anyway. Those outputs are wired to the
+  # dGPU's KMS node, which is disabled above, so it can never carry audio here.
+  # The rule matches this one PCI function, so the internal codec on
+  # 0000:00:1f.3 (card0, speakers and mic) keeps its own driver and behaviour.
+  services.udev = {
+    extraRules = ''
+      ACTION=="add", SUBSYSTEM=="pci", KERNEL=="${nvidiaAudioFn}", DRIVER=="snd_hda_intel", RUN+="${pkgs.bash}/bin/sh -c 'echo ${nvidiaAudioFn} > /sys/bus/pci/drivers/snd_hda_intel/unbind'"
+    '';
 
-  # Allow members of the video group to write screen brightness via
-  # brightnessctl's udev rules (they chgrp/chmod the backlight sysfs nodes).
-  # Required for the Fn brightness keys, which drive brightness through
-  # ashell's IPC writing directly to those nodes.
-  services.udev.packages = [pkgs.brightnessctl];
+    # Allow members of the video group to write screen brightness via
+    # brightnessctl's udev rules (they chgrp/chmod the backlight sysfs nodes).
+    # Required for the Fn brightness keys, which drive brightness through
+    # ashell's IPC writing directly to those nodes.
+    packages = [pkgs.brightnessctl];
+  };
 
   # Disable KMS on the dGPU. modules/desktop/nvidia.nix turns modesetting on,
   # and the nixpkgs module also forces nvidia-drm.modeset=1 whenever PRIME
