@@ -165,7 +165,28 @@
     };
     # Disable unnecessary services
     colord.enable = false;
+
+    # --- Daemons pruned for idle power ---
+
+    # acpid runs with no handlers here (no /etc/acpi/events entries) and
+    # systemd-logind already owns the lid switch and power key. ninja force
+    # disables it for the same reason. mkForce because nixos-hardware's laptop
+    # module turns it on.
+    acpid.enable = lib.mkForce false;
+
+    # irqbalance spreads interrupts across cores to avoid thermal hotspots,
+    # which means periodically waking cores that were idle. Worth it on ninja,
+    # not on a machine running off a battery.
+    irqbalance.enable = false;
+
+    # No flatpak apps are installed here, so the system helper and the weekly
+    # update timer have nothing to do. home/flatpak.nix follows this switch.
+    flatpak.enable = false;
   };
+
+  # Bluetooth stays available, but the radio starts cold rather than powered up
+  # at every boot. Nothing has ever been paired with this machine.
+  hardware.bluetooth.powerOnBoot = false;
 
   # --- PRUNED FOR IDLE POWER ---
   mySystem.core = {

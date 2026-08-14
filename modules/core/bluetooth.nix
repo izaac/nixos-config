@@ -50,7 +50,9 @@ in {
 
     hardware.bluetooth = {
       enable = true;
-      powerOnBoot = true;
+      # mkDefault so battery-powered hosts can leave the radio cold until it is
+      # actually asked for.
+      powerOnBoot = lib.mkDefault true;
       disabledPlugins = ["bap" "sap"];
       settings = {
         General = {
