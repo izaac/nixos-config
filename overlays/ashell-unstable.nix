@@ -9,9 +9,19 @@
 # permanent loop, roughly 17k pointless D-Bus round trips a day. The patch adds
 # exponential backoff and stops after six failed attempts. Recheck it against
 # src/services/network/mod.rs on every ashell bump.
+#
+# The second patch is a preference, but it has nowhere else to live: the
+# brightness step is hardcoded at 5% and upstream exposes no setting for it, so
+# it cannot be expressed in config the way volume_step can. Applied everywhere
+# because it is inert on a host with no backlight.
 inputs: final: _prev: {
   ashell = inputs.nixpkgs-unstable.legacyPackages.${final.stdenv.hostPlatform.system}.ashell
     .overrideAttrs (old: {
-    patches = (old.patches or []) ++ [./patches/ashell-network-backoff.patch];
+    patches =
+      (old.patches or [])
+      ++ [
+        ./patches/ashell-network-backoff.patch
+        ./patches/ashell-brightness-step.patch
+      ];
   });
 }
