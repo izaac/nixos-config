@@ -142,6 +142,17 @@ decoder and mpv already uses it (`hwdec = "auto-safe"` in `home/mpv.nix`).
 Waking a 12 W GPU to decode a film costs far more power than the iGPU path and
 gains nothing.
 
+Firefox had to be told this explicitly. It decodes in a separate RDD process,
+where VA-API takes its DRM fd from `DMABufDevice`, which reads `MOZ_DRM_DEVICE`
+first and otherwise falls back to whichever device the glxtest probe reported.
+Left to itself it opened the dGPU render node plus `/dev/nvidia0` and
+`/dev/nvidiactl` and held them for as long as the browser ran, which is enough
+to keep the card out of runtime suspend. `home/firefox.nix` now sets
+`MOZ_DRM_DEVICE` to the iGPU render node, derived from
+`hardware.nvidia.prime.intelBusId` and applied only on hosts with PRIME offload
+enabled, so ninja is unaffected. Symptom to watch for: the `RDD Process` showing
+up in the holder scan above.
+
 ### Display Optimizations
 
 - **Kernel Param**: `acpi_backlight=native` (Restores GNOME brightness slider).
