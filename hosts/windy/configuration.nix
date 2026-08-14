@@ -62,6 +62,17 @@
       # blocks the controller from reaching APST's deeper idle states.
       "nvme.noacpi=1"
 
+      # Panel Self Refresh. The panel advertises PSR1 support but i915's auto
+      # mode (enable_psr=-1) leaves it disabled, so the display controller
+      # re-scans the framebuffer continuously even on a completely static
+      # screen. Forcing it on lets the panel hold its own image instead, which
+      # matters most at this resolution: there is no lower mode to fall back to,
+      # eDP-1 only offers 3840x2160, so every refresh moves 8.3M pixels.
+      # Helps while reading or idling, does nothing during video playback.
+      # If the display ever flickers or dims oddly, drop this line; PSR on OLED
+      # is occasionally glitchy and the previous generation boots without it.
+      "i915.enable_psr=1"
+
       # USB autosuspend is left at the kernel default. ninja opts out of it in
       # hosts/ninja/performance.nix for input latency; a laptop wants the sleep.
     ];
