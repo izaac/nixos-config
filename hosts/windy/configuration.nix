@@ -251,6 +251,27 @@ in {
     packages = [pkgs.brightnessctl];
   };
 
+  # nsncd is restarted three to six times within a couple of seconds during
+  # early boot here, and with systemd's default burst of five it exhausts the
+  # start limit and lands in "failed", taking nss-lookup.target and
+  # nss-user-lookup.target down with it. ninja never does this.
+  #
+  # The restarts themselves are harmless, nsncd comes back in about 30ms, and
+  # nothing on this host actually depends on those targets: getent hosts,
+  # passwd and group all resolve normally while the unit is dead, because glibc
+  # falls back to querying NSS directly. The only real cost is that
+  # `systemctl --failed` is never clean, which hides genuine failures.
+  #
+  # What issues the repeated restarts is unidentified. It is not an ordering
+  # cycle, not the users/groups activation script (that calls `nscd
+  # --invalidate` twice, which nsncd ignores, and does not restart the unit),
+  # and the binary is stock glibc rather than a wrapper. systemd only records
+  # which unit requested a job at debug level, so catching it would need a boot
+  # with systemd.log_level=debug. Raising the limit is therefore a deliberate
+  # symptom fix: it lets the unit survive the churn rather than pretending to
+  # explain it.
+  systemd.services.nscd.startLimitBurst = 20;
+
   # Disable KMS on the dGPU. modules/desktop/nvidia.nix turns modesetting on,
   # and the nixpkgs module also forces nvidia-drm.modeset=1 whenever PRIME
   # offload is enabled, which registers /dev/dri/card0 for the dGPU. niri
