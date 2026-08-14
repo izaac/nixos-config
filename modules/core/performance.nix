@@ -84,8 +84,10 @@ in {
       # Ananicy-cpp (Auto-nice daemon) - Disabled per Anticipation Strategy
       ananicy.enable = false;
 
-      # Irqbalance - Spread interrupts across cores to reduce thermal hotspots
-      irqbalance.enable = true;
+      # Irqbalance - Spread interrupts across cores to reduce thermal hotspots.
+      # mkDefault so laptops can turn it off: rebalancing wakes idle cores,
+      # which costs more on battery than the thermal spread is worth.
+      irqbalance.enable = lib.mkDefault true;
     };
   };
 }
