@@ -73,6 +73,16 @@ in {
         ".config/caveman/config.json".text = builtins.toJSON {
           defaultMode = "ultra";
         };
+
+        # Antigravity CLI MCP servers
+        ".gemini/config/mcp_config.json".text = builtins.toJSON {
+          mcpServers = {
+            nixos = {
+              command = "nix";
+              args = ["run" "github:utensils/mcp-nixos" "--"];
+            };
+          };
+        };
       };
 
     activation = {
@@ -97,6 +107,7 @@ in {
         if command -v claude >/dev/null 2>&1; then
           claude mcp add --scope user context7 --transport stdio -- npx -y @upstash/context7-mcp@3.2.0 2>/dev/null || true
           claude mcp add --scope user sequential-thinking --transport stdio -- npx -y @modelcontextprotocol/server-sequential-thinking@2025.12.18 2>/dev/null || true
+          claude mcp add --scope user nixos --transport stdio -- nix run github:utensils/mcp-nixos -- 2>/dev/null || true
         fi
       '';
     };
