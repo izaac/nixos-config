@@ -1,30 +1,27 @@
 # LazyVim (Neovim)
 
-> **Hosts**: all (`ninja`, `windy` on Linux, `Mac` on Apple Silicon)
-> **Defined in**: [`home/lazyvim.nix`](../home/lazyvim.nix), `programs.neovim`
+> **Hosts**: all (`ninja`, `windy` on Linux, `Mac` on Apple Silicon) **Defined in**:
+> [`home/lazyvim.nix`](../home/lazyvim.nix), `programs.neovim`
 
-[LazyVim](https://www.lazyvim.org/) is the Neovim setup on every host. It runs
-inside [tmux](tmux.md), which in turn runs inside [Kitty](kitty.md), so the same
-three-layer split that governs the terminal also frames the editor: Kitty is the
-window, tmux owns sessions and panes, and Neovim is the app in the pane. For how
-the two terminal layers cooperate, see [Kitty + tmux](kitty-tmux.md).
+[LazyVim](https://www.lazyvim.org/) is the Neovim setup on every host. It runs inside
+[tmux](tmux.md), which in turn runs inside [Kitty](kitty.md), so the same three-layer split that
+governs the terminal also frames the editor: Kitty is the window, tmux owns sessions and panes, and
+Neovim is the app in the pane. For how the two terminal layers cooperate, see
+[Kitty + tmux](kitty-tmux.md).
 
-Neovim is set as the default editor (`defaultEditor = true`, with `vi` and `vim`
-aliases), so `$EDITOR`, `git` and anything else that shells out to an editor all
-open LazyVim.
+Neovim is set as the default editor (`defaultEditor = true`, with `vi` and `vim` aliases), so
+`$EDITOR`, `git` and anything else that shells out to an editor all open LazyVim.
 
-The module loads on the Linux hosts through
-[`home/desktop.nix`](../home/desktop.nix) and on the Mac through the
-home-manager block in
-[`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix), so the editor is
-identical everywhere.
+The module loads on the Linux hosts through [`home/desktop.nix`](../home/desktop.nix) and on the Mac
+through the home-manager block in [`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix),
+so the editor is identical everywhere.
 
 ---
 
 ## How this differs from a plain LazyVim install
 
-This is LazyVim wired for Nix, not the usual `git clone` starter. A few decisions
-follow from that, and they are the things worth knowing before you edit anything.
+This is LazyVim wired for Nix, not the usual `git clone` starter. A few decisions follow from that,
+and they are the things worth knowing before you edit anything.
 
 | Area               | Normal LazyVim                 | Here                                                                  |
 | ------------------ | ------------------------------ | --------------------------------------------------------------------- |
@@ -36,29 +33,27 @@ follow from that, and they are the things worth knowing before you edit anything
 
 ### Mason is disabled on purpose
 
-Mason downloads prebuilt ELF binaries that expect a standard glibc FHS layout,
-which does not exist on NixOS. Leaving it on would give broken language servers.
-Instead the LSPs, formatters and linters are installed as normal Nix packages and
-Neovim finds them on `$PATH`. `nvim-lspconfig` keeps running as usual, it just
-never asks Mason to fetch anything. The disable lives in
+Mason downloads prebuilt ELF binaries that expect a standard glibc FHS layout, which does not exist
+on NixOS. Leaving it on would give broken language servers. Instead the LSPs, formatters and linters
+are installed as normal Nix packages and Neovim finds them on `$PATH`. `nvim-lspconfig` keeps
+running as usual, it just never asks Mason to fetch anything. The disable lives in
 `nvim/lua/plugins/disable-mason.lua`.
 
 ### Colors come from Catppuccin, not Stylix
 
-LazyVim ships its own colorscheme and Stylix also wants to theme Neovim, so the
-two would fight at startup. `stylix.targets.neovim.enable = false` steps Stylix
-out of the way, and `nvim/lua/plugins/colorscheme.lua` pins `catppuccin-mocha`,
-which matches the [Kitty](kitty.md) and [tmux](tmux.md) themes so the whole
-terminal stack stays one palette.
+LazyVim ships its own colorscheme and Stylix also wants to theme Neovim, so the two would fight at
+startup. `stylix.targets.neovim.enable = false` steps Stylix out of the way, and
+`nvim/lua/plugins/colorscheme.lua` pins `catppuccin-mocha`, which matches the [Kitty](kitty.md) and
+[tmux](tmux.md) themes so the whole terminal stack stays one palette.
 
 ---
 
 ## Languages
 
 Language support is declared in `home/lazyvim.nix` as LazyVim
-[language extras](https://www.lazyvim.org/extras). Each extra pulls in the right
-treesitter parsers, plugins and LSP wiring, and the matching server has to be on
-`$PATH` (see [Adding a language](#adding-a-language)).
+[language extras](https://www.lazyvim.org/extras). Each extra pulls in the right treesitter parsers,
+plugins and LSP wiring, and the matching server has to be on `$PATH` (see
+[Adding a language](#adding-a-language)).
 
 | Extra             | Language | Server     | Provided by                                   |
 | ----------------- | -------- | ---------- | --------------------------------------------- |
@@ -69,9 +64,9 @@ treesitter parsers, plugins and LSP wiring, and the matching server has to be on
 | `lang.toml`       | TOML     | `taplo`    | [`home/dev.nix`](../home/dev.nix)             |
 | `lang.markdown`   | Markdown | `marksman` | wrapper `extraPackages` in `home/lazyvim.nix` |
 
-Because Mason is off, every linter and formatter an extra spawns also has to be
-present, not just the LSP. The extras pull in more than the language server, so
-the wrapper bundles the rest through `extraPackages` in `home/lazyvim.nix`:
+Because Mason is off, every linter and formatter an extra spawns also has to be present, not just
+the LSP. The extras pull in more than the language server, so the wrapper bundles the rest through
+`extraPackages` in `home/lazyvim.nix`:
 
 | Extra           | Also bundled                                        |
 | --------------- | --------------------------------------------------- |
@@ -79,22 +74,20 @@ the wrapper bundles the rest through `extraPackages` in `home/lazyvim.nix`:
 | `lang.python`   | `ruff` (linter and formatter)                       |
 | `lang.markdown` | `markdownlint-cli2`, `prettier`, `markdown-toc`     |
 
-Lua is not an extra but is fully wired the same way: `lua-language-server` and
-the `stylua` formatter are bundled into the wrapper rather than the shared
-`$PATH`, since nothing else uses them.
+Lua is not an extra but is fully wired the same way: `lua-language-server` and the `stylua`
+formatter are bundled into the wrapper rather than the shared `$PATH`, since nothing else uses them.
 
-> **Nix note**: the `lang.nix` extra defaults to the `nil_ls` server and the
-> `nixfmt` formatter, but this repo standardises on `nixd` and `alejandra`
-> everywhere (CLI, treefmt, pre-commit). `nvim/lua/plugins/nix-tools.lua`
-> overrides the extra so an in-editor save formats a file identically to
-> `nix fmt`, with no churn against the hooks.
+> **Nix note**: the `lang.nix` extra defaults to the `nil_ls` server and the `nixfmt` formatter, but
+> this repo standardises on `nixd` and `alejandra` everywhere (CLI, treefmt, pre-commit).
+> `nvim/lua/plugins/nix-tools.lua` overrides the extra so an in-editor save formats a file
+> identically to `nix fmt`, with no churn against the hooks.
 
 ---
 
 ## Tools it relies on
 
-LazyVim leans on a handful of external binaries. Most are already on `$PATH` for
-other reasons, so the wrapper does not duplicate them.
+LazyVim leans on a handful of external binaries. Most are already on `$PATH` for other reasons, so
+the wrapper does not duplicate them.
 
 | Tool             | Used for                    | Provided by                                             |
 | ---------------- | --------------------------- | ------------------------------------------------------- |
@@ -108,10 +101,10 @@ other reasons, so the wrapper does not duplicate them.
 
 ## Keybindings
 
-The leader key is `Space` (`vim.g.mapleader = " "`). Press it and pause to get the
-which-key popup listing everything under the current prefix, which is the fastest
-way to discover binds. The list below is only the most-used LazyVim defaults; the
-full map is on the [LazyVim keymaps page](https://www.lazyvim.org/keymaps).
+The leader key is `Space` (`vim.g.mapleader = " "`). Press it and pause to get the which-key popup
+listing everything under the current prefix, which is the fastest way to discover binds. The list
+below is only the most-used LazyVim defaults; the full map is on the
+[LazyVim keymaps page](https://www.lazyvim.org/keymaps).
 
 ### Files and search
 
@@ -158,55 +151,48 @@ full map is on the [LazyVim keymaps page](https://www.lazyvim.org/keymaps).
 
 ## Working with Kitty and tmux
 
-Neovim sits at the bottom of the terminal stack, and the layers are tuned so they
-stay out of its way rather than needing per-app config.
+Neovim sits at the bottom of the terminal stack, and the layers are tuned so they stay out of its
+way rather than needing per-app config.
 
 ### The keys never clash
 
-Every [tmux](tmux.md#keybindings) bind goes through the `Ctrl+a` prefix, and every
-custom [Kitty](kitty.md#keybindings) bind starts with `Ctrl+Shift`, `Ctrl+Tab` or
-`Shift+Arrow`. Neovim uses bare `Ctrl+h/j/k/l` for split navigation and `Space`
-for the leader, none of which open a tmux or Kitty bind. So a keypress lands in
-exactly one layer: prefix first means tmux, `Ctrl+Shift` means Kitty, everything
-else reaches Neovim.
+Every [tmux](tmux.md#keybindings) bind goes through the `Ctrl+a` prefix, and every custom
+[Kitty](kitty.md#keybindings) bind starts with `Ctrl+Shift`, `Ctrl+Tab` or `Shift+Arrow`. Neovim
+uses bare `Ctrl+h/j/k/l` for split navigation and `Space` for the leader, none of which open a tmux
+or Kitty bind. So a keypress lands in exactly one layer: prefix first means tmux, `Ctrl+Shift` means
+Kitty, everything else reaches Neovim.
 
-`Ctrl+h/j/k/l` is worth calling out: tmux only reacts to `Ctrl+a h/j/k/l` (with
-the prefix), so the bare chord passes straight through to Neovim for window
-navigation. Move between editor splits and tmux panes with the same muscle memory,
-just with or without the prefix.
+`Ctrl+h/j/k/l` is worth calling out: tmux only reacts to `Ctrl+a h/j/k/l` (with the prefix), so the
+bare chord passes straight through to Neovim for window navigation. Move between editor splits and
+tmux panes with the same muscle memory, just with or without the prefix.
 
 ### Clipboard and colors carry through
 
 Because tmux runs with `set-clipboard on` and true-color enabled (see
-[Kitty + tmux](kitty-tmux.md#colors-clipboard-and-focus)), a yank in Neovim rides
-tmux's OSC 52 relay out through Kitty to the system clipboard, and the
-Catppuccin theme renders at full RGB. `focus-events on` means Neovim's autoread
-notices when you switch away and back.
+[Kitty + tmux](kitty-tmux.md#colors-clipboard-and-focus)), a yank in Neovim rides tmux's OSC 52
+relay out through Kitty to the system clipboard, and the Catppuccin theme renders at full RGB.
+`focus-events on` means Neovim's autoread notices when you switch away and back.
 
 ### Shadowed keys
 
-Two chords are grabbed by a layer above Neovim, so they behave differently than a
-standalone editor would:
+Two chords are grabbed by a layer above Neovim, so they behave differently than a standalone editor
+would:
 
-- **`Ctrl+a`**: this is the tmux prefix, and Neovim always runs inside tmux. So
-  Neovim's native `Ctrl+a` (increment the number under the cursor) never reaches
-  the editor. This config rebinds increment and decrement to `+` and `-` in
-  normal and visual mode so they work without the prefix (`+` increments, `-`
-  decrements; in visual mode they step a selection as a sequence). To use the
-  built-in `Ctrl+a` directly you can still press `Ctrl+a` `a`, which tmux
-  forwards down as a literal `Ctrl+a`. The same shadowing hits the shell's
-  `Ctrl+a` (start of line) at a bare prompt.
-- **`Shift+↑` / `Shift+↓`**: Kitty maps these to jump between shell prompts and
-  intercepts them before Neovim sees them. Neovim does not bind Shift-arrows by
-  default, so nothing is lost inside the editor; just do not expect them to move
-  the cursor. Use `Ctrl+u` / `Ctrl+d` to scroll and visual mode (`V`, then `j` /
-  `k`) to select by line.
+- **`Ctrl+a`**: this is the tmux prefix, and Neovim always runs inside tmux. So Neovim's native
+  `Ctrl+a` (increment the number under the cursor) never reaches the editor. This config rebinds
+  increment and decrement to `+` and `-` in normal and visual mode so they work without the prefix
+  (`+` increments, `-` decrements; in visual mode they step a selection as a sequence). To use the
+  built-in `Ctrl+a` directly you can still press `Ctrl+a` `a`, which tmux forwards down as a literal
+  `Ctrl+a`. The same shadowing hits the shell's `Ctrl+a` (start of line) at a bare prompt.
+- **`Shift+↑` / `Shift+↓`**: Kitty maps these to jump between shell prompts and intercepts them
+  before Neovim sees them. Neovim does not bind Shift-arrows by default, so nothing is lost inside
+  the editor; just do not expect them to move the cursor. Use `Ctrl+u` / `Ctrl+d` to scroll and
+  visual mode (`V`, then `j` / `k`) to select by line.
 
-Everything else stays in exactly one layer. tmux binds all start with the
-`Ctrl+a` prefix, custom Kitty binds all start with `Ctrl+Shift` (or `Ctrl+Tab` /
-`Shift+Arrow`), and [niri](niri.md) binds all use `Super`, `Print` or the media
-keys. Neovim's `Ctrl+h/j/k/l` (move between splits) and `Ctrl+←/↑/↓/→` (resize)
-use bare `Ctrl`, which none of the other layers claim, so they pass straight
+Everything else stays in exactly one layer. tmux binds all start with the `Ctrl+a` prefix, custom
+Kitty binds all start with `Ctrl+Shift` (or `Ctrl+Tab` / `Shift+Arrow`), and [niri](niri.md) binds
+all use `Super`, `Print` or the media keys. Neovim's `Ctrl+h/j/k/l` (move between splits) and
+`Ctrl+←/↑/↓/→` (resize) use bare `Ctrl`, which none of the other layers claim, so they pass straight
 through.
 
 ---
@@ -215,17 +201,15 @@ through.
 
 Because Mason is off, adding a language is two steps:
 
-1. Add the LazyVim extra to the `spec` list in
-   [`home/lazyvim.nix`](../home/lazyvim.nix), for example
-   `{ import = "lazyvim.plugins.extras.lang.rust" }`.
-2. Add its language server, and any formatter or linter the extra spawns, so
-   they land on a `$PATH` Neovim can see. Either put them in
-   [`home/dev.nix`](../home/dev.nix) if they are useful to the shell too, or in
-   the wrapper `extraPackages` in [`home/lazyvim.nix`](../home/lazyvim.nix) to
-   keep them editor-only, for example `rust-analyzer`.
+1. Add the LazyVim extra to the `spec` list in [`home/lazyvim.nix`](../home/lazyvim.nix), for
+   example `{ import = "lazyvim.plugins.extras.lang.rust" }`.
+2. Add its language server, and any formatter or linter the extra spawns, so they land on a `$PATH`
+   Neovim can see. Either put them in [`home/dev.nix`](../home/dev.nix) if they are useful to the
+   shell too, or in the wrapper `extraPackages` in [`home/lazyvim.nix`](../home/lazyvim.nix) to keep
+   them editor-only, for example `rust-analyzer`.
 
-Rebuild, and `nvim-lspconfig` picks the server up automatically. Skipping step 2
-leaves the extra installed but the LSP silent, and Mason will not fill the gap.
+Rebuild, and `nvim-lspconfig` picks the server up automatically. Skipping step 2 leaves the extra
+installed but the LSP silent, and Mason will not fill the gap.
 
 ---
 
@@ -237,11 +221,10 @@ leaves the extra installed but the LSP silent, and Mason will not fill the gap.
 just build      # nh os switch .
 ```
 
-Config files are regenerated on switch. Restart Neovim to load the new config;
-LazyVim then syncs any changed plugin specs on the next start.
+Config files are regenerated on switch. Restart Neovim to load the new config; LazyVim then syncs
+any changed plugin specs on the next start.
 
 ### Mac
 
-Flakes only see git-tracked files, so commit and push first, then re-apply with
-`darwin-rebuild`. See [kitty.md → How to apply](kitty.md#mac) for the full remote
-workflow.
+Flakes only see git-tracked files, so commit and push first, then re-apply with `darwin-rebuild`.
+See [kitty.md → How to apply](kitty.md#mac) for the full remote workflow.

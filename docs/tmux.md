@@ -1,24 +1,21 @@
 # tmux
 
-> **Hosts**: all (`ninja`, `windy` on Linux, `Mac` on Apple Silicon)
-> **Defined in**: [`home/tmux.nix`](../home/tmux.nix), `programs.tmux`, themed by Stylix
+> **Hosts**: all (`ninja`, `windy` on Linux, `Mac` on Apple Silicon) **Defined in**:
+> [`home/tmux.nix`](../home/tmux.nix), `programs.tmux`, themed by Stylix
 
-[tmux](https://github.com/tmux/tmux) is the terminal multiplexer on every host.
-It runs inside [Kitty](kitty.md) and owns sessions, windows and panes, while the
-Kitty keybinds sit at the terminal level underneath tmux's own prefix. For the
-details of how the two layers cooperate, see [Kitty + tmux](kitty-tmux.md).
+[tmux](https://github.com/tmux/tmux) is the terminal multiplexer on every host. It runs inside
+[Kitty](kitty.md) and owns sessions, windows and panes, while the Kitty keybinds sit at the terminal
+level underneath tmux's own prefix. For the details of how the two layers cooperate, see
+[Kitty + tmux](kitty-tmux.md).
 
 Colors come from Stylix (Catppuccin Mocha, set in
-[`modules/core/theme.nix`](../modules/core/theme.nix)). Turning on
-`programs.tmux` is enough for Stylix to paint the status bar and panes, so there
-is no manual Catppuccin block in the config. Only the status-bar layout is set by
-hand.
+[`modules/core/theme.nix`](../modules/core/theme.nix)). Turning on `programs.tmux` is enough for
+Stylix to paint the status bar and panes, so there is no manual Catppuccin block in the config. Only
+the status-bar layout is set by hand.
 
-The module loads on all hosts through
-[`home/core.nix`](../home/core.nix), which is imported via
-[`modules/core/home-manager.nix`](../modules/core/home-manager.nix) on Linux and
-via the home-manager block in
-[`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix) on the Mac.
+The module loads on all hosts through [`home/core.nix`](../home/core.nix), which is imported via
+[`modules/core/home-manager.nix`](../modules/core/home-manager.nix) on Linux and via the
+home-manager block in [`hosts/Mac/configuration.nix`](../hosts/Mac/configuration.nix) on the Mac.
 
 ## Core behavior
 
@@ -35,8 +32,7 @@ via the home-manager block in
 
 ## Keybindings
 
-Every bind uses the `Ctrl+a` prefix unless noted. Press the prefix, let go, then
-press the key.
+Every bind uses the `Ctrl+a` prefix unless noted. Press the prefix, let go, then press the key.
 
 | Keys               | Action                                      |
 | ------------------ | ------------------------------------------- |
@@ -48,30 +44,27 @@ press the key.
 | `Ctrl+a` `a`       | Send a literal `Ctrl+a` to the inner app    |
 | `Ctrl+a` `m`       | Open the **tmux-menus** popup               |
 
-The `\` and `v` splits are deliberate: the default `\` split is moved aside so it
-does not fight the menu trigger. All the usual tmux pane binds still work on top
-of these, including `%` and `"` for splits, `z` to zoom, `x` to kill, `c` for a
-new window and `[` for copy mode.
+The `\` and `v` splits are deliberate: the default `\` split is moved aside so it does not fight the
+menu trigger. All the usual tmux pane binds still work on top of these, including `%` and `"` for
+splits, `z` to zoom, `x` to kill, `c` for a new window and `[` for copy mode.
 
 ### Sending a literal Ctrl+a
 
-Because `Ctrl+a` is the prefix, it never reaches whatever is running in the pane.
-Press `Ctrl+a` `a` (the `send-prefix` bind) to forward one literal `Ctrl+a`
-through to the inner app. This covers three cases:
+Because `Ctrl+a` is the prefix, it never reaches whatever is running in the pane. Press `Ctrl+a` `a`
+(the `send-prefix` bind) to forward one literal `Ctrl+a` through to the inner app. This covers three
+cases:
 
-- **Nested tmux**: SSH from a local tmux into a remote one and the outer session
-  swallows the prefix, so `Ctrl+a` `a` drives the inner session.
-- **Neovim**: the editor's native `Ctrl+a` (increment number) is shadowed.
-  `Ctrl+a` `a` triggers it, though the config also binds `+` / `-` for a
-  prefix-free increment and decrement (see
+- **Nested tmux**: SSH from a local tmux into a remote one and the outer session swallows the
+  prefix, so `Ctrl+a` `a` drives the inner session.
+- **Neovim**: the editor's native `Ctrl+a` (increment number) is shadowed. `Ctrl+a` `a` triggers it,
+  though the config also binds `+` / `-` for a prefix-free increment and decrement (see
   [LazyVim](lazyvim.md#shadowed-keys)).
-- **Shell**: `Ctrl+a` (start of line) at a bare prompt likewise needs
-  `Ctrl+a` `a`.
+- **Shell**: `Ctrl+a` (start of line) at a bare prompt likewise needs `Ctrl+a` `a`.
 
 ### Windows
 
-A tmux window is like a tab: a full-screen workspace that can hold its own panes.
-The custom binds above only cover panes, so window management uses tmux defaults.
+A tmux window is like a tab: a full-screen workspace that can hold its own panes. The custom binds
+above only cover panes, so window management uses tmux defaults.
 
 | Keys              | Action                     |
 | ----------------- | -------------------------- |
@@ -84,13 +77,13 @@ The custom binds above only cover panes, so window management uses tmux defaults
 | `Ctrl+a` `w`      | List and pick a window     |
 | `Ctrl+a` `&`      | Kill the current window    |
 
-Open windows show in the middle of the status bar as `index:name` with flags, so
-you can always see which one is current.
+Open windows show in the middle of the status bar as `index:name` with flags, so you can always see
+which one is current.
 
 ### Panes
 
-The custom binds cover splitting and moving between panes. The rest of pane
-management uses tmux defaults, plus the mouse, which is enabled in the config.
+The custom binds cover splitting and moving between panes. The rest of pane management uses tmux
+defaults, plus the mouse, which is enabled in the config.
 
 | Keys                   | Action                                       |
 | ---------------------- | -------------------------------------------- |
@@ -101,14 +94,13 @@ management uses tmux defaults, plus the mouse, which is enabled in the config.
 | Mouse drag border      | Resize a pane by dragging                    |
 | Mouse click pane       | Focus that pane                              |
 
-A zoomed pane shows a `Z` flag next to its window in the status bar. Press
-`Ctrl+a` `z` again to restore the layout.
+A zoomed pane shows a `Z` flag next to its window in the status bar. Press `Ctrl+a` `z` again to
+restore the layout.
 
 ### Sessions
 
-A session is the top-level container that holds your windows. It keeps running on
-the server even after you detach, which is what makes the
-[SSH auto-attach](#ssh-auto-attach) below work.
+A session is the top-level container that holds your windows. It keeps running on the server even
+after you detach, which is what makes the [SSH auto-attach](#ssh-auto-attach) below work.
 
 | Command or keys    | Action                                    |
 | ------------------ | ----------------------------------------- |
@@ -124,9 +116,9 @@ The session name is shown on the left of the status bar.
 
 ### Copy mode
 
-Copy mode lets you scroll back and select text with the keyboard. The config sets
-`keyMode = "vi"`, so movement uses Vim keys, and `set-clipboard on` sends whatever
-you copy out through Kitty to the system clipboard.
+Copy mode lets you scroll back and select text with the keyboard. The config sets `keyMode = "vi"`,
+so movement uses Vim keys, and `set-clipboard on` sends whatever you copy out through Kitty to the
+system clipboard.
 
 | Keys                | Action                                 |
 | ------------------- | -------------------------------------- |
@@ -137,9 +129,9 @@ you copy out through Kitty to the system clipboard.
 | `y`                 | Copy the selection and leave copy mode |
 | `q`                 | Quit copy mode without copying         |
 
-With the mouse on, you can also just drag to select; releasing copies the text
-straight to the clipboard. `v` and `y` are custom binds added in the config, and
-the default `Space` and `Enter` still work too.
+With the mouse on, you can also just drag to select; releasing copies the text straight to the
+clipboard. `v` and `y` are custom binds added in the config, and the default `Space` and `Enter`
+still work too.
 
 ## Plugins
 
@@ -148,12 +140,11 @@ the default `Space` and `Enter` still work too.
 | `sensible`   | `pkgs.tmuxPlugins.sensible`     | Sane baseline defaults                     |
 | `tmux-menus` | `jaclu/tmux-menus` (pinned rev) | Popup menu on `Ctrl+a` `m`, cache disabled |
 
-`tmux-menus` is not in nixpkgs, so it is built locally with `mkTmuxPlugin`
-against a pinned commit. The old config used `rev = "main"`, which moves over
-time and breaks reproducibility. It is loaded by hand with `run-shell` in
-`extraConfig` because `@menus_use_cache` has to be set to `"no"` before the
-plugin starts up. The Nix store path is read-only, so the plugin cannot write
-its cache there and would otherwise error.
+`tmux-menus` is not in nixpkgs, so it is built locally with `mkTmuxPlugin` against a pinned commit.
+The old config used `rev = "main"`, which moves over time and breaks reproducibility. It is loaded
+by hand with `run-shell` in `extraConfig` because `@menus_use_cache` has to be set to `"no"` before
+the plugin starts up. The Nix store path is read-only, so the plugin cannot write its cache there
+and would otherwise error.
 
 ## Status bar
 
@@ -165,27 +156,27 @@ Stylix supplies the colors, and the config only describes the layout.
 | **Middle** | Window list `index:name` with flags (`*` current, `-` last, `Z` zoom) |
 | **Right**  | Weekday, date and time (`%a %d %b  %H:%M`), refreshed every 5 s       |
 
-Activity monitoring is on, so a window with background output gets flagged and a
-`visual-activity` message fires.
+Activity monitoring is on, so a window with background output gets flagged and a `visual-activity`
+message fires.
 
 ## Kitty integration
 
-tmux always runs inside Kitty, and the two are tuned to stay out of each other's
-way on colors, clipboard and shortcuts. That setup lives in its own page so both
-docs can point at one source of truth: [Kitty + tmux](kitty-tmux.md).
+tmux always runs inside Kitty, and the two are tuned to stay out of each other's way on colors,
+clipboard and shortcuts. That setup lives in its own page so both docs can point at one source of
+truth: [Kitty + tmux](kitty-tmux.md).
 
 ## SSH auto-attach
 
-Logging into a host over SSH drops you straight into a persistent tmux session.
-For interactive SSH shells that are not already inside tmux or a VS Code
-terminal, [`home/shell/zsh.nix`](../home/shell/zsh.nix) runs:
+Logging into a host over SSH drops you straight into a persistent tmux session. For interactive SSH
+shells that are not already inside tmux or a VS Code terminal,
+[`home/shell/zsh.nix`](../home/shell/zsh.nix) runs:
 
 ```sh
 exec tmux new-session -A -s main
 ```
 
-`-A` attaches to `main` if it exists and creates it otherwise, so a dropped SSH
-connection leaves your work running and the next login picks it back up.
+`-A` attaches to `main` if it exists and creates it otherwise, so a dropped SSH connection leaves
+your work running and the next login picks it back up.
 
 ## Mac notes
 
@@ -202,11 +193,10 @@ connection leaves your work running and the next login picks it back up.
 just build      # nh os switch .
 ```
 
-Reload the config in a running session with
-`Ctrl+a` `:source-file ~/.config/tmux/tmux.conf`, or just start a new session.
+Reload the config in a running session with `Ctrl+a` `:source-file ~/.config/tmux/tmux.conf`, or
+just start a new session.
 
 ### Mac
 
-Flakes only see git-tracked files, so commit and push first, then re-apply with
-`darwin-rebuild`. See [kitty.md → How to apply](kitty.md#mac) for the full remote
-workflow.
+Flakes only see git-tracked files, so commit and push first, then re-apply with `darwin-rebuild`.
+See [kitty.md → How to apply](kitty.md#mac) for the full remote workflow.

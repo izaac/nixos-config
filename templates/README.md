@@ -1,6 +1,7 @@
 # Development Environment Templates
 
-This directory contains both **golden master shells** (ephemeral) and **project templates** (scaffolding) for various programming languages.
+This directory contains both **golden master shells** (ephemeral) and **project templates**
+(scaffolding) for various programming languages.
 
 ## Quick Reference
 
@@ -127,7 +128,8 @@ cd ~/existing-cpp-project
 cppinit              # Loads environment with clang, cmake, lldb, etc.
 ```
 
-**Note:** These functions create a `.envrc` file in your current directory. Add it to `.gitignore` if you don't want to commit it.
+**Note:** These functions create a `.envrc` file in your current directory. Add it to `.gitignore`
+if you don't want to commit it.
 
 ---
 
@@ -150,8 +152,7 @@ build  # Run cargo build
 watch  # Run bacon (background checker)
 ```
 
-**Customization:**
-Edit `devenv.nix` to:
+**Customization:** Edit `devenv.nix` to:
 
 - Change Rust channel (stable/nightly/beta)
 - Add more cargo tools
@@ -177,8 +178,7 @@ build  # cmake + ninja build
 debug  # launch gdb
 ```
 
-**Customization:**
-Edit `devenv.nix` to:
+**Customization:** Edit `devenv.nix` to:
 
 - Add/remove libraries in `packages = [ ... ]`
 - Modify build scripts
@@ -208,8 +208,7 @@ format  # clang-format
 lint    # clang-tidy
 ```
 
-**Customization:**
-Edit `devenv.nix` to:
+**Customization:** Edit `devenv.nix` to:
 
 - Switch to GCC (uncomment gcc/gdb, comment clang/lldb)
 - Add/remove libraries
@@ -361,7 +360,8 @@ pkg-config --list-all
 
 ### "npm install failed: ENOENT package.json" (or similar errors)
 
-You ran `ninit`/`pinit` in a directory without project files. The functions only work in project directories.
+You ran `ninit`/`pinit` in a directory without project files. The functions only work in project
+directories.
 
 **Fix:**
 

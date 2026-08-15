@@ -1,6 +1,7 @@
 # Security & System Hardening
 
-This document outlines the security measures and system hardening techniques implemented in this NixOS configuration.
+This document outlines the security measures and system hardening techniques implemented in this
+NixOS configuration.
 
 ## Disk Encryption (LUKS)
 
@@ -15,7 +16,8 @@ This protects data at rest for system partitions.
 
 ## Secrets Management (sops-nix + age)
 
-Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activation/runtime by `sops-nix`.
+Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activation/runtime by
+`sops-nix`.
 
 - Module: `modules/core/sops.nix`
 - Key location is derived from the configured user home:
@@ -27,7 +29,9 @@ Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activatio
 
 ## SSH and Privilege Defaults
 
-`modules/core/system.nix` disables sshd by default (`services.openssh.enable = lib.mkDefault false`); each host opts in and hardens it in its own `ssh.nix`:
+`modules/core/system.nix` disables sshd by default
+(`services.openssh.enable = lib.mkDefault false`); each host opts in and hardens it in its own
+`ssh.nix`:
 
 - `hosts/ninja/ssh.nix` / `hosts/windy/ssh.nix`:
   - `services.openssh.enable = true`
@@ -35,14 +39,16 @@ Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activatio
   - `KbdInteractiveAuthentication = false`
   - `PermitRootLogin = "no"`
 
-Privilege escalation uses the memory-safe Rust `sudo-rs` (C `sudo` is `mkForce`-disabled in `modules/core/system.nix`):
+Privilege escalation uses the memory-safe Rust `sudo-rs` (C `sudo` is `mkForce`-disabled in
+`modules/core/system.nix`):
 
 - `modules/core/system.nix`: `security.sudo-rs.enable = lib.mkForce true`
 - `modules/core/user.nix`: `security.sudo-rs.wheelNeedsPassword = true`
 
 ## Firewall and Network Exposure
 
-Host firewall policy on ninja is enabled in `hosts/ninja/network.nix` (windy enables `networking.firewall.enable = true` in its own `network.nix`):
+Host firewall policy on ninja is enabled in `hosts/ninja/network.nix` (windy enables
+`networking.firewall.enable = true` in its own `network.nix`):
 
 - `networking.firewall.enable = true`
 - Explicit TCP port `22` (SSH)

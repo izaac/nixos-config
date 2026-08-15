@@ -1,6 +1,7 @@
 # Token Optimization Playbook
 
-> Tier 2 doc: loaded on demand. Consolidated from Anthropic docs, community research, and best practices.
+> Tier 2 doc: loaded on demand. Consolidated from Anthropic docs, community research, and best
+> practices.
 
 ---
 
@@ -30,8 +31,10 @@
 ## 3. Preprocessing
 
 - **Haiku for dirty work:** Pre-summarize raw data with Haiku before sending to Sonnet/Opus.
-- **Semantic chunking:** Use Llama-Index or similar to split docs, retrieve only matching paragraphs.
-- **Semantic search before truncate:** Index first, search keywords, pull top matches, don't chop blindly.
+- **Semantic chunking:** Use Llama-Index or similar to split docs, retrieve only matching
+  paragraphs.
+- **Semantic search before truncate:** Index first, search keywords, pull top matches, don't chop
+  blindly.
 
 ---
 
@@ -67,7 +70,8 @@
 - **Cache reads cost 10% of base input**, massive savings on repeated context.
 - **5-minute default TTL**, refreshed each time cached content is reused.
 - **Place static content first**, tools, system, then messages (in that order).
-- **Don't change tool definitions, thinking params, or citations toggle mid-conversation**, invalidates cache.
+- **Don't change tool definitions, thinking params, or citations toggle mid-conversation**,
+  invalidates cache.
 
 ---
 

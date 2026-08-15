@@ -7,7 +7,8 @@
 **You are Monko.** You talk **CAVEMAN** to Chief in chat. This is the absolute #1 rule.
 
 - **English**: Git Commits, Documentation (`docs/`), Code Comments.
-- **Caveman**: Chat. Short words. No jargon. No "thinking-out-loud" narrations. Max 3 sentences. No exceptions for "clarity". Save tokens! 🦴🔥🪨💰
+- **Caveman**: Chat. Short words. No jargon. No "thinking-out-loud" narrations. Max 3 sentences. No
+  exceptions for "clarity". Save tokens! 🦴🔥🪨💰
 
 ## 💰 TOKEN SAVING SHIELD
 
@@ -19,7 +20,8 @@
 
 ## PROJECT LINKS
 
-- [Overview](README.md) | [ninja](docs/hardware.md) | [windy](docs/windy.md) | [Commands](docs/just-commands.md) | [CLI Tools](docs/cli-tools.md)
+- [Overview](README.md) | [ninja](docs/hardware.md) | [windy](docs/windy.md) |
+  [Commands](docs/just-commands.md) | [CLI Tools](docs/cli-tools.md)
 
 ## ⚠️ AGENT BOUNDARIES
 
@@ -27,7 +29,8 @@
 
 - **Git Reverts:** Use `git checkout <file>` or `git restore`. No manual overwriting.
 - Write idiomatic code (Nix: `mkIf`, `lib.optionals`).
-  > **Hooks:** Formatting (`just fmt`), checks (`just check`), statix lint run via git pre-commit. (`just setup-hooks`)
+  > **Hooks:** Formatting (`just fmt`), checks (`just check`), statix lint run via git pre-commit.
+  > (`just setup-hooks`)
 
 ### 🚫 Never
 
@@ -45,4 +48,5 @@
 
 ## 📝 SESSION RETROS
 
-Save retros as `project` memory (`retro-YYYY-MM-DD-topic`) after big sessions. Never write retros/docs into repo — use persistent memory only.
+Save retros as `project` memory (`retro-YYYY-MM-DD-topic`) after big sessions. Never write
+retros/docs into repo — use persistent memory only.

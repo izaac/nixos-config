@@ -1,6 +1,7 @@
 # Just: The Jungle Magic Stick
 
-The `just` command runner provides a simplified interface for common repository tasks. Instead of remembering complex Nix or NH commands, use these short-codes.
+The `just` command runner provides a simplified interface for common repository tasks. Instead of
+remembering complex Nix or NH commands, use these short-codes.
 
 ## Usage
 
@@ -34,18 +35,19 @@ just <command>
 | `just builder-info`                     | Show offload build machines                 | `cat /etc/nix/machines`                                                 |
 | `just builder-reset`                    | Recreate Mac builder VM disk (Mac)          | `launchctl bootout/bootstrap + rm nixos.qcow2`                          |
 
-> **`test-host` + the Mac builder:** running `just test-host ninja` on the Mac
-> builds ninja's whole closure and offloads the Linux build to the
-> [linux-builder](linux-builder.md). A green build means the config evaluates and
-> every package compiles, safe to apply on ninja. See the builder doc for the
-> when/why and the disk-recreation gotcha behind `builder-reset`.
+> **`test-host` + the Mac builder:** running `just test-host ninja` on the Mac builds ninja's whole
+> closure and offloads the Linux build to the [linux-builder](linux-builder.md). A green build means
+> the config evaluates and every package compiles, safe to apply on ninja. See the builder doc for
+> the when/why and the disk-recreation gotcha behind `builder-reset`.
 
 ## Remote Installation (nixos-anywhere)
 
 The `deploy-ninja` command uses `nixos-anywhere` to bootstrap a new machine over SSH.
 
 - **Requirement**: The target machine must have an existing Linux install with SSH access as `root`.
-- **Warning**: This command will **entirely wipe the destination disk** using the `disko` configuration.
+- **Warning**: This command will **entirely wipe the destination disk** using the `disko`
+  configuration.
 - **RAM**: The target needs at least 1.5GB of RAM to host the temporary installer.
 
-To add more commands, edit the `justfile` in the repository root. Remember to use tabs for indentation, as `just` follows `make` syntax.
+To add more commands, edit the `justfile` in the repository root. Remember to use tabs for
+indentation, as `just` follows `make` syntax.

@@ -1,22 +1,5 @@
 {
   "nodes": {
-    "ai-trace-scanner": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1775777966,
-        "narHash": "sha256-afVXxgHC2nh95SsrvyGZVatn+6KLl2x3ff2Jv/FnLMM=",
-        "owner": "izaac",
-        "repo": "ai-trace-scanner",
-        "rev": "7a0588e88ab0b925b8b3d76a20b13d752a5bfbe2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "izaac",
-        "ref": "v0.8.0",
-        "repo": "ai-trace-scanner",
-        "type": "github"
-      }
-    },
     "base16": {
       "inputs": {
         "fromYaml": "fromYaml"
@@ -425,7 +408,6 @@
     },
     "root": {
       "inputs": {
-        "ai-trace-scanner": "ai-trace-scanner",
         "claude-skills": "claude-skills",
         "darwin": "darwin",
         "disko": "disko",

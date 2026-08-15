@@ -1,27 +1,25 @@
 # Kitty Terminal
 
-> **Hosts**: all (`ninja`, `windy` on Linux and `Mac` on Apple Silicon laptop)
-> **Defined in**:
+> **Hosts**: all (`ninja`, `windy` on Linux and `Mac` on Apple Silicon laptop) **Defined in**:
 >
 > - Linux: [`home/kitty.nix`](../home/kitty.nix), `programs.kitty`, themed by Stylix
 > - Mac: [`home/darwin/kitty.nix`](../home/darwin/kitty.nix), raw `kitty.conf`, **no Stylix**
 
-[Kitty](https://sw.kovidgoyal.net/kitty/) is the terminal on every host.
-[`tmux`](tmux.md) runs inside it for sessions and panes, and the kitty binds
-below are terminal-level and sit underneath tmux's own prefix keys. For how the
-two layers split the work, see [Kitty + tmux](kitty-tmux.md).
+[Kitty](https://sw.kovidgoyal.net/kitty/) is the terminal on every host. [`tmux`](tmux.md) runs
+inside it for sessions and panes, and the kitty binds below are terminal-level and sit underneath
+tmux's own prefix keys. For how the two layers split the work, see [Kitty + tmux](kitty-tmux.md).
 
-The two hosts use **two separate config files** because the Mac needs macOS-only
-workarounds (shell pinning, Option-as-Alt) and is not themed by Stylix. The
-keybindings are kept in sync so muscle memory transfers, with one deliberate
-divergence for the laptop keyboard (see [Mac differences](#mac-differences)).
+The two hosts use **two separate config files** because the Mac needs macOS-only workarounds (shell
+pinning, Option-as-Alt) and is not themed by Stylix. The keybindings are kept in sync so muscle
+memory transfers, with one deliberate divergence for the laptop keyboard (see
+[Mac differences](#mac-differences)).
 
 ---
 
 ## Keybindings
 
-These are the **custom** binds defined in the config. Kitty's own defaults
-(e.g. `ctrl+shift+c/v` copy/paste on Linux, `⌘C/⌘V` on macOS) still apply on top.
+These are the **custom** binds defined in the config. Kitty's own defaults (e.g. `ctrl+shift+c/v`
+copy/paste on Linux, `⌘C/⌘V` on macOS) still apply on top.
 
 | Keys                          | Action                               | Linux | Mac |
 | ----------------------------- | ------------------------------------ | :---: | :-: |
@@ -37,9 +35,9 @@ These are the **custom** binds defined in the config. Kitty's own defaults
 | `Ctrl+Shift+F`                | Toggle zoom (`stack` layout)         |  Yes  | Yes |
 | `Shift+↑` / `Shift+↓`         | Jump to previous / next shell prompt |  Yes  | Yes |
 
-Splits and the zoom toggle require `enabled_layouts splits,stack` (set in both
-configs). `Shift+↑/↓` prompt-jumping relies on kitty **shell integration** being
-active (enabled on Linux, loaded manually on the Mac, see below).
+Splits and the zoom toggle require `enabled_layouts splits,stack` (set in both configs). `Shift+↑/↓`
+prompt-jumping relies on kitty **shell integration** being active (enabled on Linux, loaded manually
+on the Mac, see below).
 
 ### Useful kitty defaults
 
@@ -70,32 +68,30 @@ The Mac config diverges from the Linux one in a few deliberate ways:
 
 ### Why the Mac pins the shell
 
-The macOS GUI launchd session can leave `$SHELL` pointing at a stale login shell
-(e.g. the system `/bin/zsh` or an old `/bin/bash`), so a fresh kitty window would
-not pick up the nix-managed shell. The Mac config therefore pins kitty to the nix
-`zsh` with `--login` so it reads `.zprofile` → `.zshrc` from the managed
-environment.
+The macOS GUI launchd session can leave `$SHELL` pointing at a stale login shell (e.g. the system
+`/bin/zsh` or an old `/bin/bash`), so a fresh kitty window would not pick up the nix-managed shell.
+The Mac config therefore pins kitty to the nix `zsh` with `--login` so it reads `.zprofile` →
+`.zshrc` from the managed environment.
 
-Because kitty detects `zsh` by basename, `shellIntegration.mode = "enabled"`
-injects its shell integration automatically (the `KITTY_*` env vars and prompt
-marking). With integration live, kitty can tell an idle prompt from a running
-command, which is what makes `confirm_os_window_close -1` only warn on close when
-a job is actually running.
+Because kitty detects `zsh` by basename, `shellIntegration.mode = "enabled"` injects its shell
+integration automatically (the `KITTY_*` env vars and prompt marking). With integration live, kitty
+can tell an idle prompt from a running command, which is what makes `confirm_os_window_close -1`
+only warn on close when a job is actually running.
 
 ### Why no PageUp/PageDown on the Mac
 
-The built-in MacBook keyboard has **no physical PageUp/PageDown keys** (they are
-`Fn+↑` / `Fn+↓`). The PageUp/PageDown tab binds are kept for an external
-keyboard, but the day-to-day tab cycle is `Ctrl+Tab` / `Ctrl+Shift+Tab`.
+The built-in MacBook keyboard has **no physical PageUp/PageDown keys** (they are `Fn+↑` / `Fn+↓`).
+The PageUp/PageDown tab binds are kept for an external keyboard, but the day-to-day tab cycle is
+`Ctrl+Tab` / `Ctrl+Shift+Tab`.
 
 ---
 
 ## Changing the font size
 
-- **Linux**: font comes from Stylix, not kitty. Edit `stylix.fonts.sizes.terminal`
-  in [`modules/core/theme.nix`](../modules/core/theme.nix) and rebuild.
-- **Mac**: edit `font_size` in [`home/darwin/kitty.nix`](../home/darwin/kitty.nix)
-  and re-apply. For a quick, non-persistent change use `⌘+` / `⌘-` / `⌘0`.
+- **Linux**: font comes from Stylix, not kitty. Edit `stylix.fonts.sizes.terminal` in
+  [`modules/core/theme.nix`](../modules/core/theme.nix) and rebuild.
+- **Mac**: edit `font_size` in [`home/darwin/kitty.nix`](../home/darwin/kitty.nix) and re-apply. For
+  a quick, non-persistent change use `⌘+` / `⌘-` / `⌘0`.
 
 ---
 
@@ -119,6 +115,5 @@ ssh izaac@192.168.0.218 'cd ~/repos/nixos-config && git pull --ff-only \
   && sudo darwin-rebuild switch --flake .#Mac'
 ```
 
-Open kitty windows keep the old config until reloaded, so press `⌃⌘,` or open a
-new window. See [AeroSpace → How to apply](aerospace.md#how-to-apply) for the
-full remote workflow.
+Open kitty windows keep the old config until reloaded, so press `⌃⌘,` or open a new window. See
+[AeroSpace → How to apply](aerospace.md#how-to-apply) for the full remote workflow.

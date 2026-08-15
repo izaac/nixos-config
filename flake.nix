@@ -48,10 +48,6 @@
       url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ai-trace-scanner = {
-      url = "github:izaac/ai-trace-scanner/v0.8.0";
-      flake = false;
-    };
     claude-skills = {
       # Private repo, fetched over ssh so it stays private. Skill files
       # only, not a flake.

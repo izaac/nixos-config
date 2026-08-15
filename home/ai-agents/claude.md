@@ -5,4 +5,6 @@
 - Use subagent for codebase explore. Keep main context clean.
 - Never load full doc when link or `@` import enough.
 - Point to specific file + line number in prompt.
-- **Always query Context7** before implement pattern not 100% sure, especially test design (cleanup, fixtures, assertions), Playwright API, any library/framework best practice. Training data stale; Context7 current. Apply to main context + subagent.
+- **Always query Context7** before implement pattern not 100% sure, especially test design (cleanup,
+  fixtures, assertions), Playwright API, any library/framework best practice. Training data stale;
+  Context7 current. Apply to main context + subagent.

@@ -1,10 +1,12 @@
 # System Rebuild: Ninja Recovery with Disko
 
-Complete disaster-recovery guide for the `ninja` workstation, from building the rescue ISO to a fully working system.
+Complete disaster-recovery guide for the `ninja` workstation, from building the rescue ISO to a
+fully working system.
 
 ## 1. Build the Recovery ISO
 
-The flake includes a minimal recovery image called **canoe**. It has NetworkManager (with iwd for WiFi), firmware blobs, disk tools, and your user account, no desktop environment.
+The flake includes a minimal recovery image called **canoe**. It has NetworkManager (with iwd for
+WiFi), firmware blobs, disk tools, and your user account, no desktop environment.
 
 ```bash
 # From any machine with Nix installed
@@ -40,7 +42,8 @@ sudo dd if=result/iso/nixos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
 
 ## 3. Partition with Disko
 
-The `disko` configuration uses stable `/dev/disk/by-id/` paths, so it targets the correct drives regardless of boot order.
+The `disko` configuration uses stable `/dev/disk/by-id/` paths, so it targets the correct drives
+regardless of boot order.
 
 ### Dry-Run (Verification)
 
@@ -83,7 +86,8 @@ lsblk
 nixos-install --flake github:izaac/nixos-config#ninja --no-root-password
 ```
 
-This pulls the full `ninja` configuration from GitHub including NVIDIA drivers, the niri desktop, all packages, and Home Manager config. Set the user password when prompted.
+This pulls the full `ninja` configuration from GitHub including NVIDIA drivers, the niri desktop,
+all packages, and Home Manager config. Set the user password when prompted.
 
 ## 5. Post-Installation
 
@@ -119,7 +123,8 @@ nrb  # nh os switch .
 
 ## Testing with vmWithDisko
 
-Before touching real hardware, validate the entire disko layout in a virtual machine. This builds disk images in a VM, formats them with disko, and produces a bootable QEMU script.
+Before touching real hardware, validate the entire disko layout in a virtual machine. This builds
+disk images in a VM, formats them with disko, and produces a bootable QEMU script.
 
 ### Build the VM
 
@@ -127,7 +132,8 @@ Before touching real hardware, validate the entire disko layout in a virtual mac
 nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko
 ```
 
-This creates virtual disk images matching the disko layout (LUKS, ESP, game drive) and a runner script.
+This creates virtual disk images matching the disko layout (LUKS, ESP, game drive) and a runner
+script.
 
 ### Run the VM
 
@@ -141,7 +147,8 @@ The VM will:
 2. Run the full disko destroy → format → mount sequence.
 3. Boot into the resulting NixOS system.
 
-> **Note**: NVIDIA drivers are force-disabled in the VM via `virtualisation.vmVariant` in `configuration.nix`, so the VM uses software rendering. This is expected.
+> **Note**: NVIDIA drivers are force-disabled in the VM via `virtualisation.vmVariant` in
+> `configuration.nix`, so the VM uses software rendering. This is expected.
 
 ### What to Verify
 
@@ -168,11 +175,15 @@ rm -f ninja.qcow2
 
 ## How It Works
 
-Disko owns all local disk mounts (`/`, `/boot`, `/mnt/data`). The `hardware.nix` file only declares hardware modules (kernel modules, microcode, kernel params). Disko is always the single source of truth for local disk layout.
+Disko owns all local disk mounts (`/`, `/boot`, `/mnt/data`). The `hardware.nix` file only declares
+hardware modules (kernel modules, microcode, kernel params). Disko is always the single source of
+truth for local disk layout.
 
 ### neededForBoot Workaround
 
-Disko does **not** set `neededForBoot = true` on the root filesystem. Without this flag the initrd generates no `/etc/fstab` entry for `/`, so systemd-in-initrd successfully decrypts the LUKS volume but then **hangs indefinitely** because it never mounts `/sysroot`.
+Disko does **not** set `neededForBoot = true` on the root filesystem. Without this flag the initrd
+generates no `/etc/fstab` entry for `/`, so systemd-in-initrd successfully decrypts the LUKS volume
+but then **hangs indefinitely** because it never mounts `/sysroot`.
 
 The fix lives in `hosts/ninja/hardware.nix`:
 
@@ -180,15 +191,19 @@ The fix lives in `hosts/ninja/hardware.nix`:
 fileSystems."/".neededForBoot = true;
 ```
 
-If this line is ever removed the system will appear to freeze immediately after entering the LUKS passphrase. Re-add it and rebuild to recover (from a live USB or `nixos-enter`).
+If this line is ever removed the system will appear to freeze immediately after entering the LUKS
+passphrase. Re-add it and rebuild to recover (from a live USB or `nixos-enter`).
 
 ## Remote Install with nixos-anywhere
 
-[nixos-anywhere](https://github.com/nix-community/nixos-anywhere) can install NixOS on a remote machine over SSH, no USB drive needed. The target just needs to be booted into any Linux with SSH access (e.g., a rescue system from your hosting provider, or a live USB on another machine).
+[nixos-anywhere](https://github.com/nix-community/nixos-anywhere) can install NixOS on a remote
+machine over SSH, no USB drive needed. The target just needs to be booted into any Linux with SSH
+access (e.g., a rescue system from your hosting provider, or a live USB on another machine).
 
 ### Different Disk Layout
 
-Each machine needs its own disko config because disk paths differ. To deploy to a machine with different disks:
+Each machine needs its own disko config because disk paths differ. To deploy to a machine with
+different disks:
 
 1. Create a new host in the flake:
 
@@ -205,7 +220,8 @@ Each machine needs its own disko config because disk paths differ. To deploy to 
    ssh root@target ls -l /dev/disk/by-id/
    ```
 
-3. Write `disko.nix` using those disk IDs. The structure is the same as `hosts/ninja/disko.nix` but with different device paths, partition sizes, and labels.
+3. Write `disko.nix` using those disk IDs. The structure is the same as `hosts/ninja/disko.nix` but
+   with different device paths, partition sizes, and labels.
 
 4. Add the new host to `flake.nix`:
 
@@ -225,7 +241,8 @@ Each machine needs its own disko config because disk paths differ. To deploy to 
      root@target-ip
    ```
 
-   This will SSH into the target, run disko to partition and format the disks, install NixOS with the `newbox` config, and reboot.
+   This will SSH into the target, run disko to partition and format the disks, install NixOS with
+   the `newbox` config, and reboot.
 
 ### Requirements
 

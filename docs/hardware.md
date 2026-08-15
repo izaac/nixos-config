@@ -1,8 +1,6 @@
 # Hardware Configuration - ninja
 
-> **Last Updated**: 2026-02-22
-> **System**: ASUS ROG STRIX X670E-F GAMING WIFI
-> **OS**: NixOS 25.11
+> **Last Updated**: 2026-02-22 **System**: ASUS ROG STRIX X670E-F GAMING WIFI **OS**: NixOS 25.11
 
 ---
 
@@ -53,9 +51,8 @@
 
 ## CPU Power & Thermal Tuning
 
-The 9950X3D is tuned for low heat output and quiet operation in a warm room,
-trading a small amount of peak multi-core performance for much lower socket
-power and temperatures.
+The 9950X3D is tuned for low heat output and quiet operation in a warm room, trading a small amount
+of peak multi-core performance for much lower socket power and temperatures.
 
 ### BIOS settings (ASUS ROG STRIX X670E-F)
 
@@ -67,9 +64,8 @@ Set under `Ai Tweaker → Precision Boost Overdrive`:
 | **Eco Mode TDP**    | 105W      | PPT ceiling ~142W (vs ~200W stock)             |
 | **Curve Optimizer** | -15 (all) | All-core undervolt; cooler and slightly faster |
 
-> The Curve Optimizer offset is a mild -15. If long stress runs or games ever
-> crash/freeze hours in, back off toward -10. Validate with a sustained
-> all-core load after any change.
+> The Curve Optimizer offset is a mild -15. If long stress runs or games ever crash/freeze hours in,
+> back off toward -10. Validate with a sustained all-core load after any change.
 
 ### Linux-side cap (NixOS)
 
@@ -80,24 +76,23 @@ Independent of BIOS, NixOS caps boost frequency (the two stack):
   (`hosts/ninja/configuration.nix`: `cpuBoostFreq`/`cpuBaseFreq`)
 - `amd_pstate=active` (`hosts/ninja/boot.nix`)
 
-Note: PPT/TDP and Curve Optimizer are BIOS-only on desktop AM5 - `ryzenadj`
-does not apply to desktop Zen 5, so the power cap must be set in firmware.
+Note: PPT/TDP and Curve Optimizer are BIOS-only on desktop AM5 - `ryzenadj` does not apply to
+desktop Zen 5, so the power cap must be set in firmware.
 
 ### How the two caps interact
 
-There are two independent ceilings. Both are active at all times, and the
-**lower one wins** at any given moment:
+There are two independent ceilings. Both are active at all times, and the **lower one wins** at any
+given moment:
 
-1. **Power cap (BIOS, PPT ~142W)** - a hard wall on socket power. Under load
-   the CPU ramps power up to this limit automatically, but never past it.
-2. **Frequency cap (NixOS, 4.5 GHz)** - a hard wall on boost clock for normal
-   tasks. GameMode lifts it to 5.7 GHz only while a game runs.
+1. **Power cap (BIOS, PPT ~142W)** - a hard wall on socket power. Under load the CPU ramps power up
+   to this limit automatically, but never past it.
+2. **Frequency cap (NixOS, 4.5 GHz)** - a hard wall on boost clock for normal tasks. GameMode lifts
+   it to 5.7 GHz only while a game runs.
 
-Key consequence: unlocking 5.7 GHz (GameMode) only grants _permission_ to
-boost. The chip reaches 5.7 GHz only if doing so fits within the ~142W power
-budget. That is true for light/few-threaded work (most games), but a full
-all-core load cannot afford 5.7 GHz at 142W, so clocks settle lower to stay
-within the power cap.
+Key consequence: unlocking 5.7 GHz (GameMode) only grants _permission_ to boost. The chip reaches
+5.7 GHz only if doing so fits within the ~142W power budget. That is true for light/few-threaded
+work (most games), but a full all-core load cannot afford 5.7 GHz at 142W, so clocks settle lower to
+stay within the power cap.
 
 | Workload                         | Power behaviour       | Clock reached           |
 | -------------------------------- | --------------------- | ----------------------- |
@@ -113,9 +108,9 @@ within the power cap.
 | **105W Eco (~142W)** | **~4.5-4.7 GHz**   | **~90-95%**     |
 | 65W Eco (~88W)       | ~3.8-4.0 GHz       | ~78-82%         |
 
-The 105W Eco point is the efficiency sweet spot: ~5-10% multi-core loss for
-~30% less power and far lower temperatures. Single/light-thread performance
-(games) is barely affected because it fits inside the power budget.
+The 105W Eco point is the efficiency sweet spot: ~5-10% multi-core loss for ~30% less power and far
+lower temperatures. Single/light-thread performance (games) is barely affected because it fits
+inside the power budget.
 
 ### Measured (Eco 105W + Curve -15, 4.5 GHz cap)
 
@@ -135,7 +130,8 @@ The 105W Eco point is the efficiency sweet spot: ~5-10% multi-core loss for
 | **M.2_3** | Empty               | -        | PCIe 4.0 x4     | -           | From chipset                | -                  |
 | **M.2_4** | **WD Black SN850X** | **4TB**  | **PCIe 4.0 x4** | **~7 GB/s** | **/mnt/data (unencrypted)** | **`0000:08:00.0`** |
 
-> **Important**: M.2_2 slot shares PCIe lanes with PCIEX16_1 via bifurcation. When populated, GPU drops from x16 to x8 mode. **Currently M.2_2 is empty, so GPU runs at full x16 speed.**
+> **Important**: M.2_2 slot shares PCIe lanes with PCIEX16_1 via bifurcation. When populated, GPU
+> drops from x16 to x8 mode. **Currently M.2_2 is empty, so GPU runs at full x16 speed.**
 
 ### Current Configuration (Optimized)
 
@@ -167,8 +163,7 @@ The 105W Eco point is the efficiency sweet spot: ~5-10% multi-core loss for
 | **DIMM B1** | DDR5 UDIMM | 32GB     | DDR5  | Manufacturer 0x06:0x32 rev 1.6 |
 | **DIMM B2** | Empty      | -        | -     | -                              |
 
-**Total**: 64GB DDR5 (dual-channel)
-**Monitoring**: SPD5118 temperature sensors enabled
+**Total**: 64GB DDR5 (dual-channel) **Monitoring**: SPD5118 temperature sensors enabled
 
 ---
 
@@ -212,7 +207,10 @@ The 105W Eco point is the efficiency sweet spot: ~5-10% multi-core loss for
 - **Model**: GB206 (rev a1) (Device ID: 10de:2d04)
 - **Vendor**: MSI Ventus 2X (Subsystem ID: 1462:5351)
 - **PCIe**: 5.0 x16 @ **full x16 speed** (256 GB/s) - **VRAM**: 16GB GDDR7
-- **Power**: 150-180W (default 180W); service caps to 150W power limit + 210-2700MHz clock ceiling. The 150W cap is the active limiter under load. Values validated with real in-game benchmarking: ~2610MHz @ ~142W @ 74°C at 99% utilization (the prior 2000MHz lock left ~58W of budget and clock headroom unused at only 63°C)
+- **Power**: 150-180W (default 180W); service caps to 150W power limit + 210-2700MHz clock ceiling.
+  The 150W cap is the active limiter under load. Values validated with real in-game benchmarking:
+  ~2610MHz @ ~142W @ 74°C at 99% utilization (the prior 2000MHz lock left ~58W of budget and clock
+  headroom unused at only 63°C)
 - **Driver**: NVIDIA Open Kernel Module 595.71.05
 - **Features**:
   - SR-IOV capable (1 VF supported)
@@ -526,5 +524,5 @@ watch -n 1 sensors
 
 ---
 
-_Generated from system introspection on 2026-02-11_
-_Last hardware change: Moved WD Black SN850X from M.2_2 to M.2_4 for full GPU x16 bandwidth_
+_Generated from system introspection on 2026-02-11_ _Last hardware change: Moved WD Black SN850X
+from M.2_2 to M.2_4 for full GPU x16 bandwidth_

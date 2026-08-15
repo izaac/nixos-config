@@ -76,7 +76,6 @@ in {
       # --- AI CLI TOOLS ---
       github-copilot-cli
       claude-code
-      ai-trace-scanner
       opencode
 
       # --- COMPRESSION & ARCHIVING ---

@@ -1,9 +1,11 @@
 # Zathura PDF Viewer
 
-> **Hosts**: Linux (`ninja`, `windy`)
-> **Defined in**: [`home/zathura.nix`](../home/zathura.nix), `programs.zathura`
+> **Hosts**: Linux (`ninja`, `windy`) **Defined in**: [`home/zathura.nix`](../home/zathura.nix),
+> `programs.zathura`
 
-[Zathura](https://pwmt.org/projects/zathura/) is the minimal, keyboard-driven document viewer on Linux hosts. It replaces GNOME Papers as the default application for PDF (`application/pdf`) and EPUB (`application/epub+zip`) documents across the desktop environment.
+[Zathura](https://pwmt.org/projects/zathura/) is the minimal, keyboard-driven document viewer on
+Linux hosts. It replaces GNOME Papers as the default application for PDF (`application/pdf`) and
+EPUB (`application/epub+zip`) documents across the desktop environment.
 
 Stylix manages the color scheme and fonts automatically via `stylix.targets.zathura`.
 
@@ -36,6 +38,9 @@ Zathura uses modal, Vim-style navigation bindings by default:
 
 ## Configuration & Integration
 
-- **Stylix Theme**: Color palette, background, and foreground colors are generated dynamically by Stylix (`stylix.targets.zathura`).
-- **System Clipboard**: `selection-clipboard = "clipboard"` ensures selected text copies directly to the system clipboard via Wayland.
-- **Default Application**: Configured in [`home/desktop.nix`](../home/desktop.nix) under `xdg.mimeApps.defaultApplications`.
+- **Stylix Theme**: Color palette, background, and foreground colors are generated dynamically by
+  Stylix (`stylix.targets.zathura`).
+- **System Clipboard**: `selection-clipboard = "clipboard"` ensures selected text copies directly to
+  the system clipboard via Wayland.
+- **Default Application**: Configured in [`home/desktop.nix`](../home/desktop.nix) under
+  `xdg.mimeApps.defaultApplications`.

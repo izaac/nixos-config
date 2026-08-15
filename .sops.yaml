@@ -8,7 +8,6 @@ keys:
   # from /etc/ssh/ssh_host_ed25519_key.pub.
   - &host_ninja age1cjc00x0g5mhejndsh3ljz09ukkl38kutd692aatd3qw0jrmxx3sq4tk5av
   - &host_windy age14j9qj86wahqesn6pv0nxl5wxkkcxxaz53w3h5qstu8rxqe5swu9q748avw
-
 creation_rules:
   # Common secrets — readable by every host and every editor.
   - path_regex: secrets/common\.yaml$
@@ -19,7 +18,6 @@ creation_rules:
           - *user_windy
           - *host_ninja
           - *host_windy
-
   # Per-host slots — pre-wired so adding host-specific secrets is a one-step
   # `sops secrets/<host>.yaml` away. Same recipients today; tighten when
   # windy gets its own host key.

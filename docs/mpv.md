@@ -1,16 +1,18 @@
 # mpv Media Player
 
-> **Hosts**: Linux (`ninja`, `windy`)
-> **Defined in**: [`home/mpv.nix`](../home/mpv.nix), `programs.mpv`
-> **Imported in**: [`home/desktop.nix`](../home/desktop.nix)
+> **Hosts**: Linux (`ninja`, `windy`) **Defined in**: [`home/mpv.nix`](../home/mpv.nix),
+> `programs.mpv` **Imported in**: [`home/desktop.nix`](../home/desktop.nix)
 
-[mpv](https://mpv.io/) is the primary media player across all Linux desktop environments. It is managed declaratively via Home Manager, complete with GPU acceleration, custom scripts for UI/MPRIS, and dedicated Vim-style keybindings.
+[mpv](https://mpv.io/) is the primary media player across all Linux desktop environments. It is
+managed declaratively via Home Manager, complete with GPU acceleration, custom scripts for UI/MPRIS,
+and dedicated Vim-style keybindings.
 
 ---
 
 ## Hardware & Performance Configuration
 
-mpv is tuned for zero-latency, high-quality video playback on modern Vulkan and NVIDIA/Intel hardware.
+mpv is tuned for zero-latency, high-quality video playback on modern Vulkan and NVIDIA/Intel
+hardware.
 
 | Setting               | Value                        | Description                                        |
 | --------------------- | ---------------------------- | -------------------------------------------------- |
@@ -28,15 +30,21 @@ mpv is tuned for zero-latency, high-quality video playback on modern Vulkan and 
 
 The setup bundles three essential mpv scripts:
 
-1. **`uosc`** ([`pkgs.mpvScripts.uosc`](https://github.com/tomasklaen/uosc)): Modern, minimal UI replacement for the default OSC with smooth timeline controls.
-2. **`mpris`** ([`pkgs.mpvScripts.mpris`](https://github.com/tumpay/mpv-mpris)): Exposes mpv controls over MPRIS2, allowing media keys, lock screen controls, and `playerctl` / the `ashell` status bar to control playback.
-3. **`thumbfast`** ([`pkgs.mpvScripts.thumbfast`](https://github.com/po5/thumbfast)): On-hover thumbnail previews on the timeline seek bar.
+1. **`uosc`** ([`pkgs.mpvScripts.uosc`](https://github.com/tomasklaen/uosc)): Modern, minimal UI
+   replacement for the default OSC with smooth timeline controls.
+2. **`mpris`** ([`pkgs.mpvScripts.mpris`](https://github.com/tumpay/mpv-mpris)): Exposes mpv
+   controls over MPRIS2, allowing media keys, lock screen controls, and `playerctl` / the `ashell`
+   status bar to control playback.
+3. **`thumbfast`** ([`pkgs.mpvScripts.thumbfast`](https://github.com/po5/thumbfast)): On-hover
+   thumbnail previews on the timeline seek bar.
 
 ---
 
 ## Keybindings
 
-Keybinds use direct single keys (Vim-style `hjkl` for seek and volume) without modifiers. Because mpv receives window focus under [Niri](niri.md), these keybinds are scoped strictly inside the mpv window.
+Keybinds use direct single keys (Vim-style `hjkl` for seek and volume) without modifiers. Because
+mpv receives window focus under [Niri](niri.md), these keybinds are scoped strictly inside the mpv
+window.
 
 ### Playback & Seeking
 
@@ -106,7 +114,13 @@ mpv sits cleanly within the overall desktop hotkey system without key binding co
 
 ### Overlap Matrix
 
-- **Niri Compositor** ([`docs/niri.md`](niri.md)): Uses `Mod` (**Super** key) for all global window and workspace operations. mpv keybinds use no `Mod` key, so `Mod+Q` (close) or `Mod+F` (maximize column) pass to Niri without interference.
-- **Terminal & Multiplexer** ([`docs/kitty.md`](kitty.md), [`docs/tmux.md`](tmux.md)): Kitty uses `Ctrl+Shift` and tmux uses `Ctrl+a`. mpv is a standalone GUI window, so terminal/multiplexer shortcuts do not conflict.
-- **Editor** ([`docs/lazyvim.md`](lazyvim.md)): While mpv adopts Vim navigation keys (`h/j/k/l`), they operate only when the mpv window holds X11/Wayland input focus.
-- **Capture Card Wrapper** ([`home/capture-card.nix`](../home/capture-card.nix)): Uses mpv CLI flags (`--profile=low-latency --untimed`) which extend the core declarative configuration seamlessly.
+- **Niri Compositor** ([`docs/niri.md`](niri.md)): Uses `Mod` (**Super** key) for all global window
+  and workspace operations. mpv keybinds use no `Mod` key, so `Mod+Q` (close) or `Mod+F` (maximize
+  column) pass to Niri without interference.
+- **Terminal & Multiplexer** ([`docs/kitty.md`](kitty.md), [`docs/tmux.md`](tmux.md)): Kitty uses
+  `Ctrl+Shift` and tmux uses `Ctrl+a`. mpv is a standalone GUI window, so terminal/multiplexer
+  shortcuts do not conflict.
+- **Editor** ([`docs/lazyvim.md`](lazyvim.md)): While mpv adopts Vim navigation keys (`h/j/k/l`),
+  they operate only when the mpv window holds X11/Wayland input focus.
+- **Capture Card Wrapper** ([`home/capture-card.nix`](../home/capture-card.nix)): Uses mpv CLI flags
+  (`--profile=low-latency --untimed`) which extend the core declarative configuration seamlessly.
