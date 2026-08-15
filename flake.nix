@@ -148,8 +148,17 @@
       };
     });
 
-    checks = forEachSystem (system: {
-      formatting = treefmtEval.${system}.config.build.check self;
-    });
+    checks = forEachSystem (system:
+      (nixpkgs.lib.optionalAttrs (system == "aarch64-darwin") {
+        Mac-eval = self.darwinConfigurations.Mac.config.system.build.toplevel;
+      })
+      // {
+        formatting = treefmtEval.${system}.config.build.check self;
+
+        ninja-eval = self.nixosConfigurations.ninja.config.system.build.toplevel;
+        windy-eval = self.nixosConfigurations.windy.config.system.build.toplevel;
+        canoe-eval = self.nixosConfigurations.canoe.config.system.build.toplevel;
+        canoe-niri-eval = self.nixosConfigurations.canoe-niri.config.system.build.toplevel;
+      });
   };
 }
