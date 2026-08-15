@@ -6,6 +6,7 @@
   inputs,
   ...
 }: let
+  _force = import ../../lib/mkForceIf.nix {inherit lib;};
   # PCI address of dGPU audio function (HDA controller). Derived from PRIME bus id in nvidia.nix.
   nvidiaAudioFn = let
     parts = lib.splitString ":" (lib.removePrefix "PCI:" config.hardware.nvidia.prime.nvidiaBusId);
@@ -58,8 +59,8 @@ in {
     kernel.sysctl = {
       "vm.laptop_mode" = 5;
       # Laptop dirty-page tuning: batch writes for longer disk idle (vs desktop in performance.nix).
-      "vm.dirty_writeback_centisecs" = lib.mkForce 6000;
-      "vm.dirty_expire_centisecs" = lib.mkForce 6000;
+      "vm.dirty_writeback_centisecs" = _force.sysctlForceIf true "vm.dirty_writeback_centisecs" 6000;
+      "vm.dirty_expire_centisecs" = _force.sysctlForceIf true "vm.dirty_expire_centisecs" 6000;
       # NMI watchdog: wakes cores on timer, costs idle power, no value on laptop.
       "kernel.nmi_watchdog" = 0;
     };
@@ -68,7 +69,7 @@ in {
   # Power: thermald, TLP tuned for powersave, no turbo, charge limits.
   services = {
     thermald.enable = true;
-    scx.enable = lib.mkForce false;
+    scx.enable = _force.mkForceIf true false;
 
     tlp = {
       enable = true;
@@ -102,7 +103,7 @@ in {
 
     colord.enable = false;
     # acpid: no handlers, logind owns lid/power key. mkForce: nixos-hardware laptop module enables it.
-    acpid.enable = lib.mkForce false;
+    acpid.enable = _force.mkForceIf true false;
     # irqbalance: spreads interrupts but wakes idle cores. Worth it on desktop (ninja), not on battery.
     irqbalance.enable = false;
     # flatpak: no apps installed, helper and update timer have nothing to do.
@@ -126,8 +127,8 @@ in {
 
   # Disable dGPU KMS (modeset=0): external outputs wired to dGPU stay dark; PRIME render offload uses render node; niri on iGPU. Prevents ~12.5W idle draw from pinned KMS device.
   hardware.nvidia.moduleParams."nvidia-drm" = {
-    modeset = lib.mkForce 0;
-    fbdev = lib.mkForce 0;
+    modeset = _force.mkForceIf true 0;
+    fbdev = _force.mkForceIf true 0;
   };
 
   environment.systemPackages = with pkgs; [
