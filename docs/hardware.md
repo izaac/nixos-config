@@ -526,3 +526,68 @@ watch -n 1 sensors
 
 _Generated from system introspection on 2026-02-11_ _Last hardware change: Moved WD Black SN850X
 from M.2_2 to M.2_4 for full GPU x16 bandwidth_
+
+---
+
+## nixos-hardware Modules Reference
+
+This project uses the [NixOS/nixos-hardware](https://github.com/NixOS/nixos-hardware) repository for
+hardware-specific configuration modules. Each host imports the modules relevant to its platform.
+
+### ninja (Desktop: AMD Ryzen 9 9950X3D + NVIDIA RTX 5060 Ti)
+
+Located in `hosts/ninja/configuration.nix`:
+
+| Module                       | Purpose                                   | Why Needed                                                                                                                                                              |
+| ---------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `common-cpu-amd-pstate`      | AMD P-State driver configuration          | Enables `amd_pstate=active` for modern AMD CPUs (Zen 2+). Provides better performance/power than acpi-cpufreq. Required for 9950X3D.                                    |
+| `common-gpu-nvidia-nonprime` | NVIDIA desktop (non-Prime/offload) config | Configures NVIDIA as primary GPU with modesetting, DRM, and framebuffer. No Prime offload complexity since no iGPU.                                                     |
+| `common-pc-ssd`              | SSD/NVMe optimizations                    | Enables TRIM via `fstrim.timer`, sets `nvme_core.default_ps_max_latency_us=0` for lowest latency. Benefits both Crucial T705 (PCIe 5.0) and WD Black SN850X (PCIe 4.0). |
+
+### windy (Laptop: Intel i9-11980HK + NVIDIA RTX 3080 Mobile Prime Offload)
+
+Located in `hosts/windy/configuration.nix`:
+
+| Module              | Purpose                              | Why Needed                                                                                                                                |
+| ------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `common-cpu-intel`  | Intel CPU power/performance defaults | Sets `intel_pstate=active`, enables HWP, configures thermald defaults. Required for 11th gen Intel mobile.                                |
+| `common-gpu-nvidia` | NVIDIA Prime offload (laptop) config | Configures Prime render offload: iGPU drives display, dGPU used on-demand via `__NV_PRIME_RENDER_OFFLOAD=1`. Sets `nvidia-drm.modeset=1`. |
+| `common-pc-laptop`  | Laptop-specific power/ACPI defaults  | Enables laptop-mode tools, configures lid switch, battery thresholds, ACPI battery module, fn keys.                                       |
+| `common-pc-ssd`     | SSD/NVMe optimizations               | Same as ninja: TRIM timer, NVMe latency tuning. Benefits laptop NVMe drive.                                                               |
+
+### canoe / canoe-niri (ISO Builds)
+
+These are minimal live ISO configurations (`hosts/canoe/minimal.nix`, `hosts/canoe/niri.nix`). They
+**do not** import nixos-hardware modules because:
+
+- ISOs must boot on arbitrary hardware
+- nixos-hardware modules are machine-specific and would break portability
+- The installer kernel already includes all necessary drivers
+
+### Module Selection Guide
+
+When adding a new host:
+
+1. **Identify CPU vendor**: AMD → `common-cpu-amd-pstate`, Intel → `common-cpu-intel`
+2. **Identify GPU setup**:
+   - NVIDIA desktop (no iGPU) → `common-gpu-nvidia-nonprime`
+   - NVIDIA laptop with Prime offload → `common-gpu-nvidia`
+   - AMD GPU → `common-gpu-amd` (if available)
+   - Intel iGPU only → no GPU module needed
+3. **Form factor**: Laptop → `common-pc-laptop`, Desktop → skip
+4. **Storage**: NVMe/SSD → `common-pc-ssd` (almost always)
+
+### Why Not Use `nixos-hardware.auto`?
+
+The `nixos-hardware.auto` module attempts to auto-detect hardware and apply matching modules. We
+**don't use it** because:
+
+- Auto-detection can misidentify hardware (e.g., desktop with iGPU detected as laptop)
+- Explicit imports are auditable and predictable
+- Each module's purpose is clear in the configuration
+- Easier to debug when something breaks
+
+---
+
+_Generated from system introspection on 2026-02-11_ _Last hardware change: Moved WD Black SN850X
+from M.2_2 to M.2_4 for full GPU x16 bandwidth_
