@@ -5,7 +5,9 @@
   inputs,
   siteConfig,
   ...
-}: {
+}: let
+  _force = import ../../lib/mkForceIf.nix {inherit lib;};
+in {
   imports = [
     ../common.nix
     ./hardware.nix
@@ -27,18 +29,15 @@
   ];
 
   # VM variant: disable NVIDIA, no sops secrets.
-  virtualisation.vmVariant = {
-    # VM: disable NVIDIA, use modesetting, no sops.
-    services.xserver.videoDrivers = lib.mkForce ["modesetting"];
+  virtualisation.vmVariant = _force.mkForceManyIf true {
+    services.xserver.videoDrivers = ["modesetting"];
     hardware = {
-      nvidia.package = lib.mkForce pkgs.hello;
-      graphics.extraPackages = lib.mkForce [];
-      # VM: disable nvidia-container-toolkit.
-      nvidia-container-toolkit.enable = lib.mkForce false;
+      nvidia.package = pkgs.hello;
+      graphics.extraPackages = [];
+      nvidia-container-toolkit.enable = false;
     };
-    systemd.services.nvidia-lock-clocks.enable = lib.mkForce false;
-    # VM: no sops secrets needed.
-    sops.gnupg.home = lib.mkForce "/tmp/gnupg";
+    systemd.services.nvidia-lock-clocks.enable = false;
+    sops.gnupg.home = "/tmp/gnupg";
   };
 
   # Host deltas: gaming clocks, thermal guard, tailscale routes.
