@@ -281,6 +281,138 @@ host SSH key). When windy gets its own host key, split `&host_shared` into
 
 ---
 
+## Secret rotation procedure
+
+Rotate keys when a private key is compromised, an employee leaves, or on a
+scheduled cadence (e.g. annually).
+
+### 1. Generate new key on the affected machine
+
+```bash
+# User age key (for editing):
+mkdir -p ~/.config/sops/age
+nix shell nixpkgs#ssh-to-age -c bash -c \
+  'ssh-to-age -private-key -i ~/.ssh/id_ed25519 > ~/.config/sops/age/keys.txt'
+chmod 600 ~/.config/sops/age/keys.txt
+
+# Get new public recipient:
+nix shell nixpkgs#ssh-to-age -c ssh-to-age < ~/.ssh/id_ed25519.pub
+# Output: age1...
+```
+
+```bash
+# Host SSH key (for boot decryption) — run on the affected host:
+ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
+# Get new public recipient:
+cat /etc/ssh/ssh_host_ed25519_key.pub | nix shell nixpkgs#ssh-to-age -c ssh-to-age
+# Output: age1...
+```
+
+### 2. Add new recipient to `.sops.yaml`
+
+Add a new alias under `keys` and include it in all `creation_rules`:
+
+```yaml
+keys:
+  - &user_ninja_new age1newuserkey...
+  - &host_ninja_new age1newhostkey...
+creation_rules:
+  - path_regex: secrets/common.yaml
+    key_groups:
+      - age:
+          - *user_ninja
+          - *user_mac
+          - *host_shared
+          - *user_ninja_new   # add new editor key
+          - *host_ninja_new   # add new host key
+```
+
+### 3. Re-encrypt all secrets with `sops updatekeys`
+
+Run from a machine that **currently decrypts** (has old key):
+
+```bash
+sops updatekeys secrets/common.yaml
+sops updatekeys secrets/ninja.yaml   # if exists
+sops updatekeys secrets/windy.yaml   # if exists
+```
+
+Commit and push. Verify both old and new keys can decrypt:
+
+```bash
+sops -d secrets/common.yaml | head -3
+```
+
+### 4. Deploy new host key to affected hosts
+
+Rebuild each host so the new `/etc/ssh/ssh_host_ed25519_key` is in place:
+
+```bash
+# On ninja:
+just build
+
+# On windy:
+just build
+
+# On Mac:
+just darwin-build
+```
+
+### 5. Remove old recipient from `.sops.yaml`
+
+After confirming all hosts rebuild successfully with the new keys:
+
+```yaml
+keys:
+  - &user_ninja_new age1newuserkey...
+  - &host_ninja_new age1newhostkey...
+  # old keys removed
+creation_rules:
+  - path_regex: secrets/common.yaml
+    key_groups:
+      - age:
+          - *user_mac
+          - *user_ninja_new
+          - *host_ninja_new
+```
+
+### 6. Re-encrypt again to drop old key wrappers
+
+```bash
+sops updatekeys secrets/common.yaml
+sops updatekeys secrets/ninja.yaml
+sops updatekeys secrets/windy.yaml
+```
+
+Commit. The old private keys can now be revoked/destroyed.
+
+---
+
+## Emergency: host key compromised, no valid decryptor
+
+If the host SSH key is compromised and **no machine can decrypt** `secrets/common.yaml`:
+
+**Emergency steps:**
+
+- Generate a new host key on a clean machine
+- Extract its age public key
+- Manually edit `.sops.yaml` to add the new recipient to `creation_rules`
+- Use `age` CLI directly to re-wrap the data key:
+
+```bash
+# Decrypt the data key from one of the encrypted entries using a still-valid key
+# (if any exist), or use the cleartext from a known backup
+# Then encrypt for the new recipient and update the file header
+```
+
+- Run `sops updatekeys` and push
+- Verify decryption works from a machine with the new key
+
+> This is why every secrets file MUST keep at least one editor recipient
+> (`*user_mac` or `*user_ninja`) — it provides a human recovery path.
+
+---
+
 ## Security model: what protects what
 
 - **At rest (the git repo + GitHub):** The secret payload is AES-GCM
@@ -296,6 +428,3 @@ host SSH key). When windy gets its own host key, split `&host_shared` into
   (`secrets/<host>.yaml`) limit this: only that host's per-file secrets
   leak, not the shared `common.yaml`. Common secrets remain at risk by
   design because every host can read them, which is what "common" means.
-- **Key rotation:** Changing an SSH key changes the derived age key.
-  Workflow: add new recipient → `sops updatekeys` everywhere → remove old
-  recipient from `.sops.yaml` → `sops updatekeys` again.
