@@ -14,9 +14,6 @@
       tailscale = {
         enable = lib.mkDefault true;
       };
-      virtualization = {
-        enable = lib.mkDefault true;
-      };
       printing = {
         enable = lib.mkDefault true;
       };
