@@ -1,5 +1,4 @@
-# Shared host configuration - imported by ninja/ and windy/
-# Each host's configuration.nix should import this and add its deltas.
+# Shared host config for ninja/ and windy. Import in each host's configuration.nix.
 {lib, ...}: {
   imports = [
     ../modules/core
@@ -9,7 +8,7 @@
     ../users/izaac
   ];
 
-  # Base mySystem structure - hosts override what they need
+  # Base mySystem with mkDefault for host overrides.
   mySystem = {
     core = {
       tailscale = {

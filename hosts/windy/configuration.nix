@@ -1,5 +1,4 @@
-# windy: laptop (Intel i9-11980HK + NVIDIA Prime offload).
-# Optimized for battery life, thermals, quiet operation.
+# windy: laptop (Intel i9-11980HK + NVIDIA Prime offload). Optimized for battery, thermals, quiet.
 {
   config,
   pkgs,
@@ -7,10 +6,7 @@
   inputs,
   ...
 }: let
-  # "PCI:1:0:0" -> "0000:01:00.1", the PCI address of the audio function that
-  # sits alongside the dGPU. Derived from the PRIME bus id in ./nvidia.nix so
-  # the two cannot drift apart. Function 1 is the HDA controller; the GPU
-  # itself is function 0.
+  # PCI address of dGPU audio function (HDA controller). Derived from PRIME bus id in nvidia.nix.
   nvidiaAudioFn = let
     parts = lib.splitString ":" (lib.removePrefix "PCI:" config.hardware.nvidia.prime.nvidiaBusId);
     pad = lib.fixedWidthString 2 "0";
@@ -29,7 +25,7 @@ in {
     inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
 
-  # --- HOST DELTAS ---
+  # Host deltas: disable virtualization, printing, sops.
   mySystem = {
     core = {
       virtualization.enable = false;
@@ -38,7 +34,7 @@ in {
     };
   };
 
-  # --- KERNEL & BOOT ---
+  # Kernel & boot: latest kernel, native backlight, voluntary preempt, NVMe tweaks.
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
 
@@ -63,7 +59,7 @@ in {
     };
   };
 
-  # --- POWER MANAGEMENT ---
+  # Power: thermald, TLP tuned for powersave, no turbo, charge limits.
   services = {
     thermald.enable = true;
     scx.enable = lib.mkForce false;
@@ -100,7 +96,7 @@ in {
 
   hardware.bluetooth.powerOnBoot = false;
 
-  # --- NVIDIA AUDIO FUNCTION UNBIND ---
+  # NVIDIA audio unbind: detach dGPU HDA for D3cold.
   services.udev = {
     extraRules = ''
       ACTION=="bind", SUBSYSTEM=="pci", KERNEL=="${nvidiaAudioFn}", DRIVER=="snd_hda_intel", RUN+="${pkgs.systemd}/bin/systemd-run --no-block ${pkgs.bash}/bin/sh -c 'echo ${nvidiaAudioFn} > /sys/bus/pci/drivers/snd_hda_intel/unbind'"

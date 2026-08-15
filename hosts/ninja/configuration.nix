@@ -1,5 +1,4 @@
-# ninja: high-performance desktop (Ryzen 9 9950X3D + NVIDIA).
-# Optimized for zero-latency feel, high-fidelity audio, gaming throughput.
+# ninja: high-performance desktop (Ryzen 9 9950X3D + NVIDIA). Zero-latency feel, high-fidelity audio, gaming throughput.
 {
   pkgs,
   lib,
@@ -27,22 +26,22 @@
     inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
 
-  # --- VIRTUALIZATION VARIANT ---
+  # VM variant: disable NVIDIA, no sops secrets.
   virtualisation.vmVariant = {
-    # Disable NVIDIA in the VM
+    # VM: disable NVIDIA, use modesetting, no sops.
     services.xserver.videoDrivers = lib.mkForce ["modesetting"];
     hardware = {
       nvidia.package = lib.mkForce pkgs.hello;
       graphics.extraPackages = lib.mkForce [];
-      # Disable NVIDIA toolkit in VM
+      # VM: disable nvidia-container-toolkit.
       nvidia-container-toolkit.enable = lib.mkForce false;
     };
     systemd.services.nvidia-lock-clocks.enable = lib.mkForce false;
-    # No sops secrets needed in the VM
+    # VM: no sops secrets needed.
     sops.gnupg.home = lib.mkForce "/tmp/gnupg";
   };
 
-  # --- HOST DELTAS ---
+  # Host deltas: gaming clocks, thermal guard, tailscale routes.
   mySystem = {
     gaming = {
       cpuBoostFreq = 5756452; # 5.7 GHz
@@ -61,7 +60,7 @@
     };
   };
 
-  # --- TOOLS OF THE TRADE ---
+  # System packages: audio, monitor, boot utils, uutils coreutils.
   environment.systemPackages = with pkgs; [
     libglvnd
     parted
