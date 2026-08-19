@@ -144,17 +144,21 @@
       };
     });
 
-    checks = forEachSystem (system:
+    checks = forEachSystem (system: let
+      pkgs = mkPkgs system;
+      mkEvalCheck = name: toplevel:
+        pkgs.writeText "${name}-eval-check" (builtins.unsafeDiscardStringContext toplevel.drvPath);
+    in
       (nixpkgs.lib.optionalAttrs (system == "aarch64-darwin") {
-        Mac-eval = self.darwinConfigurations.Mac.config.system.build.toplevel;
+        Mac-eval = mkEvalCheck "Mac" self.darwinConfigurations.Mac.config.system.build.toplevel;
       })
-      // {
+      // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
         formatting = treefmtEval.${system}.config.build.check self;
 
-        ninja-eval = self.nixosConfigurations.ninja.config.system.build.toplevel;
-        windy-eval = self.nixosConfigurations.windy.config.system.build.toplevel;
-        canoe-eval = self.nixosConfigurations.canoe.config.system.build.toplevel;
-        canoe-niri-eval = self.nixosConfigurations.canoe-niri.config.system.build.toplevel;
-      });
+        ninja-eval = mkEvalCheck "ninja" self.nixosConfigurations.ninja.config.system.build.toplevel;
+        windy-eval = mkEvalCheck "windy" self.nixosConfigurations.windy.config.system.build.toplevel;
+        canoe-eval = mkEvalCheck "canoe" self.nixosConfigurations.canoe.config.system.build.toplevel;
+        canoe-niri-eval = mkEvalCheck "canoe-niri" self.nixosConfigurations.canoe-niri.config.system.build.toplevel;
+      }));
   };
 }
