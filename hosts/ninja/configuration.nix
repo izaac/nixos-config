@@ -20,7 +20,6 @@ in {
     ./performance.nix
     ./audio.nix
     ./chromium.nix
-    ./plex.nix
     ./ssh.nix
     # nixos-hardware: AMD pstate, NVIDIA (nonprime/desktop), SSD trim
     inputs.nixos-hardware.nixosModules.common-cpu-amd-pstate

@@ -87,6 +87,7 @@
     nixosConfigurations = {
       ninja = mkSystem "ninja" "x86_64-linux";
       windy = mkSystem "windy" "x86_64-linux";
+      plex = mkSystem "plex" "x86_64-linux";
       canoe = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {inherit inputs userConfig siteConfig;};
@@ -157,6 +158,7 @@
 
         ninja-eval = mkEvalCheck "ninja" self.nixosConfigurations.ninja.config.system.build.toplevel;
         windy-eval = mkEvalCheck "windy" self.nixosConfigurations.windy.config.system.build.toplevel;
+        plex-eval = mkEvalCheck "plex" self.nixosConfigurations.plex.config.system.build.toplevel;
         canoe-eval = mkEvalCheck "canoe" self.nixosConfigurations.canoe.config.system.build.toplevel;
         canoe-niri-eval = mkEvalCheck "canoe-niri" self.nixosConfigurations.canoe-niri.config.system.build.toplevel;
       }));
