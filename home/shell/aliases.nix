@@ -26,11 +26,6 @@
       top = "btop";
       sysls = "systemctl --type=service --state=running";
 
-      # --- PLEX (remote mini PC) ---
-      plex-status = "ssh izaac@192.168.0.184 systemctl status plex";
-      plex-restart = "ssh izaac@192.168.0.184 systemctl restart plex";
-      plex-logs = "ssh izaac@192.168.0.184 journalctl -u plex -n 50 --no-pager";
-
       # --- NAVIGATION & FILE OPS ---
       cpv = "rsync -ahP --size-only";
       rcp = "rclone sync --progress --fast-list --drive-chunk-size 64M --transfers 8 --checkers 16 --size-only";

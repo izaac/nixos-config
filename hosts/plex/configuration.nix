@@ -52,6 +52,16 @@
   # Disable flatpak on headless server
   services.flatpak.enable = false;
 
+  # Allow wheel users to inhibit sleep without password prompt for background jobs
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.freedesktop.login1.inhibit-block-sleep" &&
+          subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
   # Enable Plex Media Server
   services.plex = {
     enable = true;
