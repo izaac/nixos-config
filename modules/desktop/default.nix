@@ -2,12 +2,14 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }: let
   cfg = config.mySystem.desktop;
 in {
   imports = [
     ./nvidia.nix
+    inputs.niri-flake.nixosModules.niri
   ];
 
   options.mySystem.desktop = {
@@ -15,6 +17,8 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    nixpkgs.overlays = [inputs.niri-flake.overlays.niri];
+
     programs = {
       # --- Niri (scrollable-tiling Wayland compositor) ---
       # nixosModules.niri enables programs.niri, sets the binary cache,

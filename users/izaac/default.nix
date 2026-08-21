@@ -1,14 +1,19 @@
 {userConfig, ...}: {
-  # This file serves as the "Profile" for the user.
-  # It defines all the personal dotfiles and GUI applications that belong to this specific user,
-  # completely decoupled from the system-level hardware modules.
+  # User profile for configured user (${userConfig.username}).
+  # Desktop GUI modules are conditionally imported only on hosts with desktop.enable = true.
 
-  home-manager.users.${userConfig.username}.imports = [
-    ../../home/desktop.nix
-    ../../home/gaming.nix
-    ../../home/flatpak.nix
-    ../../home/niri.nix
-    ../../home/ashell.nix
-    ../../home/lock.nix
-  ];
+  home-manager.users.${userConfig.username} = {
+    osConfig,
+    lib,
+    ...
+  }: {
+    imports = lib.optionals (osConfig.mySystem.desktop.enable or false) [
+      ../../home/desktop.nix
+      ../../home/gaming.nix
+      ../../home/flatpak.nix
+      ../../home/niri.nix
+      ../../home/ashell.nix
+      ../../home/lock.nix
+    ];
+  };
 }

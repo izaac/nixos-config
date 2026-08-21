@@ -15,7 +15,6 @@ inputs.nixpkgs.lib.nixosSystem {
     ../hosts/${hostname}/configuration.nix
     inputs.disko.nixosModules.disko
     inputs.stylix.nixosModules.stylix
-    inputs.niri-flake.nixosModules.niri
     (import ./common-nixpkgs.nix inputs)
     {
       # Linux-only overlays on top of the shared list.
@@ -26,7 +25,6 @@ inputs.nixpkgs.lib.nixosSystem {
         (import ../overlays/copilot-cli-bash-path.nix)
         (import ../overlays/ashell-unstable.nix inputs)
         (import ../overlays/stash-unstable.nix inputs)
-        inputs.niri-flake.overlays.niri
       ];
     }
   ];
