@@ -273,7 +273,6 @@
     ];
     casks = [
       "cyberduck"
-      "docker-desktop"
       "firefox"
       "google-chrome"
       "gpg-suite-no-mail"
@@ -286,6 +285,7 @@
       "moonlight"
       "plex"
       "plexamp"
+      "podman-desktop"
       "protonvpn"
       "slack"
       "telegram"
