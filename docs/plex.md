@@ -1,0 +1,140 @@
+# Hardware Configuration - plex
+
+> **Last Updated**: 2026-08-25 **System**: PELADN Intel N100 Mini PC **OS**: NixOS 26.05
+
+---
+
+## System Overview
+
+| Component   | Model                             | Notes                                        |
+| ----------- | --------------------------------- | -------------------------------------------- |
+| **Mini PC** | PELADN (Intel N100)               | Headless server, wired ethernet only         |
+| **CPU**     | Intel N100 (Alder Lake-N)         | 4-Core, 4-Thread, up to 3.4 GHz, low TDP     |
+| **GPU**     | Intel UHD Graphics (Alder Lake-N) | `8086:46d1`, QuickSync transcoding for Plex  |
+| **RAM**     | 8GB                               | Single stick; ZRAM swap sized to match       |
+| **Storage** | PELADN 256GB SATA SSD             | `/dev/sda`, unencrypted ext4 via disko       |
+| **Role**    | Plex media server + home server   | Media served from an encrypted rclone remote |
+
+---
+
+## Storage Configuration
+
+### Partition Layout (disko)
+
+**PELADN 256GB SATA SSD (`/dev/sda`):**
+
+- `/dev/sda1` (1G) - EFI System Partition (`/boot`, fmask/dmask 0077)
+- `/dev/sda2` (237.5G) - Root filesystem, ext4 with `noatime,nodiratime,lazytime,commit=60`
+
+No LUKS on this host. No disk swap partition; ZRAM provides swap (see
+`modules/core/performance.nix`).
+
+### Media storage (rclone)
+
+Media lives on a crypt remote (`ul-crypt:`) mounted at `/srv/media` by the `rclone-ul-crypt.service`
+unit defined in `hosts/plex/configuration.nix`:
+
+- Mount options:
+  `--allow-other --vfs-cache-mode full --vfs-cache-max-size 50G --vfs-cache-max-age 168h --buffer-size 64M`
+- Runs as `izaac`, `Type=notify` (rclone signals readiness to systemd)
+- `programs.fuse.userAllowOther = true` so Plex can read the FUSE mount
+- Cache dir defaults to `~/.cache/rclone/vfs`; keep an eye on it against the 233G root
+
+Plex transcode directory is `/tmp/plex-transcode` (created by `systemd.tmpfiles.rules`). `/tmp` is
+tmpfs on this host, so partial transcodes hit RAM and never touch the SSD.
+
+---
+
+## Graphics & QuickSync
+
+The N100 iGPU does the heavy lifting for Plex hardware transcoding (Gen12 graphics):
+
+| Package              | Purpose                                      |
+| -------------------- | -------------------------------------------- |
+| `intel-media-driver` | VA-API driver for Gen12+ (media-hybrid path) |
+| `vpl-gpu-rt`         | oneVPL runtime for QSV on 11th gen and newer |
+| `intel-vaapi-driver` | Legacy VA-API fallback driver                |
+
+Wired up in `hosts/plex/configuration.nix` via `hardware.graphics.extraPackages`. The `izaac` user
+is in the `video` and `render` groups (`modules/core/user.nix`), which Plex needs because
+`services.plex.user` is set to `izaac` instead of the default `plex` user (so it can read
+`/srv/media`).
+
+Verify hardware transcode works after a rebuild:
+
+```bash
+# VA-API report (expect iHD driver entry)
+sudo -u izaac vainfo
+
+# QSV session while a transcode runs
+intel_gpu_top
+```
+
+---
+
+## Network & Connectivity
+
+| Device       | Model               | Interface | Driver | Notes                      |
+| ------------ | ------------------- | --------- | ------ | -------------------------- |
+| **Ethernet** | Realtek RTL8111 GbE | enp1s0    | r8169  | Primary link, always wired |
+| **WiFi**     | Realtek RTL8822CE   | wlp2s0    | rtw88  | Present but unused         |
+
+WiFi is intentionally unused: `networking.wireless.enable = false` means no supplicant ever
+configures it, and `boot.blacklistedKernelModules = ["rtw88_8822ce"]` unbinds the Realtek card so no
+`wlp2s0` link appears.
+
+Tailscale runs for remote access (`mySystem.core.tailscale.enable`).
+
+---
+
+## Services
+
+| Service           | State   | Purpose                                      |
+| ----------------- | ------- | -------------------------------------------- |
+| `plex`            | active  | Media server, runs as `izaac`, firewall open |
+| `rclone-ul-crypt` | active  | Mounts `ul-crypt:` at `/srv/media` on boot   |
+| `tailscaled`      | active  | Remote access                                |
+| openssh           | enabled | LAN + tailnet admin access                   |
+
+Deliberately off on this headless host (overridden in `hosts/plex/configuration.nix`): desktop,
+gaming, virtualization/podman, printing, sops-nix, flatpak.
+
+---
+
+## Power
+
+Server duty: sleep is disabled at the source with `systemd.sleep.extraConfig` (`AllowSuspend=no` and
+friends in `hosts/plex/configuration.nix`), so nothing can suspend the box, no matter what holds or
+lacks an inhibitor lock. Background jobs such as `ul-migrate` still take `block` inhibitor locks;
+harmless, they just never get tested by a suspend.
+
+---
+
+## Troubleshooting
+
+### Check the rclone mount
+
+```bash
+systemctl status rclone-ul-crypt
+journalctl -u rclone-ul-crypt -n 50
+mountpoint /srv/media && ls /srv/media
+```
+
+Systemd logs CPU/IO/network totals per run when the service restarts; memory peak around 6G with the
+current buffer/cache settings is normal on this box.
+
+### Check QuickSync during playback
+
+```bash
+sudo -u izaac vainfo                 # expect iHD + Gen12 profiles
+intel_gpu_top                        # Video engine busy during transcode
+```
+
+### WiFi interface missing
+
+Expected. See [Network & Connectivity](#network--connectivity): no supplicant and the `rtw88_8822ce`
+driver is blacklisted, so no wireless link exists.
+
+---
+
+_Generated from system introspection on 2026-08-25_

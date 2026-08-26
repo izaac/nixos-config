@@ -555,6 +555,18 @@ Located in `hosts/windy/configuration.nix`:
 | `common-pc-laptop`  | Laptop-specific power/ACPI defaults  | Enables laptop-mode tools, configures lid switch, battery thresholds, ACPI battery module, fn keys.                                       |
 | `common-pc-ssd`     | SSD/NVMe optimizations               | Same as ninja: TRIM timer, NVMe latency tuning. Benefits laptop NVMe drive.                                                               |
 
+### plex (Headless Server: Intel N100 Mini PC)
+
+Located in `hosts/plex/configuration.nix`:
+
+| Module             | Purpose                              | Why Needed                                                                   |
+| ------------------ | ------------------------------------ | ---------------------------------------------------------------------------- |
+| `common-cpu-intel` | Intel CPU power/performance defaults | Sets `intel_pstate=active`, enables HWP. Required for the Alder Lake-N N100. |
+| `common-pc-ssd`    | SSD/NVMe optimizations               | Same as ninja: TRIM timer, NVMe latency tuning. Benefits the SATA SSD.       |
+
+No GPU module: the N100 iGPU needs no nixos-hardware profile; QuickSync is wired up directly via
+`hardware.graphics.extraPackages` (`intel-media-driver`, `vpl-gpu-rt`). See [plex](plex.md).
+
 ### canoe / canoe-niri (ISO Builds)
 
 These are minimal live ISO configurations (`hosts/canoe/minimal.nix`, `hosts/canoe/niri.nix`). They

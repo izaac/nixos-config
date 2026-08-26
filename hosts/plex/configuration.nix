@@ -21,11 +21,13 @@
   # Passwordless sudo matching ninja and windy
   security.sudo.wheelNeedsPassword = false;
 
-  # Blacklist WiFi drivers to keep pure wired headless setup
-  boot.blacklistedKernelModules = [
-    "iwlwifi"
-    "iwlmvm"
-  ];
+  # Lock the local password. Access is ssh key only and sudo is passwordless,
+  # so no console login path remains. Applied on every switch, overriding the
+  # password set by hand during installation (users.mutableUsers stays on).
+  users.users.${userConfig.username}.hashedPassword = "!";
+
+  # Blacklist the RTL8822CE WiFi driver to keep a pure wired headless setup
+  boot.blacklistedKernelModules = ["rtw88_8822ce"];
 
   # Hardware acceleration for Intel N100 QuickSync transcoding
   hardware.graphics = {
@@ -52,15 +54,14 @@
   # Disable flatpak on headless server
   services.flatpak.enable = false;
 
-  # Allow wheel users to inhibit sleep without password prompt for background jobs
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-      if (action.id == "org.freedesktop.login1.inhibit-block-sleep" &&
-          subject.isInGroup("wheel")) {
-        return polkit.Result.YES;
-      }
-    });
-  '';
+  # Server duty: make sleep impossible instead of managing inhibitor locks.
+  # Background jobs no longer need polkit-based sleep inhibition.
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = "no";
+    AllowHibernation = "no";
+    AllowHybridSleep = "no";
+    AllowSuspendThenHibernate = "no";
+  };
 
   # Enable Plex Media Server
   services.plex = {
@@ -78,6 +79,14 @@
     "d /tmp/plex-transcode 0775 ${userConfig.username} users -"
   ];
 
+  # Headless box: nobody runs `just clean` here, so prune old generations
+  # automatically and keep the store from creeping into the VFS cache budget.
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 14d";
+  };
+
   # Systemd service to auto-mount rclone ul-crypt drive on boot
   systemd.services.rclone-ul-crypt = {
     description = "Rclone mount for ul-crypt media drive";
@@ -91,7 +100,7 @@
     ];
     serviceConfig = {
       Type = "notify";
-      ExecStart = "${pkgs.rclone}/bin/rclone mount ul-crypt: /srv/media --config /home/${userConfig.username}/.config/rclone/rclone.conf --allow-other --vfs-cache-mode full --vfs-cache-max-size 50G --buffer-size 64M";
+      ExecStart = "${pkgs.rclone}/bin/rclone mount ul-crypt: /srv/media --config /home/${userConfig.username}/.config/rclone/rclone.conf --allow-other --vfs-cache-mode full --vfs-cache-max-size 50G --vfs-cache-max-age 168h --buffer-size 64M";
       ExecStop = "/run/current-system/sw/bin/umount -l /srv/media";
       Restart = "on-failure";
       RestartSec = "10s";

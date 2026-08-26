@@ -1,6 +1,6 @@
 # NixOS Configuration
 
-Personal flake managing two NixOS hosts (`ninja`, `windy`) and a nix-darwin Mac. Tracks
+Personal flake managing three NixOS hosts (`ninja`, `windy`, `plex`) and a nix-darwin Mac. Tracks
 **nixos-26.05 stable**. Custom packages live in a separate
 [nix-packages](https://github.com/izaac/nix-packages) repo consumed as a flake input.
 
@@ -53,7 +53,8 @@ flake input. Use **`nix-init`** to bootstrap new package definitions.
 
 ## Documentation
 
-- [Hardware (ninja)](docs/hardware.md) | [Hardware (windy)](docs/windy.md)
+- [Hardware (ninja)](docs/hardware.md) | [Hardware (windy)](docs/windy.md) |
+  [Hardware (plex)](docs/plex.md)
 - [NVIDIA Driver Updates](docs/nvidia-driver-updates.md)
 - [Security & Hardening](docs/security.md) | [Secrets](docs/secrets.md)
 - [Disaster Recovery & Disko](docs/disko-rebuild.md)
