@@ -19,7 +19,7 @@
   };
 
   # Passwordless sudo matching ninja and windy
-  security.sudo.wheelNeedsPassword = false;
+  security.sudo-rs.wheelNeedsPassword = false;
 
   # Lock the local password. Access is ssh key only and sudo is passwordless,
   # so no console login path remains. Applied on every switch, overriding the

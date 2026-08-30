@@ -28,7 +28,7 @@ in {
     # sudo-rs is enabled via core/system.nix (mkForce).
     # Configure it here for user-facing settings.
     security.sudo-rs = {
-      wheelNeedsPassword = true;
+      wheelNeedsPassword = lib.mkDefault true;
       extraConfig = ''
         Defaults editor=${pkgs.neovim}/bin/nvim
       '';
