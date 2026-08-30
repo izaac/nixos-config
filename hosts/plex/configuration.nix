@@ -79,14 +79,6 @@
     "d /tmp/plex-transcode 0775 ${userConfig.username} users -"
   ];
 
-  # Headless box: nobody runs `just clean` here, so prune old generations
-  # automatically and keep the store from creeping into the VFS cache budget.
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
-  };
-
   # Systemd service to auto-mount rclone ul-crypt drive on boot
   systemd.services.rclone-ul-crypt = {
     description = "Rclone mount for ul-crypt media drive";
