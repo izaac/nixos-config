@@ -46,20 +46,12 @@ Re-evaluate at each channel bump.
 **Package**: `stash-clipboard` **Reason**: Package was merged after 26.05 branch cut; stable channel
 has no such attribute (nixpkgs `stash` is stashapp, an unrelated media organizer).
 
-Builds from upstream `main` (commit e8ee084) rather than v0.4.0 release because v0.4.0 has a bug:
+Pins to `nixpkgs-unstable` which ships `v0.5.0` (including upstream fixes for plain text offers and
+MIME types).
 
-- `watch` ignores `--mime-type text/plain`
-- Firefox offers `text/html` encoded as UTF-16LE
-- Every browser copy stored as UTF-16 markup but labelled `text/plain`
-- Pasting produced lone `<` or raw HTML
+**Migration target**: Once `stash-clipboard` lands in nixpkgs stable, drop the overlay.
 
-Upstream fixed in `watch: capture plain text instead of UTF-16 HTML wrappers` +
-`watch: prefer plain text over browser URI offers` (unreleased).
-
-**Migration target**: Once a tag after v0.4.0 lands in nixpkgs, drop the `src/cargoDeps` override
-and use stable.
-
-**Affects**: All hosts (applied in lib/mkSystem.nix)
+**Affects**: Linux hosts (applied in `lib/mkSystem.nix`)
 
 ---
 
@@ -73,9 +65,19 @@ and use stable.
 
 ---
 
-## Decision Criteria for Adding Unstable Packages
+## What NOT to Put in Overlays
 
-Before adding a new unstable overlay, verify:
+Do **NOT** add overlays for:
+
+1. Packages available in stable with acceptable versions
+2. System packages that affect large dependency graphs without justification
+3. Complex packages that might cause build failures or mass rebuilds
+
+---
+
+## Checklist for Adding an Unstable Package
+
+Before adding a new overlay, ensure:
 
 1. **Not in stable**: Package genuinely missing from `nixos-26.05`
 2. **No alternative**: Cannot use `nixpkgs-unstable` package via `nix-shell`, `nix run`, or
@@ -90,7 +92,7 @@ Before adding a new unstable overlay, verify:
 
 - [ ] Check if ashell 0.9.0+ is in new stable
 - [ ] Check if opencode updated in new stable
-- [ ] Check if stash-clipboard >v0.4.0 in new stable
+- [ ] Check if stash-clipboard is in new stable
 - [ ] Remove overlays that are no longer needed
 - [ ] Update this document
 
