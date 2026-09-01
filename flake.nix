@@ -111,6 +111,12 @@
         # Drop proton-drive-cli: upstream meta only lists x86_64-linux,
         # which breaks `nix flake check` on aarch64-darwin.
         nixpkgs.lib.filterAttrs (name: _: name != "proton-drive-cli") extraPkgs
+        // {
+          gcroots = import ./lib/gcroots.nix {
+            inherit inputs;
+            pkgs = mkPkgs system;
+          };
+        }
         // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
           iso = self.nixosConfigurations.canoe.config.system.build.isoImage;
           iso-niri = self.nixosConfigurations.canoe-niri.config.system.build.isoImage;

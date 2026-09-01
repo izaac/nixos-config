@@ -24,8 +24,9 @@ just <command>
 | `just fmt`                              | Format all files (treefmt)                  | `nix fmt`                                                               |
 | `just vm`                               | Build and prep the Ghost-Cave               | `nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko` |
 | `just clean`                            | Remove old system generations               | `nh clean all --keep 5`                                                 |
-| `just up`                               | Update all flake inputs and switch          | `nix flake update && nh os switch . --update`                           |
-| `just up-nixpkgs`                       | Update only nixpkgs (full channel) + switch | `nix flake update nixpkgs && nh os switch .`                            |
+| `just up`                               | Update all flake inputs and switch          | `nix flake update && just gcroots && nh os switch . --update`           |
+| `just up-nixpkgs`                       | Update only nixpkgs (full channel) + switch | `nix flake update nixpkgs && just gcroots && nh os switch .`            |
+| `just gcroots`                          | Root pinned flake inputs against GC         | `nix build .#gcroots --out-link ~/.local/state/nix/gcroots/...`         |
 | `just setup-hooks`                      | Activate git pre-commit hooks               | `git config core.hooksPath .githooks`                                   |
 | `just validate-sudo`                    | Check sudo-readonly ruleset                 | `scripts/validate-sudo.sh`                                              |
 | `just road-on / road-off / road-status` | Hostile-network lockdown toggle             | `scripts/road-mode.sh on/off/status`                                    |

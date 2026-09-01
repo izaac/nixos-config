@@ -44,12 +44,19 @@ clean:
 # Update the whole jungle (Flake Update)
 up:
         nix flake update
+        just gcroots
         {{ if os() == "macos" { "nh darwin switch .#Mac --update" } else { "nh os switch . --update" } }}
 
 # Update only the nixpkgs input (full channel bump) and switch
 up-nixpkgs:
         nix flake update nixpkgs
+        just gcroots
         {{ if os() == "macos" { "nh darwin switch .#Mac" } else { "nh os switch ." } }}
+
+# Root the pinned flake inputs so GC can't delete eval-time sources
+gcroots:
+        mkdir -p ~/.local/state/nix/gcroots
+        nix build .#gcroots --out-link ~/.local/state/nix/gcroots/flake-inputs
 
 # Activate git pre-commit hooks
 setup-hooks:
