@@ -40,6 +40,21 @@ sudo dd if=result/iso/nixos-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
    ping -c 3 github.com
    ```
 
+### Remote Access (SSH)
+
+The canoe ISO runs sshd with the firewall open, so the whole install can be done from another
+machine:
+
+- Your user and `root` both have pre-authorized keys from `ninja` and `mac`
+  (`hosts/canoe/base.nix`).
+- Root login is key-only (`PermitRootLogin prohibit-password`); your user also allows password auth,
+  and the initial console password is empty.
+- `sudo-rs` is passwordless for the `wheel` group.
+
+```bash
+ssh <user>@<target-ip>   # or root@<target-ip> from ninja/mac
+```
+
 ## 3. Partition with Disko
 
 The `disko` configuration uses stable `/dev/disk/by-id/` paths, so it targets the correct drives

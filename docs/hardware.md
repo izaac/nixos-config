@@ -576,6 +576,9 @@ These are minimal live ISO configurations (`hosts/canoe/minimal.nix`, `hosts/can
 - nixos-hardware modules are machine-specific and would break portability
 - The installer kernel already includes all necessary drivers
 
+Both ISOs ship sshd with pre-authorized keys and passwordless `sudo-rs`; see
+[disko-rebuild](disko-rebuild.md#remote-access-ssh) for remote access details.
+
 ### Module Selection Guide
 
 When adding a new host:
