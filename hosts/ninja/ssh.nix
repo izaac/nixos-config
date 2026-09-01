@@ -15,7 +15,7 @@
   };
 
   users.users.${userConfig.username}.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKReCEJbKJZa0tS2D9owU5+YdXbl1pKpiRBOPlKGbQFh izaac@mac"
+    userConfig.sshKeys.mac
   ];
 
   # Restrict sshd to LAN (eno1) and Tailscale (tailscale0); no WAN exposure.

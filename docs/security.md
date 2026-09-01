@@ -33,17 +33,30 @@ Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activatio
 (`services.openssh.enable = lib.mkDefault false`); each host opts in and hardens it in its own
 `ssh.nix`:
 
-- `hosts/ninja/ssh.nix` / `hosts/windy/ssh.nix`:
+- `hosts/ninja/ssh.nix` / `hosts/windy/ssh.nix` / `hosts/plex/ssh.nix`:
   - `services.openssh.enable = true`
   - `PasswordAuthentication = false`
   - `KbdInteractiveAuthentication = false`
   - `PermitRootLogin = "no"`
+  - `X11Forwarding = false`, `MaxAuthTries = 3`, `LoginGraceTime = "30s"`
+
+Authorized keys are not inlined per host. They live in `lib/user.nix` under `sshKeys`, so rotating a
+key is a single edit that every host picks up.
+
+The `canoe` installer ISO (`hosts/canoe/base.nix`) is the deliberate exception: it keeps
+`PasswordAuthentication = true` and `PermitRootLogin = "prohibit-password"` with an empty initial
+console password, because it is a short-lived recovery image driven over the LAN.
 
 Privilege escalation uses the memory-safe Rust `sudo-rs` (C `sudo` is `mkForce`-disabled in
 `modules/core/system.nix`):
 
 - `modules/core/system.nix`: `security.sudo-rs.enable = lib.mkForce true`
-- `modules/core/user.nix`: `security.sudo-rs.wheelNeedsPassword = true`
+- `modules/core/user.nix`: `security.sudo-rs.wheelNeedsPassword = lib.mkDefault true`
+
+The `mkDefault` lets headless hosts opt out. `plex` and `canoe` set
+`security.sudo-rs.wheelNeedsPassword = false`: neither has an interactive console login path (plex
+locks the local password with `hashedPassword = "!"` and is ssh-key only), so a sudo prompt would
+only block unattended jobs without adding a barrier.
 
 ## Firewall and Network Exposure
 

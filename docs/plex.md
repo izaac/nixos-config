@@ -103,9 +103,9 @@ gaming, virtualization/podman, printing, sops-nix, flatpak.
 
 ## Power
 
-Server duty: sleep is disabled at the source with `systemd.sleep.extraConfig` (`AllowSuspend=no` and
-friends in `hosts/plex/configuration.nix`), so nothing can suspend the box, no matter what holds or
-lacks an inhibitor lock. Background jobs such as `ul-migrate` still take `block` inhibitor locks;
+Server duty: sleep is disabled at the source with `systemd.sleep.settings.Sleep` (`AllowSuspend=no`
+and friends in `hosts/plex/configuration.nix`), so nothing can suspend the box, no matter what holds
+or lacks an inhibitor lock. Background jobs such as `ul-migrate` still take `block` inhibitor locks;
 harmless, they just never get tested by a suspend.
 
 ---
