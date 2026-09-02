@@ -64,10 +64,16 @@
   };
 
   # Enable Plex Media Server
+  #
+  # Pinned to izaac/nix-packages, which tracks the newest build on plex.tv.
+  # nixpkgs trails upstream by weeks, and this box is internet-facing through
+  # plex.tv relay, so server-side security fixes should not wait on a channel
+  # bump. Drop the override once nixpkgs catches up and stays current.
   services.plex = {
     enable = true;
     openFirewall = true;
     user = userConfig.username;
+    package = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system}.plex;
   };
 
   # Fuse support for rclone mounts

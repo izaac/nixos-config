@@ -99,6 +99,25 @@ Tailscale runs for remote access (`mySystem.core.tailscale.enable`).
 Deliberately off on this headless host (overridden in `hosts/plex/configuration.nix`): desktop,
 gaming, virtualization/podman, printing, sops-nix, flatpak.
 
+### Plex Media Server package
+
+`services.plex.package` is pinned to `inputs.nix-packages.packages.<system>.plex` rather than
+`pkgs.plex`. nixpkgs trails upstream by weeks (26.05 and unstable both shipped 1.43.2.10687 well
+after 1.43.3.10896 landed with fixes for the CompanionProxy vulnerability, PM-5763, and network
+modification of `TranscoderH264Options`, PM-5766). This box is reachable through the plex.tv relay,
+so server-side security fixes should not wait on a channel bump.
+
+The `plex` package in [izaac/nix-packages](https://github.com/izaac/nix-packages) overrides the
+`version` and `src` of nixpkgs' `plexRaw` and feeds the result back into the stock FHS userenv, so
+the NixOS module contract is untouched. A weekly workflow bumps it from the plex.tv downloads API.
+
+Drop the override once nixpkgs catches up and stays current:
+
+```bash
+nix eval --raw .#nixosConfigurations.plex.config.services.plex.package  # what is deployed
+nix eval --raw nixpkgs#plex.version                                     # what nixpkgs offers
+```
+
 ---
 
 ## Power
