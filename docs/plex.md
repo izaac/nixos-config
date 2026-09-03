@@ -129,6 +129,48 @@ harmless, they just never get tested by a suspend.
 
 ---
 
+## Overnight Stability
+
+Two hangs landed inside Plex's default butler window of 02:00-05:00, on 2026-08-31 at 03:31 and
+2026-09-03 at 03:32. `GenerateBIFBehavior="scheduled"` means thumbnail generation demuxes the
+library overnight, which is what put the box under load both times.
+
+The first hang left an oops:
+
+```text
+BUG: kernel NULL pointer dereference, address: 0000000000000038
+RIP: 0010:__alloc_tagging_slab_alloc_hook+0x7a/0x1c0
+Comm: dmx0:matroska,w   Not tainted 6.18.47 #1-NixOS
+```
+
+`__alloc_tagging_slab_alloc_hook` is the memory allocation profiling instrumentation
+(`CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=y`), not Plex code: the profiler itself faulted
+under the slab churn of the demux. The second hang logged nothing at all, which is the signature of
+a hard lockup rather than an oops.
+
+Two mitigations in `hosts/plex/configuration.nix`:
+
+| Setting                   | Value | Why                                                      |
+| ------------------------- | ----- | -------------------------------------------------------- |
+| `sysctl.vm.mem_profiling` | `0`   | Boot param; removes the faulting code path. No use here. |
+| `kernel.panic`            | `30`  | Reboot 30s after a panic instead of halting forever.     |
+| `kernel.panic_on_oops`    | `1`   | Promote an oops to a panic so the reboot actually fires. |
+| `kernel.hardlockup_panic` | `1`   | Let the NMI watchdog panic on a silent lockup.           |
+
+The panic settings matter as much as the fix: the kernel default (`kernel.panic = 0`) is to hang
+indefinitely, so both incidents cost hours of downtime waiting on a manual power cycle.
+
+Verify after a rebuild:
+
+```bash
+cat /proc/sys/vm/mem_profiling                       # expect 0
+sysctl kernel.panic kernel.panic_on_oops             # expect 30 and 1
+journalctl --list-boots                              # unexpected gaps mean it happened again
+journalctl -b -1 -k | grep -E 'BUG:|Oops:|Comm:'     # trace from the last crash, if any
+```
+
+---
+
 ## Troubleshooting
 
 ### Check the rclone mount

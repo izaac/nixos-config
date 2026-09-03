@@ -29,6 +29,26 @@
   # Blacklist the RTL8822CE WiFi driver to keep a pure wired headless setup
   boot.blacklistedKernelModules = ["rtw88_8822ce"];
 
+  # Overnight stability, after two hangs inside Plex's 02:00-05:00 butler
+  # window (2026-08-31 03:31, 2026-09-03 03:32).
+  #
+  # The first left an oops in __alloc_tagging_slab_alloc_hook, the memory
+  # allocation profiling instrumentation, faulting on a NULL deref under the
+  # slab churn of a matroska demux (thumbnail generation). The profiling data
+  # is a debugging aid with no use on this host, so the code path is switched
+  # off rather than left to trip again. The second hang logged nothing at all,
+  # which is what a hard lockup looks like.
+  boot.kernelParams = ["sysctl.vm.mem_profiling=0"];
+
+  # Headless and unattended: reboot instead of sitting wedged until someone
+  # walks over to the box. Both hangs above cost hours of downtime because the
+  # kernel default is to halt forever.
+  boot.kernel.sysctl = {
+    "kernel.panic" = 30;
+    "kernel.panic_on_oops" = 1;
+    "kernel.hardlockup_panic" = 1;
+  };
+
   # Hardware acceleration for Intel N100 QuickSync transcoding
   hardware.graphics = {
     enable = true;
