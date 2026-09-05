@@ -131,11 +131,15 @@ harmless, they just never get tested by a suspend.
 
 ## Overnight Stability
 
-Two hangs landed inside Plex's default butler window of 02:00-05:00, on 2026-08-31 at 03:31 and
-2026-09-03 at 03:32. `GenerateBIFBehavior="scheduled"` means thumbnail generation demuxes the
-library overnight, which is what put the box under load both times.
+Three hangs so far, all in the small hours:
 
-The first hang left an oops:
+| When             | Downtime | Oops? | State at crash                    |
+| ---------------- | -------- | ----- | --------------------------------- |
+| 2026-08-31 03:31 | 6h 35m   | yes   | Plex demuxing matroska            |
+| 2026-09-03 03:32 | 3h 24m   | no    | unknown                           |
+| 2026-09-05 04:14 | 54s      | no    | idle, Plex last logged 40m before |
+
+The first left an oops:
 
 ```text
 BUG: kernel NULL pointer dereference, address: 0000000000000038
@@ -145,26 +149,39 @@ Comm: dmx0:matroska,w   Not tainted 6.18.47 #1-NixOS
 
 `__alloc_tagging_slab_alloc_hook` is the memory allocation profiling instrumentation
 (`CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=y`), not Plex code: the profiler itself faulted
-under the slab churn of the demux. The second hang logged nothing at all, which is the signature of
-a hard lockup rather than an oops.
+under the slab churn of the demux.
 
-Two mitigations in `hosts/plex/configuration.nix`:
+The other two are a **different, still unexplained fault**. They logged nothing at all, and the
+09-05 one hit while the box was idle, so the butler window was a coincidence rather than a cause.
+Ruled out along the way: the r8169 NIC (ASPM already disabled, no runtime errors) and the constant
+IPv6 prefix churn from tailscale and dhcpcd (roughly 14 link changes an hour, all day, not
+correlated with the crashes). The current suspect is a deep package C-state wedge: C10 accounts for
+~87% of idle residency and the PELADN BIOS is stock `100E_P` (02/2024). C-states are deliberately
+**not** capped yet, so the fault can recur and be identified instead of masked. A BIOS update from
+PELADN would be the fix at the source if one exists.
 
-| Setting                   | Value | Why                                                      |
-| ------------------------- | ----- | -------------------------------------------------------- |
-| `sysctl.vm.mem_profiling` | `0`   | Boot param; removes the faulting code path. No use here. |
-| `kernel.panic`            | `30`  | Reboot 30s after a panic instead of halting forever.     |
-| `kernel.panic_on_oops`    | `1`   | Promote an oops to a panic so the reboot actually fires. |
-| `kernel.hardlockup_panic` | `1`   | Let the NMI watchdog panic on a silent lockup.           |
+Mitigations in `hosts/plex/configuration.nix`, in two layers:
 
-The panic settings matter as much as the fix: the kernel default (`kernel.panic = 0`) is to hang
-indefinitely, so both incidents cost hours of downtime waiting on a manual power cycle.
+| Setting                                       | Value | Covers                                                   |
+| --------------------------------------------- | ----- | -------------------------------------------------------- |
+| `sysctl.vm.mem_profiling`                     | `0`   | Boot param; removes the faulting code path. No use here. |
+| `kernel.panic`                                | `30`  | Reboot 30s after a panic instead of halting forever.     |
+| `kernel.panic_on_oops`                        | `1`   | Promote an oops to a panic so the reboot actually fires. |
+| `kernel.hardlockup_panic`                     | `1`   | Let the NMI watchdog panic on a silent lockup.           |
+| `systemd.settings.Manager.RuntimeWatchdogSec` | `60s` | Hardware watchdog for a CPU too wedged to panic.         |
+
+The two layers are not redundant. The sysctls need a kernel alive enough to run its own panic path;
+the hardware watchdog (`intel_oc_wdt`, with `iTCO_wdt` as `watchdog1`) is silicon and resets the
+board even when nothing can execute. The panic settings already proved themselves: they cut 09-05
+from hours of downtime to 54 seconds.
 
 Verify after a rebuild:
 
 ```bash
 cat /proc/sys/vm/mem_profiling                       # expect 0
 sysctl kernel.panic kernel.panic_on_oops             # expect 30 and 1
+systemctl show -p RuntimeWatchdogUSec --value        # expect 60000000
+cat /sys/class/watchdog/watchdog0/state              # expect active
 journalctl --list-boots                              # unexpected gaps mean it happened again
 journalctl -b -1 -k | grep -E 'BUG:|Oops:|Comm:'     # trace from the last crash, if any
 ```

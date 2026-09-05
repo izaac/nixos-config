@@ -29,25 +29,30 @@
   # Blacklist the RTL8822CE WiFi driver to keep a pure wired headless setup
   boot.blacklistedKernelModules = ["rtw88_8822ce"];
 
-  # Overnight stability, after two hangs inside Plex's 02:00-05:00 butler
-  # window (2026-08-31 03:31, 2026-09-03 03:32).
+  # Overnight hangs at 03:31 (08-31), 03:32 (09-03), 04:14 (09-05).
   #
-  # The first left an oops in __alloc_tagging_slab_alloc_hook, the memory
-  # allocation profiling instrumentation, faulting on a NULL deref under the
-  # slab churn of a matroska demux (thumbnail generation). The profiling data
-  # is a debugging aid with no use on this host, so the code path is switched
-  # off rather than left to trip again. The second hang logged nothing at all,
-  # which is what a hard lockup looks like.
+  # The first oopsed in __alloc_tagging_slab_alloc_hook, the memory allocation
+  # profiling instrumentation. It is a debugging aid with no use here, so the
+  # code path is switched off.
   boot.kernelParams = ["sysctl.vm.mem_profiling=0"];
 
-  # Headless and unattended: reboot instead of sitting wedged until someone
-  # walks over to the box. Both hangs above cost hours of downtime because the
-  # kernel default is to halt forever.
+  # The later two logged nothing and hit while idle, so they are a different,
+  # still unexplained fault. Suspected deep C-state wedge (C10 is ~87% of idle
+  # residency, BIOS 100E_P is stock), left unmasked so it can recur and be
+  # identified.
+  #
+  # Recover automatically instead. The sysctls cover a kernel alive enough to
+  # panic (the default of 0 halts forever, which cost 6.5h and 3.4h); the
+  # watchdog covers a wedged CPU, which only silicon can reset.
   boot.kernel.sysctl = {
     "kernel.panic" = 30;
     "kernel.panic_on_oops" = 1;
     "kernel.hardlockup_panic" = 1;
   };
+
+  # /dev/watchdog is intel_oc_wdt. systemd pings at half the interval, so 60s
+  # tolerates a 30s stall before the board resets itself.
+  systemd.settings.Manager.RuntimeWatchdogSec = "60s";
 
   # Hardware acceleration for Intel N100 QuickSync transcoding
   hardware.graphics = {
