@@ -45,6 +45,7 @@ in {
     clapper # Modern GTK4 Video Player (Rust)
     snapshot # GTK Camera App (Rust)
     inputs.nix-packages.packages.${system}.sparrow
+    inputs.nix-packages.packages.${system}.plex-desktop
     ffmpeg-full
 
     # File manager + archives + preview thumbnailers
