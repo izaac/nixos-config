@@ -4,6 +4,7 @@
     ./fastfetch.nix
     ./ssh.nix
     ./rclone.nix
+    ./smug.nix
     ./tmux.nix
     ./theme.nix
     ./whosthere.nix
