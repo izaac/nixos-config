@@ -29,7 +29,7 @@
   # matugen fills the {{...}} placeholders and writes ashellConfig. Structure is
   # fixed here; only colors track the wallpaper.
   ashellTemplate = (pkgs.formats.toml {}).generate "ashell-template.toml" {
-    log_level = "warn";
+    logging.level = "warn";
     position = "Top";
 
     modules = {
@@ -99,7 +99,7 @@
       show_timestamps = true;
       show_bodies = true;
       toast = true;
-      toast_position = "top_right";
+      toast_position = "TopRight";
       toast_timeout = 5000;
       toast_limit = 5;
     };
@@ -157,7 +157,7 @@
         margin = "xs";
       };
 
-      menu.opacity = 0.95;
+      opacity.menu = 0.95;
 
       background_color = {
         base = "{{colors.surface.default.hex}}";
