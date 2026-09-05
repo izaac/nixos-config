@@ -172,13 +172,23 @@ in {
         excludes = [{title = "^Steam$";}];
         open-floating = true;
       }
-      # Elden Ring: auto-fullscreen so it owns the whole output (no niri chrome),
+      # Games: auto-fullscreen so they own the whole output (no niri chrome),
       # critical when streaming via sunshine which captures the active monitor.
+      #
+      # Each rule matches the Proton app-id and falls back to the title, since
+      # niri ORs the entries in `matches`. The title on its own is not enough
+      # to identify the game: Steam's own dialogs (properties, launch options)
+      # carry the game name as their title but keep app-id "steam", so they
+      # match the fallback and get fullscreened too. Excluding that app-id
+      # leaves them to the float rule above, where they belong.
+      #
+      # Elden Ring.
       {
         matches = [
           {app-id = "^steam_app_1245620$";}
           {title = "^ELDEN RING.*";}
         ];
+        excludes = [{app-id = "^[Ss]team$";}];
         open-fullscreen = true;
       }
       # SILENT HILL f: Steam/Proton sometimes opens tiled under niri.
@@ -187,6 +197,7 @@ in {
           {app-id = "^steam_app_2947440$";}
           {title = "^SILENT HILL f.*";}
         ];
+        excludes = [{app-id = "^[Ss]team$";}];
         open-fullscreen = true;
       }
       # Lords of the Fallen: opens windowed/tiled under niri; force fullscreen
@@ -196,6 +207,7 @@ in {
           {app-id = "^steam_app_1501750$";}
           {title = "^Lords of the Fallen.*";}
         ];
+        excludes = [{app-id = "^[Ss]team$";}];
         open-fullscreen = true;
       }
       # SPICE Viewer (virt-viewer, spicy) and Remmina session: open wider than default
