@@ -53,16 +53,6 @@
 in {
   config = lib.mkIf pkgs.stdenv.isLinux {
     systemd.user.services = {
-      rclone-gdrive = mkRcloneMount {
-        description = "RClone Mount for Encrypted Google Drive (Zero-Knowledge)";
-        remote = "gd-crypt:";
-        mountPoint = "${config.home.homeDirectory}/PrivateGDrive";
-        service = {
-          Restart = "on-failure";
-          RestartSec = "30";
-        };
-      };
-
       rclone-proton =
         mkRcloneMount {
           description = "RClone Mount for Proton Drive";
