@@ -28,6 +28,31 @@ brightness indicators, which `ninja` has no hardware for.
 
 ---
 
+## X11 apps (xwayland-satellite)
+
+niri is Wayland-only, so X11 clients such as Steam reach it through
+[xwayland-satellite](https://github.com/Supreeeme/xwayland-satellite). niri-flake spawns it
+automatically once `xwayland-satellite.path` is set in `home/niri.nix`.
+
+The binary carries one local patch,
+[`overlays/patches/xwayland-satellite-popup-focus.patch`](../overlays/patches/xwayland-satellite-popup-focus.patch).
+Without it, Steam's menu bar dropdowns (Steam, View, Friends, Games, Help) open and dismiss
+themselves within about 35 ms, so they cannot be clicked through at all.
+
+The cause is upstream commit `3273a0f`, which shipped in v0.8.2 and focuses an override-redirect
+popup as soon as the compositor configures it. Steam holds an X11 grab on its main window, so that
+focus change makes it reclaim `_NET_ACTIVE_WINDOW` and the menu tears down. The patch drops the
+focus block, which is what v0.8.1 did, while keeping the rest of v0.8.2.
+
+Tracked upstream as [issue #468](https://github.com/Supreeeme/xwayland-satellite/issues/468), still
+open. Drop the patch once that is fixed and released.
+
+Worth knowing when debugging this class of bug: these popups never become niri windows, so no
+`window-rule` can affect them. `niri msg event-stream` reports no window open or close events while
+a Steam menu appears, which is what separates an xwayland-satellite fault from a window-rule one.
+
+---
+
 ## Keybindings
 
 ### Apps & session

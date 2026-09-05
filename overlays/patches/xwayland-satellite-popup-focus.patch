@@ -1,0 +1,58 @@
+Do not steal focus for override-redirect popups on first configure.
+
+Steam's menu bar dropdowns (Steam, View, Friends, Games, Help) open and dismiss
+themselves within ~35ms under niri, so they cannot be navigated at all. The
+menus never reach niri as windows: a `niri msg event-stream` capture during a
+click shows no window open or close events, which places the fault in
+xwayland-satellite's handling of the X11 override-redirect surface rather than
+in any niri window rule.
+
+Upstream bisected this to 3273a0fccd71da21c6362c74f3b1d1c0a89ff3ba ("Fix: unity
+editor add component pop up", #397), which landed after v0.8.1 and shipped in
+v0.8.2. It focuses the popup as soon as the compositor configures it. Steam
+holds an X11 grab on its main window, so that focus change makes Steam revert
+`_NET_ACTIVE_WINDOW` to the main window a moment later and the menu tears down.
+A follow-up, 5d1efbc9 ("server: only focus 'passive' popups"), narrowed the
+condition to `require_wm_focus()` but Steam still trips it.
+
+This drops the focus block, restoring the v0.8.1 behaviour while keeping the
+rest of v0.8.2 (the output scale and geometry fixes matter on a multi-monitor
+setup). The `first_configure` binding goes with it since nothing else reads it.
+`FocusData` stays imported; it is still used by the keyboard focus path.
+
+The cost is reverting #397, so the Unity editor's "Add Component" search bar
+loses its input fix. Nothing here uses the Unity editor.
+
+Tracked upstream as https://github.com/Supreeeme/xwayland-satellite/issues/468,
+still open. Drop this patch once that is fixed and released.
+
+Recheck against src/server/event.rs on every xwayland-satellite bump.
+
+--- a/src/server/event.rs
++++ b/src/server/event.rs
+@@ -441,25 +441,12 @@
+ 
+                 let mut role = data.get::<&mut SurfaceRole>().unwrap();
+                 let xdg = role.xdg_mut().unwrap();
+-                let first_configure = !xdg.configured;
+                 xdg.pending = Some(PendingSurfaceState {
+                     x,
+                     y,
+                     width,
+                     height,
+                 });
+-
+-                if first_configure {
+-                    let window_data = data.get::<&WindowData>().unwrap();
+-                    if window_data.attrs.require_wm_focus() {
+-                        let window = *data.get::<&x::Window>().unwrap();
+-                        state.inner.to_focus = Some(FocusData {
+-                            window,
+-                            output_name: None,
+-                            is_popup: true,
+-                        });
+-                    }
+-                }
+             }
+             xdg_popup::Event::Repositioned { .. } => {}
+             xdg_popup::Event::PopupDone => {
