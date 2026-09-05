@@ -22,8 +22,20 @@ These are load-bearing features for this config. The overlay also applies two pa
   17k pointless D-Bus round trips/day on hosts without NetworkManager/iwd)
 - `ashell-brightness-step.patch`: Configurable brightness step (upstream hardcodes 5%)
 
-**Migration target**: nixpkgs PR #533450 backports 0.9.0 to release-26.05. Once merged and released,
-drop this overlay.
+Both patches were rechecked against ashell 0.10.0 and are still required: upstream keeps the flat
+five second retry with no give-up, and still hardcodes the brightness step at 5% with no setting to
+override it. The backoff patch had to be refreshed at 0.10.0, which added a third field to
+`State::Active` and broke the first hunk's context. Expect the same on future bumps, since every
+hunk of that patch touches the network service's state machine.
+
+**Migration target**: nixpkgs PR #533450 backports 0.9.0 to release-26.05, still open. Once merged
+and released, drop this overlay.
+
+**Pinning**: ashell comes from a dedicated `nixpkgs-ashell` input in `flake.nix`, locked to an
+explicit rev (`801bef6a`, ashell 0.10.0) rather than the floating `nixpkgs-unstable`.
+`nix flake update` cannot move an input whose URL names a rev, so a routine `just up` can no longer
+bump ashell and break the network patch. To bump ashell deliberately: change that rev, rebuild, and
+refresh the patch if it stops applying.
 
 **Affects**: All hosts (applied in lib/mkSystem.nix)
 
@@ -57,11 +69,11 @@ MIME types).
 
 ## Overlay Application
 
-| Overlay               | Applied In             | Hosts             |
-| --------------------- | ---------------------- | ----------------- |
-| ashell-unstable.nix   | lib/mkSystem.nix       | ninja, windy      |
-| opencode-unstable.nix | lib/common-nixpkgs.nix | ninja, windy, Mac |
-| stash-unstable.nix    | lib/mkSystem.nix       | ninja, windy      |
+| Overlay               | Applied In             | Hosts             | Source                        |
+| --------------------- | ---------------------- | ----------------- | ----------------------------- |
+| ashell-unstable.nix   | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-ashell` (pinned rev) |
+| opencode-unstable.nix | lib/common-nixpkgs.nix | ninja, windy, Mac | `nixpkgs-unstable` (floating) |
+| stash-unstable.nix    | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-unstable` (floating) |
 
 ---
 
@@ -111,4 +123,4 @@ Update the commit hash when re-evaluating. This prevents unexpected breakage fro
 
 ---
 
-_Last reviewed: 2026-08-15_
+_Last reviewed: 2026-09-05_

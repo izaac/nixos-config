@@ -1,3 +1,23 @@
+Back off and give up when no network backend is available.
+
+ashell's network service retries a failed backend connection every five seconds
+for the lifetime of the session, with no backoff and no give-up. On a host
+without NetworkManager or iwd (ninja runs systemd-networkd) that is a permanent
+loop, roughly 17k pointless D-Bus round trips a day.
+
+This threads an attempt counter through the state machine, doubles the delay on
+each failure, and moves to a new `Disabled` state after six attempts, on the
+grounds that a system with no supported backend will not grow one mid-session.
+
+Still needed as of 0.10.0: upstream continues to hardcode
+`error!("Network service error, retrying in 5 seconds")` with a flat five second
+sleep and an unconditional return to `State::Init`.
+
+Refreshed for 0.10.0, which added a third field to `State::Active` and so broke
+the first hunk's context.
+
+Recheck against src/services/network/mod.rs on every ashell bump.
+
 --- a/src/services/network/mod.rs
 +++ b/src/services/network/mod.rs
 @@ -181,11 +181,17 @@
@@ -6,7 +26,7 @@
  enum State {
 -    Init,
 +    Init(u32),
-     Active(zbus::Connection, BackendChoice),
+     Active(zbus::Connection, BackendChoice, bool),
 -    Error,
 +    Error(u32),
 +    Disabled,
@@ -54,7 +74,7 @@
 +                    State::Error(attempt)
                  }
              },
-             State::Active(conn, choice) => {
+             State::Active(conn, choice, refresh_data) => {
 @@ -488,7 +494,7 @@
                              Ok(nm) => nm,
                              Err(e) => {
@@ -82,7 +102,7 @@
                              }
                          };
                          match iwd.subscribe_events().await {
-@@ -543,18 +549,33 @@
+@@ -564,18 +570,33 @@
                              Err(err) => {
                                  error!("Failed to listen for network events: {err}");
  

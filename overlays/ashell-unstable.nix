@@ -1,6 +1,12 @@
-# Pin ashell to nixos-unstable: 26.05 ships 0.8.0, which predates the IPC
+# Pin ashell to a frozen nixpkgs rev: 26.05 ships 0.8.0, which predates the IPC
 # socket, the notification daemon and the OSD, all of which are load-bearing
-# here. Drop this once nixpkgs PR #533450 backports 0.9.0 to release-26.05.
+# here. Drop this once nixpkgs PR #533450 backports a new enough ashell to
+# release-26.05.
+#
+# The source is `nixpkgs-ashell`, pinned by rev in flake.nix rather than the
+# floating `nixpkgs-unstable`, because the network patch below breaks whenever
+# upstream reworks the network service. Pinning keeps `just up` from failing on
+# an ashell bump nobody asked for; bump the rev in flake.nix to move it.
 #
 # The patch fixes an upstream bug rather than a preference, so it is applied on
 # every host: the network service retries a failed backend connection every five
@@ -15,7 +21,7 @@
 # it cannot be expressed in config the way volume_step can. Applied everywhere
 # because it is inert on a host with no backlight.
 inputs: final: _prev: {
-  ashell = inputs.nixpkgs-unstable.legacyPackages.${final.stdenv.hostPlatform.system}.ashell
+  ashell = inputs.nixpkgs-ashell.legacyPackages.${final.stdenv.hostPlatform.system}.ashell
     .overrideAttrs (old: {
     patches =
       (old.patches or [])

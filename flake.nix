@@ -9,6 +9,15 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Pinned to an explicit rev, not a branch, so `nix flake update` cannot
+    # move it. overlays/patches/ashell-network-backoff.patch rewrites ashell's
+    # network service state machine, so it breaks whenever upstream touches
+    # that file: 0.10.0 added a field to `State::Active` and broke it already.
+    # Floating this input means a routine `just up` can fail the build.
+    #
+    # This rev ships ashell 0.10.0. To bump ashell deliberately: move the rev,
+    # rebuild, and refresh the patch if it no longer applies.
+    nixpkgs-ashell.url = "github:nixos/nixpkgs/801bef6abd86b91e51083066b83fb354a11fc640";
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
