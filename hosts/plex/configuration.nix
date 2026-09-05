@@ -101,6 +101,9 @@
     package = inputs.nix-packages.packages.${pkgs.stdenv.hostPlatform.system}.plex;
   };
 
+  # Disk management daemon
+  services.udisks2.enable = true;
+
   # Fuse support for rclone mounts
   programs.fuse.userAllowOther = true;
 
