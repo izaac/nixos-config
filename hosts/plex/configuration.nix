@@ -104,6 +104,15 @@
   # Disk management daemon
   services.udisks2.enable = true;
 
+  # Allow wheel users to manage disks with udisks2 without password prompts (needed for headless/SSH)
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id.indexOf("org.freedesktop.udisks2.") === 0 && subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
   # Fuse support for rclone mounts
   programs.fuse.userAllowOther = true;
 
