@@ -41,6 +41,34 @@
     GenerateCreditsMarkerBehavior = "scheduled";
   };
 
+  # Individual butler tasks, on ("1") or off ("0"). These are the Scheduled
+  # Tasks checkboxes in the UI, separate from the analysis behaviours above.
+  #
+  # The three disabled ones each walk the whole library reading file content
+  # over the network. DeepMediaAnalysis is the task that was running during the
+  # 2026-09-06 13:39 hang, working through a backlog thousands of items deep.
+  # UpgradeMediaAnalysis repeats that whole pass whenever Plex bumps its
+  # analysis version, and EPG guide refresh does nothing without a tuner.
+  #
+  # Everything left enabled is local and cheap: database backup and optimise,
+  # bundle and cache cleanup, blob garbage collection, and metadata refresh.
+  # RefreshLibraries stays off, which is also Plex's default; scanning is
+  # driven by ScheduledLibraryUpdateInterval instead.
+  butlerTasks = {
+    ButlerTaskDeepMediaAnalysis = "0";
+    ButlerTaskUpgradeMediaAnalysis = "0";
+    ButlerTaskRefreshEpgGuides = "0";
+
+    ButlerTaskBackupDatabase = "1";
+    ButlerTaskOptimizeDatabase = "1";
+    ButlerTaskCleanOldBundles = "1";
+    ButlerTaskCleanOldCacheFiles = "1";
+    ButlerTaskGarbageCollectBlobs = "1";
+    ButlerTaskRefreshLocalMedia = "1";
+    ButlerTaskRefreshPeriodicMetadata = "1";
+    ButlerTaskRefreshLibraries = "0";
+  };
+
   # Seconds between library scans. Plex cannot get change notifications from a
   # network mount, so periodic scanning is how new media is discovered. Hourly
   # was re-queueing analysis work far more often than the library actually
@@ -273,6 +301,11 @@ in {
       # Analysis behaviours: keep the expensive ones off or deferred.
       ${lib.concatStringsSep "\n" (
         lib.mapAttrsToList (k: v: ''set_pref ${k} "${v}"'') analysisBehavior
+      )}
+
+      # Individual butler tasks.
+      ${lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (k: v: ''set_pref ${k} "${v}"'') butlerTasks
       )}
     '';
   };

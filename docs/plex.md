@@ -308,6 +308,12 @@ most of them by default, including several that produce nothing on this server.
 `scheduled` only stops them firing on import. Nothing already generated is removed by any of this;
 these settings govern future work only.
 
+Separately, three Scheduled Tasks are disabled outright. `ButlerTaskDeepMediaAnalysis` is the task
+that was running during the 2026-09-06 13:39 hang; it and `ButlerTaskUpgradeMediaAnalysis` each walk
+the whole library reading file content over the network, and `ButlerTaskRefreshEpgGuides` does
+nothing without a DVR tuner. The cheap local tasks stay on: database backup and optimise, bundle and
+cache cleanup, blob garbage collection, and metadata refresh.
+
 The butler window itself stays at Plex's usual **02:00-05:00**, since the box is idle then and the
 workload above is now much smaller.
 
