@@ -11,11 +11,41 @@
   # plex-preferences service below for why.
   transcodeDir = "${config.services.plex.dataDir}/Transcode";
 
-  # Plex's butler maintenance window, 24h clock. Plex's own default is 02:00 to
-  # 05:00; this is shifted into the afternoon while the overnight hangs are
-  # being diagnosed, so the load lands when someone is awake to watch it.
-  butlerStartHour = 12;
-  butlerEndHour = 15;
+  # Plex's butler maintenance window, 24h clock. Matches Plex's own default of
+  # 02:00 to 05:00: the box is idle then, and the overnight load has been cut
+  # substantially by the analysis settings below. Pinned explicitly rather than
+  # left to Plex's default so the window is visible and version controlled.
+  butlerStartHour = 2;
+  butlerEndHour = 5;
+
+  # Analysis tasks, all of which read file *content* over the network mount and
+  # so are far more expensive here than on a local disk. Values are Plex's
+  # "behavior" enum: never | scheduled | asap.
+  #
+  # `never` for the three that produce nothing on this server: there is no
+  # music library (loudness, sonic) and no DVR tuner (ad markers). Preview
+  # thumbnails are also off, which is Plex's own default; they read every file
+  # end to end and store the images in the database. Plex's docs warn against
+  # enabling them on a large existing library for exactly this reason.
+  #
+  # `scheduled` for the rest, so they run inside the butler window instead of
+  # firing on import. Skip Intro, Skip Credits and chapter thumbnails all keep
+  # working, they are just deferred.
+  analysisBehavior = {
+    GenerateBIFBehavior = "never";
+    LoudnessAnalysisBehavior = "never";
+    MusicAnalysisBehavior = "never";
+    GenerateAdMarkerBehavior = "never";
+    GenerateChapterThumbBehavior = "scheduled";
+    GenerateIntroMarkerBehavior = "scheduled";
+    GenerateCreditsMarkerBehavior = "scheduled";
+  };
+
+  # Seconds between library scans. Plex cannot get change notifications from a
+  # network mount, so periodic scanning is how new media is discovered. Hourly
+  # was re-queueing analysis work far more often than the library actually
+  # changes; 6h still finds new files the same day.
+  scheduledLibraryUpdateInterval = 6 * 60 * 60;
 in {
   imports = [
     ../common.nix
@@ -212,12 +242,18 @@ in {
       # Transcode scratch on disk, not the PrivateTmp tmpfs.
       set_pref TranscoderTempDirectory "${transcodeDir}"
 
-      # Butler maintenance window. Plex defaults to 02:00-05:00 when these keys
-      # are absent, which is where every hang so far has landed. Held during
-      # waking hours so the load is observable rather than discovered at
-      # breakfast.
+      # Butler maintenance window. Plex falls back to 02:00-05:00 when these
+      # keys are absent; pinned so the window is explicit rather than implied.
       set_pref ButlerStartHour "${toString butlerStartHour}"
       set_pref ButlerEndHour "${toString butlerEndHour}"
+
+      # Library scan interval, in seconds.
+      set_pref ScheduledLibraryUpdateInterval "${toString scheduledLibraryUpdateInterval}"
+
+      # Analysis behaviours: keep the expensive ones off or deferred.
+      ${lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (k: v: ''set_pref ${k} "${v}"'') analysisBehavior
+      )}
     '';
   };
 

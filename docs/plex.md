@@ -287,10 +287,29 @@ Cause, same file:
 The desktop values live in `modules/core/performance.nix` and are tuned for ninja's 64G. They are
 `mkDefault` so a small-memory host can override them; plex does.
 
-The butler window is also held at **12:00-15:00** rather than Plex's overnight default, so the load
-lands while someone is awake. That doubles as the experiment that separates the two theories: if the
-hangs follow the window into the afternoon, this diagnosis is right; if the box instead hangs
-overnight while idle, the C-state theory returns.
+### Taming the analysis workload
+
+The other half of the fix is doing less work at all. Every analysis task reads file **content**
+through the network mount, which is far more expensive here than on a local disk. Plex Pass enables
+most of them by default, including several that produce nothing on this server.
+
+| Setting                          | Value       | Reason                                                                                                                                                                                  |
+| -------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GenerateBIFBehavior`            | `never`     | Preview thumbnails read every file end to end. Plex's own default is `never`, and its docs warn against enabling it on a large existing library                                         |
+| `LoudnessAnalysisBehavior`       | `never`     | No music library                                                                                                                                                                        |
+| `MusicAnalysisBehavior`          | `never`     | No music library                                                                                                                                                                        |
+| `GenerateAdMarkerBehavior`       | `never`     | DVR only, no tuner on this host                                                                                                                                                         |
+| `GenerateChapterThumbBehavior`   | `scheduled` | Kept, deferred to the butler window                                                                                                                                                     |
+| `GenerateIntroMarkerBehavior`    | `scheduled` | Was `asap`; Skip Intro still works                                                                                                                                                      |
+| `GenerateCreditsMarkerBehavior`  | `scheduled` | Was `asap`; Skip Credits still works                                                                                                                                                    |
+| `ScheduledLibraryUpdateInterval` | `21600`     | 6h, was hourly. Plex cannot get change notifications from a network mount, so scanning is how new media is found, but hourly re-queued analysis far more often than the library changes |
+
+`asap` means "when media is added **and** as a scheduled task", so moving the marker tasks to
+`scheduled` only stops them firing on import. Nothing already generated is removed by any of this;
+these settings govern future work only.
+
+The butler window itself stays at Plex's usual **02:00-05:00**, since the box is idle then and the
+workload above is now much smaller.
 
 ### Declarative Plex settings
 
@@ -298,6 +317,15 @@ Plex rewrites `Preferences.xml` itself (tokens, machine identifier, anything cha
 it cannot be a store symlink. Instead `systemd.services.plex-preferences` stamps only the keys that
 must not drift, before each start, using `xmlstarlet` to insert-or-update. It is idempotent and
 leaves the other keys alone.
+
+Changing one of these in the Plex UI works until the next `plex.service` restart, at which point the
+value in `hosts/plex/configuration.nix` wins. To change one for real, edit it there and rebuild.
+Note that `nh os switch` does not restart `plex.service` on its own, so the stamp does not take
+effect until Plex is restarted:
+
+```bash
+sudo systemctl restart plex
+```
 
 Verify after a rebuild:
 
@@ -313,7 +341,7 @@ journalctl --list-boots                              # unexpected gaps mean it h
 journalctl -b -1 -k | grep -E 'BUG:|Oops:|Comm:'     # trace from the last crash, if any
 
 # Butler window and transcode path actually in force
-grep -oE '(ButlerStartHour|ButlerEndHour|TranscoderTempDirectory)="[^"]*"' \
+grep -oE '(Butler|Generate|Loudness|Music|Transcoder|Scheduled)[A-Za-z]*="[^"]*"' \
   '/var/lib/plex/Plex Media Server/Preferences.xml'
 ```
 
