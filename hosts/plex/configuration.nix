@@ -71,21 +71,41 @@ in {
   # Blacklist the RTL8822CE WiFi driver to keep a pure wired headless setup
   boot.blacklistedKernelModules = ["rtw88_8822ce"];
 
-  # Overnight hangs at 03:31 (08-31), 03:32 (09-03), 04:14 (09-05).
+  # Six hangs: 03:31 (08-31), 03:32 (09-03), 04:14 (09-05), 02:53 and 03:46
+  # (09-06), 13:39 (09-06).
   #
   # The first oopsed in __alloc_tagging_slab_alloc_hook, the memory allocation
   # profiling instrumentation. It is a debugging aid with no use here, so the
   # code path is switched off.
-  boot.kernelParams = ["sysctl.vm.mem_profiling=0"];
-
-  # The later two logged nothing and hit while idle, so they are a different,
-  # still unexplained fault. Suspected deep C-state wedge (C10 is ~87% of idle
-  # residency, BIOS 100E_P is stock), left unmasked so it can recur and be
-  # identified.
   #
-  # Recover automatically instead. The sysctls cover a kernel alive enough to
-  # panic (the default of 0 halts forever, which cost 6.5h and 3.4h); the
-  # watchdog covers a wedged CPU, which only silicon can reset.
+  # The rest logged nothing at all and are a different fault. C-states were
+  # left uncapped so it could recur and be identified; it recurred five more
+  # times and never produced a trace, and the 09-06 13:39 hang was not
+  # recovered by either the panic path or the hardware watchdog, so the box sat
+  # dead until it was power cycled by hand. A CPU too wedged for the watchdog
+  # to reset points below the kernel, so C10 is now capped rather than studied.
+  #
+  # intel_idle.max_cstate counts the driver's own table, which for Gracemont
+  # (Alder Lake-N) is C1, C1E, C6, C8, C10. 4 therefore permits up to C8 and
+  # blocks C10 only, keeping most of the idle power saving. Verify after any
+  # kernel upgrade, since a table change would shift the index:
+  #
+  #   grep . /sys/devices/system/cpu/cpu0/cpuidle/state*/name
+  #   cat /sys/devices/system/cpu/cpu0/cpuidle/state4/time   # must not grow
+  #
+  # Escalate to intel_idle.max_cstate=1 (C1 only) if hangs continue; that is
+  # what fixed the same symptom on another N100 board, and no Alder Lake-N
+  # erratum or BIOS fix exists. PELADN publishes no BIOS for the WI-6 and the
+  # firmware GUID is all zeros, so a capsule update is not an option either.
+  boot.kernelParams = [
+    "sysctl.vm.mem_profiling=0"
+    "intel_idle.max_cstate=4"
+  ];
+
+  # Recovery, for the case where the cap is not enough. The sysctls cover a
+  # kernel alive enough to panic (the default of 0 halts forever, which cost
+  # 6.5h and 3.4h); the watchdog covers a wedged CPU, which only silicon can
+  # reset. Neither saved the 09-06 13:39 hang.
   # 8G of RAM, unlike ninja. The shared performance module tunes for a desktop
   # with memory to spare, which is actively harmful here: Plex's overnight
   # butler work (see docs/plex.md) transcodes into tmpfs while rclone streams
