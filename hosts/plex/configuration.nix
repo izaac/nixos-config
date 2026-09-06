@@ -1,10 +1,22 @@
 # plex: Intel N100 Mini PC (Headless Plex media server + home server).
 {
+  config,
+  lib,
   pkgs,
   inputs,
   userConfig,
   ...
-}: {
+}: let
+  # Transcode scratch, deliberately on disk rather than under /tmp. See the
+  # plex-preferences service below for why.
+  transcodeDir = "${config.services.plex.dataDir}/Transcode";
+
+  # Plex's butler maintenance window, 24h clock. Plex's own default is 02:00 to
+  # 05:00; this is shifted into the afternoon while the overnight hangs are
+  # being diagnosed, so the load lands when someone is awake to watch it.
+  butlerStartHour = 12;
+  butlerEndHour = 15;
+in {
   imports = [
     ../common.nix
     ./disko.nix
@@ -44,10 +56,39 @@
   # Recover automatically instead. The sysctls cover a kernel alive enough to
   # panic (the default of 0 halts forever, which cost 6.5h and 3.4h); the
   # watchdog covers a wedged CPU, which only silicon can reset.
+  # 8G of RAM, unlike ninja. The shared performance module tunes for a desktop
+  # with memory to spare, which is actively harmful here: Plex's overnight
+  # butler work (see docs/plex.md) transcodes into tmpfs while rclone streams
+  # the media mount through its VFS cache, and every escape valve on this box
+  # was also RAM.
+  #
+  # zram is compressed swap living *in* RAM, so at 100% it cannot relieve real
+  # pressure, it only trades uncompressed pages for compressed ones. Halved,
+  # and paired with a genuine on-disk swapfile so the kernel has somewhere to
+  # actually evict to. swappiness drops from the desktop's 180 because
+  # thrashing pages into RAM-backed swap is what makes the stall worse.
+  zramSwap.memoryPercent = lib.mkForce 50;
+
+  swapDevices = [
+    {
+      device = "/var/swapfile";
+      size = 8192; # MiB, matched to RAM
+    }
+  ];
+
   boot.kernel.sysctl = {
     "kernel.panic" = 30;
     "kernel.panic_on_oops" = 1;
     "kernel.hardlockup_panic" = 1;
+
+    # Prefer reclaiming page cache over swapping anonymous pages.
+    "vm.swappiness" = lib.mkForce 60;
+
+    # Percentages of RAM: the shared 10/5 is 750M/375M of dirty pages on 8G,
+    # which is a long stall to flush through one SATA SSD while rclone is
+    # writing its cache. Lower caps keep writeback incremental.
+    "vm.dirty_ratio" = lib.mkForce 5;
+    "vm.dirty_background_ratio" = lib.mkForce 2;
   };
 
   # /dev/watchdog is intel_oc_wdt. systemd pings at half the interval, so 60s
@@ -116,11 +157,69 @@
   # Fuse support for rclone mounts
   programs.fuse.userAllowOther = true;
 
-  # Create mount directory for rclone media (/srv/media) and RAM transcode path (/tmp/plex-transcode)
+  # Create mount directory for rclone media (/srv/media)
   systemd.tmpfiles.rules = [
     "d /srv/media 0775 ${userConfig.username} users -"
-    "d /tmp/plex-transcode 0775 ${userConfig.username} users -"
+    "d ${transcodeDir} 0755 ${config.services.plex.user} ${config.services.plex.group} -"
   ];
+
+  # Plex settings live in a Preferences.xml that Plex itself rewrites (tokens,
+  # machine identifier, anything changed in the UI), so the file cannot be a
+  # store symlink. Instead, stamp only the keys that must not drift, before
+  # each start. Everything else is left to Plex.
+  #
+  # TranscoderTempDirectory is the important one. It defaulted to
+  # /tmp/plex-transcode, and because the unit runs with PrivateTmp=true that
+  # was a systemd-provided tmpfs, i.e. RAM, on a host with 8G of it. Overnight
+  # butler transcodes (loudness analysis decodes audio out to FLAC, which is
+  # lossless and therefore larger than the source) wrote into that tmpfs while
+  # rclone held 64M buffers and flushed its VFS cache to disk. tmpfs pages can
+  # only be evicted to swap, and swap was zram, which is also RAM. The result
+  # was a reclaim stall that took the whole box down with no trace: journald
+  # could not write, and the NMI watchdog stayed quiet because tasks were
+  # blocked in D-state rather than spinning. Only the hardware watchdog
+  # recovered it. Pointing this at the data directory puts transcode scratch on
+  # the 123G of free disk instead.
+  #
+  # The old value also carried a trailing space, which is why it reads oddly in
+  # any dump of the file.
+  systemd.services.plex-preferences = {
+    description = "Stamp declarative settings into Plex Preferences.xml";
+    before = ["plex.service"];
+    requiredBy = ["plex.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      User = config.services.plex.user;
+      Group = config.services.plex.group;
+    };
+    script = let
+      prefs = "${config.services.plex.dataDir}/Plex Media Server/Preferences.xml";
+    in ''
+      # First run: Plex has not created the file yet, so there is nothing to
+      # stamp. Plex writes its own defaults and the next start will fix them up.
+      if [ ! -f "${prefs}" ]; then
+        echo "Preferences.xml not present yet, skipping"
+        exit 0
+      fi
+
+      set_pref() {
+        ${lib.getExe pkgs.xmlstarlet} edit --inplace \
+          --insert "/Preferences[not(@$1)]" --type attr --name "$1" --value "$2" \
+          --update "/Preferences/@$1" --value "$2" \
+          "${prefs}"
+      }
+
+      # Transcode scratch on disk, not the PrivateTmp tmpfs.
+      set_pref TranscoderTempDirectory "${transcodeDir}"
+
+      # Butler maintenance window. Plex defaults to 02:00-05:00 when these keys
+      # are absent, which is where every hang so far has landed. Held during
+      # waking hours so the load is observable rather than discovered at
+      # breakfast.
+      set_pref ButlerStartHour "${toString butlerStartHour}"
+      set_pref ButlerEndHour "${toString butlerEndHour}"
+    '';
+  };
 
   # Systemd service to auto-mount rclone ul-crypt drive on boot
   systemd.services.rclone-ul-crypt = {

@@ -11,11 +11,14 @@ in {
 
   config = lib.mkIf cfg.enable {
     # --- MEMORY MANAGEMENT (ZRAM) ---
-    # Highly recommended for NVMe & high-core systems to prevent disk-thrashing
+    # Highly recommended for NVMe & high-core systems to prevent disk-thrashing.
+    # These defaults assume a desktop with RAM to spare (ninja has 64G). A
+    # small-memory host can override them; see hosts/plex, which runs on 8G and
+    # has to leave real headroom instead of trading it for compressed swap.
     zramSwap = {
       enable = true;
       algorithm = "zstd"; # Best balance of speed and compression
-      memoryPercent = 100; # Use up to 100% of RAM as compressed swap (as previously configured)
+      memoryPercent = lib.mkDefault 100; # Up to 100% of RAM as compressed swap
       priority = 100; # High priority to ensure it's used before disk swap
     };
 
@@ -25,8 +28,11 @@ in {
         # ZRAM Swappiness (Aggressive swap-to-zram, avoids disk wait)
         "vm.swappiness" = lib.mkDefault 180;
         "vm.vfs_cache_pressure" = 50; # Keep filesystem cache longer (snappier Nautilus)
-        "vm.dirty_ratio" = 10;
-        "vm.dirty_background_ratio" = 5;
+        # Writeback thresholds are a percentage of RAM, so the same number means
+        # very different byte counts on a 64G desktop and an 8G server. Left
+        # overridable for hosts that push heavy sustained writeback.
+        "vm.dirty_ratio" = lib.mkDefault 10;
+        "vm.dirty_background_ratio" = lib.mkDefault 5;
         "vm.dirty_writeback_centisecs" = 500;
         "vm.dirty_expire_centisecs" = 1200;
         "vm.page_lock_unfairness" = 1;

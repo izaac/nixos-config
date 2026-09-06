@@ -131,13 +131,15 @@ harmless, they just never get tested by a suspend.
 
 ## Overnight Stability
 
-Three hangs so far, all in the small hours:
+Five hangs so far, every one inside Plex's 02:00-05:00 butler window:
 
-| When             | Downtime | Oops? | State at crash                    |
-| ---------------- | -------- | ----- | --------------------------------- |
-| 2026-08-31 03:31 | 6h 35m   | yes   | Plex demuxing matroska            |
-| 2026-09-03 03:32 | 3h 24m   | no    | unknown                           |
-| 2026-09-05 04:14 | 54s      | no    | idle, Plex last logged 40m before |
+| When             | Downtime | Oops? | Recovered by       |
+| ---------------- | -------- | ----- | ------------------ |
+| 2026-08-31 03:31 | 6h 35m   | yes   | manual power cycle |
+| 2026-09-03 03:32 | 3h 24m   | no    | manual power cycle |
+| 2026-09-05 04:14 | 54s      | no    | `kernel.panic`     |
+| 2026-09-06 02:53 | 2m 34s   | no    | hardware watchdog  |
+| 2026-09-06 03:46 | 1m 45s   | no    | hardware watchdog  |
 
 The first left an oops:
 
@@ -151,16 +153,73 @@ Comm: dmx0:matroska,w   Not tainted 6.18.47 #1-NixOS
 (`CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=y`), not Plex code: the profiler itself faulted
 under the slab churn of the demux.
 
-The other two are a **different, still unexplained fault**. They logged nothing at all, and the
-09-05 one hit while the box was idle, so the butler window was a coincidence rather than a cause.
-Ruled out along the way: the r8169 NIC (ASPM already disabled, no runtime errors) and the constant
-IPv6 prefix churn from tailscale and dhcpcd (roughly 14 link changes an hour, all day, not
-correlated with the crashes). The current suspect is a deep package C-state wedge: C10 accounts for
-~87% of idle residency and the PELADN BIOS is stock `100E_P` (02/2024). C-states are deliberately
-**not** capped yet, so the fault can recur and be identified instead of masked. A BIOS update from
-PELADN would be the fix at the source if one exists.
+The other four logged nothing at all. The 09-05 one looked like it hit while idle, but that reading
+came from the journal, which only captures Plex's stdout; Plex's real work never appears there. The
+transcoder statistics logs tell a different story, and the butler window turned out to be the
+correlation that matters, not a coincidence.
 
-Mitigations in `hosts/plex/configuration.nix`, in two layers:
+### The butler window
+
+`Preferences.xml` carries no `ButlerStartHour` or `ButlerEndHour`, so Plex fell back to its built-in
+maintenance window of **02:00-05:00**. Every hang landed inside it, five for five. With
+`GenerateBIFBehavior="scheduled"` the overnight work includes thumbnail generation, which seeks
+through every video, plus loudness analysis, which decodes audio out to FLAC. All of it reads
+through the rclone media mount. Caught in the act before the 02:53 hang:
+
+```text
+02:27:49  02:28:04  02:28:16  02:28:32  02:28:46  02:29:00
+videoDecision="ignore" audioDecision="transcode" transcodeHwRequested="1"
+```
+
+### Why that killed an 8G box
+
+Every escape valve on this host was also RAM:
+
+| Resource          | Backing                | Note                                      |
+| ----------------- | ---------------------- | ----------------------------------------- |
+| Transcode scratch | `/tmp`, a tmpfs        | `PrivateTmp=true`, so systemd's own tmpfs |
+| Swap              | zram at 100% of RAM    | compressed pages, still resident          |
+| rclone buffers    | `--buffer-size 64M`    | per open file                             |
+| rclone VFS cache  | disk, pegged at 49/50G | constant writeback and eviction           |
+
+tmpfs pages can only be evicted to swap, and swap was zram, which is RAM. Batch-transcoding FLAC
+into a 3.8G tmpfs on a 7.5G box, while rclone streamed downloads and flushed its cache to one SATA
+SSD, drove the kernel into a reclaim stall.
+
+That explains the evidence the C-state theory could not. Notably the **NMI watchdog never fired**:
+it detects a CPU spinning with interrupts off, and tasks blocked in D-state on I/O are not that, so
+it correctly stayed silent. Only the hardware watchdog recovered the box, because systemd's own ping
+thread was blocked too. journald could not write, which is why nothing was ever logged.
+
+Ruled out along the way: the r8169 NIC (ASPM already disabled, no runtime errors), the constant IPv6
+prefix churn from tailscale and dhcpcd (~14 link changes an hour, all day, uncorrelated), thermals
+(50 C against a 105 C limit), ECC (zero errors), and SATA (zero ATA exceptions across every boot).
+
+### On the C-state theory, and the BIOS
+
+An earlier revision of this page blamed a deep package C-state wedge. That is not dead, but it is no
+longer the leading explanation, and it never accounted for the butler correlation. Worth recording
+what the research turned up:
+
+- There is **no Alder Lake-N C-state erratum**. `intel_idle` exposes C10 for Gracemont with no quirk
+  or `UNUSABLE` flag, in contrast to Bay Trail, which gets an explicit workaround in the same file.
+- There is a close same-CPU precedent on a **different board** (ASRock N100M, TrueNAS): unresponsive
+  overnight, clean logs, fixed with `intel_idle.max_cstate=1`. Same CPU only, not the same machine.
+- **PELADN publishes no BIOS for the WI-6 at all.** Their downloads page lists only driver packs and
+  a Windows image; a Wayback sweep of the whole domain returns zero URLs containing "bios", and
+  their support page states they do not supply BIOS files and void the warranty if one is flashed.
+- A BIOS update would not be applicable anyway: the SMBIOS firmware inventory reports
+  `Firmware ID: 00000000-0000-0000-0000-000000000000`, matching the all-zero GUID in the ESRT entry,
+  so there is no capsule identity for fwupd or anything else to target. PELADN is absent from LVFS.
+- Microcode is already current and is **not** the stale part: the BIOS ships revision `0x0f` from
+  2024, and Linux early-loads `0x21` from `microcode-intel-20260812` on every boot.
+
+So the firmware route is closed. C-states are still deliberately left uncapped, because capping them
+now would mask whichever cause is real.
+
+### Mitigations
+
+Recovery, in `hosts/plex/configuration.nix`:
 
 | Setting                                       | Value | Covers                                                   |
 | --------------------------------------------- | ----- | -------------------------------------------------------- |
@@ -170,20 +229,52 @@ Mitigations in `hosts/plex/configuration.nix`, in two layers:
 | `kernel.hardlockup_panic`                     | `1`   | Let the NMI watchdog panic on a silent lockup.           |
 | `systemd.settings.Manager.RuntimeWatchdogSec` | `60s` | Hardware watchdog for a CPU too wedged to panic.         |
 
-The two layers are not redundant. The sysctls need a kernel alive enough to run its own panic path;
-the hardware watchdog (`intel_oc_wdt`, with `iTCO_wdt` as `watchdog1`) is silicon and resets the
-board even when nothing can execute. The panic settings already proved themselves: they cut 09-05
-from hours of downtime to 54 seconds.
+These are not redundant: the sysctls need a kernel alive enough to run its own panic path, while the
+hardware watchdog is silicon and resets the board even when nothing can execute. Only the watchdog
+has actually fired so far, which is itself evidence for the stall diagnosis. It cut the 09-06 hangs
+to 2m34s and 1m45s, against 6h35m and 3h24m before it existed.
+
+Cause, same file:
+
+| Setting                           | Value                      | Why                                             |
+| --------------------------------- | -------------------------- | ----------------------------------------------- |
+| `TranscoderTempDirectory`         | `/var/lib/plex/Transcode`  | Scratch on disk instead of the PrivateTmp tmpfs |
+| `zramSwap.memoryPercent`          | `50` (desktop default 100) | Stop trading real RAM for compressed RAM        |
+| `swapDevices`                     | 8G file on `/`             | A real place to evict to                        |
+| `vm.swappiness`                   | `60` (desktop default 180) | Do not thrash into RAM-backed swap              |
+| `vm.dirty_ratio` / `_background_` | `5` / `2` (desktop 10 / 5) | Percentages of RAM: 10% of 8G is a long flush   |
+
+The desktop values live in `modules/core/performance.nix` and are tuned for ninja's 64G. They are
+`mkDefault` so a small-memory host can override them; plex does.
+
+The butler window is also held at **12:00-15:00** rather than Plex's overnight default, so the load
+lands while someone is awake. That doubles as the experiment that separates the two theories: if the
+hangs follow the window into the afternoon, this diagnosis is right; if the box instead hangs
+overnight while idle, the C-state theory returns.
+
+### Declarative Plex settings
+
+Plex rewrites `Preferences.xml` itself (tokens, machine identifier, anything changed in the UI), so
+it cannot be a store symlink. Instead `systemd.services.plex-preferences` stamps only the keys that
+must not drift, before each start, using `xmlstarlet` to insert-or-update. It is idempotent and
+leaves the other keys alone.
 
 Verify after a rebuild:
 
 ```bash
 cat /proc/sys/vm/mem_profiling                       # expect 0
 sysctl kernel.panic kernel.panic_on_oops             # expect 30 and 1
+sysctl vm.swappiness vm.dirty_ratio                  # expect 60 and 5
 systemctl show -p RuntimeWatchdogUSec --value        # expect 60000000
 cat /sys/class/watchdog/watchdog0/state              # expect active
+swapon --show                                        # expect zram AND /var/swapfile
+findmnt -no FSTYPE /var/lib/plex/Transcode           # expect ext4, NOT tmpfs
 journalctl --list-boots                              # unexpected gaps mean it happened again
 journalctl -b -1 -k | grep -E 'BUG:|Oops:|Comm:'     # trace from the last crash, if any
+
+# Butler window and transcode path actually in force
+grep -oE '(ButlerStartHour|ButlerEndHour|TranscoderTempDirectory)="[^"]*"' \
+  '/var/lib/plex/Plex Media Server/Preferences.xml'
 ```
 
 ---
