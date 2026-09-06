@@ -31,17 +31,57 @@ No LUKS on this host. No disk swap partition; ZRAM provides swap (see
 
 ### Media storage (rclone)
 
-Media lives on a crypt remote (`ul-crypt:`) mounted at `/srv/media` by the `rclone-ul-crypt.service`
-unit defined in `hosts/plex/configuration.nix`:
+Media lives on a crypt remote mounted at `/srv/media` by the `rclone-ul-crypt.service` unit defined
+in `hosts/plex/configuration.nix`.
 
-- Mount options:
-  `--allow-other --vfs-cache-mode full --vfs-cache-max-size 50G --vfs-cache-max-age 168h --buffer-size 64M`
+`ul-crypt:` is the alias used for the offsite media provider throughout this repo. It is a `crypt`
+remote wrapping the provider's own remote, so filenames and contents are encrypted client-side and
+the provider sees neither. The provider is deliberately not named here or in the config. To see what
+it wraps:
+
+```bash
+rclone config show ul-crypt   # prints the wrapped remote name and its password fields
+```
+
 - Runs as `izaac`, `Type=notify` (rclone signals readiness to systemd)
 - `programs.fuse.userAllowOther = true` so Plex can read the FUSE mount
 - Cache dir defaults to `~/.cache/rclone/vfs`; keep an eye on it against the 233G root
 
-Plex transcode directory is `/tmp/plex-transcode` (created by `systemd.tmpfiles.rules`). `/tmp` is
-tmpfs on this host, so partial transcodes hit RAM and never touch the SSD.
+The library is flat and large: roughly 6300 entries under `movies` alone. The provider paginates
+directory listings at 500 entries, so one full listing costs about 13 sequential API round trips.
+With rclone's default `--dir-cache-time` of 5 minutes that repeated every 5 minutes, and constantly
+during a library scan, which is where most of the host's I/O pressure came from.
+
+**Splitting the library into subfolders does not help.** Plex scans recursively, so the same 6300
+entries are still fetched; the work is only spread across more directories. A flat library root is
+also what Plex's own naming guide expects. The fix is cache tuning, not reorganisation:
+
+| Flag                            | Value          | Why                                                   |
+| ------------------------------- | -------------- | ----------------------------------------------------- |
+| `--dir-cache-time`              | `72h`          | Default 5m meant re-listing 6300 entries continuously |
+| `--attr-timeout`                | `1h`           | Default 1s; Plex stats every file it scans            |
+| `--vfs-cache-mode`              | `full`         | Needed for seeking during playback                    |
+| `--vfs-cache-max-size` / `-age` | `50G` / `168h` | Bounded against the 233G root                         |
+| `--buffer-size`                 | `64M`          | In-memory read-ahead per open file                    |
+| `--vfs-read-chunk-size` / limit | `32M` / `2G`   | Ramp up rather than many small ranged reads           |
+| `--rc` on `127.0.0.1:5572`      |                | Lets the dir cache be refreshed on demand, see below  |
+
+#### Refreshing after an upload
+
+The backend reports `ChangeNotify: false`, so `--poll-interval` cannot detect changes and the 72h
+cache would otherwise hide new files for up to three days.
+
+Writing **through the mount** invalidates the cache immediately. Uploading **straight to the
+remote** does not, so refresh it afterwards:
+
+```bash
+rclone move "Some Movie 2026 1080p.mkv" ul-crypt:movies/ --progress --check-first
+rclone rc --rc-addr 127.0.0.1:5572 --rc-no-auth vfs/refresh dir=movies
+```
+
+Prefer `rclone move` over `mv` into the mount: it verifies the upload before deleting the source and
+keeps the transfer out of the VFS cache. The control socket is loopback-only and the firewall does
+not open the port.
 
 ---
 

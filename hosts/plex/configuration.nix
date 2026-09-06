@@ -234,7 +234,47 @@ in {
     ];
     serviceConfig = {
       Type = "notify";
-      ExecStart = "${pkgs.rclone}/bin/rclone mount ul-crypt: /srv/media --config /home/${userConfig.username}/.config/rclone/rclone.conf --allow-other --vfs-cache-mode full --vfs-cache-max-size 50G --vfs-cache-max-age 168h --buffer-size 64M";
+      ExecStart = let
+        flags = [
+          "--config /home/${userConfig.username}/.config/rclone/rclone.conf"
+          "--allow-other"
+
+          # Content cache. Sized to leave room on the 233G root; entries also
+          # expire after a week so a one-off binge does not pin the cache.
+          "--vfs-cache-mode full"
+          "--vfs-cache-max-size 50G"
+          "--vfs-cache-max-age 168h"
+
+          # Directory listings. The default is 5 minutes, which meant rclone
+          # re-fetched the movies listing (6300+ entries) from the provider over the
+          # network every 5 minutes, and continuously during a library scan.
+          # Matches the 72h used for the Google Drive mount in home/rclone.nix.
+          #
+          # The backend reports ChangeNotify=false, so --poll-interval cannot
+          # pick up changes made outside the mount. Writes through /srv/media
+          # invalidate the cache immediately; uploads made straight to the
+          # remote (`rclone move ... ul-crypt:movies/`) do not, so those need
+          # `rclone rc vfs/refresh dir=movies` afterwards. See docs/plex.md.
+          "--dir-cache-time 72h"
+
+          # FUSE attribute cache, default 1s. Plex stats every file it scans,
+          # and each miss is a round trip. Kept well under dir-cache-time.
+          "--attr-timeout 1h"
+
+          # Sequential streaming: start small so playback begins quickly, then
+          # ramp up rather than issuing many small ranged reads.
+          "--buffer-size 64M"
+          "--vfs-read-chunk-size 32M"
+          "--vfs-read-chunk-size-limit 2G"
+
+          # Loopback-only control socket, so vfs/refresh can be triggered after
+          # an out-of-band upload. Not reachable off the box; the firewall does
+          # not open this port either.
+          "--rc"
+          "--rc-addr 127.0.0.1:5572"
+          "--rc-no-auth"
+        ];
+      in "${pkgs.rclone}/bin/rclone mount ul-crypt: /srv/media ${lib.concatStringsSep " " flags}";
       ExecStop = "/run/current-system/sw/bin/umount -l /srv/media";
       Restart = "on-failure";
       RestartSec = "10s";
