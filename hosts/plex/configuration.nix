@@ -41,6 +41,41 @@
     GenerateCreditsMarkerBehavior = "scheduled";
   };
 
+  # Transcoding. This host almost only serves the LAN, and an N100 pulling 4K
+  # from a network mount is the worst possible place to transcode video, so the
+  # goal is to never touch the video stream: clients get the original and do
+  # their own work.
+  #
+  # TranscoderCanOnlyRemuxVideo is the switch that guarantees it ("Disable
+  # video stream transcoding" in the UI). Audio can still be transcoded and the
+  # container can still be remuxed, which is cheap; the video stream is passed
+  # through untouched. The tradeoff is that a client which genuinely cannot
+  # decode a file will fail rather than fall back to a CPU-melting transcode.
+  #
+  # TranscoderQuality was set to 1 ("prefer higher speed"), which only applies
+  # to video transcodes that can no longer happen. Reset to Plex's default of 0
+  # (automatic) so it is not a misleading leftover.
+  #
+  # LAN bitrate is deliberately left unset. Setting a "Limit remote stream
+  # bitrate" or LAN quality value is a common way to force transcodes on
+  # otherwise direct-playable files.
+  #
+  # Tone mapping is left on but is inert: Plex's docs note it cannot run while
+  # video stream transcoding is disabled, since the transcoder is what applies
+  # it. It costs nothing and becomes useful if video transcoding is ever
+  # allowed.
+  transcoderSettings = {
+    TranscoderCanOnlyRemuxVideo = "1";
+    TranscoderQuality = "0";
+    TranscoderToneMapping = "1";
+    TranscoderVideoResolutionLimit = "0x0";
+
+    # QuickSync stays enabled: it is what makes the audio transcodes and any
+    # remuxing cheap, and costs nothing when idle.
+    HardwareAcceleratedCodecs = "1";
+    HardwareAcceleratedEncoders = "1";
+  };
+
   # Individual butler tasks, on ("1") or off ("0"). These are the Scheduled
   # Tasks checkboxes in the UI, separate from the analysis behaviours above.
   #
@@ -306,6 +341,11 @@ in {
       # Individual butler tasks.
       ${lib.concatStringsSep "\n" (
         lib.mapAttrsToList (k: v: ''set_pref ${k} "${v}"'') butlerTasks
+      )}
+
+      # Transcoding: never touch the video stream.
+      ${lib.concatStringsSep "\n" (
+        lib.mapAttrsToList (k: v: ''set_pref ${k} "${v}"'') transcoderSettings
       )}
     '';
   };
