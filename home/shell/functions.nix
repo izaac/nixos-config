@@ -10,6 +10,18 @@ in {
     ncl-full() { direnv prune && nh clean all --keep 10; }
     gpg-fix() { gpgconf --kill gpg-agent && rm -f ~/.gnupg/*.lock ~/.gnupg/public-keys.d/*.lock && echo 'GPG Fixed'; }
 
+    # SSH without landing in the remote tmux session. The auto-attach in
+    # home/shell/zsh.nix only fires when TMUX is empty, so presetting it makes
+    # the remote shell skip tmux and start a plain interactive login instead.
+    # Takes the same arguments as ssh.
+    sshnt() {
+      if [[ $# -eq 0 ]]; then
+        echo "usage: sshnt [ssh options] <host> [command]" >&2
+        return 1
+      fi
+      ssh -t "$@" 'TMUX=skip exec "$SHELL" -l'
+    }
+
     # --- AI HELPERS ---
     monko() {
       if [[ $# -eq 0 ]]; then
