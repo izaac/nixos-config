@@ -41,37 +41,40 @@
     GenerateCreditsMarkerBehavior = "scheduled";
   };
 
-  # Transcoding. This host almost only serves the LAN, and an N100 pulling 4K
-  # from a network mount is the worst possible place to transcode video, so the
-  # goal is to never touch the video stream: clients get the original and do
-  # their own work.
+  # Transcoding. This host almost only serves the LAN. The library is entirely
+  # 1080p or lower (sampled 120 items: nothing above 1920 wide) and QuickSync
+  # encodes 1080p h264 at roughly 6x realtime here, so a playback transcode is
+  # a bounded, on-demand load rather than a threat.
   #
-  # TranscoderCanOnlyRemuxVideo is the switch that guarantees it ("Disable
-  # video stream transcoding" in the UI). Audio can still be transcoded and the
-  # container can still be remuxed, which is cheap; the video stream is passed
-  # through untouched. The tradeoff is that a client which genuinely cannot
-  # decode a file will fail rather than fall back to a CPU-melting transcode.
+  # Video transcoding is deliberately allowed. It was disabled for a while on
+  # the assumption that transcodes were implicated in the overnight hangs, but
+  # those turned out to be unattended butler analysis walking the whole library
+  # for hours, which is a different shape of load entirely and is now off.
   #
-  # TranscoderQuality was set to 1 ("prefer higher speed"), which only applies
-  # to video transcodes that can no longer happen. Reset to Plex's default of 0
-  # (automatic) so it is not a misleading leftover.
+  # The practical reason to allow it is subtitles. Plex has no "transcode only
+  # for subtitles" option, and burning in a subtitle requires a full video
+  # transcode. The library carries `ass` and `pgs` (bitmap) tracks that many
+  # clients cannot render; with transcoding refused those subtitles simply
+  # never appear.
   #
-  # LAN bitrate is deliberately left unset. Setting a "Limit remote stream
-  # bitrate" or LAN quality value is a common way to force transcodes on
-  # otherwise direct-playable files.
+  # TranscoderVideoResolutionLimit caps output at 1080p. Nothing in the library
+  # exceeds that today, so it changes nothing now and prevents a future 4K file
+  # from starting a transcode this box cannot sustain.
   #
-  # Tone mapping is left on but is inert: Plex's docs note it cannot run while
-  # video stream transcoding is disabled, since the transcoder is what applies
-  # it. It costs nothing and becomes useful if video transcoding is ever
-  # allowed.
+  # TranscoderQuality stays at Plex's default of 0 (automatic). LAN bitrate
+  # limits are deliberately left unset, since a quality cap is a common way to
+  # force transcodes on otherwise direct-playable files.
   transcoderSettings = {
-    TranscoderCanOnlyRemuxVideo = "1";
+    TranscoderCanOnlyRemuxVideo = "0";
+    TranscoderVideoResolutionLimit = "1920x1080";
     TranscoderQuality = "0";
-    TranscoderToneMapping = "1";
-    TranscoderVideoResolutionLimit = "0x0";
 
-    # QuickSync stays enabled: it is what makes the audio transcodes and any
-    # remuxing cheap, and costs nothing when idle.
+    # Tone mapping now actually applies, since it is the transcoder that does
+    # it: HDR sources will not look washed out on an SDR client.
+    TranscoderToneMapping = "1";
+
+    # QuickSync does the work instead of the CPU. Without these the same
+    # transcode would be software and would not keep up.
     HardwareAcceleratedCodecs = "1";
     HardwareAcceleratedEncoders = "1";
   };
