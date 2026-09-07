@@ -3,7 +3,6 @@
   pkgs,
   lib,
   inputs,
-  siteConfig,
   ...
 }: let
   _force = import ../../lib/mkForceIf.nix {inherit lib;};
@@ -39,7 +38,7 @@ in {
     sops.gnupg.home = "/tmp/gnupg";
   };
 
-  # Host deltas: gaming clocks, thermal guard, tailscale routes.
+  # Host deltas: gaming clocks, thermal guard.
   mySystem = {
     gaming = {
       cpuBoostFreq = 5756452; # 5.7 GHz
@@ -52,10 +51,8 @@ in {
         recoverTemp = 80;
       };
     };
-    core.tailscale = {
-      advertiseRoutes = [siteConfig.subnet];
-      routingInterface = "eno1";
-    };
+    # Tailnet routing (LAN subnet + exit node) lives on plex, which is
+    # always on. This workstation is a plain tailnet client.
   };
 
   # System packages: audio, monitor, boot utils, uutils coreutils.

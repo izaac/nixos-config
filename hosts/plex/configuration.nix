@@ -5,6 +5,7 @@
   pkgs,
   inputs,
   userConfig,
+  siteConfig,
   ...
 }: let
   # Transcode scratch, deliberately on disk rather than under /tmp. See the
@@ -219,7 +220,17 @@ in {
     desktop.enable = false;
     gaming.enable = false;
     core = {
-      tailscale.enable = true;
+      tailscale = {
+        enable = true;
+        # Always-on wired box, so it carries the tailnet's routing duty:
+        # both the LAN subnet route and the exit node.
+        advertiseRoutes = [siteConfig.subnet];
+        advertiseExitNode = true;
+        routingInterface = "enp1s0";
+        # Unlike the workstations this host has no LAN DNS worth protecting,
+        # and it resolves tailnet names, so leave MagicDNS in charge.
+        acceptDns = true;
+      };
       virtualization.enable = false;
       printing.enable = false;
       sops.enable = false;
