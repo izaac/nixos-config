@@ -146,16 +146,17 @@ in {
   # mem_profiling: the first hang oopsed in the allocation profiling
   # instrumentation, a debugging aid with no use here.
   #
-  # intel_idle.max_cstate=1 permits C1 only. C10 was capped first (=4) and a
-  # hang recurred under load anyway, so deep idle is now out entirely. This is
-  # mitigation, not diagnosis, until memtest86+ has run. The index counts the
-  # driver's own table (C1, C1E, C6, C8, C10 on Gracemont), so recheck after a
-  # kernel upgrade:
+  # intel_idle.max_cstate=4 blocks C10 and keeps the rest. Do not lower it: on
+  # this CPU max_cstate=1 leaves no usable state at all ("max_cstate 1 reached",
+  # POLL the only entry in sysfs), and busy-looping raised the idle package
+  # temperature from 50 to 70 C. Heat shortens DRAM retention, so that trade
+  # works against the actual fault. The index counts the driver's own table
+  # (C1, C1E, C6, C8, C10 on Gracemont), so recheck after a kernel upgrade:
   #
   #   grep . /sys/devices/system/cpu/cpu0/cpuidle/state*/name
   boot.kernelParams = [
     "sysctl.vm.mem_profiling=0"
-    "intel_idle.max_cstate=1"
+    "intel_idle.max_cstate=4"
   ];
 
   # 8G of RAM, unlike ninja. The shared performance module tunes for a desktop

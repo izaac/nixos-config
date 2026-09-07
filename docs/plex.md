@@ -248,11 +248,11 @@ Software cannot do this. Kernel text is mapped read-only, and the wrong bytes ar
 independent places.
 
 The board carries a single non-ECC DDR4-3200 SODIMM (`Error Correction Type: None`), so nothing
-detects or corrects a flip. `igen6_edac` loads but reports nothing, because there is no ECC for it to
-report; the earlier note on this page reading that silence as "ECC: zero errors" was wrong.
+detects or corrects a flip. `igen6_edac` loads but reports nothing, because there is no ECC for it
+to report; the earlier note on this page reading that silence as "ECC: zero errors" was wrong.
 
-**The fix is the RAM.** Reseat it, then replace it, with memtest86+ to confirm which. The C-state cap
-below only buys uptime in the meantime.
+**The fix is the RAM.** Reseat it, then replace it, with memtest86+ to confirm which. The C-state
+cap below only buys uptime in the meantime.
 
 ### The butler window
 
@@ -317,9 +317,20 @@ Worth recording what the research turned up:
 - Microcode is already current and is **not** the stale part: the BIOS ships revision `0x0f` from
   2024, and Linux early-loads `0x21` from `microcode-intel-20260812` on every boot.
 
-So the firmware route is closed. C10 was capped first (`max_cstate=4`); a hang recurred under load
-anyway, so the cap is now `max_cstate=1`. Given the pstore evidence, treat this as buying uptime
-while memtest86+ settles whether the RAM is at fault.
+So the firmware route is closed. C10 is capped (`max_cstate=4`) and stays capped, but the theory is
+retired: the pstore dumps show corrupted kernel text, which no idle transition explains.
+
+`max_cstate=1` was tried and reverted. On this CPU it leaves **no usable idle state at all** rather
+than just C1:
+
+```text
+intel_idle: max_cstate 1 reached
+$ ls /sys/devices/system/cpu/cpu0/cpuidle/     # state0 only, and state0 is POLL
+```
+
+The cores then busy-loop, and the idle package temperature went from 50 C to 70 C. Since DRAM
+retention time falls as temperature rises, that setting works against the real fault. Do not lower
+the cap below 4 on this box.
 
 ### Mitigations
 
