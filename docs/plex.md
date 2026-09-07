@@ -393,13 +393,35 @@ most of them by default, including several that produce nothing on this server.
 | `MusicAnalysisBehavior`          | `never`     | No music library                                                                                                                                                                        |
 | `GenerateAdMarkerBehavior`       | `never`     | DVR only, no tuner on this host                                                                                                                                                         |
 | `GenerateChapterThumbBehavior`   | `scheduled` | Kept, deferred to the butler window                                                                                                                                                     |
-| `GenerateIntroMarkerBehavior`    | `scheduled` | Was `asap`; Skip Intro still works                                                                                                                                                      |
-| `GenerateCreditsMarkerBehavior`  | `scheduled` | Was `asap`; Skip Credits still works                                                                                                                                                    |
+| `GenerateIntroMarkerBehavior`    | `never`     | Was `scheduled`. Decodes the whole file, see below                                                                                                                                      |
+| `GenerateCreditsMarkerBehavior`  | `never`     | Was `scheduled`. Decodes the whole file, see below                                                                                                                                      |
 | `ScheduledLibraryUpdateInterval` | `21600`     | 6h, was hourly. Plex cannot get change notifications from a network mount, so scanning is how new media is found, but hourly re-queued analysis far more often than the library changes |
 
-`asap` means "when media is added **and** as a scheduled task", so moving the marker tasks to
-`scheduled` only stops them firing on import. Nothing already generated is removed by any of this;
-these settings govern future work only.
+`asap` means "when media is added **and** as a scheduled task", so moving a task to `scheduled` only
+stops it firing on import. Nothing already generated is removed by any of this; these settings
+govern future work only, so markers detected before the change are still there.
+
+#### Why the marker tasks went from scheduled to never
+
+`scheduled` is not a guarantee. Asking Plex to re-read one item, with
+`PUT /library/metadata/<id>/analyze`, runs the marker passes **immediately**, whatever the behaviour
+setting says. That surfaced while `dialogue-boost.sh` was adding audio tracks: each rewritten file
+was handed to Plex to re-read, and each one spawned
+
+```text
+Plex Media Scanner -C -f /srv/media/movies/<film>.mkv --log-file-suffix Credits \
+  --creditsTempDataPath /tmp/PlexCreditsDetection-...
+```
+
+at over 100% CPU, pulling the file over the network a second time immediately after it had been
+downloaded, encoded and uploaded. Load sat above 5 with two rclone transfers competing.
+
+Intro and credits detection both decode the entire film. On a local disk that is merely slow; on a
+4.6 TB cloud mount it doubles the transfer for every file touched. Chapter thumbnails stay on
+because they sample frames rather than decoding everything.
+
+Note `--creditsTempDataPath` points into `/tmp`, which is a tmpfs under `PrivateTmp=true`, so that
+scratch data is RAM.
 
 Separately, three Scheduled Tasks are disabled outright. `ButlerTaskDeepMediaAnalysis` is the task
 that was running during the 2026-09-06 13:39 hang; it and `ButlerTaskUpgradeMediaAnalysis` each walk

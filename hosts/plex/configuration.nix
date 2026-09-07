@@ -22,23 +22,30 @@
   # so are far more expensive here than on a local disk. Values are Plex's
   # "behavior" enum: never | scheduled | asap.
   #
-  # `never` for the three that produce nothing on this server: there is no
-  # music library (loudness, sonic) and no DVR tuner (ad markers). Preview
-  # thumbnails are also off, which is Plex's own default; they read every file
-  # end to end and store the images in the database. Plex's docs warn against
-  # enabling them on a large existing library for exactly this reason.
+  # `never` for the four that are not worth their cost here. There is no music
+  # library (loudness, sonic) and no DVR tuner (ad markers). Preview thumbnails
+  # are also off, which is Plex's own default; they read every file end to end
+  # and store the images in the database, and Plex's docs warn against enabling
+  # them on a large existing library for exactly this reason.
   #
-  # `scheduled` for the rest, so they run inside the butler window instead of
-  # firing on import. Skip Intro, Skip Credits and chapter thumbnails all keep
-  # working, they are just deferred.
+  # Credits and intro detection are off for the same reason, learned the hard
+  # way. Both decode the whole film, so on this library that is a second full
+  # download of a file that was just downloaded, and they do not respect
+  # `scheduled` when something asks for an analysis directly: replacing a file
+  # and telling Plex to re-read it spawned a credits pass immediately, at over
+  # 100% CPU and 9 MB/s, competing with the job that had just written the file.
+  # Skip Intro and Skip Credits are not worth that on a cloud mount.
+  #
+  # `scheduled` for chapter thumbnails, which stay cheap because they sample
+  # frames rather than decoding the whole file.
   analysisBehavior = {
     GenerateBIFBehavior = "never";
     LoudnessAnalysisBehavior = "never";
     MusicAnalysisBehavior = "never";
     GenerateAdMarkerBehavior = "never";
+    GenerateCreditsMarkerBehavior = "never";
+    GenerateIntroMarkerBehavior = "never";
     GenerateChapterThumbBehavior = "scheduled";
-    GenerateIntroMarkerBehavior = "scheduled";
-    GenerateCreditsMarkerBehavior = "scheduled";
   };
 
   # Transcoding. This host almost only serves the LAN. The library is entirely
