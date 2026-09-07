@@ -5,7 +5,7 @@
 {
   pkgs,
   config,
-  lib,
+  userConfig,
   ...
 }: let
   home = config.home.homeDirectory;
@@ -28,7 +28,9 @@
     windows = map mkWindow [
       {
         name = "nix";
-        root = "${home}/nixos-config";
+        # The checkout is ~/nixos-config on Linux but ~/repos/nixos-config on
+        # the Mac, so take the path from the shared helper rather than assuming.
+        root = userConfig.dotfilesDirFor pkgs;
       }
       {
         name = "muster";
@@ -53,10 +55,10 @@
     ];
   };
 in {
-  config = lib.mkIf pkgs.stdenv.isLinux {
-    home.packages = [pkgs.smug];
+  home.packages = [pkgs.smug];
 
-    xdg.configFile."smug/daily.yml".source =
-      (pkgs.formats.yaml {}).generate "smug-daily.yml" daily;
-  };
+  # smug hardcodes ~/.config/smug on every platform, including macOS, so this
+  # lands where it looks for it without needing an XDG override.
+  xdg.configFile."smug/daily.yml".source =
+    (pkgs.formats.yaml {}).generate "smug-daily.yml" daily;
 }

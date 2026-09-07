@@ -178,14 +178,23 @@ smug print daily     # dump the config
 
 Six windows, each split into two panes side by side (`even-horizontal`):
 
-| Window      | Panes | Root             |
-| ----------- | ----- | ---------------- |
-| `nix`       | 2     | `~/nixos-config` |
-| `muster`    | 2     | `~/repos`        |
-| `plans`     | 2     | `~/repos`        |
-| `ansible`   | 2     | `~/repos`        |
-| `dashboard` | 2     | `~/repos`        |
-| `mix`       | 2     | `~`              |
+| Window      | Panes | Root                      |
+| ----------- | ----- | ------------------------- |
+| `nix`       | 2     | the nixos-config checkout |
+| `muster`    | 2     | `~/repos`                 |
+| `plans`     | 2     | `~/repos`                 |
+| `ansible`   | 2     | `~/repos`                 |
+| `dashboard` | 2     | `~/repos`                 |
+| `mix`       | 2     | `~`                       |
+
+The `nix` window cannot hardcode a path, because the checkout lives at `~/nixos-config` on Linux but
+`~/repos/nixos-config` on the Mac. It uses `userConfig.dotfilesDirFor pkgs` from `lib/user.nix`, the
+same helper `home/dev.nix` and `modules/core/maintenance.nix` already use, so the generated YAML
+carries the right absolute path per host and there is one place to change if a checkout moves.
+
+smug looks for `~/.config/smug` on every platform, macOS included, rather than following Go's usual
+`~/Library/Application Support`, so `xdg.configFile` puts the file where it is expected without an
+XDG override.
 
 One quirk worth knowing when editing `home/smug.nix`: smug's `panes` list holds the panes created
 _in addition_ to the one tmux opens with every new window. A single entry therefore produces two
