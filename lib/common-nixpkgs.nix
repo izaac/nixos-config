@@ -6,6 +6,7 @@ inputs: {
     config.allowUnfree = true;
     overlays = [
       (import ../overlays/opencode-unstable.nix inputs)
+      (import ../overlays/tailscale-unstable.nix inputs)
     ];
   };
 }

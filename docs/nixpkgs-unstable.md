@@ -67,13 +67,32 @@ MIME types).
 
 ---
 
+### 4. tailscale (tailscale-unstable.nix)
+
+**Package**: `tailscale` **Reason**: The release branch only receives backports, so it sat on
+`1.98.10` while upstream shipped `1.102.3`. Tailscale releases roughly fortnightly and the client is
+expected to track the coordination server, so drifting several minor versions behind on a release
+branch is the steady state here, not a one-off.
+
+Safe to take from unstable: a single static Go binary with no kernel module, and
+`modules/core/tailscale.nix` uses only `services.tailscale` options, so nothing depends on package
+internals.
+
+**Migration target**: Keep. The release-branch policy that causes the drift does not change within a
+release, so this is not a temporary gap waiting to close. Re-evaluate at the next channel bump.
+
+**Affects**: All hosts (applied in `lib/common-nixpkgs.nix`)
+
+---
+
 ## Overlay Application
 
-| Overlay               | Applied In             | Hosts             | Source                        |
-| --------------------- | ---------------------- | ----------------- | ----------------------------- |
-| ashell-unstable.nix   | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-ashell` (pinned rev) |
-| opencode-unstable.nix | lib/common-nixpkgs.nix | ninja, windy, Mac | `nixpkgs-unstable` (floating) |
-| stash-unstable.nix    | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-unstable` (floating) |
+| Overlay                | Applied In             | Hosts             | Source                        |
+| ---------------------- | ---------------------- | ----------------- | ----------------------------- |
+| ashell-unstable.nix    | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-ashell` (pinned rev) |
+| opencode-unstable.nix  | lib/common-nixpkgs.nix | ninja, windy, Mac | `nixpkgs-unstable` (floating) |
+| stash-unstable.nix     | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-unstable` (floating) |
+| tailscale-unstable.nix | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating) |
 
 ---
 
