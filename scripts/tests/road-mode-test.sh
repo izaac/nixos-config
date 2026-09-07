@@ -53,17 +53,17 @@ bool() { if "$@" >/dev/null 2>&1; then printf true; else printf false; fi; }
 
 # Active exit node ("; exit node" at end of line).
 fixture_ts_exit_active='100.64.0.2  fancy        izaac@  macOS    -
-100.64.0.1  ninja        izaac@  linux    active; exit node; direct 198.51.100.1:41641
+100.64.0.1  plex         izaac@  linux    active; exit node; direct 198.51.100.1:41641
 '
 
 # Exit node offered but not active.
 fixture_ts_exit_offered='100.64.0.2  fancy        izaac@  macOS    -
-100.64.0.1  ninja        izaac@  linux    active; offers exit node; direct 198.51.100.1:41641
+100.64.0.1  plex         izaac@  linux    active; offers exit node; direct 198.51.100.1:41641
 '
 
 # No exit node at all.
 fixture_ts_no_exit='100.64.0.2  fancy        izaac@  macOS    -
-100.64.0.1  ninja        izaac@  linux    active; direct 198.51.100.1:41641
+100.64.0.1  plex         izaac@  linux    active; direct 198.51.100.1:41641
 '
 
 # Status JSON fragment — Online: true.

@@ -19,7 +19,7 @@
 set -euo pipefail
 
 FW=/usr/libexec/ApplicationFirewall/socketfilterfw
-EXIT_NODE="${ROAD_EXIT_NODE:-ninja}"
+EXIT_NODE="${ROAD_EXIT_NODE:-plex}"
 
 if [[ $EUID -eq 0 ]]; then
   echo "road-mode.sh: do not run as root (blueutil needs the user session)" >&2
