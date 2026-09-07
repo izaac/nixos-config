@@ -4,7 +4,9 @@
 
 - [Hardware Configuration (ninja)](hardware.md)
 - [Host Notes (windy)](windy.md)
+- [Hardware Configuration (plex)](plex.md)
 - [NVIDIA Driver Updates](nvidia-driver-updates.md)
+- [nixpkgs-unstable Usage Reference](nixpkgs-unstable.md)
 - [Security & Hardening](security.md)
 - [Secret Management](secrets.md)
 - [GitHub SSH Host Key Pinning](known-hosts.md)
@@ -21,6 +23,7 @@
 - [tmux (terminal multiplexer)](tmux.md)
 - [Kitty + tmux integration](kitty-tmux.md)
 - [LazyVim (Neovim)](lazyvim.md)
+- [mpv Media Player](mpv.md)
 - [Zathura PDF Viewer](zathura.md)
 
 ## Agent Instructions

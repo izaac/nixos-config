@@ -123,18 +123,26 @@ WiFi is intentionally unused: `networking.wireless.enable = false` means no supp
 configures it, and `boot.blacklistedKernelModules = ["rtw88_8822ce"]` unbinds the Realtek card so no
 `wlp2s0` link appears.
 
-Tailscale runs for remote access (`mySystem.core.tailscale.enable`).
+Tailscale runs here, and this host carries the tailnet's routing duties (`mySystem.core.tailscale`):
+it advertises the LAN subnet and offers itself as an exit node. Both moved here from ninja because
+this box is always on, where a workstation is not. Both also need one-time approval in the Tailscale
+admin console before other devices can use them.
+
+Because it forwards traffic, the module gives this host `useRoutingFeatures = "server"` (IP
+forwarding), loose reverse-path filtering, and UDP GRO offload on `enp1s0`. It is also the one host
+with `acceptDns = true`, so MagicDNS resolves tailnet names here; the workstations keep LAN DNS.
 
 ---
 
 ## Services
 
-| Service           | State   | Purpose                                      |
-| ----------------- | ------- | -------------------------------------------- |
-| `plex`            | active  | Media server, runs as `izaac`, firewall open |
-| `rclone-ul-crypt` | active  | Mounts `ul-crypt:` at `/srv/media` on boot   |
-| `tailscaled`      | active  | Remote access                                |
-| openssh           | enabled | LAN + tailnet admin access                   |
+| Service             | State   | Purpose                                      |
+| ------------------- | ------- | -------------------------------------------- |
+| `plex`              | active  | Media server, runs as `izaac`, firewall open |
+| `rclone-ul-crypt`   | active  | Mounts `ul-crypt:` at `/srv/media` on boot   |
+| `tailscaled`        | active  | Remote access, subnet router, exit node      |
+| `tailscale-udp-gro` | active  | UDP GRO offload on `enp1s0` for forwarding   |
+| openssh             | enabled | LAN + tailnet admin access                   |
 
 Deliberately off on this headless host (overridden in `hosts/plex/configuration.nix`): desktop,
 gaming, virtualization/podman, printing, sops-nix, flatpak.
