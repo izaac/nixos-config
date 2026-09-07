@@ -229,13 +229,30 @@ are intact and the top 33 bits are gone, so a live function pointer was corrupte
 handler, raised when an indirect branch lands somewhere it was never allowed to.
 
 Random control-flow corruption in whatever happens to be executing is the signature of unstable
-hardware, not of a driver. Relevant: the board carries a single non-ECC DDR4-3200 SODIMM
-(`Error Correction Type: None`), so bit flips are entirely undetected. `igen6_edac` loads but
-reports nothing, because in-band ECC is not enabled on this board.
+hardware, not of a driver. The 09-06 03:46 dump proves it outright, because the oops prints the
+machine code around the faulting instruction:
 
-**Next step is memtest86+**, which is the only thing that discriminates bad RAM from an unstable
-SoC. Until that has run, the C-state cap below is a mitigation and not a diagnosis: a faulty
-deep-idle exit corrupting register or cache state would produce exactly these symptoms too.
+```text
+RIP: 0010:check_preempt_wakeup_fair+0x0/0x450
+Code: ... 0f 1f 80 00 00 00 00 97 90 90 90 90 90 90 90 13 90 90 90 90 90 90 90 <71> 0f 1e fa ...
+```
+
+Everything between the alignment `nop` and the function entry is compiler padding and must read
+`90`, and the entry itself must be `endbr64`, `f3 0f 1e fa`. In memory those bytes read `97`, `13`
+and `71`. **Kernel executable text was corrupted in RAM.** That is also the mechanism of the crash:
+with `f3` broken to `71` the `endbr64` no longer exists, so Intel IBT raised a control-protection
+fault on the indirect call into that function, and `exc_control_protection` ended at its `UD2`
+("invalid opcode"). CET is a hardware integrity check on kernel code, and it caught the corruption.
+
+Software cannot do this. Kernel text is mapped read-only, and the wrong bytes are wrong in several
+independent places.
+
+The board carries a single non-ECC DDR4-3200 SODIMM (`Error Correction Type: None`), so nothing
+detects or corrects a flip. `igen6_edac` loads but reports nothing, because there is no ECC for it to
+report; the earlier note on this page reading that silence as "ECC: zero errors" was wrong.
+
+**The fix is the RAM.** Reseat it, then replace it, with memtest86+ to confirm which. The C-state cap
+below only buys uptime in the meantime.
 
 ### The butler window
 
