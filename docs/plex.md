@@ -359,18 +359,23 @@ Recovery, in `hosts/plex/configuration.nix`:
 
 These are not redundant: the sysctls need a kernel alive enough to run its own panic path, while the
 hardware watchdog is silicon and resets the board even when nothing can execute. Only the watchdog
-has actually fired so far, which is itself evidence for the stall diagnosis. It cut the 09-06 hangs
-to 2m34s and 1m45s, against 6h35m and 3h24m before it existed.
+has actually fired so far. It cut the 09-06 hangs to 2m34s and 1m45s, against 6h35m and 3h24m before
+it existed.
 
-Cause, same file:
+Tuning, same file. All of it dates from the 8G era; the right-hand column is why each one is still
+there on 16G:
 
-| Setting                           | Value                      | Why                                             |
-| --------------------------------- | -------------------------- | ----------------------------------------------- |
-| `TranscoderTempDirectory`         | `/var/lib/plex/Transcode`  | Scratch on disk instead of the PrivateTmp tmpfs |
-| `zramSwap.memoryPercent`          | `50` (desktop default 100) | Stop trading real RAM for compressed RAM        |
-| `swapDevices`                     | 8G file on `/`             | A real place to evict to                        |
-| `vm.swappiness`                   | `60` (desktop default 180) | Do not thrash into RAM-backed swap              |
-| `vm.dirty_ratio` / `_background_` | `5` / `2` (desktop 10 / 5) | Percentages of RAM: 10% of 8G is a long flush   |
+| Setting                           | Value                      | Still there because                              |
+| --------------------------------- | -------------------------- | ------------------------------------------------ |
+| `TranscoderTempDirectory`         | `/var/lib/plex/Transcode`  | Scratch on disk instead of the PrivateTmp tmpfs  |
+| `vm.dirty_ratio` / `_background_` | `5` / `2` (desktop 10 / 5) | The single SATA SSD. 10% of 16G is 1.6G to flush |
+| `vm.swappiness`                   | `60` (desktop default 180) | 180 assumes swap is zram; this host swaps to SSD |
+| `zramSwap.memoryPercent`          | `50` (desktop default 100) | Conservative for a server. Optional now          |
+| `swapDevices`                     | 8G file on `/`             | Cheap insurance. Optional now                    |
+
+Note the dirty ratios are percentages **of RAM**, so more memory means a larger writeback burst, not
+a smaller one. That setting became more relevant after the upgrade, not less. Measured on 16G with a
+`dialogue-boost` run in progress: 1.3G used, 14.4G available, memory pressure flat at 0.00.
 
 The desktop values live in `modules/core/performance.nix` and are tuned for ninja's 64G. They are
 `mkDefault` so a small-memory host can override them; plex does.

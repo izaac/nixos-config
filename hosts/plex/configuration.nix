@@ -159,16 +159,16 @@ in {
     "intel_idle.max_cstate=4"
   ];
 
-  # 16G of RAM after the DIMM swap, still half of ninja's. zram at the shared
-  # 100% would be pointless here (compressed swap lives *in* RAM, so it cannot
-  # relieve real pressure), and the on-disk swapfile gives the kernel somewhere
-  # to actually evict to. Both are now headroom rather than damage control.
+  # These four overrides existed to survive 8G. On 16G the box idles at 1.3G
+  # used with zero memory pressure, so they are no longer about capacity. Two
+  # of them are still right for other reasons, noted at each; the zram split
+  # and the swapfile are kept as cheap conservative defaults for a server.
   zramSwap.memoryPercent = lib.mkForce 50;
 
   swapDevices = [
     {
       device = "/var/swapfile";
-      size = 8192; # MiB, half of RAM
+      size = 8192; # MiB
     }
   ];
 
@@ -179,13 +179,16 @@ in {
     "kernel.panic_on_oops" = 1;
     "kernel.hardlockup_panic" = 1;
 
-    # Prefer reclaiming page cache over swapping anonymous pages. The desktop
-    # default of 180 assumes fast swap and memory to spare.
+    # The shared 180 is desktop tuning that assumes swap is zram and therefore
+    # fast. This host also has a swapfile on the same SATA SSD that serves
+    # media, so evicting anonymous pages there costs playback latency.
     "vm.swappiness" = lib.mkForce 60;
 
-    # Percentages of RAM. The shared 10/5 is 1.6G/800M of dirty pages on 16G,
-    # a long stall to flush through one SATA SSD while rclone writes its cache.
-    # Lower caps keep writeback incremental.
+    # Percentages of RAM, so more RAM means a bigger writeback burst, not a
+    # smaller one: the shared 10/5 is 1.6G/800M of dirty pages on 16G, flushed
+    # through the one SATA SSD that rclone is already writing its cache to.
+    # This is about the disk, not the memory, and did not stop mattering when
+    # the DIMM was replaced.
     "vm.dirty_ratio" = lib.mkForce 5;
     "vm.dirty_background_ratio" = lib.mkForce 2;
   };
