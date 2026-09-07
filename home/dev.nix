@@ -1,8 +1,28 @@
 {
+  lib,
   pkgs,
   userConfig,
   ...
-}: {
+}: let
+  # gpg-agent runs as a systemd user service that inherits the graphical
+  # session environment, so WAYLAND_DISPLAY is always set from its point of
+  # view. A pinentry chosen from that environment therefore always opens a
+  # GUI dialog, even when the caller is a tmux pane on a different workspace,
+  # where the dialog goes unnoticed and eventually times out.
+  #
+  # gpg forwards PINENTRY_USER_DATA from the calling process to the agent,
+  # which re-exports it for pinentry, so the caller is the only reliable
+  # source of truth. home/shell/gpg-tty.sh sets it for every interactive
+  # shell; callers that leave it unset have no terminal to draw on either,
+  # so the GUI dialog is the correct default.
+  pinentry-auto = pkgs.writeShellScriptBin "pinentry" ''
+    case "''${PINENTRY_USER_DATA:-}" in
+      *curses*) exec ${lib.getExe pkgs.pinentry-curses} "$@" ;;
+    esac
+
+    exec ${lib.getExe pkgs.pinentry-gnome3} "$@"
+  '';
+in {
   home = {
     packages = with pkgs; [
       # --- CORE DEPENDENCIES ---
@@ -167,8 +187,11 @@
     pinentry.package =
       if pkgs.stdenv.isDarwin
       then pkgs.pinentry_mac
-      else pkgs.pinentry-gnome3;
+      else pinentry-auto;
     defaultCacheTtl = 3600;
+    # Grabbing the keyboard and mouse breaks the curses prompt that tmux
+    # sessions fall back to, and offers nothing for the GUI dialog here.
+    grabKeyboardAndMouse = false;
     extraConfig = ''
       allow-preset-passphrase
     '';

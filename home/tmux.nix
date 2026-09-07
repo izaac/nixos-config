@@ -75,6 +75,14 @@ in {
       # tmux 3.5+ async refresh hooks).
       set -g focus-events on
 
+      # Refresh session-scoped desktop variables on every attach. A tmux
+      # server started from a tty otherwise keeps a stale (or missing)
+      # Wayland environment forever, which breaks anything that needs to
+      # reach the compositor, notably GPG pinentry.
+      set -ga update-environment " WAYLAND_DISPLAY"
+      set -ga update-environment " XDG_SESSION_TYPE"
+      set -ga update-environment " XDG_CURRENT_DESKTOP"
+
       # 2. Pane Colors (Blue/Orange)
       set-option -g display-panes-active-colour colour33
       set-option -g display-panes-colour colour166
