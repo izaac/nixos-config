@@ -137,52 +137,31 @@ in {
   # Blacklist the RTL8822CE WiFi driver to keep a pure wired headless setup
   boot.blacklistedKernelModules = ["rtw88_8822ce"];
 
-  # Six hangs: 03:31 (08-31), 03:32 (09-03), 04:14 (09-05), 02:53 and 03:46
-  # (09-06), 13:39 (09-06).
+  # Recurring hangs, seven so far, under load and at idle. Nothing reaches the
+  # journal, but the kernel dumps to EFI pstore and systemd-pstore archives it
+  # to /var/lib/systemd/pstore. Those dumps show control-flow corruption in a
+  # different kernel function every time, which points at the hardware; the RAM
+  # is non-ECC so nothing else would catch it. See docs/plex.md.
   #
-  # The first oopsed in __alloc_tagging_slab_alloc_hook, the memory allocation
-  # profiling instrumentation. It is a debugging aid with no use here, so the
-  # code path is switched off.
+  # mem_profiling: the first hang oopsed in the allocation profiling
+  # instrumentation, a debugging aid with no use here.
   #
-  # The rest logged nothing at all and are a different fault. C-states were
-  # left uncapped so it could recur and be identified; it recurred five more
-  # times and never produced a trace, and the 09-06 13:39 hang was not
-  # recovered by either the panic path or the hardware watchdog, so the box sat
-  # dead until it was power cycled by hand. A CPU too wedged for the watchdog
-  # to reset points below the kernel, so C10 is now capped rather than studied.
-  #
-  # intel_idle.max_cstate counts the driver's own table, which for Gracemont
-  # (Alder Lake-N) is C1, C1E, C6, C8, C10. 4 therefore permits up to C8 and
-  # blocks C10 only, keeping most of the idle power saving. Verify after any
-  # kernel upgrade, since a table change would shift the index:
+  # intel_idle.max_cstate=1 permits C1 only. C10 was capped first (=4) and a
+  # hang recurred under load anyway, so deep idle is now out entirely. This is
+  # mitigation, not diagnosis, until memtest86+ has run. The index counts the
+  # driver's own table (C1, C1E, C6, C8, C10 on Gracemont), so recheck after a
+  # kernel upgrade:
   #
   #   grep . /sys/devices/system/cpu/cpu0/cpuidle/state*/name
-  #   cat /sys/devices/system/cpu/cpu0/cpuidle/state4/time   # must not grow
-  #
-  # Escalate to intel_idle.max_cstate=1 (C1 only) if hangs continue; that is
-  # what fixed the same symptom on another N100 board, and no Alder Lake-N
-  # erratum or BIOS fix exists. PELADN publishes no BIOS for the WI-6 and the
-  # firmware GUID is all zeros, so a capsule update is not an option either.
   boot.kernelParams = [
     "sysctl.vm.mem_profiling=0"
-    "intel_idle.max_cstate=4"
+    "intel_idle.max_cstate=1"
   ];
 
-  # Recovery, for the case where the cap is not enough. The sysctls cover a
-  # kernel alive enough to panic (the default of 0 halts forever, which cost
-  # 6.5h and 3.4h); the watchdog covers a wedged CPU, which only silicon can
-  # reset. Neither saved the 09-06 13:39 hang.
   # 8G of RAM, unlike ninja. The shared performance module tunes for a desktop
-  # with memory to spare, which is actively harmful here: Plex's overnight
-  # butler work (see docs/plex.md) transcodes into tmpfs while rclone streams
-  # the media mount through its VFS cache, and every escape valve on this box
-  # was also RAM.
-  #
-  # zram is compressed swap living *in* RAM, so at 100% it cannot relieve real
-  # pressure, it only trades uncompressed pages for compressed ones. Halved,
-  # and paired with a genuine on-disk swapfile so the kernel has somewhere to
-  # actually evict to. swappiness drops from the desktop's 180 because
-  # thrashing pages into RAM-backed swap is what makes the stall worse.
+  # with memory to spare, which is harmful here: zram is compressed swap living
+  # *in* RAM, so at 100% it cannot relieve real pressure. Halved, and paired
+  # with a real on-disk swapfile so the kernel has somewhere to evict to.
   zramSwap.memoryPercent = lib.mkForce 50;
 
   swapDevices = [
@@ -192,17 +171,20 @@ in {
     }
   ];
 
+  # Recovery, for when the cap is not enough. The sysctls cover a kernel alive
+  # enough to panic; the default of 0 halts forever, which cost 6.5h and 3.4h.
   boot.kernel.sysctl = {
     "kernel.panic" = 30;
     "kernel.panic_on_oops" = 1;
     "kernel.hardlockup_panic" = 1;
 
-    # Prefer reclaiming page cache over swapping anonymous pages.
+    # Prefer reclaiming page cache over swapping anonymous pages. Thrashing
+    # pages into RAM-backed swap is what makes a stall worse.
     "vm.swappiness" = lib.mkForce 60;
 
     # Percentages of RAM: the shared 10/5 is 750M/375M of dirty pages on 8G,
-    # which is a long stall to flush through one SATA SSD while rclone is
-    # writing its cache. Lower caps keep writeback incremental.
+    # a long stall to flush through one SATA SSD. Lower caps keep writeback
+    # incremental.
     "vm.dirty_ratio" = lib.mkForce 5;
     "vm.dirty_background_ratio" = lib.mkForce 2;
   };
@@ -285,17 +267,9 @@ in {
   # each start. Everything else is left to Plex.
   #
   # TranscoderTempDirectory is the important one. It defaulted to
-  # /tmp/plex-transcode, and because the unit runs with PrivateTmp=true that
-  # was a systemd-provided tmpfs, i.e. RAM, on a host with 8G of it. Overnight
-  # butler transcodes (loudness analysis decodes audio out to FLAC, which is
-  # lossless and therefore larger than the source) wrote into that tmpfs while
-  # rclone held 64M buffers and flushed its VFS cache to disk. tmpfs pages can
-  # only be evicted to swap, and swap was zram, which is also RAM. The result
-  # was a reclaim stall that took the whole box down with no trace: journald
-  # could not write, and the NMI watchdog stayed quiet because tasks were
-  # blocked in D-state rather than spinning. Only the hardware watchdog
-  # recovered it. Pointing this at the data directory puts transcode scratch on
-  # the 123G of free disk instead.
+  # /tmp/plex-transcode, and because the unit runs with PrivateTmp=true that was
+  # a systemd-provided tmpfs, i.e. RAM, on a host with 8G of it. Pointing it at
+  # the data directory puts transcode scratch on disk instead. See docs/plex.md.
   #
   # The old value also carried a trailing space, which is why it reads oddly in
   # any dump of the file.

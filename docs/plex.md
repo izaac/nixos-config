@@ -171,15 +171,18 @@ harmless, they just never get tested by a suspend.
 
 ## Overnight Stability
 
-Five hangs so far, every one inside Plex's 02:00-05:00 butler window:
+Seven hangs so far. The first five all landed inside Plex's 02:00-05:00 butler window; the last two
+did not, which is what eventually ruled the window out as the cause on its own.
 
-| When             | Downtime | Oops? | Recovered by       |
-| ---------------- | -------- | ----- | ------------------ |
-| 2026-08-31 03:31 | 6h 35m   | yes   | manual power cycle |
-| 2026-09-03 03:32 | 3h 24m   | no    | manual power cycle |
-| 2026-09-05 04:14 | 54s      | no    | `kernel.panic`     |
-| 2026-09-06 02:53 | 2m 34s   | no    | hardware watchdog  |
-| 2026-09-06 03:46 | 1m 45s   | no    | hardware watchdog  |
+| When             | Downtime | Oops? | Recovered by       | Load at the time     |
+| ---------------- | -------- | ----- | ------------------ | -------------------- |
+| 2026-08-31 03:31 | 6h 35m   | yes   | manual power cycle | butler               |
+| 2026-09-03 03:32 | 3h 24m   | no    | manual power cycle | butler               |
+| 2026-09-05 04:14 | 54s      | no    | `kernel.panic`     | butler               |
+| 2026-09-06 02:53 | 2m 34s   | no    | hardware watchdog  | butler, 6 transcodes |
+| 2026-09-06 03:46 | 1m 45s   | no    | hardware watchdog  | butler               |
+| 2026-09-06 13:39 | 8m       | no    | manual power cycle | deep media analysis  |
+| 2026-09-06 19:11 | ~60s     | no    | hardware watchdog  | ffmpeg + rclone      |
 
 The first left an oops:
 
@@ -193,18 +196,56 @@ Comm: dmx0:matroska,w   Not tainted 6.18.47 #1-NixOS
 (`CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=y`), not Plex code: the profiler itself faulted
 under the slab churn of the demux.
 
-The other four logged nothing at all. The 09-05 one looked like it hit while idle, but that reading
-came from the journal, which only captures Plex's stdout; Plex's real work never appears there. The
-transcoder statistics logs tell a different story, and the butler window turned out to be the
-correlation that matters, not a coincidence.
+The rest logged nothing **to the journal**, which for a long time was mistaken for logging nothing
+at all. They are all recorded: journald cannot flush to disk while the kernel is dying, but the
+kernel writes its ring buffer into EFI variables through `efi_pstore`, and `systemd-pstore` moves
+those into `/var/lib/systemd/pstore/<epoch>/` on the next boot. There is a dump there for every
+hang.
+
+```bash
+sudo ls /var/lib/systemd/pstore/                     # one directory per crash
+sudo tail -70 /var/lib/systemd/pstore/<epoch>/001/dmesg.txt   # the fault is at the end
+```
+
+The dump is written in numbered parts, newest last, so the oops itself is at the _tail_ of
+`dmesg.txt` while the head is early boot.
+
+### What the dumps actually say
+
+| When        | Faulting task     | Signature                                                     |
+| ----------- | ----------------- | ------------------------------------------------------------- |
+| 08-31 03:31 | `dmx0:matroska,w` | NULL deref in `__alloc_tagging_slab_alloc_hook`               |
+| 09-06 02:53 | `swapper/*`       | NULL deref in `update_sd_lb_stats` (scheduler load balancer)  |
+| 09-06 03:46 | `av:hevc:df1`     | `exc_control_protection`, RIP `check_preempt_wakeup_fair+0x0` |
+| 09-06 19:11 | `af#0:7`          | instruction fetch at `0x355746a0`, a truncated kernel pointer |
+
+Different code every time, always in the hottest paths (scheduler tick, load balancer, idle enter),
+always "Not tainted", across two kernel versions. That is not one kernel bug.
+
+The 09-06 19:11 dump is the clearest. The kernel branched to `0x00000000355746a0`; the value it
+should have held is `0xffffffffb55746a0`, still visible in a nearby register. The low three bytes
+are intact and the top 33 bits are gone, so a live function pointer was corrupted in flight. The
+09-06 03:46 dump is the same class from the other direction: `exc_control_protection` is the CET
+handler, raised when an indirect branch lands somewhere it was never allowed to.
+
+Random control-flow corruption in whatever happens to be executing is the signature of unstable
+hardware, not of a driver. Relevant: the board carries a single non-ECC DDR4-3200 SODIMM
+(`Error Correction Type: None`), so bit flips are entirely undetected. `igen6_edac` loads but
+reports nothing, because in-band ECC is not enabled on this board.
+
+**Next step is memtest86+**, which is the only thing that discriminates bad RAM from an unstable
+SoC. Until that has run, the C-state cap below is a mitigation and not a diagnosis: a faulty
+deep-idle exit corrupting register or cache state would produce exactly these symptoms too.
 
 ### The butler window
 
 `Preferences.xml` carries no `ButlerStartHour` or `ButlerEndHour`, so Plex fell back to its built-in
-maintenance window of **02:00-05:00**. Every hang landed inside it, five for five. With
-`GenerateBIFBehavior="scheduled"` the overnight work includes thumbnail generation, which seeks
-through every video, plus loudness analysis, which decodes audio out to FLAC. All of it reads
-through the rclone media mount. Caught in the act before the 02:53 hang:
+maintenance window of **02:00-05:00**. The first five hangs all landed inside it, which looked
+conclusive at the time; the 13:39 and 19:11 hangs later broke the pattern. What the window really
+explains is _why the box was busy_, not why it fell over. With `GenerateBIFBehavior="scheduled"` the
+overnight work includes thumbnail generation, which seeks through every video, plus loudness
+analysis, which decodes audio out to FLAC. All of it reads through the rclone media mount. Caught in
+the act before the 02:53 hang:
 
 ```text
 02:27:49  02:28:04  02:28:16  02:28:32  02:28:46  02:29:00
@@ -212,6 +253,11 @@ videoDecision="ignore" audioDecision="transcode" transcodeHwRequested="1"
 ```
 
 ### Why that killed an 8G box
+
+This section described the original working theory, and the fixes below are worth keeping on their
+own merits, but the pstore dumps do not support it as the cause: a reclaim stall does not corrupt
+function pointers. Read it as "the box was badly configured for 8G and is no longer", not as the
+explanation for the hangs.
 
 Every escape valve on this host was also RAM:
 
@@ -229,17 +275,17 @@ SSD, drove the kernel into a reclaim stall.
 That explains the evidence the C-state theory could not. Notably the **NMI watchdog never fired**:
 it detects a CPU spinning with interrupts off, and tasks blocked in D-state on I/O are not that, so
 it correctly stayed silent. Only the hardware watchdog recovered the box, because systemd's own ping
-thread was blocked too. journald could not write, which is why nothing was ever logged.
+thread was blocked too. journald could not write, which is why nothing reached the journal, though
+the kernel still made it into pstore.
 
 Ruled out along the way: the r8169 NIC (ASPM already disabled, no runtime errors), the constant IPv6
 prefix churn from tailscale and dhcpcd (~14 link changes an hour, all day, uncorrelated), thermals
-(50 C against a 105 C limit), ECC (zero errors), and SATA (zero ATA exceptions across every boot).
+(50 C against a 105 C limit), and SATA (zero ATA exceptions across every boot). ECC was recorded as
+"zero errors", which was misread: this board has no ECC to report any.
 
 ### On the C-state theory, and the BIOS
 
-An earlier revision of this page blamed a deep package C-state wedge. That is not dead, but it is no
-longer the leading explanation, and it never accounted for the butler correlation. Worth recording
-what the research turned up:
+Worth recording what the research turned up:
 
 - There is **no Alder Lake-N C-state erratum**. `intel_idle` exposes C10 for Gracemont with no quirk
   or `UNUSABLE` flag, in contrast to Bay Trail, which gets an explicit workaround in the same file.
@@ -254,8 +300,9 @@ what the research turned up:
 - Microcode is already current and is **not** the stale part: the BIOS ships revision `0x0f` from
   2024, and Linux early-loads `0x21` from `microcode-intel-20260812` on every boot.
 
-So the firmware route is closed. C-states are still deliberately left uncapped, because capping them
-now would mask whichever cause is real.
+So the firmware route is closed. C10 was capped first (`max_cstate=4`); a hang recurred under load
+anyway, so the cap is now `max_cstate=1`. Given the pstore evidence, treat this as buying uptime
+while memtest86+ settles whether the RAM is at fault.
 
 ### Mitigations
 
