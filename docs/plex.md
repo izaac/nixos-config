@@ -1,6 +1,6 @@
 # Hardware Configuration - plex
 
-> **Last Updated**: 2026-08-25 **System**: PELADN Intel N100 Mini PC **OS**: NixOS 26.05
+> **Last Updated**: 2026-09-06 **System**: PELADN Intel N100 Mini PC **OS**: NixOS 26.05
 
 ---
 
@@ -11,7 +11,7 @@
 | **Mini PC** | PELADN (Intel N100)               | Headless server, wired ethernet only         |
 | **CPU**     | Intel N100 (Alder Lake-N)         | 4-Core, 4-Thread, up to 3.4 GHz, low TDP     |
 | **GPU**     | Intel UHD Graphics (Alder Lake-N) | `8086:46d1`, QuickSync transcoding for Plex  |
-| **RAM**     | 8GB                               | Single stick; ZRAM swap sized to match       |
+| **RAM**     | 16GB DDR4-3200 SODIMM             | Single stick, A-DATA 1Rx8, non-ECC           |
 | **Storage** | PELADN 256GB SATA SSD             | `/dev/sda`, unencrypted ext4 via disko       |
 | **Role**    | Plex media server + home server   | Media served from an encrypted rclone remote |
 
@@ -251,8 +251,21 @@ The board carries a single non-ECC DDR4-3200 SODIMM (`Error Correction Type: Non
 detects or corrects a flip. `igen6_edac` loads but reports nothing, because there is no ECC for it
 to report; the earlier note on this page reading that silence as "ECC: zero errors" was wrong.
 
-**The fix is the RAM.** Reseat it, then replace it, with memtest86+ to confirm which. The C-state
-cap below only buys uptime in the meantime.
+**The fix is the RAM.**
+
+Replaced on 2026-09-06 21:05. The original no-name `DDR4 NB 8G 3200` module (JEDEC bank 13, ID
+`0x0CC7`) came out, and a spare A-DATA 16G `AO1P32NCSV1-BDBS`, 1Rx8 DDR4-3200, went in. Confirmed
+running at full 3200 MT/s.
+
+`stressapptest` was run against the old module first and passed 13 minutes clean, which is worth
+recording as a negative result: the corruption surfaces roughly once every few hours, so a short
+stress pass proves nothing either way. The pstore dumps are the evidence, not the stress test.
+
+A second identical A-DATA module is on the shelf. If hangs continue on this one, swap to it before
+suspecting anything else, since that isolates the DIMM from the slot and the memory controller.
+
+**Watch for:** a new dump appearing under `/var/lib/systemd/pstore/`. If none shows up over a week
+of normal use including the butler window, the RAM was the fault.
 
 ### The butler window
 
@@ -271,10 +284,10 @@ videoDecision="ignore" audioDecision="transcode" transcodeHwRequested="1"
 
 ### Why that killed an 8G box
 
-This section described the original working theory, and the fixes below are worth keeping on their
-own merits, but the pstore dumps do not support it as the cause: a reclaim stall does not corrupt
-function pointers. Read it as "the box was badly configured for 8G and is no longer", not as the
-explanation for the hangs.
+Historical: the box ran on 8G until 2026-09-06 and is now on 16G. This was the original working
+theory, and the fixes below are worth keeping on their own merits, but the pstore dumps do not
+support it as the cause: a reclaim stall does not corrupt function pointers. Read it as "the box was
+badly configured for 8G and is no longer", not as the explanation for the hangs.
 
 Every escape valve on this host was also RAM:
 

@@ -159,33 +159,33 @@ in {
     "intel_idle.max_cstate=4"
   ];
 
-  # 8G of RAM, unlike ninja. The shared performance module tunes for a desktop
-  # with memory to spare, which is harmful here: zram is compressed swap living
-  # *in* RAM, so at 100% it cannot relieve real pressure. Halved, and paired
-  # with a real on-disk swapfile so the kernel has somewhere to evict to.
+  # 16G of RAM after the DIMM swap, still half of ninja's. zram at the shared
+  # 100% would be pointless here (compressed swap lives *in* RAM, so it cannot
+  # relieve real pressure), and the on-disk swapfile gives the kernel somewhere
+  # to actually evict to. Both are now headroom rather than damage control.
   zramSwap.memoryPercent = lib.mkForce 50;
 
   swapDevices = [
     {
       device = "/var/swapfile";
-      size = 8192; # MiB, matched to RAM
+      size = 8192; # MiB, half of RAM
     }
   ];
 
-  # Recovery, for when the cap is not enough. The sysctls cover a kernel alive
-  # enough to panic; the default of 0 halts forever, which cost 6.5h and 3.4h.
+  # Recovery. The sysctls cover a kernel alive enough to panic; the default of
+  # 0 halts forever, which cost 6.5h and 3.4h.
   boot.kernel.sysctl = {
     "kernel.panic" = 30;
     "kernel.panic_on_oops" = 1;
     "kernel.hardlockup_panic" = 1;
 
-    # Prefer reclaiming page cache over swapping anonymous pages. Thrashing
-    # pages into RAM-backed swap is what makes a stall worse.
+    # Prefer reclaiming page cache over swapping anonymous pages. The desktop
+    # default of 180 assumes fast swap and memory to spare.
     "vm.swappiness" = lib.mkForce 60;
 
-    # Percentages of RAM: the shared 10/5 is 750M/375M of dirty pages on 8G,
-    # a long stall to flush through one SATA SSD. Lower caps keep writeback
-    # incremental.
+    # Percentages of RAM. The shared 10/5 is 1.6G/800M of dirty pages on 16G,
+    # a long stall to flush through one SATA SSD while rclone writes its cache.
+    # Lower caps keep writeback incremental.
     "vm.dirty_ratio" = lib.mkForce 5;
     "vm.dirty_background_ratio" = lib.mkForce 2;
   };
