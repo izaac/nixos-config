@@ -12,5 +12,7 @@ inputs.darwin.lib.darwinSystem {
     ../hosts/${hostname}/configuration.nix
     inputs.home-manager.darwinModules.home-manager
     (import ./common-nixpkgs.nix inputs)
+    # Darwin-only: krunkit has no other platform.
+    {nixpkgs.overlays = [(import ../overlays/krunkit-unstable.nix inputs)];}
   ];
 }

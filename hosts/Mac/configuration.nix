@@ -26,6 +26,13 @@
 
     shells = [pkgs.zsh pkgs.bashInteractive];
 
+    # krunkit looks for its EFI firmware at ../share/krunkit relative to the
+    # binary, which resolves inside this profile rather than the store path.
+    # The nix-darwin default only links share/info and share/man, so without
+    # this krunkit starts and immediately exits with "can't find a firmware
+    # to load" and `podman machine start` reports exit code 1.
+    pathsToLink = ["/share/krunkit"];
+
     # System profile holds only Mac-specific tools. Shared CLI tooling (git,
     # jq, eza, fzf, kubectl, …) and the GNU userland (coreutils, findutils,
     # gawk, gnused, gnutar, gnugrep) come from home/shell/packages.nix —
@@ -42,6 +49,8 @@
       emacs
       indent
       govc
+      # `podman machine` shells out to this; Homebrew's podman does not ship it.
+      krunkit
       lazygit
       lld
       mcfly
@@ -314,7 +323,9 @@
       "windows-app"
       "zed"
     ];
-    brews = [];
+    brews = [
+      "podman"
+    ];
     masApps = {};
   };
 
