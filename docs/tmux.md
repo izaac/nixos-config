@@ -135,10 +135,11 @@ still work too.
 
 ## Plugins
 
-| Plugin       | Source                          | Notes                                      |
-| ------------ | ------------------------------- | ------------------------------------------ |
-| `sensible`   | `pkgs.tmuxPlugins.sensible`     | Sane baseline defaults                     |
-| `tmux-menus` | `jaclu/tmux-menus` (pinned rev) | Popup menu on `Ctrl+a` `m`, cache disabled |
+| Plugin               | Source                                | Notes                                      |
+| -------------------- | ------------------------------------- | ------------------------------------------ |
+| `sensible`           | `pkgs.tmuxPlugins.sensible`           | Sane baseline defaults                     |
+| `vim-tmux-navigator` | `pkgs.tmuxPlugins.vim-tmux-navigator` | Seamless vim/tmux pane navigation          |
+| `tmux-menus`         | `jaclu/tmux-menus` (pinned rev)       | Popup menu on `Ctrl+a` `m`, cache disabled |
 
 `tmux-menus` is not in nixpkgs, so it is built locally with `mkTmuxPlugin` against a pinned commit.
 The old config used `rev = "main"`, which moves over time and breaks reproducibility. It is loaded

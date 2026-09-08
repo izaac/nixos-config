@@ -87,8 +87,7 @@ in {
     services = {
       dbus.implementation = "broker";
 
-      # Ananicy-cpp (Auto-nice daemon) - Disabled per Anticipation Strategy
-      ananicy.enable = false;
+      # Ananicy-cpp (Auto-nice daemon) - not enabled; NixOS default is off.
 
       # Irqbalance - Spread interrupts across cores to reduce thermal hotspots.
       # mkDefault so laptops can turn it off: rebalancing wakes idle cores,

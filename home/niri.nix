@@ -221,7 +221,7 @@ in {
       {
         matches = [
           {app-id = "^(remote-viewer|spicy)$";}
-          {app-id = "^org\.remmina\.Remmina$";}
+          {app-id = "^org\\.remmina\\.Remmina$";}
         ];
         excludes = [{title = "^Remmina Remote Desktop Client$";}];
         default-column-width = {proportion = 3.0 / 4.0;};
@@ -230,7 +230,7 @@ in {
       {
         matches = [
           {
-            app-id = "^org\.remmina\.Remmina$";
+            app-id = "^org\\.remmina\\.Remmina$";
             title = "^Remmina Remote Desktop Client$";
           }
         ];

@@ -171,7 +171,7 @@ in {
   # used with zero memory pressure, so they are no longer about capacity. Two
   # of them are still right for other reasons, noted at each; the zram split
   # and the swapfile are kept as cheap conservative defaults for a server.
-  zramSwap.memoryPercent = lib.mkForce 50;
+  zramSwap.memoryPercent = 50;
 
   swapDevices = [
     {
@@ -190,15 +190,15 @@ in {
     # The shared 180 is desktop tuning that assumes swap is zram and therefore
     # fast. This host also has a swapfile on the same SATA SSD that serves
     # media, so evicting anonymous pages there costs playback latency.
-    "vm.swappiness" = lib.mkForce 60;
+    "vm.swappiness" = 60;
 
     # Percentages of RAM, so more RAM means a bigger writeback burst, not a
     # smaller one: the shared 10/5 is 1.6G/800M of dirty pages on 16G, flushed
     # through the one SATA SSD that rclone is already writing its cache to.
     # This is about the disk, not the memory, and did not stop mattering when
     # the DIMM was replaced.
-    "vm.dirty_ratio" = lib.mkForce 5;
-    "vm.dirty_background_ratio" = lib.mkForce 2;
+    "vm.dirty_ratio" = 5;
+    "vm.dirty_background_ratio" = 2;
   };
 
   # /dev/watchdog is intel_oc_wdt. systemd pings at half the interval, so 60s
@@ -326,11 +326,11 @@ in {
 
       # Butler maintenance window. Plex falls back to 02:00-05:00 when these
       # keys are absent; pinned so the window is explicit rather than implied.
-      set_pref ButlerStartHour "${toString butlerStartHour}"
-      set_pref ButlerEndHour "${toString butlerEndHour}"
+      set_pref ButlerStartHour "${builtins.toString butlerStartHour}"
+      set_pref ButlerEndHour "${builtins.toString butlerEndHour}"
 
       # Library scan interval, in seconds.
-      set_pref ScheduledLibraryUpdateInterval "${toString scheduledLibraryUpdateInterval}"
+      set_pref ScheduledLibraryUpdateInterval "${builtins.toString scheduledLibraryUpdateInterval}"
 
       # Analysis behaviours: keep the expensive ones off or deferred.
       ${lib.concatStringsSep "\n" (
