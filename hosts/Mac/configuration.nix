@@ -289,12 +289,11 @@
       "protonvpn"
       "slack"
       "telegram"
-      "timemachineeditor"
       "unetbootin"
       "tailscale-app"
-      "visual-studio-code"
       "vlc"
       "windows-app"
+      "zed"
     ];
     brews = [];
     masApps = {};
@@ -315,6 +314,7 @@
         ../../home/darwin/kitty.nix
         ../../home/darwin/screenshots.nix
         ../../home/lazyvim.nix
+        ../../home/zed.nix
         inputs.stylix.homeModules.stylix
       ];
       # stylix.enable is off on this host, so the Darwin module never injects
