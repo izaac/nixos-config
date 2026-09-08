@@ -123,6 +123,29 @@ builder, delegation to Apple hardware, not emulation.
 
 ---
 
+## Running it on demand
+
+The daemon is `RunAtLoad` and `KeepAlive`, so by default the VM boots with the Mac and stays up for
+the whole session, holding roughly 1 GB of RAM and a low but constant trickle of CPU. On a laptop
+that is a poor trade when Linux builds are occasional, so it can be switched off and started when
+needed:
+
+```bash
+just builder-stop      # frees ~1G RAM, survives reboot
+just builder-start     # bring it back before a Linux build
+just builder-status    # running or not
+```
+
+`builder-stop` both `disable`s the daemon, which persists across reboots, and `bootout`s the running
+instance. Because `bootout` removes the job from the launchd domain entirely, starting again needs
+`bootstrap` against the plist rather than `kickstart`, which is what the recipe does.
+
+Nix has no idea the builder is gone. With it stopped, a Linux build fails with a plain
+`a 'x86_64-linux' with features {} is required to build` error rather than anything
+self-explanatory, so start it first.
+
+---
+
 ## Gotcha: config changes need a disk recreation
 
 The VM boots a **persistent disk** at `/var/lib/linux-builder/nixos.qcow2`, seeded once from the VM

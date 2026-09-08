@@ -102,3 +102,19 @@ road-test:
 # Verify NOPASSWD sudo set: inert tools + locked wrappers only, no dangerous commands
 validate-sudo:
         @bash scripts/validate-sudo.sh
+
+# Start the Linux builder VM (needed only to build Linux derivations)
+builder-start:
+        @sudo launchctl enable system/org.nixos.linux-builder
+        @sudo launchctl bootstrap system /Library/LaunchDaemons/org.nixos.linux-builder.plist 2>/dev/null || true
+        @echo "linux-builder started"
+
+# Stop the Linux builder VM (frees ~1G RAM and idle CPU)
+builder-stop:
+        @sudo launchctl disable system/org.nixos.linux-builder
+        @sudo launchctl bootout system/org.nixos.linux-builder 2>/dev/null || true
+        @echo "linux-builder stopped"
+
+# Is the Linux builder running?
+builder-status:
+        @sudo launchctl print system/org.nixos.linux-builder 2>/dev/null | grep -E "^\s+state = " || echo "not loaded (stopped)"

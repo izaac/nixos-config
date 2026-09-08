@@ -257,7 +257,26 @@
     enableStealthMode = false;
   };
 
-  # Homebrew manages GUI apps/casks that nixpkgs can't ship on Darwin. The
+  # Idle sleep. nix-darwin's power.sleep.* writes a single value for every
+  # power source, and has no Power Nap option at all, so both are set here with
+  # pmset's per-source flags instead.
+  #
+  # The defaults on this machine were `sleep 0` on battery *and* AC, meaning the
+  # display slept after 10 minutes but the machine itself stayed awake
+  # indefinitely.
+  #
+  # Power Nap wakes the machine during sleep to poll mail, updates and Time
+  # Machine. Off on battery, where that costs charge for little benefit, and
+  # left on when plugged in, where it costs nothing.
+  #
+  # displaysleep is left alone; it was already sensible at 10 minutes.
+  system.activationScripts.postActivation.text = ''
+    echo "configuring idle sleep and Power Nap..." >&2
+    # -b battery, -c AC (charger)
+    /usr/bin/pmset -b sleep 15 powernap 0
+    /usr/bin/pmset -c sleep 30
+  '';
+
   # nix-darwin module only *drives* an existing brew install (run the official
   # installer once first). cleanup = "none" means it NEVER removes anything not
   # listed here, so manually-installed apps stay put. Add casks/masApps to taste.
