@@ -61,7 +61,6 @@ in {
       deadnix
       statix
       nix-tree
-      comma
       nvd
       nix-init
       nix-melt

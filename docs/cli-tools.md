@@ -21,6 +21,20 @@ Prepend any command with a comma to execute it via Nix:
 requested binary, downloads it to the Nix store temporarily, executes the command, and ensures the
 environment remains uncluttered.
 
+### Pre-generated Index Database (`nix-index-database`)
+
+Generating `nix-index` locally from scratch evaluates tens of thousands of Hydra narinfo files and
+writes a large SQLite database. On low-power hardware like the Intel N100 on `plex`, building the
+index locally takes 15 to 25 minutes and pegs CPU at 100%.
+
+To avoid local builds, this repository integrates `github:nix-community/nix-index-database`. It
+provides weekly pre-compiled binary databases through Home Manager:
+
+- `programs.nix-index-database.comma.enable = true` wraps `comma` with the pre-indexed database
+  (`comma-with-db`).
+- `programs.nix-index.enable = true` symlinks `~/.cache/nix-index/files` to the pre-built store
+  path, making `nix-locate` and command-not-found work immediately without running `nix-index`.
+
 ## Core Utility Replacements
 
 The following tools are integrated and aliased by default:

@@ -20,6 +20,7 @@ in {
       backupFileExtension = "hm-backup";
       sharedModules = [
         inputs.nix-flatpak.homeManagerModules.nix-flatpak
+        inputs.nix-index-database.homeModules.nix-index
       ];
       extraSpecialArgs = {inherit inputs userConfig;};
       # Only the cross-platform base lives here; the desktop/user-specific

@@ -335,6 +335,7 @@
         ../../home/lazyvim.nix
         ../../home/zed.nix
         inputs.stylix.homeModules.stylix
+        inputs.nix-index-database.homeModules.nix-index
       ];
       # stylix.enable is off on this host, so the Darwin module never injects
       # the useGlobalPkgs override that disables the overlay. Without

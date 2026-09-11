@@ -112,6 +112,8 @@
       enableBashIntegration = false;
     };
 
+    nix-index-database.comma.enable = true;
+
     bash = {
       enable = true;
       enableCompletion = true;

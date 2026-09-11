@@ -63,6 +63,10 @@
       url = "git+ssh://git@github.com/izaac/claude-skills";
       flake = false;
     };
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {
