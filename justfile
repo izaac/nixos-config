@@ -103,6 +103,14 @@ road-test:
 validate-sudo:
         @bash scripts/validate-sudo.sh
 
+# Query and summarize NVIDIA driver versions across channels and upstream
+nvidia-check *args:
+        @scripts/nvidia-check.sh {{args}}
+
+# Fixture-based unit tests for nvidia-check parsers (offline)
+nvidia-test:
+        @bash scripts/tests/nvidia-check-test.sh
+
 # Start the Linux builder VM (needed only to build Linux derivations)
 builder-start:
         @sudo launchctl enable system/org.nixos.linux-builder

@@ -29,6 +29,8 @@ just <command>
 | `just gcroots`                          | Root pinned flake inputs against GC         | `nix build .#gcroots --out-link ~/.local/state/nix/gcroots/...`         |
 | `just setup-hooks`                      | Activate git pre-commit hooks               | `git config core.hooksPath .githooks`                                   |
 | `just validate-sudo`                    | Check sudo-readonly ruleset                 | `scripts/validate-sudo.sh`                                              |
+| `just nvidia-check`                     | Check NVIDIA drivers across all channels    | `scripts/nvidia-check.sh`                                               |
+| `just nvidia-test`                      | Run nvidia-check unit tests                 | `scripts/tests/nvidia-check-test.sh`                                    |
 | `just road-on / road-off / road-status` | Hostile-network lockdown toggle             | `scripts/road-mode.sh on/off/status`                                    |
 | `just road-test`                        | Run road-mode unit tests                    | `scripts/tests/road-mode-test.sh`                                       |
 | `just deploy-ninja <ip>`                | Install NixOS on remote machine             | `nix run github:nix-community/nixos-anywhere`                           |
