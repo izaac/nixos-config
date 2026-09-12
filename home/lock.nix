@@ -30,7 +30,7 @@
       # flat colour, which is also fine, just less obviously intentional.
       wallpaper="${config.stylix.image}"
       if [ -r "${wallpaperState}" ]; then
-        saved=$(cat "${wallpaperState}")
+        saved="$(< "${wallpaperState}")"
         [ -f "$saved" ] && wallpaper="$saved"
       fi
 
