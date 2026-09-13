@@ -40,7 +40,6 @@
     kernelParams = [
       "boot.shell_on_fail"
       "pci=realloc,pcie_bus_safe"
-      "pcie_aspm=off"
       "iommu=pt"
       "pcie_ports=native"
       "amd_pstate=active"
@@ -48,6 +47,8 @@
       # itself is already disabled via kernel.split_lock_mitigate=0 in
       # performance.nix; this just stops the kernel from logging traps.
       "split_lock_detect=off"
+      # Prevent SMU firmware timeout and freezes on Zen 5 Granite Ridge iGPU
+      "amdgpu.dpm=0"
     ];
   };
   programs.fuse = {

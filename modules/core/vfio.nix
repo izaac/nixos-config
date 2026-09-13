@@ -81,18 +81,8 @@ in {
 
       kernelParams = [
         "amd_iommu=on"
+        "iommu=pt"
         "vfio-pci.ids=${lib.concatStringsSep "," cfg.gpuIDs}"
-        # Raphael and other AMD APUs can scan out directly from scattered system
-        # memory pages instead of the VRAM carveout. On this hardware that
-        # produced garbled blocks on screen while compositor screenshots of the
-        # same windows were pixel-perfect, which places the corruption in the
-        # display engine's fetch path rather than in rendering. It reproduced on
-        # both the DisplayPort and HDMI outputs and survived niri's
-        # disable-direct-scanout, and the display engine occasionally wedged
-        # hard enough to blank the panel with no oops and nothing in pstore.
-        # Forcing the display engine back onto the contiguous carveout avoids
-        # all of it; 2 GB is far more than 3440x1440 needs.
-        "amdgpu.sg_display=0"
       ];
 
       blacklistedKernelModules = [
@@ -121,6 +111,14 @@ in {
     hardware.graphics = {
       enable = true;
       enable32Bit = true;
+    };
+
+    # Disable Delta Color Compression in Mesa (radeonsi/RADV) to prevent
+    # rendering corruption / artifacting in GPU-accelerated windows (e.g. Kitty)
+    # on Raphael RDNA2 iGPU.
+    environment.sessionVariables = {
+      AMD_DEBUG = "nodcc";
+      RADV_DEBUG = "nodcc";
     };
 
     services.udev.extraRules = lib.mkIf cfg.lookingGlass.enable ''

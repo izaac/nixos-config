@@ -16,7 +16,7 @@
 # BIOS prerequisites for the vfio entry: integrated graphics enabled and
 # selected as the primary display, SVM and IOMMU on, and the monitor connected
 # to the motherboard output.
-{pkgs, ...}: {
+_: {
   # libvirt is available in both entries so the guest can be prepared and its
   # disk imported without rebooting into the passthrough configuration.
   mySystem.core.libvirt.enable = true;
@@ -28,14 +28,7 @@
       enable = true;
       # 01:00.0 GB206 [GeForce RTX 5060 Ti], 01:00.1 GB206 HD Audio Controller.
       gpuIDs = ["10de:2d04" "10de:22eb"];
-      # The Raphael iGPU corrupts GPU-rendered windows on the 7.2 kernel that
-      # hosts/ninja/kernel.nix builds, and its display controller logs
-      # `REG_WAIT timeout ... optc31_disable_crtc` on every boot. A window
-      # rendered in software (LIBGL_ALWAYS_SOFTWARE=1) stays clean under the
-      # same conditions, which puts the fault in the amdgpu/radeonsi path
-      # rather than in scanout. This configuration only hosts a VM, so it drops
-      # the gaming kernel's tuning for a stock, better-tested build.
-      kernelPackages = pkgs.linuxPackages_6_18;
+      # Keep the host kernel from hosts/ninja/kernel.nix without forcing a stock kernel.
       lookingGlass = {
         enable = true;
         sizeMB = 128;
