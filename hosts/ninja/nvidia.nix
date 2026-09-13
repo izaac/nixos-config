@@ -1,13 +1,20 @@
 {
   config,
   pkgs,
+  lib,
   ...
-}: {
+}: let
+  # Everything below is inert once the GPU is handed to vfio-pci, and the
+  # clock-capping service would fight the passthrough binding. Gate it all on
+  # the shared NVIDIA flag so the vfio specialisation drops it by forcing that
+  # flag off.
+  nvidiaEnabled = config.mySystem.desktop.nvidia.enable;
+in {
   # Shared NVIDIA baseline (graphics, open module, VAAPI/VDPAU) lives in
   # modules/desktop/nvidia.nix. This file overrides only ninja-specific bits.
   mySystem.desktop.nvidia.enable = true;
 
-  hardware.nvidia = {
+  hardware.nvidia = lib.mkIf nvidiaEnabled {
     # Note: On 595+ with open modules, NixOS automatically enables 'kernelSuspendNotifier'.
     # We must explicitly disable NixOS powerManagement to prevent the creation of legacy
     # nvidia-suspend/resume systemd services which conflict with the kernel notifiers.
@@ -39,14 +46,14 @@
 
   # 3. Kernel Modules & Wayland Environment
   # nvidia modules load post-initrd - keeps LUKS prompt input clean.
-  boot.kernelParams = [
+  boot.kernelParams = lib.mkIf nvidiaEnabled [
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1" # Explicitly added since powerManagement is disabled
     "nvidia.NVreg_UseKernelSuspendNotifiers=1" # Required for improved memory preservation on Open Modules
     # Adaptive PowerMizer - GPU clocks down at idle, ramps for load
     "nvidia.NVreg_RegistryDwords=\"PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerDefaultAC=0x2; RMIntrLockingMode=1; RMConnectToDevice=0\""
   ];
 
-  environment.sessionVariables = {
+  environment.sessionVariables = lib.mkIf nvidiaEnabled {
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     LIBVA_DRIVER_NAME = "nvidia";
     NVD_BACKEND = "direct";
@@ -66,7 +73,7 @@
   # under heavy load. Validated with real in-game benchmarking: ~2610MHz @
   # ~142W @ 74C at 99% utilization (vs the old 2000MHz lock which wasted ~58W
   # of budget and clock headroom at only 63C).
-  systemd.services.nvidia-lock-clocks = {
+  systemd.services.nvidia-lock-clocks = lib.mkIf nvidiaEnabled {
     enable = true;
     description = "Cap NVIDIA GPU power and clock ceiling for cool, efficient performance";
     after = ["display-manager.service" "nvidia-persistenced.service"];
