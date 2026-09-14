@@ -27,20 +27,33 @@ in {
       description = "Video drivers the host falls back to once the GPU is gone.";
     };
 
-    kernelPackages = lib.mkOption {
-      type = lib.types.nullOr lib.types.raw;
-      default = null;
-      example = lib.literalExpression "pkgs.linuxPackages_6_18";
-      description = ''
-        Kernel to use instead of the host default. Useful when the integrated
-        GPU that takes over the display misbehaves on the newest kernel: this
-        configuration only has to host a VM, so it does not need the gaming
-        kernel's tuning and can run a stock, better-tested build.
-      '';
-    };
-
     lookingGlass = {
-      enable = lib.mkEnableOption "kvmfr shared-memory device for Looking Glass";
+      enable = lib.mkEnableOption "the Looking Glass client";
+
+      kvmfr = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = ''
+          Load the out-of-tree kvmfr module, which exposes the guest's
+          framebuffer as `/dev/kvmfr0` and saves one copy compared with a plain
+          `/dev/shm` file.
+
+          The guest must reference the device rather than a `/dev/shm` file:
+
+          ```xml
+          <shmem name='kvmfr0'>
+            <model type='ivshmem-plain'/>
+            <size unit='M'>128</size>
+          </shmem>
+          ```
+
+          This was disabled for a while during the lockup investigation, because
+          an early-boot freeze left the kernel log ending on the line right
+          after kvmfr finished loading. That turned out to be the Raphael iGPU
+          rather than this module, and the machine has been stable since the
+          RX 550 replaced it.
+        '';
+      };
 
       sizeMB = lib.mkOption {
         type = lib.types.int;
@@ -63,8 +76,6 @@ in {
     ];
 
     boot = {
-      kernelPackages = lib.mkIf (cfg.kernelPackages != null) (lib.mkOverride 40 cfg.kernelPackages);
-
       # A wedged display engine leaves the machine running but blind, and a hard
       # reset on LUKS+ext4 risks the filesystem. SysRq makes a clean
       # sync-and-reboot reachable from the keyboard in that state:
@@ -83,6 +94,10 @@ in {
         "amd_iommu=on"
         "iommu=pt"
         "vfio-pci.ids=${lib.concatStringsSep "," cfg.gpuIDs}"
+        # vfio-pci parks an assigned device in D3cold while nothing has it open.
+        # If the guest touches a register before the card is fully back in D0,
+        # the MMIO read never completes and the CPU spins uninterruptibly.
+        "vfio-pci.disable_idle_d3=1"
       ];
 
       blacklistedKernelModules = [
@@ -93,11 +108,20 @@ in {
         "nouveau"
       ];
 
-      extraModulePackages = lib.optional cfg.lookingGlass.enable config.boot.kernelPackages.kvmfr;
-      kernelModules = lib.optional cfg.lookingGlass.enable "kvmfr";
-      extraModprobeConfig = lib.optionalString cfg.lookingGlass.enable ''
-        options kvmfr static_size_mb=${toString cfg.lookingGlass.sizeMB}
-      '';
+      extraModulePackages = lib.optional cfg.lookingGlass.kvmfr config.boot.kernelPackages.kvmfr;
+      kernelModules = lib.optional cfg.lookingGlass.kvmfr "kvmfr";
+      extraModprobeConfig =
+        lib.optionalString cfg.lookingGlass.kvmfr ''
+          options kvmfr static_size_mb=${toString cfg.lookingGlass.sizeMB}
+        ''
+        # vfio-pci parks an assigned device in D3cold while nothing has it open.
+        # If the guest touches a register before the card is fully back in D0,
+        # the MMIO read never completes and the CPU spins in an uninterruptible
+        # state, which is exactly what a hard lockup with no oops and a journal
+        # that stops mid-line looks like.
+        + ''
+          options vfio-pci disable_idle_d3=1
+        '';
     };
 
     # The NVIDIA stack must not be built into this configuration at all,
@@ -105,6 +129,7 @@ in {
     # shared flag off also drops the host's NVIDIA kernel parameters and the
     # clock-capping service.
     mySystem.desktop.nvidia.enable = lib.mkForce false;
+
     services.xserver.videoDrivers = lib.mkForce cfg.hostVideoDrivers;
     hardware.nvidia-container-toolkit.enable = lib.mkForce false;
 
@@ -113,15 +138,7 @@ in {
       enable32Bit = true;
     };
 
-    # Disable Delta Color Compression in Mesa (radeonsi/RADV) to prevent
-    # rendering corruption / artifacting in GPU-accelerated windows (e.g. Kitty)
-    # on Raphael RDNA2 iGPU.
-    environment.sessionVariables = {
-      AMD_DEBUG = "nodcc";
-      RADV_DEBUG = "nodcc";
-    };
-
-    services.udev.extraRules = lib.mkIf cfg.lookingGlass.enable ''
+    services.udev.extraRules = lib.mkIf cfg.lookingGlass.kvmfr ''
       SUBSYSTEM=="kvmfr", OWNER="${userConfig.username}", GROUP="kvm", MODE="0660"
     '';
 

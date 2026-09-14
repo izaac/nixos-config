@@ -9,11 +9,9 @@
   # ninja-only pieces (49" monitor layout, render device) are gated on
   # the hostname so the laptop does not inherit them.
   isNinja = (osConfig.networking.hostName or "") == "ninja";
-  # In the vfio specialisation ninja's display is driven by the Ryzen iGPU
-  # (2 compute units) instead of the RTX 5060 Ti, because the discrete card is
-  # bound to vfio-pci for VM passthrough. Compositing 3440x1440 at 144 Hz is a
-  # lot to ask of that iGPU, so the pinned high-refresh mode is dropped there.
-  onIGPU = osConfig.mySystem.core.vfio.enable or false;
+  # When passthrough is active the RTX 5060 Ti belongs to the guest, so the host
+  # desktop runs on the secondary RX 550 instead.
+  onHostGPU = osConfig.mySystem.core.vfio.enable or false;
   # Patched to stop Steam's menu bar dropdowns dismissing themselves; see
   # overlays/patches/xwayland-satellite-popup-focus.patch for the full story.
   # Drop the patch once upstream issue #468 is fixed and released.
@@ -90,21 +88,9 @@ in {
     # the clock, which runs hot and spins the fans up constantly. Compositing
     # on Intel lets the dGPU runtime-suspend (PRIME offload still routes games
     # to it on demand).
-    #
-    # On ninja in the vfio specialisation the Raphael iGPU drives the panel.
-    # Handing a client buffer straight to its display engine produced garbled
-    # blocks on screen while niri screenshots of the same window came out
-    # pixel-perfect, which places the corruption in the scanout path rather
-    # than in rendering. Compositing every frame avoids it. The cursor plane is
-    # disabled for the same reason.
-    debug =
-      lib.optionalAttrs (!isNinja) {
-        render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
-      }
-      // lib.optionalAttrs onIGPU {
-        disable-direct-scanout = [];
-        disable-cursor-plane = [];
-      };
+    debug = lib.mkIf (!isNinja) {
+      render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
+    };
 
     # Screenshots land in a single dated folder instead of niri's default
     # scatter pattern. Path is expanded by niri itself; ~ → $HOME.
@@ -112,21 +98,21 @@ in {
 
     # ninja's monitor layout only — windy keeps niri's automatic output
     # handling for whatever is plugged into its ports.
-    outputs = let
-      # The panel is a single LG UltraGear 49". It hangs off the discrete card's
-      # DisplayPort normally, and off the motherboard's DisplayPort or HDMI in
-      # the vfio specialisation, so both iGPU connectors get the same settings.
-      ultragear = {
+    # Keyed on the monitor's own description rather than a connector name.
+    # Connector names are assigned in probe order, so adding the RX 550 renamed
+    # the NVIDIA outputs from DP-1..3 to DP-2..4, and the vfio specialisation
+    # changes them again by removing the NVIDIA card entirely.
+    outputs = lib.optionalAttrs isNinja {
+      "LG Electronics LG ULTRAGEAR 401NTCZ49403" = {
         mode = {
           width = 3440;
           height = 1440;
-          # Native 144Hz on the discrete card. The Raphael iGPU has two compute
-          # units, so it composites at 60Hz instead; 60.001 is the exact rate
-          # from the monitor's EDID detailed timing descriptor, and it is
-          # available over both DisplayPort and HDMI.
+          # 144Hz over the RTX 5060 Ti's DisplayPort in the gaming
+          # specialisation. The RX 550 only drives this panel at 85Hz over
+          # HDMI, which is plenty for a desktop that exists to host a VM.
           refresh =
-            if onIGPU
-            then 60.001
+            if onHostGPU
+            then 85.000
             else 143.923;
         };
         position = {
@@ -135,11 +121,7 @@ in {
         };
         variable-refresh-rate = false;
       };
-    in
-      lib.optionalAttrs isNinja (
-        {"DP-1" = ultragear;}
-        // lib.optionalAttrs onIGPU {"HDMI-A-1" = ultragear;}
-      );
+    };
 
     # X11 app compatibility — niri-flake auto-spawns this when the path is set
     # and both niri and xwayland-satellite are on the unstable channel.

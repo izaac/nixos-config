@@ -10,6 +10,17 @@ in {
   options.mySystem.core.libvirt = {
     enable = lib.mkEnableOption "libvirtd, QEMU/KVM and virt-manager";
 
+    extraDeviceACL = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      example = ["/dev/kvmfr0"];
+      description = ''
+        Device nodes to add to libvirt's cgroup allow-list, on top of its
+        defaults. A guest cannot open a device that is not listed here, however
+        permissive the filesystem permissions are.
+      '';
+    };
+
     runVMsAsUser = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -42,10 +53,31 @@ in {
         # OVMF images ship with QEMU as of 26.05, so only the TPM emulator that
         # Windows 11 requires still needs enabling here.
         swtpm.enable = true;
-        verbatimConfig = lib.optionalString cfg.runVMsAsUser ''
-          user = "${userConfig.username}"
-          group = "kvm"
-        '';
+        verbatimConfig =
+          lib.optionalString cfg.runVMsAsUser ''
+            user = "${userConfig.username}"
+            group = "kvm"
+          ''
+          # Replaces rather than extends libvirt's list, so the defaults have to
+          # be repeated here.
+          + lib.optionalString (cfg.extraDeviceACL != []) ''
+            cgroup_device_acl = [
+              ${
+              lib.concatMapStringsSep "\n  " (d: "\"${d}\",") (
+                [
+                  "/dev/null"
+                  "/dev/full"
+                  "/dev/zero"
+                  "/dev/random"
+                  "/dev/urandom"
+                  "/dev/ptmx"
+                  "/dev/kvm"
+                ]
+                ++ cfg.extraDeviceACL
+              )
+            }
+            ]
+          '';
       };
     };
 
