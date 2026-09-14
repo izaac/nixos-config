@@ -28,6 +28,13 @@
     # Looking Glass reads frames from the kvmfr device, which the guest cannot
     # open unless libvirt's cgroup allow-list includes it.
     extraDeviceACL = ["/dev/kvmfr0"];
+    # virtiofs cannot coexist with kvmfr, so the guest gets its files over SMB
+    # on loopback instead. See the option description for the details.
+    guestShare = {
+      enable = true;
+      path = "/home/izaac/Documents";
+      name = "documents";
+    };
   };
 
   mySystem.core.vfio = {

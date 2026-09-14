@@ -21,6 +21,35 @@ in {
       '';
     };
 
+    guestShare = {
+      enable = lib.mkEnableOption ''
+        an SMB share for VM guests, bound to loopback.
+
+        virtiofs would be the obvious choice, but it cannot be used alongside
+        kvmfr: vhost-user hands every guest memory region to virtiofsd, which
+        sizes each one with seek(SEEK_END), and /dev/kvmfr0 is a character
+        device that only supports mmap. virtiofsd dies with
+        "Illegal seek" (ESPIPE) as soon as the guest starts.
+
+        SMB has no such conflict, and Windows mounts it natively. QEMU's
+        user-mode networking proxies guest connections from the host's own
+        loopback, so binding Samba there makes the share reachable from the
+        guest at \\10.0.2.2 and from nowhere else on the network
+      '';
+
+      path = lib.mkOption {
+        type = lib.types.str;
+        example = "/home/izaac/Documents";
+        description = "Directory to export.";
+      };
+
+      name = lib.mkOption {
+        type = lib.types.str;
+        default = "share";
+        description = "Share name, as it appears in the guest.";
+      };
+    };
+
     runVMsAsUser = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -85,12 +114,42 @@ in {
 
     users.users.${userConfig.username}.extraGroups = ["libvirtd" "kvm"];
 
+    # virtio-win is deliberately absent: it is a ~750 MiB ISO of Windows guest
+    # drivers, and the guest already has them installed. Add it back
+    # temporarily when building a new Windows guest.
     environment.systemPackages = with pkgs; [
       # virtiofsd backs <filesystem type="mount" driver="virtiofs"> shares.
       virtiofsd
-      # Guest drivers, including the VirtIO-FS service Windows needs.
-      virtio-win
       spice-gtk
     ];
+
+    services.samba = lib.mkIf cfg.guestShare.enable {
+      enable = true;
+      # The guest connects to a fixed address, so NetBIOS name resolution and
+      # winbind are both dead weight and extra listening sockets.
+      nmbd.enable = false;
+      winbindd.enable = false;
+      openFirewall = false;
+
+      settings = {
+        global = {
+          "interfaces" = "lo";
+          "bind interfaces only" = "yes";
+          "security" = "user";
+          "server min protocol" = "SMB3";
+          "load printers" = "no";
+          "printcap name" = "/dev/null";
+          "disable spoolss" = "yes";
+        };
+
+        ${cfg.guestShare.name} = {
+          "path" = cfg.guestShare.path;
+          "browseable" = "yes";
+          "read only" = "no";
+          "guest ok" = "no";
+          "force user" = userConfig.username;
+        };
+      };
+    };
   };
 }
