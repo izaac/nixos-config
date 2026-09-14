@@ -14,6 +14,7 @@
     description,
     remote,
     mountPoint,
+    cacheDir ? null,
     service ? {},
   }: {
     Unit = {
@@ -36,7 +37,7 @@
             --vfs-read-chunk-size 32M \
             --vfs-read-chunk-size-limit 1G \
             --buffer-size 32M \
-            --no-modtime
+            --no-modtime${lib.optionalString (cacheDir != null) " \\\n    --cache-dir ${cacheDir}"}
         '';
         # `-` prefix: ignore fusermount exit code. rclone unmounts itself on
         # SIGTERM before this runs, so fusermount usually returns
@@ -52,7 +53,57 @@
   };
 in {
   config = lib.mkIf pkgs.stdenv.isLinux {
+    home.packages = let
+      unit = "rclone-ul-crypt";
+      mountPoint = "/mnt/data/ul";
+    in [
+      (pkgs.writeShellApplication {
+        name = "ul-mount";
+        runtimeInputs = [pkgs.systemd];
+        text = ''
+          systemctl --user start ${unit}
+          # The unit is Type=exec, so systemd returns as soon as rclone execs,
+          # which is before FUSE has finished attaching. Waiting for the mount
+          # to appear means the command only returns once the path is usable.
+          for _ in $(seq 1 30); do
+            if mountpoint -q ${mountPoint}; then
+              echo "mounted: ${mountPoint}"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "timed out waiting for ${mountPoint}" >&2
+          systemctl --user --no-pager status ${unit} | tail -15 >&2
+          exit 1
+        '';
+      })
+
+      (pkgs.writeShellApplication {
+        name = "ul-umount";
+        runtimeInputs = [pkgs.systemd];
+        text = ''
+          systemctl --user stop ${unit}
+          echo "unmounted: ${mountPoint}"
+        '';
+      })
+    ];
+
     systemd.user.services = {
+      rclone-ul-crypt =
+        mkRcloneMount {
+          description = "RClone Mount for Ulozto (encrypted)";
+          remote = "ul-crypt:";
+          mountPoint = "/mnt/data/ul";
+          # Media files are large and the VFS cache holds whole files, so the
+          # cache goes next to the mount on /mnt/data rather than filling the
+          # encrypted root's default ~/.cache/rclone.
+          cacheDir = "/mnt/data/ul-cache";
+        }
+        // {
+          # On demand only, via ul-mount.
+          Install.WantedBy = [];
+        };
+
       rclone-proton =
         mkRcloneMount {
           description = "RClone Mount for Proton Drive";
