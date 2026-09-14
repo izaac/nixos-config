@@ -28,6 +28,9 @@
     # Looking Glass reads frames from the kvmfr device, which the guest cannot
     # open unless libvirt's cgroup allow-list includes it.
     extraDeviceACL = ["/dev/kvmfr0"];
+    # The guest preallocates its 16 GiB, and huge pages are only available if
+    # the host zone still has contiguous 2 MiB blocks to hand out.
+    defragBeforeStart = true;
     # virtiofs cannot coexist with kvmfr, so the guest gets its files over SMB
     # on loopback instead. See the option description for the details.
     guestShare = {

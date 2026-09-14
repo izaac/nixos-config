@@ -60,6 +60,20 @@ in {
         credentials, and the service account cannot read `/home`.
       '';
     };
+
+    defragBeforeStart = lib.mkEnableOption ''
+      compacting host memory before a guest starts.
+
+      A guest whose RAM is preallocated needs thousands of physically
+      contiguous 2 MiB blocks to be backed by transparent huge pages. On a host
+      that has been running for a while the buddy allocator has almost none
+      left, so most of the guest silently falls back to 4 KiB pages and then
+      spends its whole life missing the TLB.
+
+      Page cache is both reclaimable and the main thing fragmenting the zone,
+      so this drops it and then runs a compaction pass, giving the allocation
+      a defragmented zone to draw from
+    '';
   };
 
   config = lib.mkIf cfg.enable {
@@ -111,6 +125,20 @@ in {
     };
 
     programs.virt-manager.enable = true;
+
+    # libvirt runs every executable in hooks/qemu.d/ as root, passing
+    # "<guest> <operation> <sub-operation> <extra>". "prepare" fires before any
+    # guest resource is allocated, which is the only useful moment: once QEMU
+    # has faulted its memory in, the page size is already decided.
+    virtualisation.libvirtd.hooks.qemu = lib.mkIf cfg.defragBeforeStart {
+      defrag = pkgs.writeShellScript "libvirt-hook-defrag" ''
+        [ "$2" = "prepare" ] || exit 0
+
+        ${pkgs.coreutils}/bin/sync
+        echo 1 > /proc/sys/vm/drop_caches
+        echo 1 > /proc/sys/vm/compact_memory
+      '';
+    };
 
     users.users.${userConfig.username}.extraGroups = ["libvirtd" "kvm"];
 
