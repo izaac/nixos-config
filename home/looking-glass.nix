@@ -52,7 +52,16 @@
       ' "${shm}"; then
                 # jitRender draws only when a new frame arrives rather than on a
                 # timer, which removes a few milliseconds of latency.
-                exec looking-glass-client -f "${shm}" win:jitRender=yes "$@"
+                #
+                # autoScreensaver holds a Wayland idle inhibitor for exactly as
+                # long as the guest asks for one, which is what Windows media
+                # players request through SetThreadExecutionState. Without it the
+                # host sees no input while a film plays and locks the session
+                # behind the guest. The unconditional noScreensaver would also
+                # stop that, but it would keep the session unlocked whenever
+                # Looking Glass is open, including at an idle Windows desktop.
+                exec looking-glass-client -f "${shm}" \
+                  win:jitRender=yes win:autoScreensaver=yes "$@"
               fi
               sleep 1
             done
