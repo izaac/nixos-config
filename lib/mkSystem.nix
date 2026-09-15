@@ -25,6 +25,7 @@ inputs.nixpkgs.lib.nixosSystem {
         (import ../overlays/copilot-cli-bash-path.nix)
         (import ../overlays/ashell-unstable.nix inputs)
         (import ../overlays/stash-unstable.nix inputs)
+        (import ../overlays/virtiofsd-unstable.nix inputs)
       ];
     }
   ];

@@ -9,6 +9,9 @@
   # ninja-only pieces (49" monitor layout, render device) are gated on
   # the hostname so the laptop does not inherit them.
   isNinja = (osConfig.networking.hostName or "") == "ninja";
+  # When passthrough is active the RTX 5060 Ti belongs to the guest, so the host
+  # desktop runs on the secondary RX 550 instead.
+  onHostGPU = osConfig.mySystem.core.vfio.enable or false;
   # Patched to stop Steam's menu bar dropdowns dismissing themselves; see
   # overlays/patches/xwayland-satellite-popup-focus.patch for the full story.
   # Drop the patch once upstream issue #468 is fixed and released.
@@ -84,10 +87,21 @@ in {
     # this niri picks the NVIDIA dGPU and keeps the RTX 3080 powered on around
     # the clock, which runs hot and spins the fans up constantly. Compositing
     # on Intel lets the dGPU runtime-suspend (PRIME offload still routes games
-    # to it on demand). ninja is NVIDIA-only, so it must keep niri's default.
-    debug = lib.mkIf (!isNinja) {
-      render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
-    };
+    # to it on demand).
+    #
+    # ninja needs it too, but only in the gaming entry. amdgpu now loads from
+    # the initrd so the RX 550 at 05:00.0 takes card0, and niri would otherwise
+    # composite on it while the panel is being driven by the 5060 Ti at 01:00.0.
+    # With passthrough active the RX 550 is the only GPU left and the automatic
+    # pick cannot go wrong, so the key is left unset there rather than pinned to
+    # a path that only exists in one of the two entries.
+    debug =
+      lib.optionalAttrs (!isNinja) {
+        render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
+      }
+      // lib.optionalAttrs (isNinja && !onHostGPU) {
+        render-drm-device = "/dev/dri/by-path/pci-0000:01:00.0-render";
+      };
 
     # Screenshots land in a single dated folder instead of niri's default
     # scatter pattern. Path is expanded by niri itself; ~ → $HOME.
@@ -95,13 +109,22 @@ in {
 
     # ninja's monitor layout only — windy keeps niri's automatic output
     # handling for whatever is plugged into its ports.
+    # Keyed on the monitor's own description rather than a connector name.
+    # Connector names are assigned in probe order, so adding the RX 550 renamed
+    # the NVIDIA outputs from DP-1..3 to DP-2..4, and the vfio specialisation
+    # changes them again by removing the NVIDIA card entirely.
     outputs = lib.optionalAttrs isNinja {
-      # LG UltraGear 49" — pin to native 144Hz mode at origin.
-      "DP-1" = {
+      "LG Electronics LG ULTRAGEAR 401NTCZ49403" = {
         mode = {
           width = 3440;
           height = 1440;
-          refresh = 143.923;
+          # 144Hz over the RTX 5060 Ti's DisplayPort in the gaming
+          # specialisation. The RX 550 only drives this panel at 85Hz over
+          # HDMI, which is plenty for a desktop that exists to host a VM.
+          refresh =
+            if onHostGPU
+            then 85.000
+            else 143.923;
         };
         position = {
           x = 0;
@@ -217,10 +240,10 @@ in {
         excludes = [{app-id = "^[Ss]team$";}];
         open-fullscreen = true;
       }
-      # SPICE Viewer (virt-viewer, spicy) and Remmina session: open wider than default
+      # SPICE viewer (spicy) and Remmina session: open wider than default
       {
         matches = [
-          {app-id = "^(remote-viewer|spicy)$";}
+          {app-id = "^spicy$";}
           {app-id = "^org\\.remmina\\.Remmina$";}
         ];
         excludes = [{title = "^Remmina Remote Desktop Client$";}];

@@ -32,6 +32,17 @@ check:
 fmt:
         nix fmt
 
+# Save the live libvirt guest definition (Ghost Cave snapshot)
+vm-save guest="win11":
+        virsh -c qemu:///system dumpxml --inactive {{ guest }} > hosts/ninja/guests/{{ guest }}.xml
+        @echo "saved hosts/ninja/guests/{{ guest }}.xml"
+
+# Show how the live guest differs from the committed definition
+vm-diff guest="win11":
+        @virsh -c qemu:///system dumpxml --inactive {{ guest }} \
+                | diff -u hosts/ninja/guests/{{ guest }}.xml - \
+                && echo "{{ guest }}: in sync"
+
 # Ghost Cave (VM with Disko)
 vm:
         nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko --no-link --print-out-paths
