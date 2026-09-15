@@ -240,10 +240,10 @@ in {
         excludes = [{app-id = "^[Ss]team$";}];
         open-fullscreen = true;
       }
-      # SPICE Viewer (virt-viewer, spicy) and Remmina session: open wider than default
+      # SPICE viewer (spicy) and Remmina session: open wider than default
       {
         matches = [
-          {app-id = "^(remote-viewer|spicy)$";}
+          {app-id = "^spicy$";}
           {app-id = "^org\\.remmina\\.Remmina$";}
         ];
         excludes = [{title = "^Remmina Remote Desktop Client$";}];
