@@ -59,6 +59,12 @@
     enable = true;
     # 01:00.0 GB206 [GeForce RTX 5060 Ti], 01:00.1 GB206 HD Audio Controller.
     gpuIDs = ["10de:2d04" "10de:22eb"];
+    # Host userspace is confined to CCD1. The guest's vCPUs are pinned to CCD0,
+    # which carries the 96 MB of stacked cache (CCD1 has 32 MB), and without
+    # this the host's own processes keep landing there and evicting it. The
+    # emulator and IO threads are pinned to CCD1 in the domain and share these
+    # cores with the host quite happily.
+    hostCPUs = "8-15,24-31";
     lookingGlass = {
       enable = true;
       # Removes one copy from the frame path: the guest DMAs straight into a

@@ -27,6 +27,28 @@ in {
       description = "Video drivers the host falls back to once the GPU is gone.";
     };
 
+    hostCPUs = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "8-15,24-31";
+      description = ''
+        CPU list that host userspace is confined to while the GPU is passed
+        through, as an `AllowedCPUs` cpuset on `system.slice` and `user.slice`.
+
+        Pinning a guest's vCPUs says where they run, not that nothing else may
+        run there. Host processes keep being scheduled onto the same cores and
+        evict the cache lines the guest is using, which matters most when the
+        guest is pinned to a die with stacked cache.
+
+        libvirt places guests in `machine.slice`, which is left alone, so the
+        guest keeps the whole machine available and its own pinning decides
+        where it lands. Confining the host with a cpuset rather than
+        `isolcpus` also keeps the cores ordinary: nothing is removed from the
+        scheduler, and the restriction disappears with this module, so the
+        native gaming entry still has every thread.
+      '';
+    };
+
     lookingGlass = {
       enable = lib.mkEnableOption "the Looking Glass client";
 
@@ -133,6 +155,11 @@ in {
     services.udev.extraRules = lib.optionalString cfg.lookingGlass.kvmfr ''
       SUBSYSTEM=="kvmfr", OWNER="${userConfig.username}", GROUP="kvm", MODE="0660"
     '';
+
+    systemd.slices = lib.mkIf (cfg.hostCPUs != null) {
+      system.sliceConfig.AllowedCPUs = cfg.hostCPUs;
+      user.sliceConfig.AllowedCPUs = cfg.hostCPUs;
+    };
 
     environment.systemPackages = lib.optionals cfg.lookingGlass.enable [
       pkgs.looking-glass-client
