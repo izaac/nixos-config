@@ -28,16 +28,31 @@
     # Looking Glass reads frames from the kvmfr device, which the guest cannot
     # open unless libvirt's cgroup allow-list includes it.
     extraDeviceACL = ["/dev/kvmfr0"];
-    # The guest preallocates its 16 GiB, and huge pages are only available if
-    # the host zone still has contiguous 2 MiB blocks to hand out.
-    defragBeforeStart = true;
-    # virtiofs cannot coexist with kvmfr, so the guest gets its files over SMB
-    # on loopback instead. See the option description for the details.
-    guestShare = {
-      enable = true;
-      path = "/home/izaac/Documents";
-      name = "documents";
-    };
+    # The guest preallocates its 16 GiB from a 1 GiB hugetlb reservation, so the
+    # whole guest is covered by 16 page table entries and never depends on the
+    # host having contiguous memory to spare at start time.
+    guestHugepagesGB = 16;
+    # Deliberately off: compacting memory for transparent huge pages is pointless
+    # when the guest's pages are reserved at boot. Re-enable it if a guest is
+    # ever added that does not take a hugetlb reservation.
+    defragBeforeStart = false;
+    # /mnt/data is a separate unencrypted disk. The home directory is on the
+    # LUKS root and deliberately stays out of reach of the guest.
+    #
+    # SMB is off: the guest mounts this over virtiofs, which needs no account,
+    # is not bound by QEMU's single-threaded user-mode networking, and is
+    # reachable from a guest service account. Measured at 1.5 GB/s writing from
+    # the guest. Re-enable guestShare for a guest that lacks the driver.
+    guestFilesystems.win11.share.source = "/mnt/data/share";
+    # Remote Desktop as a fallback console. The guest has no virtual GPU at all,
+    # so Looking Glass is normally the only way in, and it goes dark whenever
+    # Windows is running setup or the NVIDIA driver is being reinstalled.
+    userNetPortForwards.win11 = [
+      {
+        hostPort = 13389;
+        guestPort = 3389;
+      }
+    ];
   };
 
   mySystem.core.vfio = {
@@ -48,7 +63,8 @@
       enable = true;
       # Removes one copy from the frame path: the guest DMAs straight into a
       # host-visible buffer instead of both sides going through a /dev/shm file.
-      # The guest XML must point <shmem> at kvmfr0 to match.
+      # The guest XML must attach /dev/kvmfr0 through <qemu:commandline>, since
+      # <shmem> cannot name a device node.
       kvmfr = true;
       # 3440x1440 at 32bpp is 18.9 MiB per frame; double buffering plus the LGMP
       # header needs about 48 MiB, so 128 leaves plenty of headroom.
