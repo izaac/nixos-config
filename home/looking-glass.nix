@@ -53,15 +53,22 @@
                 # jitRender draws only when a new frame arrives rather than on a
                 # timer, which removes a few milliseconds of latency.
                 #
-                # autoScreensaver holds a Wayland idle inhibitor for exactly as
-                # long as the guest asks for one, which is what Windows media
-                # players request through SetThreadExecutionState. Without it the
-                # host sees no input while a film plays and locks the session
-                # behind the guest. The unconditional noScreensaver would also
-                # stop that, but it would keep the session unlocked whenever
-                # Looking Glass is open, including at an idle Windows desktop.
+                # noScreensaver holds a Wayland idle inhibitor for as long as the
+                # client window is on screen. autoScreensaver is not enough on its
+                # own: it only mirrors what the guest asks for through
+                # SetThreadExecutionState, which media players call and games
+                # generally do not, so the host would lock mid-session. Nothing else
+                # keeps the session alive either, because a gamepad handed to the
+                # guest as a <hostdev> is detached from the host kernel and produces
+                # no events the compositor can see.
+                #
+                # Leaving the inhibitor unconditional is safe under niri, which only
+                # honours it while the surface is actually being scanned out
+                # (refresh_idle_inhibit checks surface_primary_scanout_output). The
+                # session therefore still locks on the normal timer as soon as the
+                # window is hidden or another workspace is focused.
                 exec looking-glass-client -f "${shm}" \
-                  win:jitRender=yes win:autoScreensaver=yes "$@"
+                  win:jitRender=yes win:noScreensaver=yes "$@"
               fi
               sleep 1
             done

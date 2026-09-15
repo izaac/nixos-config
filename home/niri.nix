@@ -88,9 +88,20 @@ in {
     # the clock, which runs hot and spins the fans up constantly. Compositing
     # on Intel lets the dGPU runtime-suspend (PRIME offload still routes games
     # to it on demand).
-    debug = lib.mkIf (!isNinja) {
-      render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
-    };
+    #
+    # ninja needs it too, but only in the gaming entry. amdgpu now loads from
+    # the initrd so the RX 550 at 05:00.0 takes card0, and niri would otherwise
+    # composite on it while the panel is being driven by the 5060 Ti at 01:00.0.
+    # With passthrough active the RX 550 is the only GPU left and the automatic
+    # pick cannot go wrong, so the key is left unset there rather than pinned to
+    # a path that only exists in one of the two entries.
+    debug =
+      lib.optionalAttrs (!isNinja) {
+        render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
+      }
+      // lib.optionalAttrs (isNinja && !onHostGPU) {
+        render-drm-device = "/dev/dri/by-path/pci-0000:01:00.0-render";
+      };
 
     # Screenshots land in a single dated folder instead of niri's default
     # scatter pattern. Path is expanded by niri itself; ~ → $HOME.
