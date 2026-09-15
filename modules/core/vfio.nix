@@ -8,7 +8,7 @@
   cfg = config.mySystem.core.vfio;
 in {
   options.mySystem.core.vfio = {
-    enable = lib.mkEnableOption "Bind a GPU to vfio-pci for VM passthrough";
+    enable = lib.mkEnableOption "GPU binding to vfio-pci for VM passthrough";
 
     gpuIDs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
@@ -38,20 +38,10 @@ in {
           framebuffer as `/dev/kvmfr0` and saves one copy compared with a plain
           `/dev/shm` file.
 
-          The guest must reference the device rather than a `/dev/shm` file:
-
-          ```xml
-          <shmem name='kvmfr0'>
-            <model type='ivshmem-plain'/>
-            <size unit='M'>128</size>
-          </shmem>
-          ```
-
-          This was disabled for a while during the lockup investigation, because
-          an early-boot freeze left the kernel log ending on the line right
-          after kvmfr finished loading. That turned out to be the Raphael iGPU
-          rather than this module, and the machine has been stable since the
-          RX 550 replaced it.
+          The guest cannot reach this through `<shmem>`: libvirt always resolves
+          a shmem name to `/dev/shm/<name>`, so the device has to be attached
+          with a raw `<qemu:commandline>` `memory-backend-file` pointing at
+          `/dev/kvmfr0`.
         '';
       };
 
@@ -95,8 +85,10 @@ in {
         "iommu=pt"
         "vfio-pci.ids=${lib.concatStringsSep "," cfg.gpuIDs}"
         # vfio-pci parks an assigned device in D3cold while nothing has it open.
-        # If the guest touches a register before the card is fully back in D0,
-        # the MMIO read never completes and the CPU spins uninterruptibly.
+        # If the guest touches a register before the card is back in D0 the MMIO
+        # read never completes and the CPU spins uninterruptibly, which is what
+        # a hard lockup with no oops and a journal stopping mid-line looks like.
+        # Set here for the initrd load and in modprobe.d below for any later one.
         "vfio-pci.disable_idle_d3=1"
       ];
 
@@ -114,11 +106,6 @@ in {
         lib.optionalString cfg.lookingGlass.kvmfr ''
           options kvmfr static_size_mb=${toString cfg.lookingGlass.sizeMB}
         ''
-        # vfio-pci parks an assigned device in D3cold while nothing has it open.
-        # If the guest touches a register before the card is fully back in D0,
-        # the MMIO read never completes and the CPU spins in an uninterruptible
-        # state, which is exactly what a hard lockup with no oops and a journal
-        # that stops mid-line looks like.
         + ''
           options vfio-pci disable_idle_d3=1
         '';
@@ -128,21 +115,26 @@ in {
     # otherwise its modules and services race vfio-pci for the card. Turning the
     # shared flag off also drops the host's NVIDIA kernel parameters and the
     # clock-capping service.
+    #
+    # This writes an option declared in modules/desktop, which lib.mkIf does not
+    # shield: an undeclared path is an eval error even in a disabled branch.
+    # hosts/common.nix always imports both trees, so the coupling holds.
     mySystem.desktop.nvidia.enable = lib.mkForce false;
 
+    # nvidia-container-toolkit follows videoDrivers in modules/core/virtualization.nix,
+    # so forcing the list above is enough to switch it off.
     services.xserver.videoDrivers = lib.mkForce cfg.hostVideoDrivers;
-    hardware.nvidia-container-toolkit.enable = lib.mkForce false;
 
     hardware.graphics = {
       enable = true;
       enable32Bit = true;
     };
 
-    services.udev.extraRules = lib.mkIf cfg.lookingGlass.kvmfr ''
+    services.udev.extraRules = lib.optionalString cfg.lookingGlass.kvmfr ''
       SUBSYSTEM=="kvmfr", OWNER="${userConfig.username}", GROUP="kvm", MODE="0660"
     '';
 
-    environment.systemPackages = lib.mkIf cfg.lookingGlass.enable [
+    environment.systemPackages = lib.optionals cfg.lookingGlass.enable [
       pkgs.looking-glass-client
     ];
   };
