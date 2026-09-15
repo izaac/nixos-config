@@ -25,9 +25,9 @@ ulc - work with the ul-crypt remote
 <dest> is the parent folder on the remote, as with cp: a directory is
 placed inside it under its own name, so
 
-  ulc cp ~/roms/Nintendo\ Wii emu
+  ulc cp ~/Pictures/Holiday\ 2026 photos
 
-creates emu/Nintendo Wii. Naming the full path instead would nest it
+creates photos/Holiday 2026. Naming the full path instead would nest it
 twice. Existing top-level folders are shown when <dest> is unknown.
 USAGE
 }
