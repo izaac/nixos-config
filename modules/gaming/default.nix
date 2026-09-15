@@ -234,8 +234,20 @@ in {
     ];
 
     services = {
+      # scx_lavd builds its topology model from sysfs and picks a small set of
+      # "primary" CPUs to pack work onto, spilling to the rest only under load.
+      # That model cannot see a cpuset, so on a host whose userspace is confined
+      # to one die it keeps choosing a primary CPU the host is not allowed to
+      # use and leaves everything in its overflow path: measured here as two of
+      # sixteen cores carrying the load and CPU pressure fifteen times higher
+      # than the kernel's own scheduler. Restarting it does not help, because it
+      # recomputes the same answer.
+      #
+      # It is also documented as targeting single-CCX systems, and this host is
+      # dual-CCD. Left to the kernel scheduler whenever the GPU is passed
+      # through; the native gaming entry still gets it.
       scx = {
-        enable = true;
+        enable = !(config.mySystem.core.vfio.enable or false);
         scheduler = lib.mkDefault "scx_lavd";
         extraArgs = lib.mkDefault ["--autopilot"];
       };
