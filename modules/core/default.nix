@@ -8,8 +8,6 @@
     ./printing.nix
     ./bluetooth.nix
     ./virtualization.nix
-    ./libvirt.nix
-    ./vfio.nix
     ./usb-fixes.nix
     ./maintenance.nix
     ./performance.nix

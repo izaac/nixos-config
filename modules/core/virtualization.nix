@@ -7,7 +7,7 @@
   cfg = config.mySystem.core.virtualization;
 in {
   options.mySystem.core.virtualization = {
-    enable = lib.mkEnableOption "Podman and Distrobox container virtualization";
+    enable = lib.mkEnableOption "Podman, Distrobox, and Quickemu virtualization";
   };
 
   config = lib.mkIf cfg.enable {
@@ -35,15 +35,12 @@ in {
     systemd.services."user@".serviceConfig.Delegate = "cpuset cpu io memory pids";
 
     # 3. Packages
-    #
-    # quickemu and quickgui built the first Windows guest and are gone: it is a
-    # libvirt domain now, with no quickemu config left anywhere, and the pair
-    # carried 2.3 GiB of closure. virt-viewer went with them, since virt-manager
-    # embeds a SPICE viewer and spice-gtk provides spicy as a standalone one.
-    #
-    # remmina stays as the RDP client, which is the fallback route into a guest
-    # whose display has gone dark. See docs/vfio-passthrough.md.
-    environment.systemPackages = [pkgs.remmina];
+    environment.systemPackages = with pkgs; [
+      quickemu
+      quickgui
+      virt-viewer
+      remmina
+    ];
 
     # 4. Performance & Environment Tweaks
     environment.sessionVariables = {

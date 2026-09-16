@@ -11,7 +11,6 @@
 - [Secret Management](secrets.md)
 - [GitHub SSH Host Key Pinning](known-hosts.md)
 - [System Recovery with Disko (ninja)](disko-rebuild.md)
-- [GPU Passthrough (ninja)](vfio-passthrough.md)
 
 ## Tools & Workflows
 

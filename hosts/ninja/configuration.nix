@@ -15,7 +15,6 @@ in {
     ./network.nix
     ./udev-igc-fix.nix
     ./boot.nix
-    ./vfio.nix
     ./kernel.nix
     ./performance.nix
     ./audio.nix

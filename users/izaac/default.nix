@@ -14,7 +14,6 @@
       ../../home/niri.nix
       ../../home/ashell.nix
       ../../home/lock.nix
-      ../../home/looking-glass.nix
     ];
   };
 }

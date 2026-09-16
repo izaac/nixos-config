@@ -40,8 +40,6 @@
     kernelParams = [
       "boot.shell_on_fail"
       "pci=realloc,pcie_bus_safe"
-      # Half of the Intel I225-V (igc) dropout workaround documented in
-      # hardware.nix; pcie_port_pm=off there is the other half.
       "pcie_aspm=off"
       "iommu=pt"
       "pcie_ports=native"
