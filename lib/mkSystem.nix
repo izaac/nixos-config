@@ -19,7 +19,6 @@ inputs.nixpkgs.lib.nixosSystem {
     {
       # Linux-only overlays on top of the shared list.
       nixpkgs.overlays = [
-        (import ../overlays/openldap-no-tests.nix)
         (import ../overlays/gvfs-no-wsdd.nix)
         (import ../overlays/dwarfs-skip-affinity-test.nix)
         (import ../overlays/copilot-cli-bash-path.nix)

@@ -99,13 +99,13 @@ in {
       opencode
     ]
     ++ lib.optionals pkgs.stdenv.isLinux [
-      dwarfs
       fuse3
     ]
     ++ lib.optionals (pkgs.stdenv.isLinux && hasDesktop) [
       appimage-run
       wl-clipboard
       wl-clip-persist
+      dwarfs
     ]
     ++ lib.optionals (pkgs.stdenv.isLinux && hasBluetooth) [
       bluetuith
