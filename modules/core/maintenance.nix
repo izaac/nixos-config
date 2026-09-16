@@ -20,7 +20,7 @@ in {
     };
 
     environment.systemPackages = with pkgs; [
-      gparted
+      parted
       exfatprogs
       atop # For historical system monitoring
 

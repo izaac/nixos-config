@@ -50,26 +50,12 @@ in {
       hyperfine
 
       # --- CLOUD & CONTAINERS ---
-      kubernetes-helm
-      kubectl
-      kdash # was k9s (Go) → kdash (Rust)
-      k3d
-      (oxker.overrideAttrs (_old: {doCheck = false;})) # skip broken macOS snapshot tests
-      skopeo
       rclone
       rsync
 
       # --- NIX TOOLS ---
       alejandra
-      deadnix
-      statix
-      nix-tree
       nvd
-      nix-init
-      nix-melt
-      nix-output-monitor
-      nix-update
-      nurl
 
       # --- SECURITY ---
       sops
@@ -87,12 +73,31 @@ in {
       gzip
       bzip2
       libarchive
+    ]
+    ++ lib.optionals isWorkstation [
+      # --- CLOUD & CONTAINERS ---
+      kubernetes-helm
+      kubectl
+      kdash # was k9s (Go) → kdash (Rust)
+      k3d
+      (oxker.overrideAttrs (_old: {doCheck = false;})) # skip broken macOS snapshot tests
+      skopeo
+
+      # --- NIX DEV TOOLS ---
+      deadnix
+      statix
+      nix-tree
+      nix-init
+      nix-melt
+      nix-output-monitor
+      nix-update
+      nurl
 
       # --- TUI / WIDGETS ---
       ticker
       tenki
-    ]
-    ++ lib.optionals isWorkstation [
+
+      # --- AI TOOLS ---
       cloudflared
       github-copilot-cli
       claude-code

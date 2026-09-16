@@ -2,8 +2,11 @@
   lib,
   pkgs,
   userConfig,
+  osConfig ? {},
   ...
 }: let
+  isWorkstation = (osConfig.mySystem.desktop.enable or false) || pkgs.stdenv.isDarwin;
+
   # gpg-agent runs as a systemd user service that inherits the graphical
   # session environment, so WAYLAND_DISPLAY is always set from its point of
   # view. A pinentry chosen from that environment therefore always opens a
@@ -20,36 +23,40 @@
       *curses*) exec ${lib.getExe pkgs.pinentry-curses} "$@" ;;
     esac
 
-    exec ${lib.getExe pkgs.pinentry-gnome3} "$@"
+    ${
+      if isWorkstation
+      then "exec ${lib.getExe pkgs.pinentry-gnome3} \"$@\""
+      else "exec ${lib.getExe pkgs.pinentry-curses} \"$@\""
+    }
   '';
 in {
   home = {
-    packages = with pkgs; [
-      # --- CORE DEPENDENCIES ---
-      gcc
-      gnumake
-      tree-sitter
+    packages = with pkgs;
+      [
+        # --- DATA & FORMATTING ---
+        sqlite
+      ]
+      ++ lib.optionals isWorkstation [
+        # --- CORE DEPENDENCIES ---
+        gcc
+        gnumake
+        tree-sitter
 
-      # --- LANGUAGES & TOOLCHAINS ---
-      docker-compose
-      nodejs
-      python3
+        # --- LANGUAGES & TOOLCHAINS ---
+        docker-compose
+        nodejs
+        python3
 
-      # --- DATA & FORMATTING ---
-      sqlite
-
-      # --- LSPs & LINTERS ---
-      bash-language-server
-      shellcheck
-      luajitPackages.lua-lsp
-      nixd # Nix LSP (eval-aware; supersedes the older nil)
-      # alejandra lives in home/shell/packages.nix under NIX TOOLS
-      gopls # Go LSP
-      typescript-language-server # JS/TS LSP
-      taplo # TOML LSP + formatter
-
-      # --- UTILS ---
-    ];
+        # --- LSPs & LINTERS ---
+        bash-language-server
+        shellcheck
+        luajitPackages.lua-lsp
+        nixd # Nix LSP (eval-aware; supersedes the older nil)
+        # alejandra lives in home/shell/packages.nix under NIX TOOLS
+        gopls # Go LSP
+        typescript-language-server # JS/TS LSP
+        taplo # TOML LSP + formatter
+      ];
 
     file = {
       ".gnupg/common.conf".text = "use-keyboxd";

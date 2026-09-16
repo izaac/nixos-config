@@ -392,13 +392,8 @@ in {
   };
 
   environment.systemPackages = with pkgs; [
-    ffmpeg
-    pciutils
-    usbutils
+    ffmpeg-headless
     htop
-    btop
-    rclone
-    fuse3
     intel-gpu-tools
   ];
 }

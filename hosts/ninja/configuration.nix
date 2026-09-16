@@ -59,7 +59,6 @@ in {
   # System packages: audio, monitor, boot utils, uutils coreutils.
   environment.systemPackages = with pkgs; [
     libglvnd
-    parted
     nmap
     alsa-utils
     libpulseaudio

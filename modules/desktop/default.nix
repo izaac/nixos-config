@@ -98,6 +98,7 @@ in {
         gcr # Graphical prompts (GPG, etc.)
         pam_gnupg # GPG unlocking
         polkit_gnome
+        gparted
       ];
     };
   };

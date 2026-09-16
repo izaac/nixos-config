@@ -21,7 +21,7 @@
       user.enable = lib.mkDefault true;
       theme.enable = lib.mkDefault false;
       home-manager.enable = lib.mkDefault true;
-      nix-ld.enable = lib.mkDefault true;
+      nix-ld.enable = lib.mkDefault false;
       yubikey.enable = lib.mkDefault false;
       "sudo-readonly".enable = lib.mkDefault true;
       "known-hosts".enable = lib.mkDefault true;
