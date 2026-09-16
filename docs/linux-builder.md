@@ -142,7 +142,9 @@ instance. Because `bootout` removes the job from the launchd domain entirely, st
 
 Nix has no idea the builder is gone. With it stopped, a Linux build fails with a plain
 `a 'x86_64-linux' with features {} is required to build` error rather than anything
-self-explanatory, so start it first.
+self-explanatory. The `just darwin-build`, `just build`, `just up`, `just up-nixpkgs`, and
+`just test-host` commands run an idempotent guard (`just ensure-builder`) that automatically checks
+and starts `linux-builder` if stopped.
 
 ---
 

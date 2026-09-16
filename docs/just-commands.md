@@ -13,30 +13,31 @@ just <command>
 
 ## Available Commands
 
-| Command                                 | Description                                 | Equivalent Action                                                       |
-| :-------------------------------------- | :------------------------------------------ | :---------------------------------------------------------------------- |
-| `just build`                            | Rebuild and switch (darwin-aware)           | `nh os switch .` (Linux) / `just darwin-build` (macOS)                  |
-| `just darwin-build`                     | Rebuild and switch the Mac                  | `sudo -H darwin-rebuild switch --flake .#Mac`                           |
-| `just dry-build`                        | Eval current host's closure, no build       | `nix build .#nixosConfigurations.$(hostname)...toplevel --dry-run`      |
-| `just iso`                              | Build the Travel-Canoe (minimal ISO)        | `nix build .#iso`                                                       |
-| `just iso-niri`                         | Build the niri desktop ISO                  | `nix build .#iso-niri`                                                  |
-| `just check`                            | Run flake checks (treefmt)                  | `nix flake check`                                                       |
-| `just fmt`                              | Format all files (treefmt)                  | `nix fmt`                                                               |
-| `just vm`                               | Build and prep the Ghost-Cave               | `nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko` |
-| `just clean`                            | Remove old system generations               | `nh clean all --keep 5`                                                 |
-| `just up`                               | Update all flake inputs and switch          | `nix flake update && just gcroots && nh os switch . --update`           |
-| `just up-nixpkgs`                       | Update only nixpkgs (full channel) + switch | `nix flake update nixpkgs && just gcroots && nh os switch .`            |
-| `just gcroots`                          | Root pinned flake inputs against GC         | `nix build .#gcroots --out-link ~/.local/state/nix/gcroots/...`         |
-| `just setup-hooks`                      | Activate git pre-commit hooks               | `git config core.hooksPath .githooks`                                   |
-| `just validate-sudo`                    | Check sudo-readonly ruleset                 | `scripts/validate-sudo.sh`                                              |
-| `just nvidia-check`                     | Check NVIDIA drivers across all channels    | `scripts/nvidia-check.sh`                                               |
-| `just nvidia-test`                      | Run nvidia-check unit tests                 | `scripts/tests/nvidia-check-test.sh`                                    |
-| `just road-on / road-off / road-status` | Hostile-network lockdown toggle             | `scripts/road-mode.sh on/off/status`                                    |
-| `just road-test`                        | Run road-mode unit tests                    | `scripts/tests/road-mode-test.sh`                                       |
-| `just deploy-ninja <ip>`                | Install NixOS on remote machine             | `nix run github:nix-community/nixos-anywhere`                           |
-| `just test-host <host>`                 | Build a host's closure, no apply            | `nix build .#nixosConfigurations.<host>.config.system.build.toplevel`   |
-| `just builder-info`                     | Show offload build machines                 | `cat /etc/nix/machines`                                                 |
-| `just builder-reset`                    | Recreate Mac builder VM disk (Mac)          | `launchctl bootout/bootstrap + rm nixos.qcow2`                          |
+| Command                                 | Description                                  | Equivalent Action                                                       |
+| :-------------------------------------- | :------------------------------------------- | :---------------------------------------------------------------------- |
+| `just build`                            | Rebuild and switch (darwin-aware)            | `nh os switch .` (Linux) / `just darwin-build` (macOS)                  |
+| `just darwin-build`                     | Rebuild and switch Mac (auto-starts builder) | `just ensure-builder && sudo -H darwin-rebuild switch --flake .#Mac`    |
+| `just ensure-builder`                   | Guard: ensure linux-builder VM runs (Mac)    | Check launchctl status; start if stopped                                |
+| `just dry-build`                        | Eval current host's closure, no build        | `nix build .#nixosConfigurations.$(hostname)...toplevel --dry-run`      |
+| `just iso`                              | Build the Travel-Canoe (minimal ISO)         | `nix build .#iso`                                                       |
+| `just iso-niri`                         | Build the niri desktop ISO                   | `nix build .#iso-niri`                                                  |
+| `just check`                            | Run flake checks (treefmt)                   | `nix flake check`                                                       |
+| `just fmt`                              | Format all files (treefmt)                   | `nix fmt`                                                               |
+| `just vm`                               | Build and prep the Ghost-Cave                | `nix build .#nixosConfigurations.ninja.config.system.build.vmWithDisko` |
+| `just clean`                            | Remove old system generations                | `nh clean all --keep 5`                                                 |
+| `just up`                               | Update all flake inputs and switch           | `nix flake update && just gcroots && nh os switch . --update`           |
+| `just up-nixpkgs`                       | Update only nixpkgs (full channel) + switch  | `nix flake update nixpkgs && just gcroots && nh os switch .`            |
+| `just gcroots`                          | Root pinned flake inputs against GC          | `nix build .#gcroots --out-link ~/.local/state/nix/gcroots/...`         |
+| `just setup-hooks`                      | Activate git pre-commit hooks                | `git config core.hooksPath .githooks`                                   |
+| `just validate-sudo`                    | Check sudo-readonly ruleset                  | `scripts/validate-sudo.sh`                                              |
+| `just nvidia-check`                     | Check NVIDIA drivers across all channels     | `scripts/nvidia-check.sh`                                               |
+| `just nvidia-test`                      | Run nvidia-check unit tests                  | `scripts/tests/nvidia-check-test.sh`                                    |
+| `just road-on / road-off / road-status` | Hostile-network lockdown toggle              | `scripts/road-mode.sh on/off/status`                                    |
+| `just road-test`                        | Run road-mode unit tests                     | `scripts/tests/road-mode-test.sh`                                       |
+| `just deploy-ninja <ip>`                | Install NixOS on remote machine              | `nix run github:nix-community/nixos-anywhere`                           |
+| `just test-host <host>`                 | Build a host's closure, no apply             | `nix build .#nixosConfigurations.<host>.config.system.build.toplevel`   |
+| `just builder-info`                     | Show offload build machines                  | `cat /etc/nix/machines`                                                 |
+| `just builder-reset`                    | Recreate Mac builder VM disk (Mac)           | `launchctl bootout/bootstrap + rm nixos.qcow2`                          |
 
 > **`test-host` + the Mac builder:** running `just test-host ninja` on the Mac builds ninja's whole
 > closure and offloads the Linux build to the [linux-builder](linux-builder.md). A green build means

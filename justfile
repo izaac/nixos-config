@@ -5,7 +5,7 @@ default:
         @just --list
 
 # Build the system for macOS (drb alias)
-darwin-build:
+darwin-build: ensure-builder
         sudo -H darwin-rebuild switch --flake .#Mac
 
 # Build the system (nrb alias); on macOS delegates to darwin-build
@@ -45,13 +45,13 @@ clean:
 up:
         nix flake update
         just gcroots
-        {{ if os() == "macos" { "nh darwin switch .#Mac --update" } else { "nh os switch . --update" } }}
+        {{ if os() == "macos" { "just ensure-builder && nh darwin switch .#Mac --update" } else { "nh os switch . --update" } }}
 
 # Update only the nixpkgs input (full channel bump) and switch
 up-nixpkgs:
         nix flake update nixpkgs
         just gcroots
-        {{ if os() == "macos" { "nh darwin switch .#Mac" } else { "nh os switch ." } }}
+        {{ if os() == "macos" { "just ensure-builder && nh darwin switch .#Mac" } else { "nh os switch ." } }}
 
 # Root the pinned flake inputs so GC can't delete eval-time sources
 gcroots:
@@ -70,6 +70,7 @@ deploy-ninja ip:
 # Test-build a host's full closure WITHOUT applying — validates eval + build.
 # On the Mac this offloads the Linux build to the linux-builder VM.
 test-host host:
+        {{ if os() == "macos" { "just ensure-builder" } else { "" } }}
         nix build .#nixosConfigurations.{{host}}.config.system.build.toplevel --no-link --print-out-paths
 
 # Show the build machines this host can offload to (Mac: the linux-builder)
@@ -111,11 +112,20 @@ nvidia-check *args:
 nvidia-test:
         @bash scripts/tests/nvidia-check-test.sh
 
+# Ensure the Linux builder VM is running on macOS (idempotent guard)
+ensure-builder:
+        @if [ "$(uname)" = "Darwin" ] && [ -f /Library/LaunchDaemons/org.nixos.linux-builder.plist ]; then \
+            if ! sudo launchctl print system/org.nixos.linux-builder 2>/dev/null | grep -q "state = running"; then \
+                echo "Starting linux-builder..."; \
+                sudo launchctl enable system/org.nixos.linux-builder 2>/dev/null || true; \
+                sudo launchctl bootstrap system /Library/LaunchDaemons/org.nixos.linux-builder.plist 2>/dev/null || \
+                sudo launchctl kickstart -k system/org.nixos.linux-builder 2>/dev/null || true; \
+            fi; \
+        fi
+
 # Start the Linux builder VM (needed only to build Linux derivations)
-builder-start:
-        @sudo launchctl enable system/org.nixos.linux-builder
-        @sudo launchctl bootstrap system /Library/LaunchDaemons/org.nixos.linux-builder.plist 2>/dev/null || true
-        @echo "linux-builder started"
+builder-start: ensure-builder
+        @echo "linux-builder ready"
 
 # Stop the Linux builder VM (frees ~1G RAM and idle CPU)
 builder-stop:
