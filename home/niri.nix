@@ -217,6 +217,15 @@ in {
         excludes = [{app-id = "^[Ss]team$";}];
         open-fullscreen = true;
       }
+      # Aliens: Fireteam Elite: opens tiled under niri; force fullscreen.
+      {
+        matches = [
+          {app-id = "^steam_app_1549970$";}
+          {title = "^Aliens: Fireteam Elite.*";}
+        ];
+        excludes = [{app-id = "^[Ss]team$";}];
+        open-fullscreen = true;
+      }
       # SPICE Viewer (virt-viewer, spicy) and Remmina session: open wider than default
       {
         matches = [
