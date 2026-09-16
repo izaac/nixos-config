@@ -6,7 +6,7 @@
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
-  hasDesktop = osConfig.mySystem.desktop.enable or false;
+  isWorkstation = (osConfig.mySystem.desktop.enable or false) || pkgs.stdenv.isDarwin;
   hasNvidia = builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or []);
   hasBluetooth = osConfig.mySystem.core.bluetooth.enable or false;
 in {
@@ -92,7 +92,7 @@ in {
       ticker
       tenki
     ]
-    ++ lib.optionals hasDesktop [
+    ++ lib.optionals isWorkstation [
       cloudflared
       github-copilot-cli
       claude-code
@@ -101,7 +101,7 @@ in {
     ++ lib.optionals pkgs.stdenv.isLinux [
       fuse3
     ]
-    ++ lib.optionals (pkgs.stdenv.isLinux && hasDesktop) [
+    ++ lib.optionals (pkgs.stdenv.isLinux && isWorkstation) [
       appimage-run
       wl-clipboard
       wl-clip-persist

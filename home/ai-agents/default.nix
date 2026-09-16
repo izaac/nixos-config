@@ -6,7 +6,7 @@
   osConfig ? {},
   ...
 }: let
-  hasDesktop = osConfig.mySystem.desktop.enable or false;
+  isWorkstation = (osConfig.mySystem.desktop.enable or false) || pkgs.stdenv.isDarwin;
   globalMd = builtins.readFile ./global.md;
   cavemanMd = builtins.readFile ./caveman.md;
   geminiMd = "${config.home.homeDirectory}/.gemini/GEMINI.md";
@@ -49,7 +49,7 @@
 in {
   home = {
     file =
-      (lib.optionalAttrs hasDesktop (
+      (lib.optionalAttrs isWorkstation (
         skillFiles
         // ownSkillFiles
         // {
@@ -104,7 +104,7 @@ in {
           fi
         '';
       }
-      // lib.optionalAttrs hasDesktop {
+      // lib.optionalAttrs isWorkstation {
         # Register MCP servers for AI agents. Antigravity CLI MCP migration is
         # a one-time manual step: `agy plugin import` pulls existing
         # ~/.gemini/settings.json mcpServers entries into agy's mcp_config.json.
