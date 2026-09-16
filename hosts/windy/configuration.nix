@@ -15,6 +15,7 @@
 in {
   imports = [
     ../common.nix
+    ../../modules/profiles/workstation.nix
     ./hardware.nix
     ./nvidia.nix
     ./network.nix

@@ -6,7 +6,6 @@
     ./rclone.nix
     ./smug.nix
     ./tmux.nix
-    ./theme.nix
     ./whosthere.nix
     ./dev.nix
     ./ai-agents

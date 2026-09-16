@@ -9,6 +9,7 @@
 in {
   imports = [
     ../common.nix
+    ../../modules/profiles/workstation.nix
     ./hardware.nix
     ./disko.nix
     ./nvidia.nix

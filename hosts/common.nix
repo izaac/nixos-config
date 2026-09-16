@@ -2,9 +2,6 @@
 {lib, ...}: {
   imports = [
     ../modules/core
-    ../modules/gaming
-    ../modules/desktop
-    ../modules/profiles/workstation.nix
     ../users/izaac
   ];
 
@@ -13,17 +10,6 @@
     core = {
       tailscale = {
         enable = lib.mkDefault true;
-      };
-      printing = {
-        enable = lib.mkDefault true;
-      };
-      sops = {
-        enable = lib.mkDefault true;
-      };
-    };
-    gaming = {
-      sunshine = {
-        enable = lib.mkDefault false;
       };
     };
   };

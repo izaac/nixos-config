@@ -123,6 +123,7 @@
 in {
   imports = [
     ../common.nix
+    ../../modules/profiles/server.nix
     ./disko.nix
     ./ssh.nix
     inputs.nixos-hardware.nixosModules.common-cpu-intel
@@ -215,38 +216,17 @@ in {
     ];
   };
 
-  # Host overrides: headless server profile
-  mySystem = {
-    desktop.enable = false;
-    gaming.enable = false;
-    core = {
-      tailscale = {
-        enable = true;
-        # Always-on wired box, so it carries the tailnet's routing duty:
-        # both the LAN subnet route and the exit node.
-        advertiseRoutes = [siteConfig.subnet];
-        advertiseExitNode = true;
-        routingInterface = "enp1s0";
-        # Unlike the workstations this host has no LAN DNS worth protecting,
-        # and it resolves tailnet names, so leave MagicDNS in charge.
-        acceptDns = true;
-      };
-      virtualization.enable = false;
-      printing.enable = false;
-      sops.enable = false;
-    };
-  };
-
-  # Disable flatpak on headless server
-  services.flatpak.enable = false;
-
-  # Server duty: make sleep impossible instead of managing inhibitor locks.
-  # Background jobs no longer need polkit-based sleep inhibition.
-  systemd.sleep.settings.Sleep = {
-    AllowSuspend = "no";
-    AllowHibernation = "no";
-    AllowHybridSleep = "no";
-    AllowSuspendThenHibernate = "no";
+  # Headless server overrides
+  mySystem.core.tailscale = {
+    enable = true;
+    # Always-on wired box, so it carries the tailnet's routing duty:
+    # both the LAN subnet route and the exit node.
+    advertiseRoutes = [siteConfig.subnet];
+    advertiseExitNode = true;
+    routingInterface = "enp1s0";
+    # Unlike the workstations this host has no LAN DNS worth protecting,
+    # and it resolves tailnet names, so leave MagicDNS in charge.
+    acceptDns = true;
   };
 
   # Enable Plex Media Server
@@ -419,5 +399,6 @@ in {
     btop
     rclone
     fuse3
+    intel-gpu-tools
   ];
 }

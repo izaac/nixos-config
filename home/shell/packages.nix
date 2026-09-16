@@ -2,9 +2,13 @@
   pkgs,
   lib,
   inputs,
+  osConfig ? {},
   ...
 }: let
   system = pkgs.stdenv.hostPlatform.system;
+  hasDesktop = osConfig.mySystem.desktop.enable or false;
+  hasNvidia = builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or []);
+  hasBluetooth = osConfig.mySystem.core.bluetooth.enable or false;
 in {
   home.packages = with pkgs;
     [
@@ -41,7 +45,6 @@ in {
       doggo # dog (rust) removed from nixpkgs as unmaintained+insecure
       lftp
       mosh
-      cloudflared
 
       # --- BENCHMARKING ---
       hyperfine
@@ -72,11 +75,6 @@ in {
       sops
       age
 
-      # --- AI CLI TOOLS ---
-      github-copilot-cli
-      claude-code
-      opencode
-
       # --- COMPRESSION & ARCHIVING ---
       ouch
       zip
@@ -94,14 +92,26 @@ in {
       ticker
       tenki
     ]
+    ++ lib.optionals hasDesktop [
+      cloudflared
+      github-copilot-cli
+      claude-code
+      opencode
+    ]
     ++ lib.optionals pkgs.stdenv.isLinux [
+      dwarfs
+      fuse3
+    ]
+    ++ lib.optionals (pkgs.stdenv.isLinux && hasDesktop) [
       appimage-run
       wl-clipboard
       wl-clip-persist
-      dwarfs
-      fuse3
-      nvtopPackages.nvidia
+    ]
+    ++ lib.optionals (pkgs.stdenv.isLinux && hasBluetooth) [
       bluetuith
+    ]
+    ++ lib.optionals (pkgs.stdenv.isLinux && hasNvidia) [
+      nvtopPackages.nvidia
     ]
     ++ lib.optionals pkgs.stdenv.isDarwin [
       # GNU userland for Linux-parity in interactive shell.

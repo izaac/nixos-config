@@ -1,6 +1,11 @@
 # Shared baseline for the interactive hosts (ninja, windy). Everything is
 # mkDefault so hosts override freely. The canoe ISOs do NOT import this.
 {lib, ...}: {
+  imports = [
+    ../desktop
+    ../gaming
+  ];
+
   mySystem = {
     desktop.enable = lib.mkDefault true;
     gaming.enable = lib.mkDefault true;
