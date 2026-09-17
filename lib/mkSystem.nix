@@ -19,11 +19,7 @@ inputs.nixpkgs.lib.nixosSystem {
     {
       # Linux-only overlays on top of the shared list.
       nixpkgs.overlays = [
-        (import ../overlays/gvfs-no-wsdd.nix)
-        (import ../overlays/dwarfs-skip-affinity-test.nix)
         (import ../overlays/copilot-cli-bash-path.nix)
-        (import ../overlays/ashell-unstable.nix inputs)
-        (import ../overlays/stash-unstable.nix inputs)
       ];
     }
   ];

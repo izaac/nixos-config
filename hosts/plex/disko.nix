@@ -4,7 +4,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/sda";
+        device = "/dev/disk/by-id/ata-PELADN_256GB_2024022700863";
         content = {
           type = "gpt";
           partitions = {
