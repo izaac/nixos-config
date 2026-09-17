@@ -85,12 +85,24 @@ release, so this is not a temporary gap waiting to close. Re-evaluate at the nex
 
 ---
 
+### 5. smug (smug-unstable.nix)
+
+**Package**: `smug` **Reason**: Track latest version from nixos-unstable ahead of nixos-26.05 stable
+release.
+
+**Migration target**: When nixos-26.05 updates smug or at next channel bump.
+
+**Affects**: All hosts (applied in `lib/common-nixpkgs.nix`)
+
+---
+
 ## Overlay Application
 
 | Overlay                | Applied In             | Hosts             | Source                        |
 | ---------------------- | ---------------------- | ----------------- | ----------------------------- |
 | ashell-unstable.nix    | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-ashell` (pinned rev) |
 | opencode-unstable.nix  | lib/common-nixpkgs.nix | ninja, windy, Mac | `nixpkgs-unstable` (floating) |
+| smug-unstable.nix      | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating) |
 | stash-unstable.nix     | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-unstable` (floating) |
 | tailscale-unstable.nix | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating) |
 

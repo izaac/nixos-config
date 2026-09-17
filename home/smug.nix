@@ -19,7 +19,7 @@
   }: {
     inherit name root;
     layout = "even-horizontal";
-    panes = [{commands = [];}];
+    panes = [{}];
   };
 
   daily = {

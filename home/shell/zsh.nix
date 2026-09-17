@@ -55,6 +55,9 @@
       if [[ $- == *i* && -n "''${SSH_TTY-}" && -z "''${TMUX-}" && -z "''${VSCODE_INJECTION-}" ]]; then
         exec tmux new-session -A -s main
       fi
+      if [[ "''${TMUX-}" == "skip" ]]; then
+        unset TMUX
+      fi
     '';
   };
 }
