@@ -69,6 +69,14 @@ in {
       harfbuzz
       gdk-pixbuf
       libepoxy
+
+      # Wine builds shipped with games. ntdll.so links against libunwind for
+      # exception handling, without which wine exits with "could not load
+      # ntdll.so" and nothing more useful. winebus.so dlopens SDL2 to find
+      # gamepads, and when that fails it says nothing at all: the game simply
+      # never sees a controller.
+      libunwind
+      SDL2
     ];
   };
 }
