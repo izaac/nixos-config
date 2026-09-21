@@ -6,14 +6,14 @@
 
 ## System Overview
 
-| Component   | Model                             | Notes                                        |
-| ----------- | --------------------------------- | -------------------------------------------- |
-| **Mini PC** | PELADN (Intel N100)               | Headless server, wired ethernet only         |
-| **CPU**     | Intel N100 (Alder Lake-N)         | 4-Core, 4-Thread, up to 3.4 GHz, low TDP     |
-| **GPU**     | Intel UHD Graphics (Alder Lake-N) | `8086:46d1`, QuickSync transcoding for Plex  |
-| **RAM**     | 16GB DDR4-3200 SODIMM             | Single stick, A-DATA 1Rx8, non-ECC           |
-| **Storage** | PELADN 256GB SATA SSD             | `/dev/sda`, unencrypted ext4 via disko       |
-| **Role**    | Plex media server + home server   | Media served from an encrypted rclone remote |
+| Component   | Model                             | Notes                                                            |
+| ----------- | --------------------------------- | ---------------------------------------------------------------- |
+| **Mini PC** | PELADN (Intel N100)               | Headless server, wired ethernet only                             |
+| **CPU**     | Intel N100 (Alder Lake-N)         | 4-Core, 4-Thread, up to 3.4 GHz, low TDP                         |
+| **GPU**     | Intel UHD Graphics (Alder Lake-N) | `8086:46d1`, QuickSync transcoding for Plex                      |
+| **RAM**     | 16GB DDR4-3200 SODIMM             | Single stick, A-DATA 1Rx8, non-ECC                               |
+| **Storage** | PELADN 256GB SATA SSD             | `/dev/disk/by-id/ata-PELADN_256GB_2024022700863`, ext4 via disko |
+| **Role**    | Plex media server + home server   | Media served from an encrypted rclone remote                     |
 
 ---
 
@@ -21,10 +21,10 @@
 
 ### Partition Layout (disko)
 
-**PELADN 256GB SATA SSD (`/dev/sda`):**
+**PELADN 256GB SATA SSD (`/dev/disk/by-id/ata-PELADN_256GB_2024022700863`):**
 
-- `/dev/sda1` (1G) - EFI System Partition (`/boot`, fmask/dmask 0077)
-- `/dev/sda2` (237.5G) - Root filesystem, ext4 with `noatime,nodiratime,lazytime,commit=60`
+- Partition 1 (1G) - EFI System Partition (`/boot`, fmask/dmask 0077)
+- Partition 2 (237.5G) - Root filesystem, ext4 with `noatime,nodiratime,lazytime,commit=60`
 
 No LUKS on this host. No disk swap partition; ZRAM provides swap (see
 `modules/core/performance.nix`).

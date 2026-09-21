@@ -133,7 +133,7 @@ sudo cat /run/secrets/some-secret  # should show decrypted content
 
 ```bash
 cd ~/nixos-config  # or clone: git clone git@github.com:izaac/nixos-config.git
-nrb  # nh os switch .
+just build  # or nh os switch .
 ```
 
 ## Testing with vmWithDisko

@@ -1,6 +1,6 @@
 # Hardware Configuration - windy
 
-> **Last Updated**: 2026-02-19 **System**: GIGABYTE AERO 15 YD **OS**: NixOS 25.11
+> **Last Updated**: 2026-09-21 **System**: GIGABYTE AERO 15 YD **OS**: NixOS 26.05
 
 ---
 
@@ -202,9 +202,9 @@ come back, and check the holder scan above before blaming the driver.
 
 windy is tuned as the inverse of ninja. ninja compiles a bespoke low-latency kernel and boots it
 `preempt=full`; windy stays on the cached `linuxPackages_latest` and trades responsiveness for idle
-power. A `structuredExtraConfig` would defeat the binary cache and turn every kernel bump into a
-multi-hour local compile on a laptop with turbo disabled, costing far more energy than the config
-could save.
+power. Shared power and battery baselines are modularized in `modules/profiles/laptop.nix`. A
+`structuredExtraConfig` would defeat the binary cache and turn every kernel bump into a multi-hour
+local compile on a laptop with turbo disabled, costing far more energy than the config could save.
 
 - **TLP**: Enabled. Governor `powersave` on both AC and battery, turbo off, sustained load capped at
   80% (AC) / 60% (battery). Runtime PM set to `auto`, PCIe ASPM `powersupersave` on battery, USB

@@ -5,12 +5,24 @@
 - [Hardware Configuration (ninja)](hardware.md)
 - [Host Notes (windy)](windy.md)
 - [Hardware Configuration (plex)](plex.md)
+- [Host Configuration (Mac)](mac.md)
 - [NVIDIA Driver Updates](nvidia-driver-updates.md)
 - [nixpkgs-unstable Usage Reference](nixpkgs-unstable.md)
 - [Security & Hardening](security.md)
 - [Secret Management](secrets.md)
 - [GitHub SSH Host Key Pinning](known-hosts.md)
 - [System Recovery with Disko (ninja)](disko-rebuild.md)
+
+## Architecture & Profiles
+
+The system uses modular host role profiles (`modules/profiles/`):
+
+- **Workstation** (`modules/profiles/workstation.nix`): Full desktop stack, dev tooling, audio,
+  gaming, and sops secrets (`ninja`, `windy`).
+- **Server** (`modules/profiles/server.nix`): Minimal headless server footprint, tailscale subnet
+  router, no GUI packages (`plex`).
+- **Laptop** (`modules/profiles/laptop.nix`): Shared power management, TLP, thermald, battery
+  thresholds, and backlight controls (`windy`).
 
 ## Tools & Workflows
 

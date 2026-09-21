@@ -37,6 +37,9 @@ just <command>
 | `just deploy-ninja <ip>`                | Install NixOS on remote machine              | `nix run github:nix-community/nixos-anywhere`                           |
 | `just test-host <host>`                 | Build a host's closure, no apply             | `nix build .#nixosConfigurations.<host>.config.system.build.toplevel`   |
 | `just builder-info`                     | Show offload build machines                  | `cat /etc/nix/machines`                                                 |
+| `just builder-start`                    | Start Mac Linux builder VM (Mac)             | Guarded check & launchctl bootstrap                                     |
+| `just builder-stop`                     | Stop Mac Linux builder VM (Mac)              | `launchctl disable + bootout` (frees ~1G RAM)                           |
+| `just builder-status`                   | Check if Mac Linux builder runs (Mac)        | `launchctl print system/org.nixos.linux-builder`                        |
 | `just builder-reset`                    | Recreate Mac builder VM disk (Mac)           | `launchctl bootout/bootstrap + rm nixos.qcow2`                          |
 
 > **`test-host` + the Mac builder:** running `just test-host ninja` on the Mac builds ninja's whole

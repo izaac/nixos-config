@@ -67,7 +67,7 @@ nix-update --flake brush-shell
 nix-update --flake --version=0.4.0 brush-shell
 ```
 
-**Limitations:** Does not work with inline overlays (e.g., `overlays/sparrow-temurin-fix.nix`). Only
+**Limitations:** Does not work with inline overlays (e.g., custom patches in `overlays/`). Only
 works with packages that have a discoverable upstream (GitHub releases, PyPI, etc.).
 
 ### nurl
@@ -80,19 +80,20 @@ manually updating overlays.
 nurl https://github.com/reubeno/brush v0.3.1
 
 # Generate fetchurl hash for a release tarball
-nurl https://github.com/sparrowwallet/sparrow/releases/download/2.5.0/sparrowwallet-2.5.0-x86_64.tar.gz
+nurl https://github.com/ivaaaan/smug/archive/refs/tags/v0.3.5.tar.gz
 ```
 
-**Workflow for overlay updates (e.g., Sparrow):**
+**Workflow for overlay updates:**
 
-1. Get the new hash: `nurl https://github.com/sparrowwallet/sparrow <new-version>`
+1. Get the new hash: `nurl <source-url> <new-version>`
 2. Update version and hash in the overlay file manually
-3. Rebuild: `nh os build .`
+3. Rebuild: `just build`
 
 ## Shell Configuration Validation
 
-The `home/shell.nix` file is complex and contains many embedded bash functions. To ensure changes do
-not introduce syntax errors that could break the login shell, use the following validation command:
+Shell configuration is modularized in `home/shell/*.nix` (`functions.nix`, `init.nix`, etc.). To
+ensure changes do not introduce syntax errors that could break the login shell, use the following
+validation command:
 
 ```bash
 nix eval ".#nixosConfigurations.$(hostname).config.home-manager.users.$USER.programs.bash.initExtra" \

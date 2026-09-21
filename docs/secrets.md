@@ -18,48 +18,50 @@ persists to disk. It only lives in `/run/secrets/` (tmpfs) at runtime.
                                            │ recipients each file
                                            │ should be encrypted for
                                            ▼
-       ┌───────────────────────────────────────────────────────────┐
-       │   secrets/common.yaml                                     │
-       │   - sshHost, geminiProject, cloudCodeProject              │
-       │   - encrypted to: user_ninja, user_mac, host_shared       │
-       └───────────────────────────────────────────────────────────┘
-       ┌───────────────────────────────────────────────────────────┐
-       │   secrets/ninja.yaml   (per-host slot, create on demand)  │
-       │   secrets/windy.yaml   (per-host slot, create on demand)  │
-       └───────────────────────────────────────────────────────────┘
+        ┌───────────────────────────────────────────────────────────┐
+        │   secrets/common.yaml                                     │
+        │   - sshHost, geminiProject, cloudCodeProject              │
+        │   - encrypted to: user_{ninja,mac,windy}, host_{ninja,windy}│
+        └───────────────────────────────────────────────────────────┘
+        ┌───────────────────────────────────────────────────────────┐
+        │   secrets/ninja.yaml   (per-host slot, create on demand)  │
+        │   secrets/windy.yaml   (per-host slot, create on demand)  │
+        └───────────────────────────────────────────────────────────┘
 
-                   Decryption requires a PRIVATE key matching
-                   one of the recipients listed in the file header.
+                    Decryption requires a PRIVATE key matching
+                    one of the recipients listed in the file header.
 
-  ┌─────────────────────────┐      ┌─────────────────────────┐
-  │   Boot path (NixOS)     │      │   Editor path (any)     │
-  │                         │      │                         │
-  │   root reads            │      │   user reads            │
-  │   /etc/ssh/             │      │   ~/.config/sops/age/   │
-  │     ssh_host_ed25519_   │      │     keys.txt            │
-  │     key  (host SSH)     │      │   (user age key,        │
-  │       │                 │      │    derived from         │
-  │       ▼                 │      │    ~/.ssh/id_ed25519)   │
-  │   sops-nix derives      │      │       │                 │
-  │   age private key       │      │       ▼                 │
-  │       │                 │      │   sops CLI uses it      │
-  │       ▼                 │      │   to decrypt for edit   │
-  │   decrypts secret →     │      │                         │
-  │   /run/secrets/*        │      │                         │
-  └─────────────────────────┘      └─────────────────────────┘
+   ┌─────────────────────────┐      ┌─────────────────────────┐
+   │   Boot path (NixOS)     │      │   Editor path (any)     │
+   │                         │      │                         │
+   │   root reads            │      │   user reads            │
+   │   /etc/ssh/             │      │   ~/.config/sops/age/   │
+   │     ssh_host_ed25519_   │      │     keys.txt            │
+   │     key  (host SSH)     │      │   (user age key,        │
+   │       │                 │      │    derived from         │
+   │       ▼                 │      │    ~/.ssh/id_ed25519)   │
+   │   sops-nix derives      │      │       │                 │
+   │   age private key       │      │       ▼                 │
+   │       │                 │      │   sops CLI uses it      │
+   │       ▼                 │      │   to decrypt for edit   │
+   │   decrypts secret →     │      │                         │
+   │   /run/secrets/*        │      │                         │
+   └─────────────────────────┘      └─────────────────────────┘
 ```
 
 ---
 
 ## Recipients (private keys ↔ machines)
 
-`.sops.yaml` defines three named recipients via YAML aliases:
+`.sops.yaml` defines named recipients via YAML aliases:
 
-| Alias          | What it is                                               | Lives on                                                   | Used for                               |
-| -------------- | -------------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------- |
-| `&user_ninja`  | Age key derived from ninja user SSH key                  | `~/.config/sops/age/keys.txt`                              | Editing secrets from ninja             |
-| `&user_mac`    | Age key derived from Mac user SSH key                    | `~/.config/sops/age/keys.txt` (Linux path) + macOS symlink | Editing secrets from Mac               |
-| `&host_shared` | Age key derived from `/etc/ssh/ssh_host_ed25519_key.pub` | ninja + windy (shared today)                               | Boot-time decryption via `sshKeyPaths` |
+| Alias         | What it is                                           | Lives on                                                   | Used for                               |
+| ------------- | ---------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------- |
+| `&user_ninja` | Age key derived from ninja user SSH key              | `~/.config/sops/age/keys.txt`                              | Editing secrets from ninja             |
+| `&user_mac`   | Age key derived from Mac user SSH key                | `~/.config/sops/age/keys.txt` (Linux path) + macOS symlink | Editing secrets from Mac               |
+| `&user_windy` | Age key derived from windy user SSH key              | `~/.config/sops/age/keys.txt`                              | Editing secrets from windy             |
+| `&host_ninja` | Age key derived from ninja `/etc/ssh/ssh_host_*` key | ninja host                                                 | Boot-time decryption via `sshKeyPaths` |
+| `&host_windy` | Age key derived from windy `/etc/ssh/ssh_host_*` key | windy host                                                 | Boot-time decryption via `sshKeyPaths` |
 
 **Property to preserve:** every secrets file MUST list at least one editor recipient (e.g.
 `*user_mac`) so a human can always rekey. Without that you'd need a host to be online to recover,

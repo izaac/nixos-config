@@ -3,16 +3,16 @@
 This document outlines the security measures and system hardening techniques implemented in this
 NixOS configuration.
 
-## Disk Encryption (LUKS)
+## Disk Encryption (LUKS & FileVault)
 
-Both hosts use encrypted root volumes via initrd-unlocked LUKS devices:
+Workstation hosts use encrypted root volumes for data-at-rest protection:
 
-- `hosts/ninja/hardware.nix`:
-  - `boot.initrd.luks.devices."luks-782b8c84-..."`
-- `hosts/windy/hardware.nix`:
-  - `boot.initrd.luks.devices."luks-16413ece-..."`
-
-This protects data at rest for system partitions.
+- **Linux Workstations** (`ninja`, `windy`): initrd-unlocked LUKS devices
+  - `hosts/ninja/hardware.nix`: `boot.initrd.luks.devices."luks-782b8c84-..."`
+  - `hosts/windy/hardware.nix`: `boot.initrd.luks.devices."luks-16413ece-..."`
+- **Mac**: macOS FileVault whole-disk encryption.
+- **plex**: Unencrypted ext4 root via disko (headless server; media payload protected client-side
+  via encrypted rclone remote `ul-crypt`).
 
 ## Secrets Management (sops-nix + age)
 

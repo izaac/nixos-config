@@ -1,12 +1,12 @@
 # Updating Custom NVIDIA Drivers in NixOS
 
-> **Current state:** both hosts track nixpkgs driver channels, ninja uses
-> `nvidiaPackages.production`, windy `nvidiaPackages.stable` (open kernel modules, see
-> `hosts/*/nvidia.nix`). No version is pinned; drivers move with the nixpkgs input. The `mkDriver`
-> override below is the **escape hatch** for pinning a version newer than what the channel ships.
+> **Current state:** `windy` tracks `nvidiaPackages.stable` (open kernel modules), while `ninja`
+> uses the `mkDriver` override pinned to **`615.71.09`** (New Feature Branch) to include Blackwell
+> fixes for the RTX 5060 Ti. The `mkDriver` override below documents how this pin is maintained and
+> bumped when nixpkgs lags upstream.
 
 This guide explains how to pin an NVIDIA driver version using the `mkDriver` override when the
-nixpkgs channel lags a release you need (the example versions below are historical).
+nixpkgs channel lags a release you need.
 
 ## 1. Where to Look for Updates
 
@@ -30,12 +30,11 @@ The custom driver configuration is located in the NVIDIA specific module for the
 ```nix
 hardware.nvidia = {
   package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-    version = "590.44.01";
-    sha256_64bit = "sha256-VbkVaKwElaazojfxkHnz/nN/5olk13ezkw/EQjhKPms=";
-    sha256_aarch64 = "sha256-gpqz07aFx+lBBOGPMCkbl5X8KBMPwDqsS+knPHpL/5g=";
-    openSha256 = "sha256-ft8FEnBotC9Bl+o4vQA1rWFuRe7gviD/j1B8t0MRL/o=";
-    settingsSha256 = "sha256-wVf1hku1l5OACiBeIePUMeZTWDQ4ueNvIk6BsW/RmF4=";
-    persistencedSha256 = "sha256-nHzD32EN77PG75hH9W8ArjKNY/7KY6kPKSAhxAWcuS4=";
+    version = "615.71.09";
+    sha256_64bit = "sha256-zc7tIrvrYSSNGm3qvCWWZz46ZQFpjucayNL9wo87cP4=";
+    openSha256 = "sha256-3gByMYIwFzRaLdDG+roCEOuKRRJDrljG9AlLnRZTirM=";
+    settingsSha256 = "sha256-LK1LU8mDkM/XVRKPBtuOZh9nIP/lGFLAJnmasEX8jhg=";
+    persistencedSha256 = "sha256-qPRb+3d88+2RcpUkoBTbjIaImnQ+jX+/6p1vXcJ5geE=";
   };
 };
 ```

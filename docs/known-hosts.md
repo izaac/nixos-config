@@ -4,7 +4,8 @@ Pins github.com SSH host keys (ED25519, ECDSA, RSA) at the system level via
 `programs.ssh.knownHosts`. First `git clone` over SSH never prompts for host key acceptance, and the
 connection is immune to first connect TOFU MITM against github.com.
 
-Enabled on ninja and windy via `mySystem.core."known-hosts".enable`.
+Enabled across all NixOS hosts (`ninja`, `windy`, `plex`) via `modules/profiles/workstation.nix` and
+`modules/profiles/server.nix`.
 
 ## Where it earns its keep
 
