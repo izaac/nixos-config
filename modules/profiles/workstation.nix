@@ -24,6 +24,7 @@
       sops.enable = lib.mkDefault true;
       system.enable = lib.mkDefault true;
       usb-fixes.enable = lib.mkDefault true;
+      "usb-hang-watchdog".enable = lib.mkDefault true;
       user.enable = lib.mkDefault true;
       theme.enable = lib.mkDefault true;
       home-manager.enable = lib.mkDefault true;

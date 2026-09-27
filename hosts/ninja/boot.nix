@@ -40,7 +40,8 @@
     kernelParams = [
       "boot.shell_on_fail"
       "pci=realloc,pcie_bus_safe"
-      "pcie_aspm=off"
+      "pcie_aspm=force"
+      "pcie_aspm.policy=performance"
       "iommu=pt"
       "pcie_ports=native"
       "amd_pstate=active"

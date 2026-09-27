@@ -9,6 +9,7 @@
     ./bluetooth.nix
     ./virtualization.nix
     ./usb-fixes.nix
+    ./usb-hang-watchdog.nix
     ./maintenance.nix
     ./performance.nix
     ./home-manager.nix

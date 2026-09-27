@@ -5,9 +5,11 @@
   osConfig ? {},
   ...
 }: let
-  # Both timers run from the start of idle, not chained: lock at 6 minutes,
-  # blank the displays 5 minutes later. Suspend stays manual, via the ashell
-  # settings panel or wlogout.
+  isNinja = (osConfig.networking.hostName or "") == "ninja";
+
+  # Lock at 6 minutes. Screen power-off (screenOffTimeout) is disabled on ninja
+  # because DPMS power-off cycles the DisplayPort connector on NVIDIA, which
+  # triggers a known niri and vblank deadlock upon display wake.
   lockTimeout = 360;
   screenOffTimeout = 660;
 
@@ -37,12 +39,26 @@
       exec swaylock -f --image "$wallpaper"
     '';
   };
+
+  wlogout = pkgs.symlinkJoin {
+    name = "wlogout-wrapped";
+    paths = [pkgs.wlogout];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      wrapProgram $out/bin/wlogout \
+        --add-flags "-b ${
+        if isNinja
+        then "4"
+        else "5"
+      }"
+    '';
+  };
 in {
   # The only two C tools left here. Every Rust Wayland locker surveyed is
   # unproven (largest 83 stars, next dead since 2025) and waylock is Zig, so a
   # security boundary stays on the battle-tested implementation.
   home.packages = [
-    pkgs.wlogout
+    wlogout
     lockNow
   ];
 
@@ -90,17 +106,20 @@ in {
       before-sleep = lib.getExe lockNow;
       lock = lib.getExe lockNow;
     };
-    timeouts = [
-      {
-        timeout = lockTimeout;
-        command = lib.getExe lockNow;
-      }
-      {
-        timeout = screenOffTimeout;
-        command = "${lib.getExe niri} msg action power-off-monitors";
-        resumeCommand = "${lib.getExe niri} msg action power-on-monitors";
-      }
-    ];
+    timeouts =
+      [
+        {
+          timeout = lockTimeout;
+          command = lib.getExe lockNow;
+        }
+      ]
+      ++ lib.optionals (!isNinja) [
+        {
+          timeout = screenOffTimeout;
+          command = "${lib.getExe niri} msg action power-off-monitors";
+          resumeCommand = "${lib.getExe niri} msg action power-on-monitors";
+        }
+      ];
   };
 
   # wlogout only backs the Mod+Shift+P keybind; the ashell settings panel
@@ -110,13 +129,21 @@ in {
     inherit (config.lib.stylix.colors) withHashtag;
     icons = "${pkgs.wlogout}/share/wlogout/icons";
   in {
-    "wlogout/layout".text = ''
-      {"label":"lock","action":"${lib.getExe lockNow}","text":"Lock","keybind":"l"}
-      {"label":"logout","action":"${lib.getExe niri} msg action quit --skip-confirmation","text":"Logout","keybind":"e"}
-      {"label":"suspend","action":"systemctl suspend","text":"Suspend","keybind":"u"}
-      {"label":"reboot","action":"systemctl reboot","text":"Reboot","keybind":"r"}
-      {"label":"shutdown","action":"systemctl poweroff","text":"Shutdown","keybind":"s"}
-    '';
+    "wlogout/layout".text = let
+      entries =
+        [
+          ''{"label":"lock","action":"${lib.getExe lockNow}","text":"Lock","keybind":"l"}''
+          ''{"label":"logout","action":"${lib.getExe niri} msg action quit --skip-confirmation","text":"Logout","keybind":"e"}''
+        ]
+        ++ lib.optionals (!isNinja) [
+          ''{"label":"suspend","action":"systemctl suspend","text":"Suspend","keybind":"u"}''
+        ]
+        ++ [
+          ''{"label":"reboot","action":"systemctl reboot","text":"Reboot","keybind":"r"}''
+          ''{"label":"shutdown","action":"systemctl poweroff","text":"Shutdown","keybind":"s"}''
+        ];
+    in
+      lib.concatStringsSep "\n" entries + "\n";
 
     "wlogout/style.css".text = ''
       * {

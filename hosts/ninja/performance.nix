@@ -9,10 +9,17 @@
     ];
 
     targets = {
-      sleep.enable = true;
-      suspend.enable = true;
-      hibernate.enable = true;
-      hybrid-sleep.enable = true;
+      sleep.enable = false;
+      suspend.enable = false;
+      hibernate.enable = false;
+      hybrid-sleep.enable = false;
+    };
+
+    sleep.settings.Sleep = {
+      AllowSuspend = "no";
+      AllowHibernation = "no";
+      AllowSuspendThenHibernate = "no";
+      AllowHybridSleep = "no";
     };
 
     oomd.enable = true;
@@ -65,8 +72,8 @@
     # scx_lavd is configured in gaming/default.nix (mkDefault)
 
     logind.settings.Login = {
-      HandleSuspendKey = "suspend";
-      HandleHibernateKey = "hibernate";
+      HandleSuspendKey = "ignore";
+      HandleHibernateKey = "ignore";
       HandleLidSwitch = "ignore";
       NAutoVTs = 0; # Don't autospawn gettys — greetd handles login
     };

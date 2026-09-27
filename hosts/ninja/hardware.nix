@@ -17,7 +17,7 @@
 
     # Workaround for Intel I225-V (igc) dropping connections after a few hours
     # Prevents PCIe power management from putting the NIC into a state it can't recover from
-    # Note: pcie_aspm=off is already set in boot.nix (pcie_aspm.policy is not a valid param)
+    # Note: pcie_aspm=force and pcie_aspm.policy=performance are set in boot.nix
     kernelParams = ["pcie_port_pm=off"];
   };
 
