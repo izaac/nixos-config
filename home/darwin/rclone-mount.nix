@@ -63,7 +63,9 @@ in {
   # GC (nix store symlinks inside .app bundles confuse macOS code signing).
   home.activation.rcloneMountApp = lib.hm.dag.entryAfter ["writeBoundary"] ''
     APP_DEST="$HOME/Applications/Mount Encrypted Drive.app"
+    chmod -R u+w "$APP_DEST" 2>/dev/null || true
     rm -rf "$APP_DEST"
     cp -r "${rcloneMountApp}/Mount Encrypted Drive.app" "$APP_DEST"
+    chmod -R u+w "$APP_DEST"
   '';
 }
