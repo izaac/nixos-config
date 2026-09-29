@@ -309,6 +309,7 @@
       "hammerspoon"
       "iterm2"
       "keka"
+      "macfuse"
       "microsoft-edge"
       "moonlight"
       "plex"
@@ -342,6 +343,7 @@
 
         ../../home/darwin/hammerspoon.nix
         ../../home/darwin/kitty.nix
+        ../../home/darwin/rclone-mount.nix
         ../../home/darwin/screenshots.nix
         ../../home/lazyvim.nix
         ../../home/zed.nix
