@@ -2,6 +2,7 @@
 
 ## Project
 
+- [Adding a New Host](adding-a-host.md)
 - [Hardware Configuration (ninja)](hardware.md)
 - [Host Notes (windy)](windy.md)
 - [Hardware Configuration (plex)](plex.md)
@@ -23,6 +24,9 @@ The system uses modular host role profiles (`modules/profiles/`):
   router, no GUI packages (`plex`).
 - **Laptop** (`modules/profiles/laptop.nix`): Shared power management, TLP, thermald, battery
   thresholds, and backlight controls (`windy`).
+
+Adding a new host requires only a `hosts/<name>/` directory with a `system.nix` file. See
+[Adding a New Host](adding-a-host.md) for the full guide.
 
 ## Tools & Workflows
 

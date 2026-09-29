@@ -96,26 +96,29 @@
     treefmtEval =
       forEachSystem (system:
         inputs.treefmt-nix.lib.evalModule (mkPkgs system) ./treefmt.nix);
-  in {
-    nixosConfigurations = {
-      ninja = mkSystem "ninja" "x86_64-linux";
-      windy = mkSystem "windy" "x86_64-linux";
-      plex = mkSystem "plex" "x86_64-linux";
-      canoe = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = {inherit inputs userConfig siteConfig;};
-        modules = [./hosts/canoe/minimal.nix];
-      };
-      canoe-niri = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = {inherit inputs userConfig siteConfig;};
-        modules = [./hosts/canoe/niri.nix];
-      };
-    };
 
-    darwinConfigurations = {
-      Mac = mkDarwin "Mac";
-    };
+    # Auto-discover hosts: any directory under hosts/ with a system.nix file
+    # is automatically added to nixosConfigurations or darwinConfigurations.
+    # See docs/adding-a-host.md for the full guide.
+    hostDirs =
+      nixpkgs.lib.filterAttrs (_name: type: type == "directory")
+      (builtins.readDir ./hosts);
+
+    hostSystems =
+      nixpkgs.lib.mapAttrs
+      (
+        name: _:
+          import ./hosts/${name}/system.nix
+      )
+      hostDirs;
+
+    nixosHosts = nixpkgs.lib.filterAttrs (_name: system: system == "x86_64-linux") hostSystems;
+    darwinHosts = nixpkgs.lib.filterAttrs (_name: system: system == "aarch64-darwin") hostSystems;
+
+    nixosConfigurations = nixpkgs.lib.mapAttrs (name: _: mkSystem name "x86_64-linux") nixosHosts;
+    darwinConfigurations = nixpkgs.lib.mapAttrs (name: _: mkDarwin name) darwinHosts;
+  in {
+    inherit nixosConfigurations darwinConfigurations;
 
     packages = forEachSystem (
       system: let
@@ -168,18 +171,24 @@
       pkgs = mkPkgs system;
       mkEvalCheck = name: toplevel:
         pkgs.writeText "${name}-eval-check" (builtins.unsafeDiscardStringContext toplevel.drvPath);
+
+      systemHosts = nixpkgs.lib.filterAttrs (_name: s: s == system) hostSystems;
+      configurations =
+        if system == "aarch64-darwin"
+        then self.darwinConfigurations
+        else self.nixosConfigurations;
+
+      hostChecks =
+        nixpkgs.lib.mapAttrs
+        (
+          name: _:
+            mkEvalCheck name configurations.${name}.config.system.build.toplevel
+        )
+        systemHosts;
     in
-      (nixpkgs.lib.optionalAttrs (system == "aarch64-darwin") {
-        Mac-eval = mkEvalCheck "Mac" self.darwinConfigurations.Mac.config.system.build.toplevel;
-      })
+      hostChecks
       // (nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
         formatting = treefmtEval.${system}.config.build.check self;
-
-        ninja-eval = mkEvalCheck "ninja" self.nixosConfigurations.ninja.config.system.build.toplevel;
-        windy-eval = mkEvalCheck "windy" self.nixosConfigurations.windy.config.system.build.toplevel;
-        plex-eval = mkEvalCheck "plex" self.nixosConfigurations.plex.config.system.build.toplevel;
-        canoe-eval = mkEvalCheck "canoe" self.nixosConfigurations.canoe.config.system.build.toplevel;
-        canoe-niri-eval = mkEvalCheck "canoe-niri" self.nixosConfigurations.canoe-niri.config.system.build.toplevel;
       }));
   };
 }
