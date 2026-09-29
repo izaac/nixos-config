@@ -8,7 +8,7 @@
   _force = import ../../lib/mkForceIf.nix {inherit lib;};
 in {
   imports = [
-    ../common.nix
+    ../workstation-common.nix
     ../../modules/profiles/workstation.nix
     ./hardware.nix
     ./disko.nix

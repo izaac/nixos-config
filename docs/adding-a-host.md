@@ -6,22 +6,17 @@ contains a `system.nix` file is automatically detected and added to the flake ou
 
 ## Quick Start
 
+Copy the host template and customize:
+
 ```bash
-# 1. Create the host directory
-mkdir hosts/myhost
+# 1. Copy template
+cp -r templates/host hosts/myhost
 
-# 2. Add system.nix (required)
-echo '"x86_64-linux"' > hosts/myhost/system.nix
+# 2. Set system type (already "x86_64-linux" in template)
+# Edit hosts/myhost/system.nix for other platforms
 
-# 3. Create configuration.nix
-cat > hosts/myhost/configuration.nix << 'EOF'
-{ ... }: {
-  imports = [
-    ../common.nix
-    ../../modules/profiles/workstation.nix
-  ];
-}
-EOF
+# 3. Customize configuration
+$EDITOR hosts/myhost/configuration.nix
 
 # 4. Build and switch
 nh os switch .#myhost
@@ -95,7 +90,7 @@ Profiles set `lib.mkDefault` values, so hosts can override any setting.
 # hosts/myhost/configuration.nix
 { ... }: {
   imports = [
-    ../common.nix
+    ../workstation-common.nix
     ../../modules/profiles/workstation.nix
     ./disko.nix
     ./hardware.nix
@@ -117,7 +112,7 @@ Profiles set `lib.mkDefault` values, so hosts can override any setting.
 # hosts/myhost/configuration.nix
 { ... }: {
   imports = [
-    ../common.nix
+    ../workstation-common.nix
     ../../modules/profiles/workstation.nix
     ../../modules/profiles/laptop.nix
     ./hardware.nix
@@ -132,7 +127,7 @@ Profiles set `lib.mkDefault` values, so hosts can override any setting.
 # hosts/myhost/configuration.nix
 { ... }: {
   imports = [
-    ../common.nix
+    ../workstation-common.nix
     ../../modules/profiles/server.nix
     ./disko.nix
     ./ssh.nix
@@ -179,9 +174,7 @@ nh os switch .#myhost
 ### Remote (nixos-anywhere)
 
 ```bash
-nix run github:nix-community/nixos-anywhere -- \
-  --flake .#myhost \
-  root@<ip>
+nix run github:nix-community/nixos-anywhere -- --flake .#myhost root@<ip>
 ```
 
 ### VM (Test Build)

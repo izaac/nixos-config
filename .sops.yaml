@@ -34,3 +34,10 @@ creation_rules:
           - *user_mac
           - *user_windy
           - *host_windy
+  - path_regex: secrets/plex\.yaml$
+    key_groups:
+      - age:
+          - *user_ninja
+          - *user_mac
+          - *host_ninja
+          - *host_windy

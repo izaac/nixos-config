@@ -14,7 +14,7 @@
   in "0000:${pad (builtins.elemAt parts 0)}:${pad (builtins.elemAt parts 1)}.1";
 in {
   imports = [
-    ../common.nix
+    ../workstation-common.nix
     ../../modules/profiles/workstation.nix
     ../../modules/profiles/laptop.nix
     ./hardware.nix

@@ -122,7 +122,7 @@
   scheduledLibraryUpdateInterval = 6 * 60 * 60;
 in {
   imports = [
-    ../common.nix
+    ../workstation-common.nix
     ../../modules/profiles/server.nix
     ./disko.nix
     ./ssh.nix
