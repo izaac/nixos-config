@@ -220,14 +220,17 @@ access (e.g., a rescue system from your hosting provider, or a live USB on anoth
 Each machine needs its own disko config because disk paths differ. To deploy to a machine with
 different disks:
 
-1. Create a new host in the flake:
+1. Create a new host directory (auto-discovered, no flake.nix edit needed):
 
    ```text
    hosts/newbox/
+   ├── system.nix          # required: "x86_64-linux" or "aarch64-darwin"
    ├── configuration.nix   # system config for the new machine
    ├── disko.nix           # disk layout matching the target's drives
    └── hardware.nix        # hardware modules, kernel config
    ```
+
+   See [Adding a New Host](adding-a-host.md) for the full guide.
 
 2. Find the target machine's disk IDs (over SSH):
 
@@ -238,17 +241,7 @@ different disks:
 3. Write `disko.nix` using those disk IDs. The structure is the same as `hosts/ninja/disko.nix` but
    with different device paths, partition sizes, and labels.
 
-4. Add the new host to `flake.nix`:
-
-   ```nix
-   nixosConfigurations = {
-     ninja = mkSystem "ninja" "x86_64-linux";
-     windy = mkSystem "windy" "x86_64-linux";
-     newbox = mkSystem "newbox" "x86_64-linux";
-   };
-   ```
-
-5. Run nixos-anywhere:
+4. Run nixos-anywhere:
 
    ```bash
    nix run github:nix-community/nixos-anywhere -- \

@@ -311,17 +311,16 @@ Add a new alias under `keys` and include it in all `creation_rules`:
 
 ```yaml
 keys:
-  - &user_ninja_new age1newuserkey...
-  - &host_ninja_new age1newhostkey...
+  - &user_newhost age1newuserkey...
+  - &host_newhost age1newhostkey...
 creation_rules:
   - path_regex: secrets/common.yaml
     key_groups:
       - age:
           - *user_ninja
           - *user_mac
-          - *host_shared
-          - *user_ninja_new   # add new editor key
-          - *host_ninja_new   # add new host key
+          - *user_newhost   # add new editor key
+          - *host_newhost   # add new host key
 ```
 
 ### 3. Re-encrypt all secrets with `sops updatekeys`

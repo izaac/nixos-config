@@ -581,16 +581,17 @@ Both ISOs ship sshd with pre-authorized keys and passwordless `sudo-rs`; see
 
 ### Module Selection Guide
 
-When adding a new host:
+When adding a new host (see [Adding a New Host](adding-a-host.md)):
 
-1. **Identify CPU vendor**: AMD → `common-cpu-amd-pstate`, Intel → `common-cpu-intel`
-2. **Identify GPU setup**:
+1. Create `hosts/<name>/system.nix` with the system type string
+2. **Identify CPU vendor**: AMD → `common-cpu-amd-pstate`, Intel → `common-cpu-intel`
+3. **Identify GPU setup**:
    - NVIDIA desktop (no iGPU) → `common-gpu-nvidia-nonprime`
    - NVIDIA laptop with Prime offload → `common-gpu-nvidia`
    - AMD GPU → `common-gpu-amd` (if available)
    - Intel iGPU only → no GPU module needed
-3. **Form factor**: Laptop → `common-pc-laptop`, Desktop → skip
-4. **Storage**: NVMe/SSD → `common-pc-ssd` (almost always)
+4. **Form factor**: Laptop → `common-pc-laptop`, Desktop → skip
+5. **Storage**: NVMe/SSD → `common-pc-ssd` (almost always)
 
 ### Why Not Use `nixos-hardware.auto`?
 
