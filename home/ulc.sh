@@ -102,14 +102,10 @@ transfer() {
       echo "no such file or directory: $s" >&2
       exit 66
     }
-    # rclone copies the *contents* of a directory into the
-    # destination, so name the target after the source to avoid
-    # scattering a folder's files across the destination. Printing the
-    # resolved target makes that renaming visible before anything
-    # moves, since the destination is a parent folder rather than the
-    # full path the file ends up at.
     local target="$REMOTE$dest"
-    [ -d "$s" ] && target="$target/$(basename "$s")"
+    if [ -d "$s" ] && [ -z "${ULC_NO_APPEND_BASENAME:-}" ]; then
+      target="$target/$(basename "$s")"
+    fi
     echo "$s -> $target"
     rclone "$verb" "$s" "$target" --progress --check-first --transfers "$transfers" "${bwlimit[@]}"
   done

@@ -69,7 +69,6 @@ in {
 
     # GTK Apps (Rust-based replacements + Viewers)
     loupe # Image Viewer (Rust)
-    newsflash # GTK4/Libadwaita RSS Reader (Rust)
     drawing # GTK image editor (MS Paint-like)
     gnome-calculator # GTK4/libadwaita scientific + programming calculator
     evince # Lightweight GTK document/PDF viewer
