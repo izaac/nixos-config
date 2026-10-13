@@ -7,7 +7,7 @@ Personal flake managing three NixOS hosts (`ninja`, `windy`, `plex`) and a nix-d
 ## Overview
 
 - **OS:** NixOS 26.05 (stable) + nix-darwin 26.05 (Mac)
-- **DM:** [ReGreet](https://github.com/rharish101/ReGreet) (greetd, in cage) with YubiKey U2F
+- **DM:** [tuigreet](https://github.com/tuigreet/tuigreet) (greetd) with YubiKey U2F
 - **Compositor:** [Niri](https://github.com/YaLTeR/niri) (scrollable-tiling Wayland) via
   [niri-flake](https://github.com/sodiboo/niri-flake)
 - **Shell of the desktop:** [ashell](https://github.com/MalpenZibo/ashell) on every Linux host (bar,

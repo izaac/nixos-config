@@ -35,16 +35,29 @@ in {
         package = pkgs.niri-unstable;
       };
 
-      # --- Display Manager: ReGreet on greetd ---
-      # The only greetd greeter with both a NixOS module and a Stylix target, so
-      # it inherits the palette, wallpaper, cursor and fonts with no custom CSS.
-      regreet = {
-        enable = true;
-        settings.GTK.application_prefer_dark_theme = true;
-      };
-
       # Cross-platform LAN file transfer (auto-opens firewall port 53317).
       localsend.enable = true;
+    };
+
+    # --- Display Manager: tuigreet on greetd ---
+    services.greetd = {
+      enable = true;
+      settings = {
+        default_session = {
+          command = builtins.concatStringsSep " " [
+            "${pkgs.tuigreet}/bin/tuigreet"
+            "--time"
+            "--asterisks"
+            "--remember"
+            "--remember-user-session"
+            "--sessions ${config.services.displayManager.sessionData.desktops}/share/wayland-sessions"
+            "--cmd niri-session"
+            "--power-shutdown '${pkgs.systemd}/bin/systemctl poweroff'"
+            "--power-reboot '${pkgs.systemd}/bin/systemctl reboot'"
+          ];
+          user = "greeter";
+        };
+      };
     };
 
     # Ensure pam_systemd registers the greeter session as type 'wayland'.
@@ -59,9 +72,6 @@ in {
     # home-manager's services.gpg-agent.enableSshSupport = false.
 
     services = {
-      # programs.regreet enables greetd itself; just pick the login user.
-      greetd.settings.default_session.user = "greeter";
-
       # Auto-mount removable media (USB drives, optical) for udiskie + Nemo.
       udisks2.enable = true;
 
