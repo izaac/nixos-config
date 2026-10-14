@@ -54,12 +54,42 @@
       [ -n "$sel" ] && pactl set-default-sink "$(echo "$sel" | cut -f1)"
     '';
   };
+  niri = osConfig.programs.niri.package or pkgs.niri;
+  powerMenu = pkgs.writeShellApplication {
+    name = "power-menu";
+    runtimeInputs = with pkgs; [fuzzel coreutils systemd niri];
+    text = ''
+      entries="Lock\nLogout${
+        if !isNinja
+        then "\\nSuspend"
+        else ""
+      }\nReboot\nShutdown"
+
+      selected=$(printf '%b\n' "$entries" | fuzzel --dmenu --prompt "Power: " --lines ${
+        if isNinja
+        then "4"
+        else "5"
+      } --width 18)
+      case "$selected" in
+        Lock) lock-now ;;
+        Logout) niri msg action quit --skip-confirmation ;;
+        ${
+        if !isNinja
+        then "Suspend) systemctl suspend ;;"
+        else ""
+      }
+        Reboot) systemctl reboot ;;
+        Shutdown) systemctl poweroff ;;
+      esac
+    '';
+  };
 in {
   # Apply Stylix theme tokens to niri config.
   stylix.targets.niri.enable = true;
 
   home.packages = with pkgs; [
     # wl-clipboard lives in home/shell/packages.nix
+    powerMenu
     slurp # Region picker (screen recorder)
     wf-recorder # Screen recorder (Wayland; wl-screenrec needs VA-API XR24 not supported on NVIDIA)
     libnotify # notify-send for screen-record feedback
@@ -166,10 +196,10 @@ in {
         ];
         open-floating = true;
       }
-      # Common popups: small floats
+      # Quick notes: small floats
       {
         matches = [
-          {app-id = "org.gnome.Calculator$";}
+          {app-id = "^quick-notes$";}
         ];
         open-floating = true;
       }
@@ -253,6 +283,7 @@ in {
 
       # --- Apps ---
       "Mod+Return".action = spawn "kitty";
+      "Mod+N".action = spawn "kitty" "--app-id" "quick-notes" "-o" "remember_window_size=no" "-o" "initial_window_width=900" "-o" "initial_window_height=600" "-d" "${config.home.homeDirectory}/Documents" "nvim" "notes.md";
       "Mod+E".action = spawn "nemo";
       "Mod+B".action = spawn "firefox";
       "Mod+Shift+S".action = spawn (lib.getExe audioSinkMenu);

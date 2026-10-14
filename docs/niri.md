@@ -60,6 +60,7 @@ a Steam menu appears, which is what separates an xwayland-satellite fault from a
 | Keys          | Action                                  |
 | ------------- | --------------------------------------- |
 | `Mod+Return`  | Launch Kitty (terminal)                 |
+| `Mod+N`       | Quick notes (floating Kitty + Neovim)   |
 | `Mod+D`       | App launcher (fuzzel)                   |
 | `Alt+Space`   | App launcher (Moonlight-friendly alias) |
 | `Mod+E`       | File manager (nemo)                     |
@@ -67,7 +68,7 @@ a Steam menu appears, which is what separates an xwayland-satellite fault from a
 | `Mod+V`       | Clipboard history (stash + fuzzel)      |
 | `Mod+Shift+W` | Wallpaper picker (fuzzel)               |
 | `Mod+Ctrl+L`  | Lock screen (swaylock)                  |
-| `Mod+Shift+P` | Session menu (wlogout)                  |
+| `Mod+Shift+P` | Session menu (power-menu via fuzzel)    |
 | `Mod+Shift+S` | Audio sink picker (fuzzel)              |
 | `Mod+Q`       | Close window                            |
 | `Mod+Shift+E` | Quit niri (with confirmation)           |

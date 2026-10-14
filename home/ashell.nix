@@ -497,7 +497,7 @@ in {
 
       # --- Session ---
       "Mod+Ctrl+L".action.spawn = ["lock-now"];
-      "Mod+Shift+P".action.spawn = ["wlogout"];
+      "Mod+Shift+P".action.spawn = ["power-menu"];
       "Mod+V".action.spawn = ["clipboard-menu"];
       "Mod+Shift+W".action.spawn = ["set-wallpaper" "pick"];
 

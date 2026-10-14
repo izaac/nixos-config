@@ -12,7 +12,7 @@ Personal flake managing three NixOS hosts (`ninja`, `windy`, `plex`) and a nix-d
   [niri-flake](https://github.com/sodiboo/niri-flake)
 - **Shell of the desktop:** [ashell](https://github.com/MalpenZibo/ashell) on every Linux host (bar,
   control center, notifications, OSD; Rust + iced), with fuzzel, swaylock, swayidle,
-  [stash](https://github.com/NotAShelf/stash) and wlogout filling the gaps.
+  [stash](https://github.com/NotAShelf/stash) filling the gaps.
 - **File manager:** Nemo (+ file-roller, ffmpegthumbnailer)
 - **Theme:** App colors are Catppuccin Mocha Blue, system-wide via
   [Stylix](https://github.com/danth/stylix); the desktop shell palette is generated from the current
@@ -35,12 +35,12 @@ lib/               # mkSystem helper, user config
 hosts/             # Per-host configuration.nix + hardware
 modules/           # Reusable NixOS modules (mySystem.* options)
   core/            # Audio, codecs, nix-ld, performance, sops, maintenance
-  desktop/         # Niri compositor, ReGreet greeter, NVIDIA glue
+  desktop/         # Niri compositor, tuigreet greeter, NVIDIA glue
   gaming/          # Steam, GameMode, sched-ext (SCX)
 home/              # Home Manager modules (per-app .nix files)
-  niri.nix         # Compositor config, shell-agnostic keybinds
+  niri.nix         # Compositor config, power-menu, keybinds
   ashell.nix       # ashell shell + matugen theming + wallpaper
-  lock.nix         # swaylock, swayidle, wlogout
+  lock.nix         # swaylock, swayidle
   shell/           # Split shell config (aliases, functions, packages)
 users/             # Per-user profile composition
 overlays/          # Package overrides

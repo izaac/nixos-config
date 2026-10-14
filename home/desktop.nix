@@ -54,9 +54,6 @@ in {
     ffmpegthumbnailer # Video thumbnails for Nemo
     webp-pixbuf-loader # WebP image thumbnails
 
-    # GUI text editor (honors GNOME prefer-dark via dconf)
-    gnome-text-editor
-
     # CD/DVD Backup & Cloning
     cdrtools # CLI: readcd, etc.
     cdrdao # CLI: Disc-at-once cloning
@@ -67,10 +64,10 @@ in {
     boxbuddy
     gearlever
 
-    # GTK Apps (Rust-based replacements + Viewers)
+    # Viewers & Tools
     loupe # Image Viewer (Rust)
     drawing # GTK image editor (MS Paint-like)
-    gnome-calculator # GTK4/libadwaita scientific + programming calculator
+    libqalculate # Advanced calculator library & CLI (qalc)
     evince # Lightweight GTK document/PDF viewer
   ];
 
@@ -92,9 +89,9 @@ in {
         "x-scheme-handler/unknown" = ["firefox.desktop"];
 
         # Text
-        "text/plain" = ["org.gnome.TextEditor.desktop"];
-        "text/markdown" = ["org.gnome.TextEditor.desktop"];
-        "text/x-log" = ["org.gnome.TextEditor.desktop"];
+        "text/plain" = ["nvim.desktop"];
+        "text/markdown" = ["nvim.desktop"];
+        "text/x-log" = ["nvim.desktop"];
 
         # Archives (file-roller)
         "application/zip" = ["org.gnome.FileRoller.desktop"];
