@@ -90,8 +90,8 @@
       [ "$linked" -eq 1 ] || die "audio failed to link to the card (wrong source captured). Log: $(cat "$loop_log")"
 
       # Make sure the destination (default sink) is audible.
-      default_sink=$(wpctl status 2>/dev/null | awk '/Sinks:/{f=1} f&&/\*/{print; exit}')
-      if echo "$default_sink" | grep -qi 'MUTED'; then
+      sink_vol=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)
+      if echo "$sink_vol" | grep -qi 'MUTED'; then
         echo "cardview: default sink is MUTED -> unmuting" >&2
         wpctl set-mute @DEFAULT_AUDIO_SINK@ 0 2>/dev/null || true
       fi
@@ -102,7 +102,7 @@
       # 4. Open the video. mpv keeps the process in the foreground; on exit the
       #    trap tears down the loopback so nothing lingers.
       ##########################################################################
-      mpv "av://v4l2:$video_dev" --no-audio --profile=low-latency --untimed --demuxer-lavf-o=video_size=1920x1080,input_format=nv12,framerate=60 "$@"
+      mpv "av://v4l2:$video_dev" --no-audio --profile=low-latency --untimed --msg-level=ffmpeg=fatal --demuxer-lavf-o=video_size=1920x1080,input_format=nv12,framerate=60 "$@"
     '';
   };
 in {

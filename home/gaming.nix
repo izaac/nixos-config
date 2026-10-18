@@ -34,6 +34,7 @@ in {
 
     # Emulation
     dolphin-emu
+    melonds
     shadps4 # nixpkgs fallback (shadps4_git broken)
   ];
 
