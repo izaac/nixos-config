@@ -243,7 +243,6 @@ in {
       input-remapper.enable = false;
       udev.packages = with pkgs; [
         game-devices-udev-rules
-        logitech-udev-rules
         openrgb
       ];
 
