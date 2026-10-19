@@ -22,6 +22,7 @@ _: {
     };
     taplo.enable = true;
     yamlfmt.enable = true;
+    rumdl-check.enable = true;
   };
   settings.formatter = {
     shfmt = {

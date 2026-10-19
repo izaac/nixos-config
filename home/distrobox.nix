@@ -175,6 +175,9 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       Service = {
         Type = "exec";
         KillMode = "process";
+        Environment = [
+          "PATH=/run/wrappers/bin:/run/current-system/sw/bin"
+        ];
         ExecStart = "${pkgs.podman}/bin/podman system service --time=0";
       };
       Install.Also = ["podman.socket"];

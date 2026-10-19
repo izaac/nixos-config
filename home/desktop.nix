@@ -20,6 +20,7 @@ in {
     ./mpv.nix
     ./firefox.nix
     ./zathura.nix
+    ./transmission-vpn.nix
   ];
 
   # --- FONTS ---

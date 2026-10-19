@@ -116,4 +116,4 @@ ssh izaac@192.168.0.218 'cd ~/repos/nixos-config && git pull --ff-only \
 ```
 
 Open kitty windows keep the old config until reloaded, so press `⌃⌘,` or open a new window. See
-[AeroSpace → How to apply](aerospace.md#how-to-apply) for the full remote workflow.
+[Mac Configuration](mac.md#build--switch-workflow) for the full remote workflow.

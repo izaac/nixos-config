@@ -44,6 +44,7 @@ in {
     dolphin-emu
     melonds
     shadps4 # nixpkgs fallback (shadps4_git broken)
+    shadps4-qtlauncher
   ];
 
   # Custom Desktop Entry for SAM Rewritten

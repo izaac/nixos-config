@@ -41,6 +41,7 @@ Adding a new host requires only a `hosts/<name>/` directory with a `system.nix` 
 - [LazyVim (Neovim)](lazyvim.md)
 - [mpv Media Player](mpv.md)
 - [Zathura PDF Viewer](zathura.md)
+- [Transmission VPN](transmission-vpn.md)
 
 ## Agent Instructions
 
