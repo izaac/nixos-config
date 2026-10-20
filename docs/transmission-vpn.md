@@ -77,7 +77,7 @@ services:
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
     ports:
-      - "9091:9091"
+      - '9091:9091'
     volumes:
       - ./config:/config
       - ${HOME}/Downloads/torrents:/downloads

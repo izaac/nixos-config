@@ -29,6 +29,13 @@ in {
       defaultNetwork.settings.dns_enabled = true;
     };
 
+    # Rootless podman needs setuid newuidmap/newgidmap from /run/wrappers/bin.
+    # NixOS generates /etc/systemd/user/podman.service.d/overrides.conf with a
+    # stripped PATH by default, which breaks user namespace setup.
+    systemd.user.services.podman = {
+      path = ["/run/wrappers" "/run/current-system/sw"];
+    };
+
     hardware.nvidia-container-toolkit.enable = lib.elem "nvidia" config.services.xserver.videoDrivers;
 
     # 2. Delegate all cgroup controllers to user sessions (containers, Gamescope, etc.)

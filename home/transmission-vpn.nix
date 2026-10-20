@@ -27,6 +27,9 @@ in
         Type = "oneshot";
         RemainAfterExit = true;
         WorkingDirectory = "${config.home.homeDirectory}/services/transmissionvpn";
+        Environment = [
+          "DOCKER_HOST=unix://%t/podman/podman.sock"
+        ];
         ExecStart = "${pkgs.docker-compose}/bin/docker-compose up -d";
         ExecStop = "${pkgs.docker-compose}/bin/docker-compose down";
       };

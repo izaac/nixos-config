@@ -1,0 +1,6 @@
+{
+  "proseWrap": "always",
+  "printWidth": 100,
+  "singleQuote": true,
+  "tabWidth": 2
+}
