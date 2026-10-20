@@ -1,7 +1,7 @@
 # Updating Custom NVIDIA Drivers in NixOS
 
 > **Current state:** `windy` tracks `nvidiaPackages.stable` (open kernel modules), while `ninja`
-> uses the `mkDriver` override pinned to **`615.71.09`** (New Feature Branch) to include Blackwell
+> uses the `mkDriver` override pinned to **`615.78.08`** (New Feature Branch) to include Blackwell
 > fixes for the RTX 5060 Ti. The `mkDriver` override below documents how this pin is maintained and
 > bumped when nixpkgs lags upstream.
 
