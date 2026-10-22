@@ -24,5 +24,7 @@ in {
     # Generic subagent defs live in the repo; ffta-* stay hand-managed.
     "opencode/agents/free-assistant.md" = liveLink "agents/free-assistant.md";
     "opencode/agents/reviewer.md" = liveLink "agents/reviewer.md";
+    "opencode/agents/evidence-vision.md" = liveLink "agents/evidence-vision.md";
+    "opencode/plugin/delegation-protocol.ts" = liveLink "plugin/delegation-protocol.ts";
   };
 }

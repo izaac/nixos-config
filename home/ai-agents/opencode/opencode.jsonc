@@ -1,6 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
 
+  // Enforces the delegation/watch-each-other protocol by injecting it into
+  // every system prompt, regardless of which primary model is active.
+  "plugin": ["./plugin/delegation-protocol.ts"],
+
   // Default primary model: OpenCode free GLM-5.3-Flash
   "model": "opencode/glm-5.3-flash-free",
 
