@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default primary model: OpenCode free GLM-5.3-Flash
+  "model": "opencode/glm-5.3-flash-free",
+
+  // OpenRouter free router for mechanical helpers (session titles, summaries)
+  "small_model": "openrouter/openrouter/free",
+
+  "agent": {
+    // Read-only search: OpenCode free Deepseek 4.1 Flash
+    "explore": {
+      "model": "opencode/deepseek-v4.1-flash-free",
+    },
+    // Multi-step worker: OpenCode free Deepseek 4.1 Flash
+    "general": {
+      "model": "opencode/deepseek-v4.1-flash-free",
+    },
+  },
+
+  "mcp": {
+    "nixos": {
+      "type": "local",
+      "command": ["nix", "run", "github:utensils/mcp-nixos", "--"],
+      "enabled": true,
+    },
+  },
+}

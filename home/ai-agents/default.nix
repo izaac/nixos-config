@@ -47,6 +47,8 @@
     })
     ownSkills);
 in {
+  imports = [./opencode.nix];
+
   home = {
     file =
       (lib.optionalAttrs isWorkstation (
