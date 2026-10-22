@@ -34,6 +34,9 @@
   source/consistency objections, then send only the contested cards back to `evidence-vision` for a
   rebuttal round. Parent arbitrates and owns the final verdict; human eyes stay the tiebreaker for
   anything still contested.
+- Text-only agents never interpret screenshots directly: they either receive pre-split visual work,
+  or they record a VISUAL REQUEST card (file paths and exact questions) in their report and defer;
+  the parent routes it to the vision seat and resumes that session on the cards.
 
 ## Git policy
 
