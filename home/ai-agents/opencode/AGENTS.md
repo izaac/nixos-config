@@ -6,11 +6,22 @@
   - `explore` (deepseek-v4.1-flash-free): codebase search, file finding, "where is X" questions
   - `general` (deepseek-v4.1-flash-free): bulk multi-step edits from clear patterns
   - `free-assistant` (openrouter/free): quick Q&A, summaries, rewording, formatting
+  - `reviewer` (deepseek-v4-pro 0423, paid via OpenRouter credits): first-pass check of another
+    subagent's result, run before the parent reviews it
 - Keep on the primary model: root-cause analysis, fix design, architecture decisions, anything where
   a wrong-but-confident answer is expensive.
 - Launch subagents in background/parallel where possible; keep main context lean.
 - Model pins live in `~/.config/opencode/opencode.jsonc`. This directory is local-only: never commit
   it anywhere.
+
+## Subagent review
+
+- After any subagent (`explore`, `general`, `free-assistant`, or custom) returns, invoke `reviewer`
+  once with the original task and that subagent's output, before using the result.
+- Do not invoke `reviewer` on its own output, and skip it for trivial results (a single file lookup,
+  a one-line answer).
+- The reviewer is only a first pass. The invoking agent still does the final review of the result
+  and of the reviewer's findings, and decides what to accept or send back.
 
 ## Git policy
 

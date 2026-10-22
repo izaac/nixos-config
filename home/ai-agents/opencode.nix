@@ -23,5 +23,6 @@ in {
     "opencode/AGENTS.md" = liveLink "AGENTS.md";
     # Generic subagent defs live in the repo; ffta-* stay hand-managed.
     "opencode/agents/free-assistant.md" = liveLink "agents/free-assistant.md";
+    "opencode/agents/reviewer.md" = liveLink "agents/reviewer.md";
   };
 }
