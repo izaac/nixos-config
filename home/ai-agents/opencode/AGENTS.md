@@ -21,6 +21,9 @@
   - `arbiter` (claude-haiku-5-5 via OpenCode Go, third family beside the DeepSeek workers and the
     gemini primary): called only when a reviewer verdict is disputed, evidence conflicts, or a wrong
     verdict is expensive. Independent error pattern is the point, not more effort
+  - `arbiter-sonnet` (claude-sonnet-4-6 via google/antigravity): last-resort arbiter for complex
+    reasoning, same read-only rules, called when stronger reasoning depth is needed or a dispute
+    stays contested.
 - Keep on the primary model: root-cause analysis, fix design, architecture decisions, anything where
   a wrong-but-confident answer is expensive.
 - Launch subagents in background/parallel where possible; keep main context lean.
@@ -49,6 +52,25 @@
 - Text-only agents never interpret screenshots directly: they either receive pre-split visual work,
   or they record a VISUAL REQUEST card (file paths and exact questions) in their report and defer;
   the parent routes it to the vision seat and resumes that session on the cards.
+
+## Search discipline
+
+- Web search loops (two or more queries, or one query plus page fetches) are delegated to a subagent
+  (`explore` or `general`) with a done-condition; the parent gets one distilled card, not link
+  piles.
+- Inline search in the main thread is allowed only for one-off single queries with no page reading.
+- Fallback chain when the `websearch` tool is weak, rate-limited, or unavailable:
+  1. `websearch` (default)
+  2. DuckDuckGo via `webfetch`: `https://html.duckduckgo.com/html/?q=<query>` or
+     `https://lite.duckduckgo.com/lite/?q=<query>`
+  3. Brave Search API via `webfetch` with a free-tier key (2000 queries/month):
+     `https://api.search.brave.com/res/v1/web/search?q=<query>` with header `X-Subscription-Token`;
+     get the key at the Brave API dashboard. Skip this rung when no key is configured.
+  4. Startpage via `webfetch`: `https://www.startpage.com/sp/search?query=<query>`; Google-grade
+     results, HTML only, occasional captcha, last mile before self-hosting.
+  5. Self-hosted SearXNG (`services.searxng` in NixOS) is the permanent upgrade path when search
+     volume grows; do not wire it speculatively.
+- Never send raw search result dumps back into the parent context; distill to a card first.
 
 ## Git policy
 

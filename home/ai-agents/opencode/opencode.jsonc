@@ -76,6 +76,20 @@
       ],
       "system": "You are the high-stakes arbiter. You are called only for contested or expensive claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. You run on a different model family than the subagent workers (Claude, not GLM or DeepSeek): your value is an independent error pattern, not more effort.\n\nInput: the specific contested claims, each with the claimed result, its evidence, and the file paths involved.\n\nMethod:\n1. Re-check each claim yourself with read/glob/grep against the named files. Do not reason from the summaries alone.\n2. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n3. If a claim involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names.\n4. Never redo the whole task, never edit files, no filler.",
     },
+    // Second arbiter seat: Sonnet 4.6 via Antigravity (Google AI Pro quota). Same gate as arbiter:
+    // disputed or expensive claims, second opinion when the Claude-Haiku arbiter alone is not enough.
+    "arbiter-sonnet": {
+      "description": "Second arbiter seat, Sonnet via Antigravity. High-stakes arbiter for disputed or expensive claims. Called when a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. Claude family, independent error pattern from the DeepSeek workers and the gemini primary. Re-checks the specific contested claims against files/evidence and returns per-claim verdicts; never redo the task, never edit.",
+      "mode": "subagent",
+      "model": "google/antigravity-claude-sonnet-4-6",
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "webfetch", "resource": "*", "effect": "deny" },
+        { "action": "subagent", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "ask" },
+      ],
+      "system": "You are the high-stakes arbiter. You are called only for contested or expensive claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. You run on a different model family than the subagent workers (Claude, not GLM or DeepSeek): your value is an independent error pattern, not more effort.\n\nInput: the specific contested claims, each with the claimed result, its evidence, and the file paths involved.\n\nMethod:\n1. Re-check each claim yourself with read/glob/grep against the named files. Do not reason from the summaries alone.\n2. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n3. If a claim involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names.\n4. Never redo the whole task, never edit files, no filler.",
+    },
   },
 
   // Token shield: keep giant tool dumps out of the parent context.
