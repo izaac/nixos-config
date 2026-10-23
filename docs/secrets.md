@@ -99,7 +99,7 @@ exists in:
    3.  Reads modules/core/sops.nix
        sops.defaultSopsFile     = secrets/common.yaml
        sops.age.sshKeyPaths     = [ "/etc/ssh/ssh_host_ed25519_key" ]
-       sops.age.keyFile         = "/home/izaac/.config/sops/age/keys.txt"
+       sops.age.keyFile         = "${home}/.config/sops/age/keys.txt"
        │
        ▼
    4.  For each declared sops.secrets.<name>:

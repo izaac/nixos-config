@@ -110,7 +110,7 @@ Reload an open window after a config change with `Ctrl+Shift+F5`.
 Flakes only see git-tracked files, so commit + push first, then:
 
 ```bash
-ssh izaac@192.168.0.218 'cd ~/repos/nixos-config && git pull --ff-only \
+ssh <user>@<mac-host> 'cd ~/repos/nixos-config && git pull --ff-only \
   && darwin-rebuild build --flake .#Mac \
   && sudo darwin-rebuild switch --flake .#Mac'
 ```
