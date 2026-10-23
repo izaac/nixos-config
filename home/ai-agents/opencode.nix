@@ -29,5 +29,9 @@ in {
     # V2 loads configured plugin directories via index.ts; the entrypoint
     # re-exports the implementation file beside it.
     "opencode/plugin/delegation-protocol" = liveLink "plugin/delegation-protocol";
+    # Retry-hook fallback chain between the Go seats.
+    "opencode/plugin/model-fallback" = liveLink "plugin/model-fallback";
+    # Shell guard: no tracing near credential paths.
+    "opencode/plugin/no-trace-guard" = liveLink "plugin/no-trace-guard";
   };
 }

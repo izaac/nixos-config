@@ -3,14 +3,33 @@
 
   // Enforces the delegation/watch-each-other protocol by injecting it into
   // every system prompt, regardless of which primary model is active.
-  "plugins": ["./plugin/delegation-protocol"],
+  // model-fallback switches to the paired Go seat when one keeps failing.
+  "plugins": [
+    "./plugin/delegation-protocol",
+    // Rejects shell commands that trace while referencing credential paths.
+    "./plugin/no-trace-guard",
+    {
+      "package": "./plugin/model-fallback",
+      "options": {
+        "fallbacks": [
+          { "from": "opencode-go/glm-5.3-flash", "to": "opencode-go/deepseek-v4.1-flash" },
+          { "from": "opencode-go/deepseek-v4.1-flash", "to": "opencode-go/glm-5.3-flash" },
+        ],
+      },
+    },
+  ],
 
   // Default primary model: OpenCode Go GLM-5.3-Flash (subscription allowance)
   "model": "opencode-go/glm-5.3-flash",
 
-  // Native V2: deny the plain OpenCode provider (free tier, 200 requests a
-  // day); the Go subscription replaces it.
-  "policies": [{ "action": "provider.use", "resource": "opencode", "effect": "deny" }],
+  // Provider allow-list: savings-first. Deny everything, then allow only the
+  // OpenCode Go subscription seats and the free OpenRouter tier. The last
+  // matching statement wins (policies guide, Order), so deny-all goes first.
+  "policies": [
+    { "action": "provider.use", "resource": "*", "effect": "deny" },
+    { "action": "provider.use", "resource": "opencode-go", "effect": "allow" },
+    { "action": "provider.use", "resource": "openrouter", "effect": "allow" },
+  ],
 
   "permissions": [
     // House rule: pushes always need the Chief's explicit nod in-turn.
@@ -62,12 +81,15 @@
     "todo": true,
   },
 
+  // NixOS MCP: disabled globally, re-enabled per project (nixos-config,
+  // nix-packages) to avoid paying the tool-schema token cost in every
+  // unrelated session.
   "mcp": {
     "servers": {
       "nixos": {
         "type": "local",
         "command": ["nix", "run", "github:utensils/mcp-nixos", "--"],
-        "disabled": false,
+        "disabled": true,
       },
     },
   },
