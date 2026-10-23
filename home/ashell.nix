@@ -491,7 +491,7 @@ in {
     binds = {
       # --- Launcher ---
       "Mod+D".action.spawn = ["fuzzel"];
-      # Alt+Space is the Moonlight-friendly alias: Mac Cmd forwarding to Linux
+      # Alt+Space is the Mac Cmd friendly alias: Mac Cmd forwarding to Linux
       # Super is unreliable, but Option (Alt) passes through cleanly.
       "Alt+Space".action.spawn = ["fuzzel"];
 

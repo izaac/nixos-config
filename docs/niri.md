@@ -57,21 +57,21 @@ a Steam menu appears, which is what separates an xwayland-satellite fault from a
 
 ### Apps & session
 
-| Keys          | Action                                  |
-| ------------- | --------------------------------------- |
-| `Mod+Return`  | Launch Kitty (terminal)                 |
-| `Mod+N`       | Quick notes (floating Kitty + Neovim)   |
-| `Mod+D`       | App launcher (fuzzel)                   |
-| `Alt+Space`   | App launcher (Moonlight-friendly alias) |
-| `Mod+E`       | File manager (nemo)                     |
-| `Mod+B`       | Browser (firefox)                       |
-| `Mod+V`       | Clipboard history (stash + fuzzel)      |
-| `Mod+Shift+W` | Wallpaper picker (fuzzel)               |
-| `Mod+Ctrl+L`  | Lock screen (swaylock)                  |
-| `Mod+Shift+P` | Session menu (power-menu via fuzzel)    |
-| `Mod+Shift+S` | Audio sink picker (fuzzel)              |
-| `Mod+Q`       | Close window                            |
-| `Mod+Shift+E` | Quit niri (with confirmation)           |
+| Keys          | Action                                |
+| ------------- | ------------------------------------- |
+| `Mod+Return`  | Launch Kitty (terminal)               |
+| `Mod+N`       | Quick notes (floating Kitty + Neovim) |
+| `Mod+D`       | App launcher (fuzzel)                 |
+| `Alt+Space`   | App launcher (Mac Cmd friendly alias) |
+| `Mod+E`       | File manager (nemo)                   |
+| `Mod+B`       | Browser (firefox)                     |
+| `Mod+V`       | Clipboard history (stash + fuzzel)    |
+| `Mod+Shift+W` | Wallpaper picker (fuzzel)             |
+| `Mod+Ctrl+L`  | Lock screen (swaylock)                |
+| `Mod+Shift+P` | Session menu (power-menu via fuzzel)  |
+| `Mod+Shift+S` | Audio sink picker (fuzzel)            |
+| `Mod+Q`       | Close window                          |
+| `Mod+Shift+E` | Quit niri (with confirmation)         |
 
 ashell exposes no "toggle panel" IPC, so the control center and the notification centre have no
 keybind: click the **Settings** and **Notifications** modules in the bar instead. This replaces the

@@ -100,7 +100,7 @@ initially; thereafter, `homebrew.onActivation` handles updates and upgrades.
   - Terminals: `ghostty`, `iterm2`
   - Collaboration: `slack`
   - Browsers: `firefox`, `google-chrome`, `microsoft-edge`
-  - Media & Remote: `moonlight`, `plexamp`, `tailscale-app`, `windows-app`
+  - Media & Remote: `plexamp`, `tailscale-app`, `windows-app`
 
 ---
 

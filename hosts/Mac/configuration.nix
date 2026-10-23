@@ -243,14 +243,7 @@
       # manual grant; toggle in System Settings → Accessibility → Display if
       # wanted (or grant FDA to kitty and re-enable here).
 
-      # Disable App Nap for the Moonlight bundle: ensures macOS never throttles
-      # the streaming client if the window briefly loses focus (e.g. Cmd-Tab to
-      # check a chat). In fullscreen App Nap normally stays off anyway; this is
-      # belt-and-suspenders for the windowed case.
       CustomUserPreferences = {
-        "com.moonlight-stream.Moonlight" = {
-          NSAppSleepDisabled = true;
-        };
         # Hot corner modifiers — require Ctrl (262144) so corners don't
         # trigger from accidental bumps. nix-darwin dock module lacks
         # these keys, so we set them here.
@@ -314,14 +307,10 @@
       "firefox"
       "google-chrome"
       "gpg-suite-no-mail"
-      # Hammerspoon: Lua automation; drives the Moonlight launch/quit watcher
-      # in home/darwin/hammerspoon.nix (caffeinate + optional Focus toggle).
-      "hammerspoon"
       "iterm2"
       "keka"
       "macfuse"
       "microsoft-edge"
-      "moonlight"
       "plex"
       "plexamp"
       "podman-desktop"
@@ -351,7 +340,6 @@
       imports = [
         ../../home/core.nix
 
-        ../../home/darwin/hammerspoon.nix
         ../../home/darwin/kitty.nix
         ../../home/darwin/rclone-mount.nix
         ../../home/darwin/screenshots.nix

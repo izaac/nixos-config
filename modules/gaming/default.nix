@@ -246,10 +246,10 @@ in {
         openrgb
       ];
 
-      # Sunshine: GameStream host. Pairs with Moonlight on the Mac so the
-      # 5070 Ti's NVENC does the encoding and the laptop becomes a thin
-      # client. Web UI for pairing lives at https://<host>:47990 on first
-      # run. capSysAdmin lets sunshine inject keyboard/mouse events.
+      # Sunshine: GameStream host. The 5070 Ti's NVENC does the encoding and a
+      # LAN thin client displays the stream. Web UI for pairing lives at
+      # https://<host>:47990 on first run. capSysAdmin lets sunshine inject
+      # keyboard/mouse events.
       # Override the package with cudaSupport so NVENC is compiled in;
       # without this sunshine falls back to libx264 (CPU encoding).
       sunshine = lib.mkIf cfg.sunshine.enable {
@@ -264,7 +264,7 @@ in {
     # CUDA + DRM enumeration walks every /sys/bus/pci/.../drm entry; the
     # default user-service nofile cap (1024) trips this on first
     # NVENC init and the encoder dies with "Too many open files",
-    # which Moonlight surfaces as "connection terminated".
+    # which clients surface as "connection terminated".
     systemd.user.services.sunshine = lib.mkIf cfg.sunshine.enable {
       serviceConfig.LimitNOFILE = 65536;
     };
