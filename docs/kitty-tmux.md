@@ -38,12 +38,14 @@ Full lists live in [kitty.md](kitty.md#keybindings) and [tmux.md](tmux.md#keybin
 A few tmux settings exist purely to let Kitty's modern features through instead of getting in their
 way.
 
-| What you get | Setting in `home/tmux.nix`                                          | Why it matters                                                                                       |
-| ------------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| True color   | `terminal-overrides ",*-256color:Tc"`, `terminal-features ",*:RGB"` | Tells tmux that Kitty can do full RGB, so themes render at full fidelity                             |
-| Clipboard    | `set-clipboard on`                                                  | tmux yanks ride Kitty's OSC 52 relay straight to the Wayland or macOS clipboard                      |
-| Focus events | `focus-events on`                                                   | Passes window focus in and out, so apps inside tmux (like nvim autoread) notice when you switch away |
+| What you get | Setting in `home/tmux.nix`                                          | Why it matters                                                                                                                                                              |
+| ------------ | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| True color   | `terminal-overrides ",*-256color:Tc"`, `terminal-features ",*:RGB"` | Tells tmux that Kitty can do full RGB, so themes render at full fidelity                                                                                                    |
+| Clipboard    | `set-clipboard on`, `allow-passthrough on`                          | tmux yanks ride Kitty's OSC 52 relay to the Wayland clipboard; `allow-passthrough` lets apps like OpenCode that wrap OSC 52 in a tmux passthrough send their own copies out |
+| Focus events | `focus-events on`                                                   | Passes window focus in and out, so apps inside tmux (like nvim autoread) notice when you switch away                                                                        |
 
 Without the color settings tmux would fall back to 256 colors and the Catppuccin theme would look
-muddy. Without `set-clipboard on` a yank inside tmux would never leave the pane. Both are easy to
-forget and annoying to debug, which is why they are spelled out here.
+muddy. Without `set-clipboard on` a yank inside tmux would never leave the pane. Apps that copy with
+OSC 52 wrapped in a tmux passthrough (OpenCode does) additionally need `allow-passthrough on`, which
+tmux has defaulted to off since 3.4. Both are easy to forget and annoying to debug, which is why
+they are spelled out here.

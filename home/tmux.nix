@@ -67,9 +67,14 @@ in {
       # 1. TrueColor Override + modern terminal feature flags. Kitty
       # supports OSC 52 clipboard relay and RGB color; tell tmux so yanks
       # reach the Wayland clipboard and color rendering stays true.
+      # allow-passthrough (default off since tmux 3.4) lets DCS-wrapped
+      # escapes through: OpenCode copies via OSC 52 wrapped in a tmux
+      # passthrough, and without this the wrapper is stripped and the
+      # clipboard never receives the copy.
       set -ga terminal-overrides ",*-256color:Tc"
       set -as terminal-features ',*:RGB:clipboard'
       set -s set-clipboard on
+      set -g allow-passthrough on
 
       # Forward focus events to apps inside tmux (fixes nvim autoread,
       # tmux 3.5+ async refresh hooks).
