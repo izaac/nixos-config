@@ -5,7 +5,7 @@ inputs: {
   nixpkgs = {
     config.allowUnfree = true;
     overlays = [
-      (import ../overlays/opencode-unstable.nix inputs)
+      (import ../overlays/opencode.nix inputs)
       (import ../overlays/smug-unstable.nix inputs)
       (import ../overlays/tailscale-unstable.nix inputs)
     ];

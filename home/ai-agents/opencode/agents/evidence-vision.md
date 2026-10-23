@@ -2,12 +2,12 @@
 description: >-
   Visual evidence reviewer (the "eyes" seat). Reads screenshots, diagrams, and any image evidence
   and converts them into precise written claim cards for another agent to cross-check. Pairs with
-  the reviewer agent (deepseek-v4-pro, text reasoning, no vision) in a watch-each-other loop:
+  the reviewer agent (deepseek-v4.1-flash, text reasoning, no vision) in a watch-each-other loop:
   reviewer contests the cards, this agent re-examines and answers. Runs on a cheap vision model
-  (openrouter qwen3-vl-235b), so the visual half of the loop stays low-cost. Use whenever evidence
-  vs claimed results must be verified visually.
+  (openrouter deepseek-v4-flash-vision-exp), so the visual half of the loop stays low-cost. Use
+  whenever evidence vs claimed results must be verified visually.
 mode: subagent
-model: openrouter/qwen/qwen3-vl-235b-a22b-instruct
+model: openrouter/deepseek/deepseek-v4-flash-vision-exp
 tools:
   bash: false
   write: false

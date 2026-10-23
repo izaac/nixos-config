@@ -6,7 +6,7 @@ description:
   security-sensitive edits, or anything where a wrong answer is expensive — keep those on the
   primary model.
 mode: subagent
-model: openrouter/free
+model: openrouter/openrouter/free
 permission:
   edit: deny
   webfetch: deny

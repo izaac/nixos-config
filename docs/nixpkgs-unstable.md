@@ -41,15 +41,19 @@ refresh the patch if it stops applying.
 
 ---
 
-### 2. opencode (opencode-unstable.nix)
+### 2. opencode (opencode.nix)
 
-**Package**: `opencode` **Reason**: Track latest version ahead of nixos-26.05 stable release. Only
-this single package from unstable; rest of system stays on stable channel.
+**Package**: `opencode` **Reason**: Track upstream OpenCode v2 releases (standalone Bun binaries
+published on opencode.ai's update manifest). nixpkgs stable and unstable both lag upstream by days;
+nixos-26.05 may not carry v2 at all.
 
-**Migration target**: When nixos-26.05 gets opencode update, or when nixos-27.05 is released.
-Re-evaluate at each channel bump.
+**Pinning**: The derivation lives in `izaac/nix-packages` (`pkgs/opencode`) with a per-package
+`update.sh` that tracks `https://opencode.ai/update/api/latest`; the weekly auto-update workflow in
+that repo opens bump PRs. The overlay prefers `inputs.nix-packages.packages.<system>.opencode` and
+lazily falls back to `nixpkgs-unstable` while flake.lock predates the package. Push nix-packages,
+then `nix flake update nix-packages` to activate the local derivation.
 
-**Affects**: All hosts (applied in lib/common-nixpkgs.nix)
+**Migration target**: None. The fallback is dead code once the lock rev carries the package.
 
 ---
 
@@ -116,14 +120,14 @@ unstable comes up with `/run/podman/podman.sock` present.
 
 ## Overlay Application
 
-| Overlay                | Applied In             | Hosts             | Source                        |
-| ---------------------- | ---------------------- | ----------------- | ----------------------------- |
-| ashell-unstable.nix    | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-ashell` (pinned rev) |
-| krunkit-unstable.nix   | lib/mkDarwin.nix       | Mac               | `nixpkgs-unstable` (floating) |
-| opencode-unstable.nix  | lib/common-nixpkgs.nix | ninja, windy, Mac | `nixpkgs-unstable` (floating) |
-| smug-unstable.nix      | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating) |
-| stash-unstable.nix     | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-unstable` (floating) |
-| tailscale-unstable.nix | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating) |
+| Overlay                | Applied In             | Hosts             | Source                                       |
+| ---------------------- | ---------------------- | ----------------- | -------------------------------------------- |
+| ashell-unstable.nix    | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-ashell` (pinned rev)                |
+| krunkit-unstable.nix   | lib/mkDarwin.nix       | Mac               | `nixpkgs-unstable` (floating)                |
+| opencode.nix           | lib/common-nixpkgs.nix | ninja, windy, Mac | `nix-packages` (fallback `nixpkgs-unstable`) |
+| smug-unstable.nix      | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating)                |
+| stash-unstable.nix     | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-unstable` (floating)                |
+| tailscale-unstable.nix | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating)                |
 
 ---
 
@@ -152,9 +156,9 @@ Before adding a new overlay, ensure:
 
 ## Re-evaluation Checklist (per channel bump)
 
-- [ ] Check if ashell 0.9.0+ is in new stable
-- [ ] Check if opencode updated in new stable
-- [ ] Check if stash-clipboard is in new stable
+- [ ] ashell 0.9.0+ in new stable
+- [ ] opencode: no longer needs re-evaluation, tracked upstream via izaac/nix-packages
+- [ ] stash-clipboard in new stable
 - [ ] Remove overlays that are no longer needed
 - [ ] Update this document
 

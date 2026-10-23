@@ -3,15 +3,19 @@
 ## Agent cost policy: savings-first
 
 - Always delegate mechanical tasks to the cheapest capable subagent:
-  - `explore` (deepseek-v4.1-flash-free): codebase search, file finding, "where is X" questions
-  - `general` (deepseek-v4.1-flash-free): bulk multi-step edits from clear patterns
+  - `explore` (deepseek-v4.1-flash via OpenCode Go): codebase search, file finding, "where is X"
+    questions
+  - `general` (deepseek-v4.1-flash via OpenCode Go): bulk multi-step edits from clear patterns
   - `free-assistant` (openrouter/free): quick Q&A, summaries, rewording, formatting
-  - `evidence-vision` (openrouter/qwen/qwen3-vl-235b-a22b-instruct, cheap paid): reads images and
+  - `evidence-vision` (deepseek-v4-flash-vision-exp via OpenRouter, cheap paid): reads images and
     screenshots; converts visible content into written claim cards. The vision seat of the pair
     below
-  - `reviewer` (deepseek-v4-pro, paid via OpenRouter credits): first-pass check of another
-    subagent's result, run before the parent reviews it. Text-only: it cannot see images, so never
-    hand it PNGs expecting visual verdicts
+  - `reviewer` (deepseek-v4.1-flash via OpenCode Go): first-pass check of another subagent's result,
+    run before the parent reviews it. Text-only: it cannot see images, so never hand it PNGs
+    expecting visual verdicts
+  - `arbiter` (glm-5.3-flash via OpenCode Go, cross-family to the DeepSeek workers): called only
+    when a reviewer verdict is disputed, evidence conflicts, or a wrong verdict is expensive.
+    Independent error pattern is the point, not more effort
 - Keep on the primary model: root-cause analysis, fix design, architecture decisions, anything where
   a wrong-but-confident answer is expensive.
 - Launch subagents in background/parallel where possible; keep main context lean.
@@ -29,8 +33,11 @@
   a one-line answer).
 - The reviewer is only a first pass. The invoking agent still does the final review of the result
   and of the reviewer's findings, and decides what to accept or send back.
+- Disputed or high-stakes claims: escalate the specific contested claims to `arbiter` (cross-family
+  GLM), one escalation per dispute. It re-checks against files and returns per-claim verdicts.
+  Parent arbitrates and owns the final call.
 - Watch-each-other pair for evidence review: when judging screenshots or image evidence, run the
-  vision seat (`evidence-vision`, free) for claim cards, then hand the cards to `reviewer` for
+  vision seat (`evidence-vision`, OpenRouter) for claim cards, then hand the cards to `reviewer` for
   source/consistency objections, then send only the contested cards back to `evidence-vision` for a
   rebuttal round. Parent arbitrates and owns the final verdict; human eyes stay the tiebreaker for
   anything still contested.

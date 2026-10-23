@@ -6,8 +6,8 @@ description:
   does the final review. Never does the task itself and never edits anything. Do not invoke it on
   its own output.
 mode: subagent
-# "DeepSeek: DeepSeek V4 Pro 0423" on OpenRouter (paid, on sale; the 0813 build is a different model)
-model: openrouter/deepseek/deepseek-v4-pro
+# DeepSeek V4.1 Flash on the OpenCode Go subscription
+model: opencode-go/deepseek-v4.1-flash
 permission:
   edit: deny
   webfetch: deny

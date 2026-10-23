@@ -25,6 +25,8 @@ in {
     "opencode/agents/free-assistant.md" = liveLink "agents/free-assistant.md";
     "opencode/agents/reviewer.md" = liveLink "agents/reviewer.md";
     "opencode/agents/evidence-vision.md" = liveLink "agents/evidence-vision.md";
-    "opencode/plugin/delegation-protocol.ts" = liveLink "plugin/delegation-protocol.ts";
+    # V2 loads configured plugin directories via index.ts; the entrypoint
+    # re-exports the implementation file beside it.
+    "opencode/plugin/delegation-protocol" = liveLink "plugin/delegation-protocol";
   };
 }
