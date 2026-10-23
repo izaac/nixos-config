@@ -3,11 +3,12 @@ description: >-
   Visual evidence reviewer (the "eyes" seat). Reads screenshots, diagrams, and any image evidence
   and converts them into precise written claim cards for another agent to cross-check. Pairs with
   the reviewer agent (deepseek-v4.1-flash, text reasoning, no vision) in a watch-each-other loop:
-  reviewer contests the cards, this agent re-examines and answers. Runs on a cheap vision model
-  (openrouter deepseek-v4-flash-vision-exp), so the visual half of the loop stays low-cost. Use
-  whenever evidence vs claimed results must be verified visually.
+  reviewer contests the cards, this agent re-examines and answers. Runs on the subscription vision
+  seat gemini-3.8-flash-low (google/antigravity provider), so the visual half of the loop stays
+  low-cost. Use whenever evidence vs claimed results must be verified visually.
 mode: subagent
-model: openrouter/deepseek/deepseek-v4-flash-vision-exp
+# Google AI Pro subscription quota; stays on OpenRouter vision model when the Antigravity weekly bucket is drained (see opencode.jsonc provider policy)
+model: google/antigravity-gemini-3.8-flash-low
 tools:
   bash: false
   write: false

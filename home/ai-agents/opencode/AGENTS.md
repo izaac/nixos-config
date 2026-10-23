@@ -8,9 +8,9 @@
   - `general` (deepseek-v4.1-flash via OpenCode Go): bulk multi-step edits from clear patterns
   - `free-assistant` (beam-free via OpenCode Go, zero cost): quick Q&A, summaries, rewording,
     formatting; stable pin since beam-free replaced the random openrouter/free router for this seat
-  - `evidence-vision` (deepseek-v4-flash-vision-exp via OpenRouter, cheap paid): reads images and
-    screenshots; converts visible content into written claim cards. The vision seat of the pair
-    below
+  - `evidence-vision` (gemini-3.8-flash-low via google/antigravity, Google AI Pro subscription
+    quota, refill ~weekly): reads images and screenshots; when the Antigravity weekly bucket is
+    drained, the parent respawns this seat on the OpenRouter vision model.
   - `reviewer` (deepseek-v4.1-flash via OpenCode Go): first-pass check of another subagent's result,
     run before the parent reviews it. Text-only: it cannot see images, so never hand it PNGs
     expecting visual verdicts
@@ -19,7 +19,7 @@
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
     docs-vs-code contradiction
   - `arbiter` (claude-haiku-5-5 via OpenCode Go, third family beside the DeepSeek workers and the
-    GLM primary): called only when a reviewer verdict is disputed, evidence conflicts, or a wrong
+    gemini primary): called only when a reviewer verdict is disputed, evidence conflicts, or a wrong
     verdict is expensive. Independent error pattern is the point, not more effort
 - Keep on the primary model: root-cause analysis, fix design, architecture decisions, anything where
   a wrong-but-confident answer is expensive.
@@ -42,10 +42,10 @@
   Claude Haiku), one escalation per dispute. It re-checks against files and returns per-claim
   verdicts. Parent arbitrates and owns the final call.
 - Watch-each-other pair for evidence review: when judging screenshots or image evidence, run the
-  vision seat (`evidence-vision`, OpenRouter) for claim cards, then hand the cards to `reviewer` for
-  source/consistency objections, then send only the contested cards back to `evidence-vision` for a
-  rebuttal round. Parent arbitrates and owns the final verdict; human eyes stay the tiebreaker for
-  anything still contested.
+  vision seat (`evidence-vision`, google/antigravity) for claim cards, then hand the cards to
+  `reviewer` for source/consistency objections, then send only the contested cards back to
+  `evidence-vision` for a rebuttal round. Parent arbitrates and owns the final verdict; human eyes
+  stay the tiebreaker for anything still contested.
 - Text-only agents never interpret screenshots directly: they either receive pre-split visual work,
   or they record a VISUAL REQUEST card (file paths and exact questions) in their report and defer;
   the parent routes it to the vision seat and resumes that session on the cards.

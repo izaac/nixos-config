@@ -5,8 +5,9 @@
 type Fallback = { from: string; to: string };
 
 // Give up after this many switches in one session, so two mutually-failing
-// models cannot ping-pong forever.
-const MAX_SWITCHES = 2;
+// models cannot ping-pong forever. Three permits an A -> B -> A -> C walk,
+// where the return to A is a rung in, not a target, so no rung repeats.
+const MAX_SWITCHES = 3;
 
 function parseModel(ref: string) {
   const slash = ref.indexOf('/');
@@ -29,11 +30,11 @@ function describe(err: any) {
 const MAX_TRACKED_SESSIONS = 200;
 const TRACKED_SESSIONS_AFTER_PRUNE = 100;
 
-function prune(switched: Map<string, number>) {
-  if (switched.size <= MAX_TRACKED_SESSIONS) return;
-  for (const key of switched.keys()) {
-    if (switched.size <= TRACKED_SESSIONS_AFTER_PRUNE) break;
-    switched.delete(key);
+function prune(map: Map<string, unknown>) {
+  if (map.size <= MAX_TRACKED_SESSIONS) return;
+  for (const key of map.keys()) {
+    if (map.size <= TRACKED_SESSIONS_AFTER_PRUNE) break;
+    map.delete(key);
   }
 }
 
@@ -70,6 +71,9 @@ export default {
 
     // Per-session count of fallback switches already performed.
     const switched = new Map();
+    // Per-session set of targets already switched to, so a repeated `from`
+    // advances to the next rung instead of bouncing back to a used target.
+    const visited = new Map<string, Set<string>>();
 
     if (fallbacks.length === 0) {
       console.info('[model-fallback] loaded with no chains, inert');
@@ -82,12 +86,18 @@ export default {
     await ctx.session.hook('retry', async (event) => {
       try {
         const current = `${event.model?.providerID}/${event.model?.id}`;
-        const chain = fallbacks.find((f) => f.from === current);
-        if (!chain) return; // unconfigured model: leave OpenCode's own policy alone
+        const candidates = fallbacks.filter((f) => f.from === current);
+        // unconfigured model: leave OpenCode's own policy alone
+        if (candidates.length === 0) return;
         if (!(event.attempt >= attemptsBeforeFallback)) return;
 
         const used = switched.get(event.sessionID) ?? 0;
         if (used >= MAX_SWITCHES) return;
+
+        // Take the first rung whose target is still unvisited; if every target
+        // for this `from` was already used, keep the plain first-match behavior.
+        const seen = visited.get(event.sessionID) ?? new Set<string>();
+        const chain = candidates.find((f) => !seen.has(f.to)) ?? candidates[0];
 
         const target = parseModel(chain.to);
         if (!target) {
@@ -99,7 +109,10 @@ export default {
 
         await ctx.session.switchModel({ sessionID: event.sessionID, model: target });
         switched.set(event.sessionID, used + 1);
+        seen.add(chain.to);
+        visited.set(event.sessionID, seen);
         prune(switched);
+        prune(visited);
         event.decision = { retry: true, delay: retryDelayMs };
         const summary = describe(event.error);
         await journal(

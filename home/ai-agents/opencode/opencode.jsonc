@@ -3,32 +3,40 @@
 
   // Enforces the delegation/watch-each-other protocol by injecting it into
   // every system prompt, regardless of which primary model is active.
-  // model-fallback switches to the paired Go seat when one keeps failing.
+  // model-fallback walks the chain when the primary keeps failing.
   "plugins": [
     "./plugin/delegation-protocol",
     // Rejects shell commands that trace while referencing credential paths.
     "./plugin/no-trace-guard",
+    // Google Antigravity OAuth: AI Pro/Ultra subscription quota via Google's
+    // Antigravity platform (successor to the deprecated Gemini CLI OAuth).
+    "opencode-antigravity-auth@2.1.1",
     {
       "package": "./plugin/model-fallback",
       "options": {
         "fallbacks": [
+          // Hop 1: gemini dark -> glm Go seat (Chief: gemini primary, Go seats as fallbacks).
+          { "from": "google/antigravity-gemini-3.8-flash-high", "to": "opencode-go/glm-5.3-flash" },
+          // Hop 2: glm dark -> deepseek Go seat (deepseek is the floor; the visited-skip rule stays armed for future rungs).
           { "from": "opencode-go/glm-5.3-flash", "to": "opencode-go/deepseek-v4.1-flash" },
-          { "from": "opencode-go/deepseek-v4.1-flash", "to": "opencode-go/glm-5.3-flash" },
         ],
       },
     },
   ],
 
-  // Default primary model: OpenCode Go GLM-5.3-Flash (subscription allowance)
-  "model": "opencode-go/glm-5.3-flash",
+  // Default primary model: Antigravity gemini-3.8-flash-high (Google AI Pro subscription quota; Go seats serve as fallbacks)
+  "model": "google/antigravity-gemini-3.8-flash-high",
 
-  // Provider allow-list: savings-first. Deny everything, then allow only the
-  // OpenCode Go subscription seats and the free OpenRouter tier. The last
-  // matching statement wins (policies guide, Order), so deny-all goes first.
+  // Provider allow-list: savings-first. Deny everything, then allow the
+  // OpenCode Go subscription seats, the free OpenRouter tier, and Google via
+  // Antigravity OAuth. The last matching statement wins (policies guide,
+  // Order), so deny-all goes first.
   "policies": [
     { "action": "provider.use", "resource": "*", "effect": "deny" },
     { "action": "provider.use", "resource": "opencode-go", "effect": "allow" },
     { "action": "provider.use", "resource": "openrouter", "effect": "allow" },
+    // Google via Antigravity OAuth (subscription quota, not API billing).
+    { "action": "provider.use", "resource": "google", "effect": "allow" },
   ],
 
   "permissions": [
@@ -55,9 +63,9 @@
 
     // Cross-family high-stakes reviewer. Same-model reviewers share the
     // same blind spots, so disputed or expensive claims go to a Claude
-    // seat, independent from the DeepSeek workers and the GLM primary.
+    // seat, independent from the DeepSeek workers and the gemini primary.
     "arbiter": {
-      "description": "High-stakes arbiter for disputed or expensive claims. Called when a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. Claude family, independent error pattern from the DeepSeek workers and the GLM primary. Re-checks the specific contested claims against files/evidence and returns per-claim verdicts; never redo the task, never edit.",
+      "description": "High-stakes arbiter for disputed or expensive claims. Called when a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. Claude family, independent error pattern from the DeepSeek workers and the gemini primary. Re-checks the specific contested claims against files/evidence and returns per-claim verdicts; never redo the task, never edit.",
       "mode": "subagent",
       "model": "opencode-go/claude-haiku-5-5",
       "permissions": [
