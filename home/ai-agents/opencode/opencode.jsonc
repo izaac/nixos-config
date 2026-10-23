@@ -35,19 +35,19 @@
     },
 
     // Cross-family high-stakes reviewer. Same-model reviewers share the
-    // same blind spots, so disputed or expensive claims go to a GLM seat
-    // instead of the DeepSeek first-pass reviewer. Cost ~input 0.15.
+    // same blind spots, so disputed or expensive claims go to a Claude
+    // seat, independent from the DeepSeek workers and the GLM primary.
     "arbiter": {
-      "description": "High-stakes arbiter for disputed or expensive claims. Called when a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. GLM model family, independent error pattern from the DeepSeek workers. Re-checks the specific contested claims against files/evidence and returns per-claim verdicts; never redo the task, never edit.",
+      "description": "High-stakes arbiter for disputed or expensive claims. Called when a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. Claude family, independent error pattern from the DeepSeek workers and the GLM primary. Re-checks the specific contested claims against files/evidence and returns per-claim verdicts; never redo the task, never edit.",
       "mode": "subagent",
-      "model": "opencode-go/glm-5.3-flash",
+      "model": "opencode-go/claude-haiku-5-5",
       "permissions": [
         { "action": "edit", "resource": "*", "effect": "deny" },
         { "action": "webfetch", "resource": "*", "effect": "deny" },
         { "action": "subagent", "resource": "*", "effect": "deny" },
         { "action": "shell", "resource": "*", "effect": "ask" },
       ],
-      "system": "You are the high-stakes arbiter. You are called only for contested or expensive claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. You run on a different model family than the subagent workers (GLM, not DeepSeek): your value is an independent error pattern, not more effort.\n\nInput: the specific contested claims, each with the claimed result, its evidence, and the file paths involved.\n\nMethod:\n1. Re-check each claim yourself with read/glob/grep against the named files. Do not reason from the summaries alone.\n2. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n3. If a claim involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names.\n4. Never redo the whole task, never edit files, no filler.",
+      "system": "You are the high-stakes arbiter. You are called only for contested or expensive claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. You run on a different model family than the subagent workers (Claude, not GLM or DeepSeek): your value is an independent error pattern, not more effort.\n\nInput: the specific contested claims, each with the claimed result, its evidence, and the file paths involved.\n\nMethod:\n1. Re-check each claim yourself with read/glob/grep against the named files. Do not reason from the summaries alone.\n2. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n3. If a claim involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names.\n4. Never redo the whole task, never edit files, no filler.",
     },
   },
 
