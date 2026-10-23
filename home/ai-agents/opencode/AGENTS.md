@@ -11,9 +11,9 @@
   - `evidence-vision` (gemini-3.8-flash-low via google/antigravity, Google AI Pro subscription
     quota, refill ~weekly): reads images and screenshots; when the Antigravity weekly bucket is
     drained, the parent respawns this seat on the OpenRouter vision model.
-  - `reviewer` (deepseek-v4.1-flash via OpenCode Go): first-pass check of another subagent's result,
-    run before the parent reviews it. Text-only: it cannot see images, so never hand it PNGs
-    expecting visual verdicts
+  - `reviewer` (deepseek-v4.1-flash via OpenCode Go): first-pass check strictly gated on authored
+    artifacts (plans, code diffs, fixtures) or disputed claims before parent reviews them.
+    Text-only: it cannot see images, so never hand it PNGs expecting visual verdicts
   - `reader` (beam-free via OpenCode Go, zero cost): bulk distillation only. Send it volume (test
     output, logs, inventories, long docs) and collect capped terse cards for the parent context.
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
@@ -30,23 +30,29 @@
 - Execution goes to subagents by default: test runs, bulk file ops, evidence harvesting, repetitive
   verification loops. The parent's job is to frame the task, review the subagent's output, arbitrate
   disputes, and own the final call before anything gets implemented or committed.
-- Tiered execution: Simple Path (surface/visibility/config) bundles verification into ONE
-  single-pass subagent and audits the final plan once. Complex Path (operators/CRDs/multi-step
-  lifecycles) decomposes into phased fixture, execution, and paired-vision stages.
-- Reviewer gating: Invoke `reviewer` on authored artifacts (plans, code diffs, fixtures) or disputed
-  claims. Skip `reviewer` on read-only discovery queries (git checks, issue queries, simple status
-  curls).
+- Tiered execution (strictly enforced):
+  - Simple Path (surface/visibility/config, routine operations, host hygiene, cleanup, command
+    runs): bundles execution and verification into ONE single-pass subagent. Reviewer is FORBIDDEN
+    on Simple Path. The parent reviews the subagent card directly and delivers the verdict.
+  - Complex Path (operators/CRDs/multi-step lifecycles): decomposes into phased fixture, execution,
+    and paired-vision stages.
+- Reviewer gating (hard rule): Invoke `reviewer` ONLY on authored artifacts (plans, code diffs,
+  fixtures) or disputed claims. NEVER invoke `reviewer` on Simple Path executions, operational
+  commands, or read-only discovery queries.
 - Model pins live in `~/.config/opencode/opencode.jsonc`. This directory is local-only: never commit
   it anywhere.
 
 ## Subagent review
 
-- After any subagent (`explore`, `general`, `free-assistant`, or custom) returns, invoke `reviewer`
-  once with the original task and that subagent's output, before using the result.
+- Reviewer gating is strictly enforced: invoke `reviewer` ONLY on authored artifacts (plans, code
+  diffs, fixtures) or disputed claims.
+- Never invoke `reviewer` on Simple Path executions: routine operations (cleanup, single commands,
+  builds, host hygiene) or discovery queries (git checks, issue queries, status curls) are verified
+  in a single pass by the executing subagent itself.
 - Do not invoke `reviewer` on its own output, and skip it for trivial results (a single file lookup,
   a one-line answer).
-- The reviewer is only a first pass. The invoking agent still does the final review of the result
-  and of the reviewer's findings, and decides what to accept or send back.
+- The reviewer is only a first pass for authored artifacts. The invoking agent still does the final
+  review of the result and of the reviewer's findings, and decides what to accept or send back.
 - Disputed or high-stakes claims: escalate the specific contested claims to `arbiter` (cross-family
   Claude Haiku), one escalation per dispute. It re-checks against files and returns per-claim
   verdicts. Parent arbitrates and owns the final call.

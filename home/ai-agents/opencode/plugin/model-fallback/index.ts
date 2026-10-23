@@ -89,6 +89,11 @@ export default {
         const candidates = fallbacks.filter((f) => f.from === current);
         // unconfigured model: leave OpenCode's own policy alone
         if (candidates.length === 0) return;
+        // Lifecycle noise, not provider dark: a disposed plugin (e.g. a second
+        // opencode instance disposing the shared auth plugin) says nothing
+        // about the provider's config, quota or auth state. Switching on it
+        // fires false positives whenever a standalone run collides.
+        if (/disposed/i.test(event.error?.message ?? '')) return;
         if (!(event.attempt >= attemptsBeforeFallback)) return;
 
         const used = switched.get(event.sessionID) ?? 0;
