@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Re-enable the nixos MCP here; it is disabled globally to save
+  // per-request tool-schema tokens outside Nix work.
+  "mcp": {
+    "servers": {
+      "nixos": {
+        "type": "local",
+        "command": ["nix", "run", "github:utensils/mcp-nixos", "--"],
+        "disabled": false,
+      },
+    },
+  },
+}
