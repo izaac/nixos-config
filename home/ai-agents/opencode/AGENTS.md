@@ -30,6 +30,12 @@
 - Execution goes to subagents by default: test runs, bulk file ops, evidence harvesting, repetitive
   verification loops. The parent's job is to frame the task, review the subagent's output, arbitrate
   disputes, and own the final call before anything gets implemented or committed.
+- Tiered execution: Simple Path (surface/visibility/config) bundles verification into ONE
+  single-pass subagent and audits the final plan once. Complex Path (operators/CRDs/multi-step
+  lifecycles) decomposes into phased fixture, execution, and paired-vision stages.
+- Reviewer gating: Invoke `reviewer` on authored artifacts (plans, code diffs, fixtures) or disputed
+  claims. Skip `reviewer` on read-only discovery queries (git checks, issue queries, simple status
+  curls).
 - Model pins live in `~/.config/opencode/opencode.jsonc`. This directory is local-only: never commit
   it anywhere.
 
