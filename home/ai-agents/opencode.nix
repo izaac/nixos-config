@@ -23,6 +23,7 @@ in {
     "opencode/AGENTS.md" = liveLink "AGENTS.md";
     # Generic subagent defs live in the repo; ffta-* stay hand-managed.
     "opencode/agents/free-assistant.md" = liveLink "agents/free-assistant.md";
+    "opencode/agents/reader.md" = liveLink "agents/reader.md";
     "opencode/agents/reviewer.md" = liveLink "agents/reviewer.md";
     "opencode/agents/evidence-vision.md" = liveLink "agents/evidence-vision.md";
     # V2 loads configured plugin directories via index.ts; the entrypoint

@@ -1,12 +1,12 @@
 ---
-description:
-  Small free-budget assistant for low-stakes work — quick Q&A, summaries, rewording, formatting,
-  simple lookups. Uses the OpenRouter Free Models Router (openrouter/free), which picks a random
-  capable free model per request. Cost-zero by design; NOT for architecture decisions,
-  security-sensitive edits, or anything where a wrong answer is expensive — keep those on the
-  primary model.
+description: >-
+  Small free-budget assistant for low-stakes work, quick Q&A, summaries, rewording, formatting,
+  simple lookups. Pinned to OpenCode Go beam-free (zero cost, fixed model). Bulk distillation (logs,
+  inventories, long docs) goes to the `reader` seat instead, which caps its output for parent
+  context. NOT for architecture decisions, security-sensitive edits, verification, or anything where
+  a wrong answer is expensive; keep those on the primary model.
 mode: subagent
-model: openrouter/openrouter/free
+model: opencode-go/beam-free
 permission:
   edit: deny
   webfetch: deny
