@@ -15,6 +15,12 @@ export default {
           "- The parent's job: frame the task, review the subagent's output, arbitrate disputes, and own the final call before anything gets implemented or committed.",
           '- Watch-each-other pair for image evidence: `evidence-vision` produces claim cards; hand the cards to `reviewer` for source/consistency objections; send only contested cards back to `evidence-vision` for rebuttal; parent arbitrates. Human eyes remain the tiebreaker.',
           '- High-stakes or disputed claims (reviewer verdict contested, evidence conflicts, expensive-to-be-wrong): escalate those specific claims to `arbiter` (cross-family Claude Haiku reviewer). It returns per-claim verdicts; the parent still owns the final call.',
+          '- Stuck circuit-breaker & 3-tier escalation ladder (strictly enforced):',
+          '  * Rule of Two: If a command, tool, or fix attempt fails with the same error twice, or two consecutive searches return 0 results, blind iteration is PROHIBITED. The worker subagent must immediately halt and return a STUCK CARD (<=15 lines: Target, Attempt, Error snippet, Blocker, Files) to the parent.',
+          '  * Two-stage triage: The parent reviews the STUCK CARD. If the issue is a simple boundary or path error, the parent redirects the worker directly. If the primary is also stuck, hypothesis fails, or the root cause is obscure, the parent escalates to the `architect` seat (Claude Sonnet 5.5 on Antigravity, fallback to Kimi K3.1 Pro on OpenCode Go).',
+          '  * `architect` produces a deep-reasoning ARCHITECTURAL SOLUTION CARD (<=25 lines) diagnosing root causes and providing concrete actions for the worker to execute.',
+          "  * Terminal Stop Invariant: The `architect` is the ceiling of automated reasoning. If the architect determines an external environment/credential/spec blocker, or if the architect's solution fails upon worker execution, further automated guessing is STRICTLY FORBIDDEN. The primary must immediately HALT and invoke the `question` tool to present the blocker, evidence, and options to the human user.",
+          '  * Role clarity: `arbiter` is strictly for tie-breaking disputed claims between reviewer and worker. It NEVER diagnoses bugs or solves problems. Problem escalation goes strictly to `architect`.',
           '- Text-only subagents never guess image content from names or metadata: they either get pre-split visual work, or they emit a VISUAL REQUEST card (file paths and exact questions) in their report and defer; the parent routes it to evidence-vision and resumes that session on the cards.',
           '- If the request can be completed with a single trivial lookup, the parent may answer directly; when in doubt, delegate.',
           '- Write-first: draft the deliverable from current knowledge immediately, then do one reconciliation pass against sources; do not re-verify known facts before writing.',
@@ -22,6 +28,9 @@ export default {
           '- Claim cards carry sampling context: when and how the state was sampled plus any state-transition history, so a stale-snapshot verdict cannot pass as a current-state verdict.',
           '- After any interruption the first action is re-reading the session checklist and FINDINGS files; never resume from conversation memory.',
           '- Frame a mechanical chain as ONE subagent task with an explicit done-condition and artifact paths; never issue one command per turn.',
+          '- Subagent anti-freeze rules (strictly enforced):',
+          '  * No recursive CLI spawning: Subagents must NEVER invoke `opencode` CLI commands (`opencode debug`, `opencode run`, etc.) inside shell tools: inspect files, configs, and system state directly with standard tools.',
+          '  * Bounded reviewer budget: Reviewer subagents are strictly first-pass spot-checks, capped at <=5 tool calls total. Never run deep diagnostic loops, full rebuilds, or recursive audits in the reviewer seat.',
         ].join('\n'),
       });
     });

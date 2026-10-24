@@ -26,6 +26,7 @@ in {
     "opencode/agents/reader.md" = liveLink "agents/reader.md";
     "opencode/agents/reviewer.md" = liveLink "agents/reviewer.md";
     "opencode/agents/evidence-vision.md" = liveLink "agents/evidence-vision.md";
+    "opencode/agents/architect.md" = liveLink "agents/architect.md";
     # V2 loads configured plugin directories via index.ts; the entrypoint
     # re-exports the implementation file beside it.
     "opencode/plugin/delegation-protocol" = liveLink "plugin/delegation-protocol";

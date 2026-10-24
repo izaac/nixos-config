@@ -21,11 +21,15 @@
   - `arbiter` (claude-haiku-5-5 via OpenCode Go, third family beside the DeepSeek workers and the
     gemini primary): called only when a reviewer verdict is disputed, evidence conflicts, or a wrong
     verdict is expensive. Independent error pattern is the point, not more effort
-  - `arbiter-sonnet` (claude-sonnet-4-6 via google/antigravity): last-resort arbiter for complex
-    reasoning, same read-only rules, called when stronger reasoning depth is needed or a dispute
-    stays contested.
+  - `arbiter-sonnet` (claude-sonnet-5-5-high via google/antigravity): last-resort arbiter for
+    complex reasoning, same read-only rules, called when stronger reasoning depth is needed or a
+    dispute stays contested.
+  - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to kimi-k3.1-pro via
+    OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
+    hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
+    permissions to debug freely (shell, webfetch, edit).
 - Keep on the primary model: root-cause analysis, fix design, architecture decisions, anything where
-  a wrong-but-confident answer is expensive.
+  a wrong-but-confident answer is expensive. If the primary is also stuck, escalate to `architect`.
 - Launch subagents in background/parallel where possible; keep main context lean.
 - Execution goes to subagents by default: test runs, bulk file ops, evidence harvesting, repetitive
   verification loops. The parent's job is to frame the task, review the subagent's output, arbitrate
@@ -64,6 +68,39 @@
 - Text-only agents never interpret screenshots directly: they either receive pre-split visual work,
   or they record a VISUAL REQUEST card (file paths and exact questions) in their report and defer;
   the parent routes it to the vision seat and resumes that session on the cards.
+- Subagent anti-freeze rules (strictly enforced):
+  - No recursive CLI spawning: Subagents must NEVER invoke `opencode` CLI commands
+    (`opencode debug`, `opencode run`, etc.) inside shell tools: inspect files, configs, and system
+    state directly with standard tools.
+  - Bounded reviewer budget: Reviewer subagents are strictly first-pass spot-checks, capped at <=5
+    tool calls total. Never run deep diagnostic loops, full rebuilds, or recursive audits in the
+    reviewer seat.
+
+## Stuck circuit-breaker & 3-tier escalation ladder
+
+- Rule of Two: If a command, tool, or fix attempt fails with the same error twice, or two
+  consecutive searches return 0 results, blind iteration is PROHIBITED. The worker subagent must
+  immediately halt and return a STUCK CARD (<=15 lines: Target, Attempt, Error snippet, Blocker,
+  Files) to the parent.
+- Two-stage triage:
+  1. The parent reviews the STUCK CARD. If the issue is a simple boundary or path error, the parent
+     redirects the worker directly without spending frontier tokens.
+  2. If the primary's hypothesis also fails, or the root cause is obscure, the primary escalates to
+     the `architect` seat (Claude Sonnet 5.5 on Antigravity, fallback to Kimi K3.1 Pro on OpenCode
+     Go).
+- `architect` produces a dense ARCHITECTURAL SOLUTION CARD (<=25 lines) diagnosing root causes and
+  providing concrete actions for the worker to execute.
+- Role clarity:
+  - `arbiter` / `arbiter-sonnet` is strictly for tie-breaking disputed claims between reviewer and
+    worker. It NEVER diagnoses bugs or solves problems.
+  - Problem escalation when stuck goes strictly to `architect`.
+- Terminal Stop Invariant: The `architect` is the ceiling of automated reasoning. If the architect
+  determines an external environment/credential/spec blocker, it returns an ARCHITECTURAL IMPASSE
+  CARD (<=20 lines). If the architect's solution fails upon worker execution, the primary receives
+  the failure card. In either case, further automated guessing is STRICTLY FORBIDDEN: the primary
+  immediately HALTS execution and invokes the `question` tool to present the blocker, evidence, and
+  2-3 concrete human options. Terminal stop means at most one architect round per problem: no loops,
+  no retries after the impasse verdict.
 
 ## Search discipline
 

@@ -94,7 +94,16 @@ export default {
         // about the provider's config, quota or auth state. Switching on it
         // fires false positives whenever a standalone run collides.
         if (/disposed/i.test(event.error?.message ?? '')) return;
-        if (!(event.attempt >= attemptsBeforeFallback)) return;
+        // 200-with-unprocessable-body is transport noise, not provider dark:
+        // the HTTP round trip succeeded but the response stream was cut
+        // mid-flight (opencode restart, proxy hiccup aborting the SSE).
+        // Demand one more failed attempt than usual before hopping so a
+        // restart blip cannot move the session.
+        const bodyNoise =
+          (event.error?.status ?? event.error?.statusCode) === 200 ||
+          /failed to process successful response/i.test(event.error?.message ?? '');
+        const floor = bodyNoise ? attemptsBeforeFallback + 1 : attemptsBeforeFallback;
+        if (!(event.attempt >= floor)) return;
 
         const used = switched.get(event.sessionID) ?? 0;
         if (used >= MAX_SWITCHES) return;
