@@ -19,12 +19,23 @@
           { "from": "google/antigravity-gemini-3.8-flash-high", "to": "opencode-go/glm-5.3-flash" },
           // Hop 2: glm dark -> deepseek Go seat (deepseek is the floor; the visited-skip rule stays armed for future rungs).
           { "from": "opencode-go/glm-5.3-flash", "to": "opencode-go/deepseek-v4.1-flash" },
+          // Hop 3: deepseek dark -> qwen Go seat.
+          { "from": "opencode-go/deepseek-v4.1-flash", "to": "opencode-go/qwen3.8-flash" },
           // Architect fallback: Claude Sonnet 5.5 (Antigravity quota) -> Kimi K3.1 Pro (OpenCode Go seat).
           {
             "from": "google/antigravity-claude-sonnet-5-5-high",
             "to": "opencode-go/kimi-k3.1-pro",
           },
         ],
+      },
+    },
+    // Dynamic peak-hours model router: routes worker agents to DeepSeek off-peak, Qwen peak.
+    {
+      "package": "./plugin/peak-hours-router",
+      "options": {
+        "offPeakModel": "opencode-go/deepseek-v4.1-flash",
+        "peakModel": "opencode-go/qwen3.8-flash",
+        "agents": ["explore", "general", "reviewer"],
       },
     },
   ],

@@ -3,17 +3,19 @@
 ## Agent cost policy: savings-first
 
 - Always delegate mechanical tasks to the cheapest capable subagent:
-  - `explore` (deepseek-v4.1-flash via OpenCode Go): codebase search, file finding, "where is X"
-    questions
-  - `general` (deepseek-v4.1-flash via OpenCode Go): bulk multi-step edits from clear patterns
+  - `explore` (deepseek-v4.1-flash off-peak / qwen3.8-flash peak via OpenCode Go): codebase search,
+    file finding, "where is X" questions
+  - `general` (deepseek-v4.1-flash off-peak / qwen3.8-flash peak via OpenCode Go): bulk multi-step
+    edits from clear patterns
   - `free-assistant` (beam-free via OpenCode Go, zero cost): quick Q&A, summaries, rewording,
     formatting; stable pin since beam-free replaced the random openrouter/free router for this seat
   - `evidence-vision` (gemini-3.8-flash-low via google/antigravity, Google AI Pro subscription
     quota, refill ~weekly): reads images and screenshots; when the Antigravity weekly bucket is
     drained, the parent respawns this seat on the OpenRouter vision model.
-  - `reviewer` (deepseek-v4.1-flash via OpenCode Go): first-pass check strictly gated on authored
-    artifacts (plans, code diffs, fixtures) or disputed claims before parent reviews them.
-    Text-only: it cannot see images, so never hand it PNGs expecting visual verdicts
+  - `reviewer` (deepseek-v4.1-flash off-peak / qwen3.8-flash peak via OpenCode Go): first-pass check
+    strictly gated on authored artifacts (plans, code diffs, fixtures) or disputed claims before
+    parent reviews them. Text-only: it cannot see images and has no shell execution tools (inspects
+    via read/grep).
   - `reader` (beam-free via OpenCode Go, zero cost): bulk distillation only. Send it volume (test
     output, logs, inventories, long docs) and collect capped terse cards for the parent context.
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified

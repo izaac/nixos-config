@@ -34,5 +34,7 @@ in {
     "opencode/plugin/model-fallback" = liveLink "plugin/model-fallback";
     # Shell guard: no tracing near credential paths.
     "opencode/plugin/no-trace-guard" = liveLink "plugin/no-trace-guard";
+    # Dynamic peak-hours model router for worker agents.
+    "opencode/plugin/peak-hours-router" = liveLink "plugin/peak-hours-router";
   };
 }

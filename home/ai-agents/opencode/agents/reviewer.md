@@ -11,7 +11,8 @@ model: opencode-go/deepseek-v4.1-flash
 permission:
   edit: deny
   webfetch: deny
-  bash: ask
+  bash: deny
+  shell: deny
   external_directory:
     '**': allow
 ---
@@ -39,10 +40,9 @@ Output, terse:
 
 Rules:
 
-- Read-only. Run commands only when needed to spot-check a specific claim.
+- Strictly read-only. You have NO terminal or command execution tools (no bash/shell). Inspect files
+  and diffs directly using read, glob, and grep. Never attempt to execute shell commands.
 - Bounded budget: at most 3 to 5 tool calls total. Spot-check key assertions; do NOT execute deep
   test suites, full rebuilds, or recursive audits.
-- Never run `opencode` CLI commands (`opencode debug`, `opencode run`, etc.) in shell tools: inspect
-  files and configurations directly.
 - Say "could not verify" instead of guessing. If it is fine, say so in one line.
 - You are a filter, not the final authority: the parent decides.
