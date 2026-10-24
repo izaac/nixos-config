@@ -60,6 +60,8 @@ in {
       # --- SECURITY ---
       sops
       age
+      lynis # system hardening audit (host + config checks)
+      vulnix # NixOS store vulnerability scanner
 
       # --- COMPRESSION & ARCHIVING ---
       ouch
