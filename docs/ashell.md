@@ -139,16 +139,19 @@ Volume and brightness changes via IPC show a percentage overlay:
 
 ## Overlay and Network Patch
 
-ashell is pinned to `nixpkgs-unstable` via `overlays/ashell-unstable.nix` because the 26.05 stable
-channel lacks IPC and OSD support.
+ashell is pinned to a frozen nixpkgs rev (the `nixpkgs-ashell` input in `flake.nix`, currently
+0.11.0) via `overlays/ashell-unstable.nix`, because the 26.05 stable channel only ships 0.8.0, which
+lacks IPC and OSD support.
 
-The overlay also carries `overlays/patches/ashell-network-backoff.patch`, which adds exponential
-backoff to the NetworkManager service backend. Without it, on a host running `systemd-networkd`
-(like `ninja`), the backend retries every 5 seconds forever, roughly 17k D-Bus round trips and 3 MB
-of log per day. The patch parks the service after 6 failed attempts.
+The overlay also carries two patches. `overlays/patches/ashell-network-backoff.patch` adds
+exponential backoff to the NetworkManager service backend. Without it, on a host running
+`systemd-networkd` (like `ninja`), the backend retries every 5 seconds forever, roughly 17k D-Bus
+round trips and 3 MB of log per day. The patch parks the service after 6 failed attempts.
+`overlays/patches/ashell-brightness-step.patch` drops the brightness step from a hardcoded 5% to 1%,
+since upstream exposes no setting for it and 5% leaves the low end of a laptop panel one press wide.
 
-> **Maintenance**: Re-check the patch against `src/services/network/mod.rs` on every ashell version
-> bump.
+> **Maintenance**: Re-check both patches against `src/services/network/mod.rs` and
+> `src/modules/settings/brightness.rs` on every ashell version bump.
 
 ## Screencast Privacy
 

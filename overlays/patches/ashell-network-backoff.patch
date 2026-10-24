@@ -9,12 +9,12 @@ This threads an attempt counter through the state machine, doubles the delay on
 each failure, and moves to a new `Disabled` state after six attempts, on the
 grounds that a system with no supported backend will not grow one mid-session.
 
-Still needed as of 0.10.0: upstream continues to hardcode
+Still needed as of 0.11.0: upstream continues to hardcode
 `error!("Network service error, retrying in 5 seconds")` with a flat five second
 sleep and an unconditional return to `State::Init`.
 
 Refreshed for 0.10.0, which added a third field to `State::Active` and so broke
-the first hunk's context.
+the first hunk's context. Applies to 0.11.0 unchanged, only with line offsets.
 
 Recheck against src/services/network/mod.rs on every ashell bump.
 

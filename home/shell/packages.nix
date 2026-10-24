@@ -109,7 +109,6 @@ in {
     ++ lib.optionals (pkgs.stdenv.isLinux && isWorkstation) [
       appimage-run
       wl-clipboard
-      wl-clip-persist
       dwarfs
     ]
     ++ lib.optionals (pkgs.stdenv.isLinux && hasBluetooth) [

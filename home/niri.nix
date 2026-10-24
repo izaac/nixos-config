@@ -2,21 +2,15 @@
   config,
   pkgs,
   lib,
-  inputs,
   osConfig ? {},
   ...
 }: let
   # ninja-only pieces (49" monitor layout, render device) are gated on
   # the hostname so the laptop does not inherit them.
   isNinja = (osConfig.networking.hostName or "") == "ninja";
-  # Patched to stop Steam's menu bar dropdowns dismissing themselves; see
-  # overlays/patches/xwayland-satellite-popup-focus.patch for the full story.
-  # Drop the patch once upstream issue #468 is fixed and released.
-  xwaylandSatellite =
-    inputs.niri-flake.packages.${pkgs.stdenv.hostPlatform.system}.xwayland-satellite-unstable.overrideAttrs
-    (old: {
-      patches = (old.patches or []) ++ [../overlays/patches/xwayland-satellite-popup-focus.patch];
-    });
+  # Upstream 0.8.3 from nixpkgs. The local popup-focus patch is gone; see
+  # docs/niri.md for what that costs.
+  xwaylandSatellite = pkgs.xwayland-satellite;
   screenRecord = pkgs.writeShellApplication {
     name = "screen-record";
     runtimeInputs = with pkgs; [wf-recorder slurp libnotify coreutils procps];

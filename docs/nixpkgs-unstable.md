@@ -22,22 +22,21 @@ These are load-bearing features for this config. The overlay also applies two pa
   17k pointless D-Bus round trips/day on hosts without NetworkManager/iwd)
 - `ashell-brightness-step.patch`: Configurable brightness step (upstream hardcodes 5%)
 
-Both patches were rechecked against ashell 0.10.0 and are still required: upstream keeps the flat
+Both patches were rechecked against ashell 0.11.0 and are still required: upstream keeps the flat
 five second retry with no give-up, and still hardcodes the brightness step at 5% with no setting to
-override it. The backoff patch had to be refreshed at 0.10.0, which added a third field to
-`State::Active` and broke the first hunk's context. Expect the same on future bumps, since every
-hunk of that patch touches the network service's state machine.
+override it. Neither patch needed a refresh at 0.11.0, both hunks matched with line offsets only.
+`State::Active` still carries its third field, so the 0.10.0 refresh held.
 
-**Migration target**: nixpkgs PR #533450 backports 0.9.0 to release-26.05, still open. Once merged
-and released, drop this overlay.
+**Migration target**: nixpkgs PR #533450 backports 0.9.0 to release-26.05. Drop this overlay once a
+stable release carries ashell 0.11.0 or later.
 
 **Pinning**: ashell comes from a dedicated `nixpkgs-ashell` input in `flake.nix`, locked to an
-explicit rev (`801bef6a`, ashell 0.10.0) rather than the floating `nixpkgs-unstable`.
+explicit rev (`a322c65b`, ashell 0.11.0) rather than the floating `nixpkgs-unstable`.
 `nix flake update` cannot move an input whose URL names a rev, so a routine `just up` can no longer
 bump ashell and break the network patch. To bump ashell deliberately: change that rev, rebuild, and
 refresh the patch if it stops applying.
 
-**Affects**: All hosts (applied in lib/mkSystem.nix)
+**Affects**: All hosts (applied in modules/desktop/default.nix)
 
 ---
 
@@ -62,12 +61,13 @@ then `nix flake update nix-packages` to activate the local derivation.
 **Package**: `stash-clipboard` **Reason**: Package was merged after 26.05 branch cut; stable channel
 has no such attribute (nixpkgs `stash` is stashapp, an unrelated media organizer).
 
-Pins to `nixpkgs-unstable` which ships `v0.5.0` (including upstream fixes for plain text offers and
-MIME types).
+Pins to `nixpkgs-unstable`, whose locked rev ships `v0.5.2`. Upstream is at `v0.5.3` on the
+`nixos-unstable` head; take that at the next deliberate `nix flake update nixpkgs-unstable` rather
+than bumping the whole unstable pin for one clipboard tool.
 
 **Migration target**: Once `stash-clipboard` lands in nixpkgs stable, drop the overlay.
 
-**Affects**: Linux hosts (applied in `lib/mkSystem.nix`)
+**Affects**: Linux hosts (applied in `modules/desktop/default.nix`)
 
 ---
 
@@ -120,14 +120,14 @@ unstable comes up with `/run/podman/podman.sock` present.
 
 ## Overlay Application
 
-| Overlay                | Applied In             | Hosts             | Source                                       |
-| ---------------------- | ---------------------- | ----------------- | -------------------------------------------- |
-| ashell-unstable.nix    | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-ashell` (pinned rev)                |
-| krunkit-unstable.nix   | lib/mkDarwin.nix       | Mac               | `nixpkgs-unstable` (floating)                |
-| opencode.nix           | lib/common-nixpkgs.nix | ninja, windy, Mac | `nix-packages` (fallback `nixpkgs-unstable`) |
-| smug-unstable.nix      | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating)                |
-| stash-unstable.nix     | lib/mkSystem.nix       | ninja, windy      | `nixpkgs-unstable` (floating)                |
-| tailscale-unstable.nix | lib/common-nixpkgs.nix | all hosts         | `nixpkgs-unstable` (floating)                |
+| Overlay                | Applied In                  | Hosts             | Source                                       |
+| ---------------------- | --------------------------- | ----------------- | -------------------------------------------- |
+| ashell-unstable.nix    | modules/desktop/default.nix | ninja, windy      | `nixpkgs-ashell` (pinned rev)                |
+| krunkit-unstable.nix   | lib/mkDarwin.nix            | Mac               | `nixpkgs-unstable` (floating)                |
+| opencode.nix           | lib/common-nixpkgs.nix      | ninja, windy, Mac | `nix-packages` (fallback `nixpkgs-unstable`) |
+| smug-unstable.nix      | lib/common-nixpkgs.nix      | all hosts         | `nixpkgs-unstable` (floating)                |
+| stash-unstable.nix     | modules/desktop/default.nix | ninja, windy      | `nixpkgs-unstable` (floating)                |
+| tailscale-unstable.nix | lib/common-nixpkgs.nix      | all hosts         | `nixpkgs-unstable` (floating)                |
 
 ---
 
@@ -156,7 +156,7 @@ Before adding a new overlay, ensure:
 
 ## Re-evaluation Checklist (per channel bump)
 
-- [ ] ashell 0.9.0+ in new stable
+- [ ] ashell 0.11.0+ in new stable
 - [ ] opencode: no longer needs re-evaluation, tracked upstream via izaac/nix-packages
 - [ ] stash-clipboard in new stable
 - [ ] Remove overlays that are no longer needed
@@ -177,4 +177,4 @@ Update the commit hash when re-evaluating. This prevents unexpected breakage fro
 
 ---
 
-_Last reviewed: 2026-09-05_
+_Last reviewed: 2026-10-24_

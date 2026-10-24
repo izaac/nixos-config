@@ -15,9 +15,9 @@
     # that file: 0.10.0 added a field to `State::Active` and broke it already.
     # Floating this input means a routine `just up` can fail the build.
     #
-    # This rev ships ashell 0.10.0. To bump ashell deliberately: move the rev,
+    # This rev ships ashell 0.11.0. To bump ashell deliberately: move the rev,
     # rebuild, and refresh the patch if it no longer applies.
-    nixpkgs-ashell.url = "github:nixos/nixpkgs/801bef6abd86b91e51083066b83fb354a11fc640";
+    nixpkgs-ashell.url = "github:nixos/nixpkgs/a322c65bf7233456788a9ebf03bc067db7dc090a";
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
