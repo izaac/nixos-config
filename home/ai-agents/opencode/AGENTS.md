@@ -38,11 +38,17 @@
   - Simple Path (surface/visibility/config, routine operations, host hygiene, cleanup, command
     runs): bundles execution and verification into ONE single-pass subagent. Reviewer is FORBIDDEN
     on Simple Path. The parent reviews the subagent card directly and delivers the verdict.
+  - Audit Path (codebase reviews, architectural sweeps, hygiene/best-practice audits, repo
+    summaries): decomposes into 3 parallel background domain probes (`explore` / `reader`): (1)
+    Architecture & Topology (boundaries, data flow, coupling), (2) Quality & Anti-patterns (error
+    handling, types, dead paths, test structure), (3) Tooling & DX (builds, CI, manifests, configs).
+    Each worker returns a FINDING CARD (<=25 lines). Reviewer is FORBIDDEN. Parent synthesizes the
+    cards into a prioritized roadmap.
   - Complex Path (operators/CRDs/multi-step lifecycles): decomposes into phased fixture, execution,
     and paired-vision stages.
 - Reviewer gating (hard rule): Invoke `reviewer` ONLY on authored artifacts (plans, code diffs,
-  fixtures) or disputed claims. NEVER invoke `reviewer` on Simple Path executions, operational
-  commands, or read-only discovery queries.
+  fixtures) or disputed claims. NEVER invoke `reviewer` on Simple Path executions, Audit Path
+  sweeps, operational commands, or read-only discovery queries.
 - Model pins live in `~/.config/opencode/opencode.jsonc`. This directory is local-only: never commit
   it anywhere.
 
@@ -50,9 +56,10 @@
 
 - Reviewer gating is strictly enforced: invoke `reviewer` ONLY on authored artifacts (plans, code
   diffs, fixtures) or disputed claims.
-- Never invoke `reviewer` on Simple Path executions: routine operations (cleanup, single commands,
-  builds, host hygiene) or discovery queries (git checks, issue queries, status curls) are verified
-  in a single pass by the executing subagent itself.
+- Never invoke `reviewer` on Simple Path executions or Audit Path sweeps: routine operations
+  (cleanup, single commands, builds, host hygiene) or discovery/audit queries (code reviews, git
+  checks, issue queries, status curls) are verified directly by the executing subagent or
+  synthesized by the parent.
 - Do not invoke `reviewer` on its own output, and skip it for trivial results (a single file lookup,
   a one-line answer).
 - The reviewer is only a first pass for authored artifacts. The invoking agent still does the final
