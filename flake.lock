@@ -71,11 +71,11 @@
     "claude-skills": {
       "flake": false,
       "locked": {
-        "lastModified": 1784844071,
-        "narHash": "sha256-vBcBFOm/Knuss3zBAV6KzqODZuP+bOpxIxcdxoPvYw4=",
+        "lastModified": 1792802177,
+        "narHash": "sha256-k+mYrMshetNOQha+1SeDmnnemw8XIeDzYoRZgRs6GzM=",
         "ref": "refs/heads/main",
-        "rev": "7f4599402935f36e7c59d1674a9b30db1107c6c8",
-        "revCount": 4,
+        "rev": "1f28d3bed6f0c2cc10d607adee0f4381910a9195",
+        "revCount": 6,
         "type": "git",
         "url": "ssh://git@github.com/izaac/claude-skills"
       },
