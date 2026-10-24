@@ -14,6 +14,8 @@
     {
       "package": "./plugin/model-fallback",
       "options": {
+        "attemptsBeforeFallback": 3,
+        "retryDelayMs": 1000,
         "fallbacks": [
           // Hop 1: gemini dark -> glm Go seat (Chief: gemini primary, Go seats as fallbacks).
           { "from": "google/antigravity-gemini-3.8-flash-high", "to": "opencode-go/glm-5.3-flash" },
