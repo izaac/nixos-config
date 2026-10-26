@@ -12,20 +12,23 @@
   - `evidence-vision` (gemini-3.8-flash-low via google/antigravity, Google AI Pro subscription
     quota, refill ~weekly): reads images and screenshots; when the Antigravity weekly bucket is
     drained, the parent respawns this seat on the OpenRouter vision model.
-  - `reviewer` (deepseek-v4.1-flash off-peak / qwen3.8-flash peak via OpenCode Go): first-pass check
-    strictly gated on authored artifacts (plans, code diffs, fixtures) or disputed claims before
-    parent reviews them. Text-only: it cannot see images and has no shell execution tools (inspects
-    via read/grep).
+  - `reviewer` (gpt-6-luna via CommandCode, `xhigh` reasoning variant): first-pass check strictly
+    gated on authored artifacts (plans, code diffs, fixtures) or disputed claims before parent
+    reviews them. Text-only: it cannot see images and has no shell execution tools (inspects via
+    read/grep).
   - `reader` (beam-free via OpenCode Go, zero cost): bulk distillation only. Send it volume (test
     output, logs, inventories, long docs) and collect capped terse cards for the parent context.
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
     docs-vs-code contradiction
-  - `arbiter` (claude-haiku-5-5 via OpenCode Go, third family beside the DeepSeek workers and the
-    gemini primary): called only when a reviewer verdict is disputed, evidence conflicts, or a wrong
-    verdict is expensive. Independent error pattern is the point, not more effort
-  - `arbiter-sonnet` (claude-sonnet-5-5-high via google/antigravity): last-resort arbiter for
-    complex reasoning, same read-only rules, called when stronger reasoning depth is needed or a
-    dispute stays contested.
+  - `arbiter` (commandcode/claude-sonnet-5-5#high, Claude Sonnet 5.5 via CommandCode, third family
+    beside the DeepSeek workers and the gemini primary): the single arbiter seat, two triggers. (a)
+    Disputed or high-stakes claims: a reviewer verdict is contested, evidence conflicts, or a wrong
+    verdict is expensive. (b) Large code change foul-check: one bounded referee pass that runs ONLY
+    after the first-pass `reviewer` has reviewed the diff and the principal has formed its own final
+    reasoning (see the foul-check ordering under Subagent review). Independent error pattern is the
+    point, not more effort. Pin form: `"model": "commandcode/claude-sonnet-5-5#high"` as one plain
+    string, with the variant riding inside the model id as a `#variant` suffix; never a sibling
+    `"variant"` key and never a nested model object
   - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to kimi-k3.1-pro via
     OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
     hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
@@ -65,10 +68,30 @@
 - Do not invoke `reviewer` on its own output, and skip it for trivial results (a single file lookup,
   a one-line answer).
 - The reviewer is only a first pass for authored artifacts. The invoking agent still does the final
-  review of the result and of the reviewer's findings, and decides what to accept or send back.
+  review of the result and of the reviewer's findings, and decides what to accept or send back. On a
+  large code change, that completed principal reasoning is exactly what the foul-check `arbiter`
+  pass receives, together with the diff and the reviewer findings.
 - Disputed or high-stakes claims: escalate the specific contested claims to `arbiter` (cross-family
-  Claude Haiku), one escalation per dispute. It re-checks against files and returns per-claim
+  Claude Sonnet 5.5), one escalation per dispute. It re-checks against files and returns per-claim
   verdicts. Parent arbitrates and owns the final call.
+- Large code change foul-check (referee check): a large change means 3+ files modified, roughly 100+
+  lines changed, or an architectural touchpoint. The order is fixed and strictly enforced:
+  1. The worker executes the change.
+  2. First-pass `reviewer` (`commandcode/gpt-6-luna#xhigh`) reviews the authored diff.
+  3. The principal receives the `reviewer` review and forms its own final reasoning: what to accept,
+     reject, or adjust.
+  4. ONLY AT THAT POINT, with the `reviewer` findings and the principal's final reasoning both in
+     hand, call `arbiter` (`commandcode/claude-sonnet-5-5#high`) for ONE quick bounded referee pass,
+     capped at <=5 tool calls, over the diff, the `reviewer` findings, and the principal's final
+     reasoning, to see if a foul needs to be called out before finalizing. Never call `arbiter`
+     before `reviewer`, and never call it twice.
+
+  What it looks for: broken invariants, security or stealth regressions, cross-file contract
+  mismatches, or missed edge cases the fast first-pass reviewer would not catch. Same read-only
+  rules: it never edits and never redoes the task. Foul-check output is lines of
+  `FOUL severity high|medium, file:line, what breaks, smallest fix`, or `CLEAN` plus the riskiest
+  spots checked.
+
 - Watch-each-other pair for evidence review: when judging screenshots or image evidence, run the
   vision seat (`evidence-vision`, google/antigravity) for claim cards, then hand the cards to
   `reviewer` for source/consistency objections, then send only the contested cards back to
@@ -100,8 +123,10 @@
 - `architect` produces a dense ARCHITECTURAL SOLUTION CARD (<=25 lines) diagnosing root causes and
   providing concrete actions for the worker to execute.
 - Role clarity:
-  - `arbiter` / `arbiter-sonnet` is strictly for tie-breaking disputed claims between reviewer and
-    worker. It NEVER diagnoses bugs or solves problems.
+  - `arbiter` is strictly for tie-breaking disputed claims between reviewer and worker, plus the
+    single bounded large-change foul-check. That foul-check runs only after `reviewer` has reported
+    and the principal has formed its final reasoning, and it is never run twice on the same change.
+    It NEVER diagnoses bugs or solves problems.
   - Problem escalation when stuck goes strictly to `architect`.
 - Terminal Stop Invariant: The `architect` is the ceiling of automated reasoning. If the architect
   determines an external environment/credential/spec blocker, it returns an ARCHITECTURAL IMPASSE

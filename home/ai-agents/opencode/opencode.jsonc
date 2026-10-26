@@ -31,13 +31,25 @@
         ],
       },
     },
-    // Dynamic peak-hours model router: routes worker agents to DeepSeek off-peak, Qwen peak.
+    // Dynamic peak-hours model router: per-agent routes, DeepSeek off-peak, partner model peak.
+    // Routes win per agent; offPeakModel/peakModel stay as shared fallbacks (legacy path)
+    // for any agent listed in "agents" but missing from "routes".
     {
       "package": "./plugin/peak-hours-router",
       "options": {
         "offPeakModel": "opencode-go/deepseek-v4.1-flash",
         "peakModel": "opencode-go/qwen3.8-flash",
-        "agents": ["explore", "general", "reviewer"],
+        "agents": ["explore", "general"],
+        "routes": {
+          "explore": {
+            "offPeak": "opencode-go/deepseek-v4.1-flash",
+            "peak": "opencode-go/qwen3.8-flash",
+          },
+          "general": {
+            "offPeak": "commandcode/deepseek/deepseek-v4.1-flash-fast",
+            "peak": "commandcode/Qwen/Qwen3.8-Omni-Flash",
+          },
+        },
       },
     },
   ],
@@ -55,6 +67,10 @@
     { "action": "provider.use", "resource": "openrouter", "effect": "allow" },
     // Google via Antigravity OAuth (subscription quota, not API billing).
     { "action": "provider.use", "resource": "google", "effect": "allow" },
+    // CommandCode (models.dev id: commandcode): OpenAI-compatible endpoint at
+    // api.commandcode.ai, key via CMD_API_KEY or /connect. Claude models carry
+    // their own @ai-sdk/anthropic routing in the models.dev snapshot.
+    { "action": "provider.use", "resource": "commandcode", "effect": "allow" },
   ],
 
   "permissions": [
@@ -74,39 +90,41 @@
     "explore": {
       "model": "opencode-go/deepseek-v4.1-flash",
     },
-    // Multi-step worker: OpenCode Go DeepSeek V4.1 Flash
+    // Multi-step worker: CommandCode DeepSeek V4.1 Flash off-peak, Qwen3.8 Omni Flash peak
+    // (peak-hours-router overrides at runtime; this is the resting default).
     "general": {
-      "model": "opencode-go/deepseek-v4.1-flash",
+      "model": "commandcode/deepseek/deepseek-v4.1-flash-fast",
     },
 
-    // Cross-family high-stakes reviewer. Same-model reviewers share the
-    // same blind spots, so disputed or expensive claims go to a Claude
-    // seat, independent from the DeepSeek workers and the gemini primary.
-    "arbiter": {
-      "description": "High-stakes arbiter for disputed or expensive claims. Called when a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. Claude family, independent error pattern from the DeepSeek workers and the gemini primary. Re-checks the specific contested claims against files/evidence and returns per-claim verdicts; never redo the task, never edit.",
-      "mode": "subagent",
-      "model": "opencode-go/claude-haiku-5-5",
-      "permissions": [
-        { "action": "edit", "resource": "*", "effect": "deny" },
-        { "action": "webfetch", "resource": "*", "effect": "deny" },
-        { "action": "subagent", "resource": "*", "effect": "deny" },
-        { "action": "shell", "resource": "*", "effect": "ask" },
-      ],
-      "system": "You are the high-stakes arbiter. You are called only for contested or expensive claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. You run on a different model family than the subagent workers (Claude, not GLM or DeepSeek): your value is an independent error pattern, not more effort.\n\nInput: the specific contested claims, each with the claimed result, its evidence, and the file paths involved.\n\nMethod:\n1. Re-check each claim yourself with read/glob/grep against the named files. Do not reason from the summaries alone.\n2. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n3. If a claim involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names.\n4. Never redo the whole task, never edit files, no filler.",
+    // First-pass reviewer: GPT-6 Luna via CommandCode, xhigh reasoning variant.
+    // Independent model family from DeepSeek workers and Gemini primary.
+    // Pin form for opencode.jsonc "agents": "model" is a plain string and the
+    // variant rides inside it as a "#variant" suffix. The schema entry for
+    // agents ({Config.AgentEncoded}) allows exactly two shapes: that string, or a
+    // closed object {providerID, model, variant}. A bare sibling "variant" key is
+    // NOT allowed there (additionalProperties: false) and silently breaks the pin.
+    "reviewer": {
+      "model": "commandcode/gpt-6-luna#xhigh",
     },
-    // Second arbiter seat: Sonnet via Antigravity (Google AI Pro quota). Same gate as arbiter:
-    // disputed or expensive claims, second opinion when the Claude-Haiku arbiter alone is not enough.
-    "arbiter-sonnet": {
-      "description": "Second arbiter seat, Sonnet via Antigravity. High-stakes arbiter for disputed or expensive claims. Called when a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. Claude family, independent error pattern from the DeepSeek workers and the gemini primary. Re-checks the specific contested claims against files/evidence and returns per-claim verdicts; never redo the task, never edit.",
+
+    // Single cross-family arbiter and referee seat. Same-model reviewers share
+    // the same blind spots, so disputed or expensive claims go to a Claude seat,
+    // independent from the DeepSeek workers and the gemini primary.
+    // Claude Sonnet 5.5 via CommandCode, high reasoning variant, same
+    // "provider/model#variant" string form as reviewer above.
+    // Foul-check ordering: worker -> reviewer -> principal's final reasoning ->
+    // arbiter (single pass), never before the reviewer, never twice.
+    "arbiter": {
+      "description": "High-stakes arbiter and referee with two triggers. (1) Disputed or high-stakes claims: a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. (2) Large code change foul-check: after a multi-file or architectural change (3+ files touched or roughly 100+ changed lines), exactly ONE bounded referee pass, run only after the first-pass reviewer has reviewed the diff and the principal has formed its own final reasoning. Input is the diff plus the reviewer findings plus the principal's final reasoning; look only for major fouls the fast reviewer may have missed (broken invariants, security or stealth regressions, cross-file contract mismatches, missed edge cases). Never before the reviewer, never twice, never redo the task, never edit.",
       "mode": "subagent",
-      "model": "google/antigravity-claude-sonnet-5-5-high",
+      "model": "commandcode/claude-sonnet-5-5#high",
       "permissions": [
         { "action": "edit", "resource": "*", "effect": "deny" },
         { "action": "webfetch", "resource": "*", "effect": "deny" },
         { "action": "subagent", "resource": "*", "effect": "deny" },
         { "action": "shell", "resource": "*", "effect": "ask" },
       ],
-      "system": "You are the high-stakes arbiter. You are called only for contested or expensive claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. You run on a different model family than the subagent workers (Claude, not GLM or DeepSeek): your value is an independent error pattern, not more effort.\n\nInput: the specific contested claims, each with the claimed result, its evidence, and the file paths involved.\n\nMethod:\n1. Re-check each claim yourself with read/glob/grep against the named files. Do not reason from the summaries alone.\n2. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n3. If a claim involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names.\n4. Never redo the whole task, never edit files, no filler.",
+      "system": "You are the high-stakes arbiter and referee. You are called for exactly two jobs.\n\nJOB 1, disputed or high-stakes claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. Input: the specific contested claims, each with the claimed result, its evidence, and the file paths involved. Method: re-check each claim yourself with read/glob/grep against the named files; never reason from the summaries alone. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n\nJOB 2, large code change foul-check: you are called last and exactly once. The worker already made a large or multi-file change (3+ files touched, roughly 100+ changed lines, or an architectural touchpoint), the first-pass reviewer already reported on the diff, and the principal already formed its own final reasoning: you receive all three. Run one quick bounded referee pass, hard cap 5 tool calls, over the diff, the reviewer findings, and the principal's reasoning, looking only for major fouls the fast first-pass reviewer would miss: broken invariants, security or stealth regressions (leaked secrets, new tracing near credential paths, widened permissions), cross-file contract mismatches (a signature, schema, or config key changed on one side only), and clearly missed edge cases. Output one line per foul: FOUL severity high|medium, file:line, what breaks, smallest fix. If nothing major is wrong, output CLEAN plus the two or three riskiest spots you checked. Do not enumerate style nits, do not redesign, do not audit the whole repo.\n\nAlways: you run on a different model family than the subagent workers (Claude, not GLM or DeepSeek), so your value is an independent error pattern, not more effort. If a claim or foul involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names. Never redo the whole task, never edit files, no filler.",
     },
   },
 

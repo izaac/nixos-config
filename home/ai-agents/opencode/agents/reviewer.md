@@ -6,8 +6,8 @@ description:
   agent, which does the final review. Never does the task itself and never edits anything. Do not
   invoke it on its own output.
 mode: subagent
-# DeepSeek V4.1 Flash on the OpenCode Go subscription
-model: opencode-go/deepseek-v4.1-flash
+# CommandCode GPT-6 Luna, xhigh reasoning variant (dedicated independent-family reviewer)
+model: commandcode/gpt-6-luna#xhigh
 permission:
   edit: deny
   webfetch: deny
