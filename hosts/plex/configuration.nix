@@ -347,10 +347,10 @@ in {
           "--config /home/${userConfig.username}/.config/rclone/rclone.conf"
           "--allow-other"
 
-          # Content cache. Sized to leave room on the 233G root; entries also
-          # expire after a week so a one-off binge does not pin the cache.
+          # Content cache. Capped at 60G to leave room on the 233G root; entries
+          # also expire after a week so a one-off binge does not pin the cache.
           "--vfs-cache-mode full"
-          "--vfs-cache-max-size 50G"
+          "--vfs-cache-max-size 60G"
           "--vfs-cache-max-age 168h"
 
           # Directory listings. The default is 5 minutes, which meant rclone
@@ -366,13 +366,19 @@ in {
           "--dir-cache-time 72h"
 
           # FUSE attribute cache, default 1s. Plex stats every file it scans,
-          # and each miss is a round trip. Kept well under dir-cache-time.
-          "--attr-timeout 1h"
+          # and each miss is a round trip. Matched to dir-cache-time: the
+          # backend cannot report attribute changes either, so a stale attr is
+          # the same trade the directory cache already makes, refreshed the
+          # same way (writes through the mount, or `rclone rc vfs/refresh`).
+          "--attr-timeout 72h"
 
-          # Sequential streaming: start small so playback begins quickly, then
-          # ramp up rather than issuing many small ranged reads.
+          # Sequential streaming: small chunks keep the first bytes and every
+          # seek responsive, the 256M read-ahead keeps the pipe full during
+          # playback, and the chunk size doubles from 2M up to the 2G limit
+          # instead of issuing many small ranged reads.
           "--buffer-size 64M"
-          "--vfs-read-chunk-size 32M"
+          "--vfs-read-chunk-size 2M"
+          "--vfs-read-ahead 256M"
           "--vfs-read-chunk-size-limit 2G"
 
           # Loopback-only control socket, so vfs/refresh can be triggered after

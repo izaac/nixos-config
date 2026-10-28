@@ -59,11 +59,12 @@ also what Plex's own naming guide expects. The fix is cache tuning, not reorgani
 | Flag                            | Value          | Why                                                   |
 | ------------------------------- | -------------- | ----------------------------------------------------- |
 | `--dir-cache-time`              | `72h`          | Default 5m meant re-listing 6300 entries continuously |
-| `--attr-timeout`                | `1h`           | Default 1s; Plex stats every file it scans            |
+| `--attr-timeout`                | `72h`          | Default 1s; Plex stats every file it scans            |
 | `--vfs-cache-mode`              | `full`         | Needed for seeking during playback                    |
-| `--vfs-cache-max-size` / `-age` | `50G` / `168h` | Bounded against the 233G root                         |
+| `--vfs-cache-max-size` / `-age` | `60G` / `168h` | Bounded against the 233G root                         |
 | `--buffer-size`                 | `64M`          | In-memory read-ahead per open file                    |
-| `--vfs-read-chunk-size` / limit | `32M` / `2G`   | Ramp up rather than many small ranged reads           |
+| `--vfs-read-chunk-size` / limit | `2M` / `2G`    | Small first chunks, doubling up to the 2G limit       |
+| `--vfs-read-ahead`              | `256M`         | Extra read-ahead for sequential playback              |
 | `--rc` on `127.0.0.1:5572`      |                | Lets the dir cache be refreshed on demand, see below  |
 
 #### Refreshing after an upload
@@ -299,12 +300,12 @@ badly configured for 8G and is no longer", not as the explanation for the hangs.
 
 Every escape valve on this host was also RAM:
 
-| Resource          | Backing                | Note                                      |
-| ----------------- | ---------------------- | ----------------------------------------- |
-| Transcode scratch | `/tmp`, a tmpfs        | `PrivateTmp=true`, so systemd's own tmpfs |
-| Swap              | zram at 100% of RAM    | compressed pages, still resident          |
-| rclone buffers    | `--buffer-size 64M`    | per open file                             |
-| rclone VFS cache  | disk, pegged at 49/50G | constant writeback and eviction           |
+| Resource          | Backing               | Note                                      |
+| ----------------- | --------------------- | ----------------------------------------- |
+| Transcode scratch | `/tmp`, a tmpfs       | `PrivateTmp=true`, so systemd's own tmpfs |
+| Swap              | zram at 100% of RAM   | compressed pages, still resident          |
+| rclone buffers    | `--buffer-size 64M`   | per open file                             |
+| rclone VFS cache  | disk, hit its 50G cap | constant writeback and eviction           |
 
 tmpfs pages can only be evicted to swap, and swap was zram, which is RAM. Batch-transcoding FLAC
 into a 3.8G tmpfs on a 7.5G box, while rclone streamed downloads and flushed its cache to one SATA
