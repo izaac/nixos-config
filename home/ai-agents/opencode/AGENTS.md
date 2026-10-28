@@ -20,15 +20,14 @@
     output, logs, inventories, long docs) and collect capped terse cards for the parent context.
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
     docs-vs-code contradiction
-  - `arbiter` (commandcode/claude-sonnet-5-5#high, Claude Sonnet 5.5 via CommandCode, third family
-    beside the DeepSeek workers and the gemini primary): the single arbiter seat, two triggers. (a)
-    Disputed or high-stakes claims: a reviewer verdict is contested, evidence conflicts, or a wrong
-    verdict is expensive. (b) Large code change foul-check: one bounded referee pass that runs ONLY
-    after the first-pass `reviewer` has reviewed the diff and the principal has formed its own final
-    reasoning (see the foul-check ordering under Subagent review). Independent error pattern is the
-    point, not more effort. Pin form: `"model": "commandcode/claude-sonnet-5-5#high"` as one plain
-    string, with the variant riding inside the model id as a `#variant` suffix; never a sibling
-    `"variant"` key and never a nested model object
+  - `arbiter` (commandcode/MiniMaxAI/MiniMax-M3, MiniMax-M3 via CommandCode, independent family
+    beside the DeepSeek workers, GPT reviewer, and gemini primary): the single arbiter seat, two
+    triggers. (a) Disputed or high-stakes claims: a reviewer verdict is contested, evidence
+    conflicts, or a wrong verdict is expensive. (b) Large code change foul-check: one bounded
+    referee pass that runs ONLY after the first-pass `reviewer` has reviewed the diff and the
+    principal has formed its own final reasoning (see the foul-check ordering under Subagent
+    review). Independent error pattern is the point, not more effort. Pin form:
+    `"model": "commandcode/MiniMaxAI/MiniMax-M3"` as one plain string.
   - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to kimi-k3.1-pro via
     OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
     hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
@@ -72,7 +71,7 @@
   large code change, that completed principal reasoning is exactly what the foul-check `arbiter`
   pass receives, together with the diff and the reviewer findings.
 - Disputed or high-stakes claims: escalate the specific contested claims to `arbiter` (cross-family
-  Claude Sonnet 5.5), one escalation per dispute. It re-checks against files and returns per-claim
+  MiniMax-M3), one escalation per dispute. It re-checks against files and returns per-claim
   verdicts. Parent arbitrates and owns the final call.
 - Large code change foul-check (referee check): a large change means 3+ files modified, roughly 100+
   lines changed, or an architectural touchpoint. The order is fixed and strictly enforced:
@@ -81,7 +80,7 @@
   3. The principal receives the `reviewer` review and forms its own final reasoning: what to accept,
      reject, or adjust.
   4. ONLY AT THAT POINT, with the `reviewer` findings and the principal's final reasoning both in
-     hand, call `arbiter` (`commandcode/claude-sonnet-5-5#high`) for ONE quick bounded referee pass,
+     hand, call `arbiter` (`commandcode/MiniMaxAI/MiniMax-M3`) for ONE quick bounded referee pass,
      capped at <=5 tool calls, over the diff, the `reviewer` findings, and the principal's final
      reasoning, to see if a foul needs to be called out before finalizing. Never call `arbiter`
      before `reviewer`, and never call it twice.
