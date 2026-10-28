@@ -36,6 +36,7 @@ just <command>
 | `just road-test`                        | Run road-mode unit tests                     | `scripts/tests/road-mode-test.sh`                                       |
 | `just deploy-ninja <ip>`                | Install NixOS on remote machine              | `nix run github:nix-community/nixos-anywhere`                           |
 | `just test-host <host>`                 | Build a host's closure, no apply             | `nix build .#nixosConfigurations.<host>.config.system.build.toplevel`   |
+| `just deploy <host>`                    | Deploy a host remotely over SSH              | `nixos-rebuild switch --flake .#<host> --target-host <host>`            |
 | `just builder-info`                     | Show offload build machines                  | `cat /etc/nix/machines`                                                 |
 | `just builder-start`                    | Start Mac Linux builder VM (Mac)             | Guarded check & launchctl bootstrap                                     |
 | `just builder-stop`                     | Stop Mac Linux builder VM (Mac)              | `launchctl disable + bootout` (frees ~1G RAM)                           |
@@ -55,6 +56,22 @@ The `deploy-ninja` command uses `nixos-anywhere` to bootstrap a new machine over
 - **Warning**: This command will **entirely wipe the destination disk** using the `disko`
   configuration.
 - **RAM**: The target needs at least 1.5GB of RAM to host the temporary installer.
+
+## Remote Deployment
+
+`just deploy <host>` pushes an existing host configuration to a machine that is already running
+NixOS. Unlike `deploy-ninja`, it does not repartition or wipe anything.
+
+- **Build**: the closure is built locally on the workstation, so the remote box only has to fetch
+  the finished store paths over SSH.
+- **Switch**: `nixos-rebuild switch --flake .#<host> --target-host <host> --use-remote-sudo` copies
+  the closure, then activates the new generation remotely. Passwordless sudo on the target supplies
+  the privileges for the remote switch.
+- **Requirement**: SSH access to the host by name, and that host must already appear in
+  `nixosConfigurations`.
+
+Because activation happens on the remote machine, `just deploy` does not restart long-running
+services for you; restart anything whose config or wrapper changed (see [plex.md](plex.md)).
 
 To add more commands, edit the `justfile` in the repository root. Remember to use tabs for
 indentation, as `just` follows `make` syntax.

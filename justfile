@@ -73,6 +73,10 @@ test-host host:
         {{ if os() == "macos" { "just ensure-builder" } else { "" } }}
         nix build .#nixosConfigurations.{{host}}.config.system.build.toplevel --no-link --print-out-paths
 
+# Deploy a host configuration remotely over SSH (builds locally, switches remotely)
+deploy host:
+        nixos-rebuild switch --flake .#{{host}} --target-host {{host}} --use-remote-sudo
+
 # Show the build machines this host can offload to (Mac: the linux-builder)
 builder-info:
         @cat /etc/nix/machines 2>/dev/null || echo "No /etc/nix/machines — no remote/linux builder configured."

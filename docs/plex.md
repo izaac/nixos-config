@@ -475,6 +475,26 @@ grep -oE '(Butler|Generate|Loudness|Music|Transcoder|Scheduled)[A-Za-z]*="[^"]*"
   '/var/lib/plex/Plex Media Server/Preferences.xml'
 ```
 
+### Deploying changes to plex
+
+The recommended workflow applies configuration from the workstation, without logging into the box:
+
+```bash
+just deploy plex
+```
+
+That builds the closure locally, copies it over SSH, and switches the generation on plex, with
+passwordless sudo performing the privileged steps remotely. When already logged in on plex,
+`nh os switch .` remains available and performs the same activation locally.
+
+Activation alone does not restart long-running units, so restart them afterwards:
+
+```bash
+ssh plex "sudo systemctl restart rclone-ul-crypt plex"
+```
+
+Order matters: `rclone-ul-crypt` has to bring up `/srv/media` before Plex starts reading it.
+
 ---
 
 ## Troubleshooting
