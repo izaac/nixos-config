@@ -93,6 +93,18 @@ in {
         "${stagingTorrents}:/downloads"
       ];
     };
+
+    # FlareSolverr: proxy service to bypass Cloudflare protection on indexers.
+    flaresolverr = {
+      image = "ghcr.io/flaresolverr/flaresolverr:latest";
+      ports = [
+        "8191:8191"
+      ];
+      environment = {
+        LOG_LEVEL = "info";
+        TZ = "UTC";
+      };
+    };
   };
 
   # Arr services run natively rather than in containers: they only need to move
@@ -215,6 +227,6 @@ in {
 
   environment.systemPackages = [pkgs.mergerfs];
 
-  # qBittorrent WebUI, published on the gluetun container.
-  networking.firewall.allowedTCPPorts = [8080];
+  # qBittorrent WebUI (8080) and FlareSolverr proxy (8191).
+  networking.firewall.allowedTCPPorts = [8080 8191];
 }
