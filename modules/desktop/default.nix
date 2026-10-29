@@ -19,7 +19,6 @@ in {
   config = lib.mkIf cfg.enable {
     nixpkgs.overlays = [
       inputs.niri-flake.overlays.niri
-      (import ../../overlays/gvfs-no-wsdd.nix)
       (import ../../overlays/dwarfs-skip-affinity-test.nix)
       (import ../../overlays/ashell-unstable.nix inputs)
       (import ../../overlays/stash-unstable.nix inputs)

@@ -14,8 +14,8 @@
     drained, the parent respawns this seat on the OpenRouter vision model.
   - `reviewer` (gpt-6-luna via CommandCode, `xhigh` reasoning variant): first-pass check strictly
     gated on authored artifacts (plans, code diffs, fixtures) or disputed claims before parent
-    reviews them. Text-only: it cannot see images and has no shell execution tools (inspects via
-    read/grep).
+    reviews them. Text-only: it cannot see images and its shell access is restricted to read-only
+    git inspection (`git status`, `git diff`, `git log`, `git show`) alongside `read`/`glob`/`grep`.
   - `reader` (beam-free via OpenCode Go, zero cost): bulk distillation only. Send it volume (test
     output, logs, inventories, long docs) and collect capped terse cards for the parent context.
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
@@ -32,6 +32,9 @@
     OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
     hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
     permissions to debug freely (shell, webfetch, edit).
+- Saiyan models ban: NEVER invoke `saiyan` agents/models (`saiyan`, `saiyan-haiku`, `saiyan-opus`)
+  unless explicitly requested by the user in the session prompt. Default strictly to standard
+  savings-first subagents.
 - Keep on the primary model: root-cause analysis, fix design, architecture decisions, anything where
   a wrong-but-confident answer is expensive. If the primary is also stuck, escalate to `architect`.
 - Launch subagents in background/parallel where possible; keep main context lean.
