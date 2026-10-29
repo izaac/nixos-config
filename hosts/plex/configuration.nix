@@ -126,6 +126,7 @@ in {
     ../../modules/profiles/server.nix
     ./disko.nix
     ./ssh.nix
+    ./media-stack.nix
     inputs.nixos-hardware.nixosModules.common-cpu-intel
     inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
@@ -262,9 +263,12 @@ in {
   # Fuse support for rclone mounts
   programs.fuse.userAllowOther = true;
 
-  # Create mount directory for rclone media (/srv/media)
+  # Transcode scratch directory.
+  #
+  # /srv/media itself and the mergerfs staging tree are created by
+  # media-stack.nix, which owns that layout. Only the transcode scratch is left
+  # here, since it is a Plex detail rather than a media-stack one.
   systemd.tmpfiles.rules = [
-    "d /srv/media 0775 ${userConfig.username} users -"
     "d ${transcodeDir} 0755 ${config.services.plex.user} ${config.services.plex.group} -"
   ];
 
@@ -335,6 +339,11 @@ in {
   };
 
   # Systemd service to auto-mount rclone ul-crypt drive on boot
+  #
+  # This mount is one branch of the mergerfs union, not the library root.
+  # media-stack.nix mounts /var/lib/media-staging/local and /srv/media-remote
+  # together at /srv/media, orders itself after this unit, and Plex in turn
+  # waits for that union. Nothing should write through this path directly.
   systemd.services.rclone-ul-crypt = {
     description = "Rclone mount for ul-crypt media drive";
     after = ["network-online.target"];
@@ -364,10 +373,12 @@ in {
           # Matches the 72h used for the Google Drive mount in home/rclone.nix.
           #
           # The backend reports ChangeNotify=false, so --poll-interval cannot
-          # pick up changes made outside the mount. Writes through /srv/media
-          # invalidate the cache immediately; uploads made straight to the
-          # remote (`rclone move ... ul-crypt:movies/`) do not, so those need
-          # `rclone rc vfs/refresh dir=movies` afterwards. See docs/plex.md.
+          # pick up changes made outside the mount. Nothing writes through
+          # /srv/media-remote directly: media-stack.nix mounts this tree as the
+          # second branch of the mergerfs union at /srv/media, and its mover
+          # uploads from the local branch with `rclone move ... ul-crypt:`.
+          # Those uploads are invisible to this cache, so the mover follows each
+          # one with `rclone rc vfs/refresh recursive=true`. See docs/plex.md.
           "--dir-cache-time 72h"
 
           # FUSE attribute cache, default 1s. Plex stats every file it scans,
@@ -393,8 +404,8 @@ in {
           "--rc-addr 127.0.0.1:5572"
           "--rc-no-auth"
         ];
-      in "${pkgs.rclone}/bin/rclone mount ul-crypt: /srv/media ${lib.concatStringsSep " " flags}";
-      ExecStop = "/run/current-system/sw/bin/umount -l /srv/media";
+      in "${pkgs.rclone}/bin/rclone mount ul-crypt: /srv/media-remote ${lib.concatStringsSep " " flags}";
+      ExecStop = "/run/current-system/sw/bin/umount -l /srv/media-remote";
       Restart = "on-failure";
       RestartSec = "10s";
       User = userConfig.username;
