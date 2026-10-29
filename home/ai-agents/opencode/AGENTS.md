@@ -27,7 +27,7 @@
     after the first-pass `reviewer` has reviewed the diff and the principal has formed its own final
     reasoning (see the foul-check ordering under Subagent review). Independent error pattern is the
     point, not more effort. Pin form: `"model": "opencode-go/minimax-m3"` as one plain string.
-  - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to kimi-k3.1-pro via
+  - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to deepseek-v4-pro via
     OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
     hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
     permissions to debug freely (shell, webfetch, edit).
@@ -119,7 +119,7 @@
   1. The parent reviews the STUCK CARD. If the issue is a simple boundary or path error, the parent
      redirects the worker directly without spending frontier tokens.
   2. If the primary's hypothesis also fails, or the root cause is obscure, the primary escalates to
-     the `architect` seat (Claude Sonnet 5.5 on Antigravity, fallback to Kimi K3.1 Pro on OpenCode
+     the `architect` seat (Claude Sonnet 5.5 on Antigravity, fallback to DeepSeek V4 Pro on OpenCode
      Go).
 - `architect` produces a dense ARCHITECTURAL SOLUTION CARD (<=25 lines) diagnosing root causes and
   providing concrete actions for the worker to execute.
