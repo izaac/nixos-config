@@ -206,8 +206,8 @@ in {
         --config /home/${userConfig.username}/.config/rclone/rclone.conf \
         --min-age 15m \
         --delete-empty-src-dirs \
-        --transfers 2 \
-        --checkers 4 \
+        --transfers 1 \
+        --checkers 2 \
         --check-first \
         --bwlimit 2.5M \
         --log-level NOTICE
