@@ -12,7 +12,7 @@
   - `evidence-vision` (gemini-3.8-flash-low via google/antigravity, Google AI Pro subscription
     quota, refill ~weekly): reads images and screenshots; when the Antigravity weekly bucket is
     drained, the parent respawns this seat on the OpenRouter vision model.
-  - `reviewer` (gpt-6-luna via CommandCode, `xhigh` reasoning variant): first-pass check strictly
+  - `reviewer` (gpt-6-luna via OpenCode Go, `xhigh` reasoning variant): first-pass check strictly
     gated on authored artifacts (plans, code diffs, fixtures) or disputed claims before parent
     reviews them. Text-only: it cannot see images and its shell access is restricted to read-only
     git inspection (`git status`, `git diff`, `git log`, `git show`) alongside `read`/`glob`/`grep`.
@@ -20,14 +20,13 @@
     output, logs, inventories, long docs) and collect capped terse cards for the parent context.
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
     docs-vs-code contradiction
-  - `arbiter` (commandcode/MiniMaxAI/MiniMax-M3, MiniMax-M3 via CommandCode, independent family
-    beside the DeepSeek workers, GPT reviewer, and gemini primary): the single arbiter seat, two
-    triggers. (a) Disputed or high-stakes claims: a reviewer verdict is contested, evidence
-    conflicts, or a wrong verdict is expensive. (b) Large code change foul-check: one bounded
-    referee pass that runs ONLY after the first-pass `reviewer` has reviewed the diff and the
-    principal has formed its own final reasoning (see the foul-check ordering under Subagent
-    review). Independent error pattern is the point, not more effort. Pin form:
-    `"model": "commandcode/MiniMaxAI/MiniMax-M3"` as one plain string.
+  - `arbiter` (opencode-go/minimax-m3, MiniMax-M3 via OpenCode Go, independent family beside the
+    DeepSeek workers, GPT reviewer, and gemini primary): the single arbiter seat, two triggers. (a)
+    Disputed or high-stakes claims: a reviewer verdict is contested, evidence conflicts, or a wrong
+    verdict is expensive. (b) Large code change foul-check: one bounded referee pass that runs ONLY
+    after the first-pass `reviewer` has reviewed the diff and the principal has formed its own final
+    reasoning (see the foul-check ordering under Subagent review). Independent error pattern is the
+    point, not more effort. Pin form: `"model": "opencode-go/minimax-m3"` as one plain string.
   - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to kimi-k3.1-pro via
     OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
     hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
@@ -79,14 +78,14 @@
 - Large code change foul-check (referee check): a large change means 3+ files modified, roughly 100+
   lines changed, or an architectural touchpoint. The order is fixed and strictly enforced:
   1. The worker executes the change.
-  2. First-pass `reviewer` (`commandcode/gpt-6-luna#xhigh`) reviews the authored diff.
+  2. First-pass `reviewer` (`opencode-go/gpt-6-luna#xhigh`) reviews the authored diff.
   3. The principal receives the `reviewer` review and forms its own final reasoning: what to accept,
      reject, or adjust.
   4. ONLY AT THAT POINT, with the `reviewer` findings and the principal's final reasoning both in
-     hand, call `arbiter` (`commandcode/MiniMaxAI/MiniMax-M3`) for ONE quick bounded referee pass,
-     capped at <=5 tool calls, over the diff, the `reviewer` findings, and the principal's final
-     reasoning, to see if a foul needs to be called out before finalizing. Never call `arbiter`
-     before `reviewer`, and never call it twice.
+     hand, call `arbiter` (`opencode-go/minimax-m3`) for ONE quick bounded referee pass, capped at
+     <=5 tool calls, over the diff, the `reviewer` findings, and the principal's final reasoning, to
+     see if a foul needs to be called out before finalizing. Never call `arbiter` before `reviewer`,
+     and never call it twice.
 
   What it looks for: broken invariants, security or stealth regressions, cross-file contract
   mismatches, or missed edge cases the fast first-pass reviewer would not catch. Same read-only

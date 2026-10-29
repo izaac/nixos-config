@@ -6,8 +6,8 @@ description:
   agent, which does the final review. Never does the task itself and never edits anything. Do not
   invoke it on its own output.
 mode: subagent
-# CommandCode GPT-6 Luna, xhigh reasoning variant (dedicated independent-family reviewer)
-model: commandcode/gpt-6-luna#xhigh
+# OpenCode Go GPT-6 Luna, xhigh reasoning variant (dedicated independent-family reviewer)
+model: opencode-go/gpt-6-luna#xhigh
 permissions:
   - action: edit
     resource: '*'

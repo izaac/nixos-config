@@ -67,10 +67,6 @@
     { "action": "provider.use", "resource": "openrouter", "effect": "allow" },
     // Google via Antigravity OAuth (subscription quota, not API billing).
     { "action": "provider.use", "resource": "google", "effect": "allow" },
-    // CommandCode (models.dev id: commandcode): OpenAI-compatible endpoint at
-    // api.commandcode.ai, key via CMD_API_KEY or /connect. Claude models carry
-    // their own @ai-sdk/anthropic routing in the models.dev snapshot.
-    { "action": "provider.use", "resource": "commandcode", "effect": "allow" },
     // Allow local project/ancestor provider definitions prefixed with local-*
     { "action": "provider.use", "resource": "local-*", "effect": "allow" },
   ],
@@ -92,13 +88,13 @@
     "explore": {
       "model": "opencode-go/deepseek-v4.1-flash",
     },
-    // Multi-step worker: CommandCode DeepSeek V4.1 Flash off-peak, Qwen3.8 Omni Flash peak
+    // Multi-step worker: OpenCode Go DeepSeek V4.1 Flash off-peak, Qwen3.8 Flash peak
     // (peak-hours-router overrides at runtime; this is the resting default).
     "general": {
       "model": "opencode-go/deepseek-v4.1-flash",
     },
 
-    // First-pass reviewer: GPT-6 Luna via CommandCode, xhigh reasoning variant.
+    // First-pass reviewer: GPT-6 Luna via OpenCode Go, xhigh reasoning variant.
     // Independent model family from DeepSeek workers and Gemini primary.
     // Pin form for opencode.jsonc "agents": "model" is a plain string and the
     // variant rides inside it as a "#variant" suffix. The schema entry for
@@ -106,20 +102,19 @@
     // closed object {providerID, model, variant}. A bare sibling "variant" key is
     // NOT allowed there (additionalProperties: false) and silently breaks the pin.
     "reviewer": {
-      "model": "commandcode/gpt-6-luna#xhigh",
+      "model": "opencode-go/gpt-6-luna#xhigh",
     },
 
     // Single cross-family arbiter and referee seat. Same-model reviewers share
     // the same blind spots, so disputed or expensive claims go to MiniMax-M3,
     // independent from the DeepSeek workers, GPT reviewer, and gemini primary.
-    // MiniMax-M3 via CommandCode: 1M context, 512k max output, deep reasoning,
-    // 8x cheaper than Sonnet ($0.30 in / $1.20 out vs $2.00 / $10.00).
+    // MiniMax-M3 via OpenCode Go: 1M context, 512k max output, deep reasoning.
     // Foul-check ordering: worker -> reviewer -> principal's final reasoning ->
     // arbiter (single pass), never before the reviewer, never twice.
     "arbiter": {
       "description": "High-stakes arbiter and referee with two triggers. (1) Disputed or high-stakes claims: a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. (2) Large code change foul-check: after a multi-file or architectural change (3+ files touched or roughly 100+ changed lines), exactly ONE bounded referee pass, run only after the first-pass reviewer has reviewed the diff and the principal has formed its own final reasoning. Input is the diff plus the reviewer findings plus the principal's final reasoning; look only for major fouls the fast reviewer may have missed (broken invariants, security or stealth regressions, cross-file contract mismatches, missed edge cases). Never before the reviewer, never twice, never redo the task, never edit.",
       "mode": "subagent",
-      "model": "commandcode/MiniMaxAI/MiniMax-M3",
+      "model": "opencode-go/minimax-m3",
       "permissions": [
         { "action": "edit", "resource": "*", "effect": "deny" },
         { "action": "webfetch", "resource": "*", "effect": "deny" },
