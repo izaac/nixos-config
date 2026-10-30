@@ -41,6 +41,10 @@ in {
         "net.core.default_qdisc" = "fq"; # Fair Queueing (Bufferbloat reduction)
         "net.ipv4.tcp_congestion_control" = "bbr"; # Google BBR congestion control
 
+        # CVE-2026-98432 mitigations: close request socket migration & MPTCP attack surface
+        "net.ipv4.tcp_migrate_req" = lib.mkDefault 0;
+        "net.mptcp.enabled" = lib.mkDefault 0;
+
         # Kernel hardening (universal — safe on desktop and laptop).
         # mkForce because NixOS sets some of these at mkDefault priority and
         # equal priorities collide; we want the stricter values regardless.

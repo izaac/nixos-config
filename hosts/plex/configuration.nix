@@ -133,6 +133,11 @@ in {
   networking = {
     hostName = "plex";
     wireless.enable = false;
+    nftables.enable = true;
+    firewall.extraInputRules = ''
+      # CVE-2026-98432: drop IPv4 TCP packets with IP options (hdrlength > 5 words = > 20 bytes)
+      ip protocol tcp ip hdrlength > 5 drop
+    '';
   };
 
   # Passwordless sudo matching ninja and windy
