@@ -33,6 +33,8 @@
       # nginx resolving `k3d-<cluster>-server-0`). The `podman*` wildcard covers
       # all current and future netavark bridges.
       extraInputRules = ''
+        # CVE-2026-98432: drop IPv4 TCP packets with IP options (hdrlength > 5 words = > 20 bytes)
+        ip protocol tcp ip hdrlength > 5 drop
         ip saddr 192.168.0.173 accept
         iifname "podman*" udp dport 53 accept
         iifname "podman*" tcp dport 53 accept
