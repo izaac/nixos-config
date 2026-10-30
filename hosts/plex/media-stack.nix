@@ -172,6 +172,13 @@ in {
   systemd.services.plex.bindsTo = ["mergerfs-media.service"];
   systemd.services.plex.partOf = ["mergerfs-media.service"];
 
+  # Radarr and Sonarr must wait for the mergerfs union and qBittorrent on boot
+  # so root folders and download client are ready before their health checks run.
+  systemd.services.radarr.after = ["mergerfs-media.service" "podman-qbittorrent.service"];
+  systemd.services.radarr.wants = ["mergerfs-media.service" "podman-qbittorrent.service"];
+  systemd.services.sonarr.after = ["mergerfs-media.service" "podman-qbittorrent.service"];
+  systemd.services.sonarr.wants = ["mergerfs-media.service" "podman-qbittorrent.service"];
+
   # Background mover. Uploads whatever the Arrs staged locally, then tells
   # rclone to drop cached listings so Plex finds the files in their new home.
   systemd.services.media-mover = {
