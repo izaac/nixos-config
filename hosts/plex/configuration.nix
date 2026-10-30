@@ -230,9 +230,9 @@ in {
     advertiseRoutes = [siteConfig.subnet];
     advertiseExitNode = true;
     routingInterface = "enp1s0";
-    # Unlike the workstations this host has no LAN DNS worth protecting,
-    # and it resolves tailnet names, so leave MagicDNS in charge.
-    acceptDns = true;
+    # Local LAN Pi-hole (192.168.0.96) handles DNS via DHCP, so keep
+    # MagicDNS off to match the ninja/windy default.
+    acceptDns = false;
   };
 
   # Enable Plex Media Server
@@ -405,6 +405,19 @@ in {
           "--rc-no-auth"
         ];
       in "${pkgs.rclone}/bin/rclone mount ul-crypt: /srv/media-remote ${lib.concatStringsSep " " flags}";
+      # DNS is not ready the moment the network comes up. Without this gate the
+      # mount fails resolution on boot and rclone exits before the resolver is
+      # usable.
+      ExecStartPre = pkgs.writeShellScript "wait-for-rclone-dns" ''
+        for i in {1..30}; do
+          if ${pkgs.glibc.getent}/bin/getent hosts apis.uloz.to >/dev/null 2>&1; then
+            exit 0
+          fi
+          ${pkgs.coreutils}/bin/sleep 1
+        done
+        echo "Timed out waiting for DNS resolution of apis.uloz.to" >&2
+        exit 1
+      '';
       ExecStop = "/run/current-system/sw/bin/umount -l /srv/media-remote";
       Restart = "on-failure";
       RestartSec = "10s";

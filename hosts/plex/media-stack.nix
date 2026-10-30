@@ -152,6 +152,8 @@ in {
     after = ["rclone-ul-crypt.service"];
     wants = ["rclone-ul-crypt.service"];
     requires = ["rclone-ul-crypt.service"];
+    bindsTo = ["rclone-ul-crypt.service"];
+    partOf = ["rclone-ul-crypt.service"];
     wantedBy = ["multi-user.target"];
     path = [pkgs.mergerfs pkgs.fuse3 "/run/wrappers"];
     serviceConfig = {
@@ -168,6 +170,7 @@ in {
   systemd.services.plex.after = ["mergerfs-media.service"];
   systemd.services.plex.requires = ["mergerfs-media.service"];
   systemd.services.plex.bindsTo = ["mergerfs-media.service"];
+  systemd.services.plex.partOf = ["mergerfs-media.service"];
 
   # Background mover. Uploads whatever the Arrs staged locally, then tells
   # rclone to drop cached listings so Plex finds the files in their new home.
