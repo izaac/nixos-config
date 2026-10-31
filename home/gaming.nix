@@ -26,15 +26,6 @@ in {
     goverlay
     vkbasalt
     umu-launcher
-    (bottles.override {
-      bottles-unwrapped = (bottles-unwrapped.override {removeWarningPopup = true;}).overrideAttrs (old: {
-        postPatch =
-          (old.postPatch or "")
-          + ''
-            substituteInPlace bottles/backend/utils/connection.py --replace-fail "https://ping.usebottles.com" "https://1.1.1.1"
-          '';
-      });
-    })
 
     # Wine / Windows Compatibility
     wineWow64Packages.waylandFull # 32-bit + 64-bit Wine with Wayland support
