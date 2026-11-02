@@ -50,10 +50,12 @@
               "--rc-no-auth"
             ];
         in "${lib.getExe pkgs.rclone} mount ${remote} ${mountPoint} ${lib.concatStringsSep " " flags}";
-        # `-` prefix: ignore fusermount exit code. rclone unmounts itself on
-        # SIGTERM before this runs, so fusermount usually returns
+        # `-` prefix: ignore fusermount3 exit code. rclone unmounts itself on
+        # SIGTERM before this runs, so fusermount3 usually returns
         # "Operation not permitted" because the mount is already gone.
-        ExecStop = "-${pkgs.fuse}/bin/fusermount -uz ${mountPoint}";
+        # FUSE v2 (pkgs.fuse) is not installed on this host; rclone mounts via
+        # libfuse3, so the unmount helper must come from fuse3.
+        ExecStop = "-${pkgs.fuse3}/bin/fusermount3 -uz ${mountPoint}";
         # Treat SIGTERM (143) as a clean exit so planned restarts (e.g.
         # home-manager activation) are not flagged as failures.
         SuccessExitStatus = "143";
