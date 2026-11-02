@@ -78,7 +78,7 @@ in {
       libunwind
       SDL2
 
-      # SDL3 / Game recompilation dependencies (e.g. TotK Recomp)
+      # SDL3 / Game recompilation dependencies
       libxscrnsaver
       fribidi
       libdecor
