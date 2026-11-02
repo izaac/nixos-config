@@ -46,10 +46,7 @@
   # https://emudhra.we-have-a-problem.com/
   security.pki.caCertificateBlacklist = [
     "Comodo AAA Services root"
-    "emSign ECC Root CA - G3"
-    "emSign Root CA - C1"
     "emSign Root CA - G1"
-    "emSign ECC Root CA - C3"
   ];
 
   environment.systemPackages = with pkgs; [

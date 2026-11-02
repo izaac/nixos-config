@@ -77,6 +77,12 @@ in {
       # never sees a controller.
       libunwind
       SDL2
+
+      # SDL3 / Game recompilation dependencies (e.g. TotK Recomp)
+      libxscrnsaver
+      fribidi
+      libdecor
+      sdl3
     ];
   };
 }
