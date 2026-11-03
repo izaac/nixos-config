@@ -40,7 +40,7 @@
 
   dnsWatchdog = pkgs.writeShellApplication {
     name = "plex-dns-watchdog";
-    runtimeInputs = with pkgs; [glibc systemd util-linux openresolv gnugrep coreutils];
+    runtimeInputs = with pkgs; [getent systemd util-linux openresolv gnugrep coreutils];
     text = ''
       # The rclone backend host. If this does not resolve, the media mount and
       # the mover are both dead, which is exactly the 2026-11-02 state.
