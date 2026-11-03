@@ -135,6 +135,16 @@ in {
     hostName = "plex";
     wireless.enable = false;
     nftables.enable = true;
+
+    # Static resolvers. DNS on this host is otherwise whatever dhcpcd last heard
+    # from the router: when the IPv6 router advertisement expired on 2026-11-02,
+    # resolvconf rewrote /etc/resolv.conf empty, every lookup (including the
+    # ul-crypt rclone backend) failed, and reads through the mount EIO'd until
+    # the RA came back. Static entries are submitted through resolvconf as
+    # "nixos-dns" and survive dhcpcd add/remove churn. Pi-hole first,
+    # 1.1.1.1 as fallback if it is down.
+    nameservers = ["192.168.0.96" "1.1.1.1"];
+
     firewall.extraInputRules = ''
       # CVE-2026-98432: drop IPv4 TCP packets with IP options (hdrlength > 5 words = > 20 bytes)
       ip protocol tcp ip hdrlength > 5 drop
