@@ -189,6 +189,11 @@ in {
     # A oneshot unit cannot overlap itself: systemd refuses to start a unit that
     # is already active, so the timer firing mid-move is a no-op rather than a
     # second mover fighting over the same files.
+    #
+    # Failures are logged at crit priority by the alert@ template in guards.nix.
+    # Before that, a three hour mover outage left nothing in the journal above
+    # default priority.
+    unitConfig.OnFailure = ["alert@%n.service"];
     serviceConfig = {
       Type = "oneshot";
       User = userConfig.username;
@@ -212,6 +217,18 @@ in {
         exit 1
       fi
 
+      # DNS preflight. On 2026-11-02 resolvconf rewrote /etc/resolv.conf empty
+      # after the IPv6 router advertisement expired, apis.uloz.to stopped
+      # resolving here, and every upload failed for three hours. Failing before
+      # rclone starts makes the cause obvious and lets alert@ report it.
+      if ! ${pkgs.glibc.getent}/bin/getent hosts apis.uloz.to > /dev/null; then
+        echo "media-mover: apis.uloz.to does not resolve, refusing to move anything" >&2
+        exit 1
+      fi
+
+      # Retry and timeout flags. The defaults here were tuned for a fast link:
+      # one connection attempt against a flaky provider aborted the whole move,
+      # and then the next timer tick started it over from scratch.
       ${pkgs.rclone}/bin/rclone move ${stagingLocal}/ ul-crypt: \
         --config /home/${userConfig.username}/.config/rclone/rclone.conf \
         --min-age 15m \
@@ -220,6 +237,10 @@ in {
         --checkers 2 \
         --check-first \
         --bwlimit 2.5M \
+        --retries 2 \
+        --low-level-retries 3 \
+        --contimeout 15s \
+        --timeout 90s \
         --log-level NOTICE
 
       ${pkgs.rclone}/bin/rclone rc --rc-addr 127.0.0.1:5572 --rc-no-auth vfs/refresh recursive=true

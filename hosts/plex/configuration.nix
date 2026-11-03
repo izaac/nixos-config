@@ -127,6 +127,7 @@ in {
     ./disko.nix
     ./ssh.nix
     ./media-stack.nix
+    ./guards.nix
     inputs.nixos-hardware.nixosModules.common-cpu-intel
     inputs.nixos-hardware.nixosModules.common-pc-ssd
   ];
@@ -144,6 +145,14 @@ in {
     # "nixos-dns" and survive dhcpcd add/remove churn. Pi-hole first,
     # 1.1.1.1 as fallback if it is down.
     nameservers = ["192.168.0.96" "1.1.1.1"];
+
+    # dhcpcd's resolv.conf hook rewrote the file from router advertisements
+    # only, so when the IPv6 RA expired on 2026-11-02 it installed an empty
+    # /etc/resolv.conf and every lookup on the host failed. With that hook off,
+    # resolvconf owns the file and the static nameservers above are the only
+    # source, so RA churn can never flush DNS again. The interface still gets
+    # its address and routes from dhcpcd; only the resolver hook is dropped.
+    dhcpcd.extraConfig = "nohook resolv.conf";
 
     firewall.extraInputRules = ''
       # CVE-2026-98432: drop IPv4 TCP packets with IP options (hdrlength > 5 words = > 20 bytes)
