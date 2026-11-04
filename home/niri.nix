@@ -84,7 +84,9 @@ in {
   home.packages = with pkgs; [
     # wl-clipboard lives in home/shell/packages.nix
     powerMenu
+    grim # Screenshot tool (Wayland)
     slurp # Region picker (screen recorder)
+    swappy # Screenshot editor with blur/pixelate for masking IPs
     wf-recorder # Screen recorder (Wayland; wl-screenrec needs VA-API XR24 not supported on NVIDIA)
     libnotify # notify-send for screen-record feedback
   ];

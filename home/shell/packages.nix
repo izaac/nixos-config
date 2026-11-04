@@ -67,7 +67,16 @@ in {
       ouch
       zip
       unzip
-      p7zip
+      (symlinkJoin {
+        name = "7zz-with-7z-alias";
+        paths = [_7zz];
+        postBuild = ''
+          ln -s 7zz $out/bin/7z
+          ln -s 7zz $out/bin/7za
+          ln -s 7zz $out/bin/7zr
+        '';
+      })
+      unrar
       xz
       zstd
       lz4
