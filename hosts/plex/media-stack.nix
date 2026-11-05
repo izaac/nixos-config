@@ -63,6 +63,7 @@ in {
   virtualisation.oci-containers.containers = {
     gluetun = {
       image = "docker.io/qmcgaw/gluetun:latest";
+      autoStart = false;
       environmentFiles = ["/var/lib/gluetun/gluetun.env"];
       extraOptions = [
         "--cap-add=NET_ADMIN"
@@ -77,6 +78,7 @@ in {
     # anything it binds is only reachable through gluetun's published ports.
     qbittorrent = {
       image = "lscr.io/linuxserver/qbittorrent:latest";
+      autoStart = false;
       dependsOn = ["gluetun"];
       extraOptions = [
         "--network=container:gluetun"
@@ -97,6 +99,7 @@ in {
     # FlareSolverr: proxy service to bypass Cloudflare protection on indexers.
     flaresolverr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
+      autoStart = false;
       ports = [
         "8191:8191"
       ];
@@ -123,6 +126,10 @@ in {
     group = "users";
     openFirewall = true;
   };
+
+  # Make sonarr and radarr on-demand (do not start at boot).
+  systemd.services.sonarr.wantedBy = lib.mkForce [];
+  systemd.services.radarr.wantedBy = lib.mkForce [];
 
   services.prowlarr = {
     enable = true;
@@ -172,12 +179,12 @@ in {
   systemd.services.plex.bindsTo = ["mergerfs-media.service"];
   systemd.services.plex.partOf = ["mergerfs-media.service"];
 
-  # Radarr and Sonarr must wait for the mergerfs union and qBittorrent on boot
+  # Radarr and Sonarr must wait for the mergerfs union and qBittorrent
   # so root folders and download client are ready before their health checks run.
   systemd.services.radarr.after = ["mergerfs-media.service" "podman-qbittorrent.service"];
-  systemd.services.radarr.wants = ["mergerfs-media.service" "podman-qbittorrent.service"];
+  systemd.services.radarr.wants = ["mergerfs-media.service"];
   systemd.services.sonarr.after = ["mergerfs-media.service" "podman-qbittorrent.service"];
-  systemd.services.sonarr.wants = ["mergerfs-media.service" "podman-qbittorrent.service"];
+  systemd.services.sonarr.wants = ["mergerfs-media.service"];
 
   # Background mover. Uploads whatever the Arrs staged locally, then tells
   # rclone to drop cached listings so Plex finds the files in their new home.

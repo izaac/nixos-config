@@ -191,6 +191,7 @@ in {
   boot.kernelParams = [
     "sysctl.vm.mem_profiling=0"
     "intel_idle.max_cstate=4"
+    "i915.enable_guc=3"
   ];
 
   # These four overrides existed to survive 8G. On 16G the box idles at 1.3G
@@ -231,14 +232,26 @@ in {
   # tolerates a 30s stall before the board resets itself.
   systemd.settings.Manager.RuntimeWatchdogSec = "60s";
 
+  # Firmware for Intel N100 iGPU (GuC/HuC/DMC) and CPU microcode
+  hardware.enableRedistributableFirmware = true;
+
   # Hardware acceleration for Intel N100 QuickSync transcoding
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
       intel-media-driver
       intel-vaapi-driver
+      intel-compute-runtime
       vpl-gpu-rt
     ];
+  };
+
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "iHD";
+  };
+
+  systemd.services.plex.environment = {
+    LIBVA_DRIVER_NAME = "iHD";
   };
 
   # Headless server overrides
