@@ -68,4 +68,8 @@ in {
   ];
 
   hardware.i2c.enable = true;
+
+  # AppImages and native Linux games hard-code /bin/bash and /usr/bin/env.
+  # envfs is a FUSE layer that resolves those paths from the caller's PATH.
+  services.envfs.enable = true;
 }

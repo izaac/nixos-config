@@ -69,6 +69,8 @@
     { "action": "provider.use", "resource": "google", "effect": "allow" },
     // Allow local project/ancestor provider definitions prefixed with local-*
     { "action": "provider.use", "resource": "local-*", "effect": "allow" },
+    // GitHub Copilot OAuth
+    { "action": "provider.use", "resource": "github-copilot", "effect": "allow" },
   ],
 
   "permissions": [
