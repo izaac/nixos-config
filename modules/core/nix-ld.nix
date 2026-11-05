@@ -19,6 +19,7 @@ in {
     programs.nix-ld.libraries = with pkgs; [
       stdenv.cc.cc.lib
       zlib
+      gmp
       fuse3
       fuse # Legacy FUSE v2 for libfuse.so.2 (Required by many AppImages)
       icu
