@@ -83,6 +83,11 @@ in {
       fribidi
       libdecor
       sdl3
+
+      # Prebuilt game bundles often ship their own libgcrypt, which in turn
+      # needs libgpg-error at runtime. Anything bundling a prebuilt GNU TLS
+      # stack needs it as well.
+      libgpg-error
     ];
   };
 }
