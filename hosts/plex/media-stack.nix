@@ -127,9 +127,10 @@ in {
     openFirewall = true;
   };
 
-  # Make sonarr and radarr on-demand (do not start at boot).
+  # Make sonarr, radarr, and prowlarr on-demand (do not start at boot).
   systemd.services.sonarr.wantedBy = lib.mkForce [];
   systemd.services.radarr.wantedBy = lib.mkForce [];
+  systemd.services.prowlarr.wantedBy = lib.mkForce [];
 
   services.prowlarr = {
     enable = true;
