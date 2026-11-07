@@ -393,11 +393,13 @@ in {
           "--config /home/${userConfig.username}/.config/rclone/rclone.conf"
           "--allow-other"
 
-          # Content cache. Capped at 60G to leave room on the 233G root; entries
-          # also expire after a week so a one-off binge does not pin the cache.
+          # Content cache. Capped at 20G to leave room on the 233G root; entries
+          # expire after 12h, and rclone auto-purges when root free space drops below 45G.
           "--vfs-cache-mode full"
-          "--vfs-cache-max-size 60G"
-          "--vfs-cache-max-age 168h"
+          "--vfs-cache-max-size 20G"
+          "--vfs-cache-max-age 12h"
+          "--vfs-cache-min-free-space 45G"
+          "--vfs-cache-poll-interval 1m"
 
           # Directory listings. The default is 5 minutes, which meant rclone
           # re-fetched the movies listing (6300+ entries) from the provider over the
@@ -420,14 +422,12 @@ in {
           # same way (writes through the mount, or `rclone rc vfs/refresh`).
           "--attr-timeout 72h"
 
-          # Sequential streaming: small chunks keep the first bytes and every
-          # seek responsive, the 256M read-ahead keeps the pipe full during
-          # playback, and the chunk size doubles from 2M up to the 2G limit
-          # instead of issuing many small ranged reads.
+          # Sequential streaming: 32M chunks reduce round trips, 64M read-ahead
+          # bounds SSD cache write amplification in full mode, and chunk limit is 1G.
           "--buffer-size 64M"
-          "--vfs-read-chunk-size 2M"
-          "--vfs-read-ahead 256M"
-          "--vfs-read-chunk-size-limit 2G"
+          "--vfs-read-chunk-size 32M"
+          "--vfs-read-ahead 64M"
+          "--vfs-read-chunk-size-limit 1G"
 
           # Loopback-only control socket, so vfs/refresh can be triggered after
           # an out-of-band upload. Not reachable off the box; the firewall does

@@ -73,6 +73,29 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       chmod +x "$SUDO_BIN"
     '';
 
+    # Mirror the host timezone into the container at init time. Host /etc is
+    # mounted read-only at /run/host, so only the container side is rewritten.
+    "distrobox/tz-sync.sh".text = ''
+      #!/bin/sh
+      Z=$(readlink /run/host/etc/localtime 2>/dev/null | sed 's#.*/zoneinfo/##')
+      [ -z "$Z" ] && [ -f /run/host/etc/timezone ] && Z=$(cat /run/host/etc/timezone)
+      if [ -n "$Z" ] && [ -f "/usr/share/zoneinfo/$Z" ]; then
+        sudo ln -sf "/usr/share/zoneinfo/$Z" /etc/localtime
+        echo "$Z" | sudo tee /etc/timezone >/dev/null 2>&1 || true
+      fi
+      exit 0
+    '';
+
+    # Bridge container-side xdg-open to the host so containerised apps can open
+    # links and files in the host session. The guard makes re-runs a no-op.
+    "distrobox/xdg-open-bridge.sh".text = ''
+      #!/bin/sh
+      if [ ! -f /usr/local/bin/xdg-open ]; then
+        printf '#!/bin/sh\nexec distrobox-host-exec xdg-open "$@"\n' | sudo tee /usr/local/bin/xdg-open >/dev/null
+        sudo chmod +x /usr/local/bin/xdg-open
+      fi
+    '';
+
     "distrobox/nvidia-setup.sh".text = ''
       #!/bin/sh
       # 1. Enable 32-bit architecture and multiverse repos
@@ -96,10 +119,10 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       [archy]
       image=archlinux:latest
       pull=true
-      additional_packages="git vim neovim ripgrep lsd fastfetch nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
+      additional_packages="git vim neovim ripgrep lsd fastfetch wl-clipboard nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
       init=false
       nvidia=true
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
       shell=/bin/bash
       # === Ubuntu Gaming Container (The "Golden Recipe" for NixOS + NVIDIA) ===
       # This container uses ~/.config/distrobox/nvidia-setup.sh to automatically
@@ -107,19 +130,19 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       [ubu]
       image=ubuntu:24.04
       pull=true
-      additional_packages="neovim git curl wget vim mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
+      additional_packages="neovim git curl wget vim wl-clipboard mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
       init=false
       nvidia=true
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/nvidia-setup.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && (sh ${config.home.homeDirectory}/.config/distrobox/nvidia-setup.sh || true) && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
       shell=/bin/bash
 
       [debi]
       image=debian:latest
       pull=true
-      additional_packages="git curl wget neovim ripgrep lsd fastfetch"
+      additional_packages="git curl wget neovim ripgrep lsd fastfetch wl-clipboard"
       init=false
       nvidia=true
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
       shell=/bin/bash
 
       # === Alpine OpenRC Sandbox ===
@@ -133,18 +156,20 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       init=false
       nvidia=false
       shell=/bin/bash
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
 
-      # === openSUSE Leap 16.0 ===
+      # === openSUSE Leap 16.1 ===
       [suse]
-      image=registry.opensuse.org/opensuse/leap:16.0
+      image=registry.opensuse.org/opensuse/leap:16.1
       pull=true
-      additional_packages="git curl wget neovim ripgrep fastfetch"
+      # neovim is installed from the official release tarball into /usr/local
+      # (see pre_init_hooks) to avoid clashing with the slower zypper package.
+      additional_packages="git curl wget ripgrep fastfetch terminfo wl-clipboard libpulse0 pulseaudio-utils alsa-plugins-pulse"
       init=false
       nvidia=true
       shell=/bin/bash
-      pre_init_hooks="zypper ref && zypper -n install -y bash-completion bc bzip2 curl diffutils findutils glibc-locale glibc-locale-base gnupg hostname iputils keyutils less lsof shadow || true"
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh"
+      pre_init_hooks="zypper ref && zypper -n install -y bash-completion bc bzip2 curl diffutils findutils glibc-locale glibc-locale-base gnupg hostname iputils keyutils less lsof shadow tar terminfo wl-clipboard || true; test -f /usr/local/bin/nvim || (curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz | tar -xz -C /usr/local --strip-components=1) || true"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
     '';
   };
 

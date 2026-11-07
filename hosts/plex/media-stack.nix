@@ -244,7 +244,7 @@ in {
         --transfers 1 \
         --checkers 2 \
         --check-first \
-        --bwlimit 2.5M \
+        --bwlimit "07:00,2.5M 20:00,3.5M" \
         --retries 2 \
         --low-level-retries 3 \
         --contimeout 15s \
