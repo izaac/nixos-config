@@ -213,8 +213,9 @@ inside the power budget.
   browser video playback
 - **Compute**: oneAPI / Level Zero via `intel-compute-runtime`
 - **Driver**: upstream in-tree `xe` kernel driver (no out-of-tree binary driver)
-- **Power**: 190W reference board TDP; no custom clock/power ceiling service (the NVIDIA
-  `nvidia-lock-clocks` unit was removed with the card)
+- **Power**: 190W reference board TDP, declaratively capped at 160W by the `arc-power-cap` systemd
+  unit (`hosts/ninja/intel.nix`), which writes `160000000` to `power1_cap` on every hwmon device at
+  boot for the sweet-spot efficiency point
 
 ### Video Outputs
 
