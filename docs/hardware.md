@@ -1,26 +1,26 @@
 # Hardware Configuration - ninja
 
-> **Last Updated**: 2026-09-21 **System**: ASUS ROG STRIX X670E-F GAMING WIFI **OS**: NixOS 26.05
+> **Last Updated**: 2026-11-07 **System**: ASUS ROG STRIX X670E-F GAMING WIFI **OS**: NixOS 26.05
 
 ---
 
 ## Documentation Links
 
 - [Security & Hardening](security.md)
-- [NVIDIA Driver Updates](nvidia-driver-updates.md)
+- [NVIDIA Driver Updates (windy)](nvidia-driver-updates.md)
 - [Software Overview](../README.md)
 
 ---
 
 ## System Overview
 
-| Component       | Model                                           | Notes                                        |
-| --------------- | ----------------------------------------------- | -------------------------------------------- |
-| **Motherboard** | ASUS ROG STRIX X670E-F GAMING WIFI              | BIOS: 3304 (2025-09-19)                      |
-| **CPU**         | AMD Ryzen 9 9950X3D                             | 16-Core, 32-Thread; PBO Eco 105W + Curve -15 |
-| **GPU**         | NVIDIA GeForce RTX 5060 Ti 16GB (MSI Ventus 2X) | PCIe 5.0 x16 @ **full x16 speed**            |
-| **RAM**         | 64GB DDR5                                       | 2x 32GB DIMMs (Slots 1 & 3)                  |
-| **Chipset**     | AMD X670E                                       | Dual chipset design                          |
+| Component       | Model                                    | Notes                                        |
+| --------------- | ---------------------------------------- | -------------------------------------------- |
+| **Motherboard** | ASUS ROG STRIX X670E-F GAMING WIFI       | BIOS: 3304 (2025-09-19)                      |
+| **CPU**         | AMD Ryzen 9 9950X3D                      | 16-Core, 32-Thread; PBO Eco 105W + Curve -15 |
+| **GPU**         | Intel Arc B580 12GB (Xe2-HPG Battlemage) | PCIe 4.0 x8 card in Gen5 x16 slot, ReBAR     |
+| **RAM**         | 64GB DDR5                                | 2x 32GB DIMMs (Slots 1 & 3)                  |
+| **Chipset**     | AMD X670E                                | Dual chipset design                          |
 
 ---
 
@@ -28,11 +28,11 @@
 
 ### Physical Slots
 
-| Slot          | Type     | Speed    | Device             | Bandwidth               |
-| ------------- | -------- | -------- | ------------------ | ----------------------- |
-| **PCIEX16_1** | x16      | PCIe 5.0 | NVIDIA RTX 5060 Ti | **256 GB/s** (full x16) |
-| **PCIEX16_2** | x16 (x4) | PCIe 4.0 | Empty              | -                       |
-| **PCIEX1**    | x1       | PCIe 3.0 | Empty              | -                       |
+| Slot          | Type     | Speed    | Device         | Bandwidth                |
+| ------------- | -------- | -------- | -------------- | ------------------------ |
+| **PCIEX16_1** | x16      | PCIe 5.0 | Intel Arc B580 | x8 @ PCIe 4.0 (card max) |
+| **PCIEX16_2** | x16 (x4) | PCIe 4.0 | Empty          | -                        |
+| **PCIEX1**    | x1       | PCIe 3.0 | Empty          | -                        |
 
 ### PCIe Lane Allocation
 
@@ -126,16 +126,17 @@ inside the power budget.
 | Slot      | Device              | Capacity | Interface       | Speed       | Usage                       | PCIe Address       |
 | --------- | ------------------- | -------- | --------------- | ----------- | --------------------------- | ------------------ |
 | **M.2_1** | Crucial T705        | 1TB      | PCIe 5.0 x4     | ~14 GB/s    | Root filesystem (encrypted) | `0000:02:00.0`     |
-| **M.2_2** | **Empty**           | -        | PCIe 5.0 x4     | -           | **Keep empty for GPU x16**  | -                  |
+| **M.2_2** | **Empty**           | -        | PCIe 5.0 x4     | -           | **Keep empty (spare slot)** | -                  |
 | **M.2_3** | Empty               | -        | PCIe 4.0 x4     | -           | From chipset                | -                  |
 | **M.2_4** | **WD Black SN850X** | **4TB**  | **PCIe 4.0 x4** | **~7 GB/s** | **/mnt/data (unencrypted)** | **`0000:08:00.0`** |
 
-> **Important**: M.2_2 slot shares PCIe lanes with PCIEX16_1 via bifurcation. When populated, GPU
-> drops from x16 to x8 mode. **Currently M.2_2 is empty, so GPU runs at full x16 speed.**
+> **Important**: M.2_2 slot shares PCIe lanes with PCIEX16_1 via bifurcation. When populated, the
+> slot splits x8/x8. The Arc B580 is an x8 card, so its negotiated width is unaffected either way;
+> **M.2_2 stays empty simply because no second boot drive is needed.**
 
 ### Current Configuration (Optimized)
 
-**GPU at full x16 bandwidth (256 GB/s)**
+**GPU at its full interface width (PCIe 4.0 x8)**
 
 - M.2_1: Crucial T705 (PCIe 5.0 from CPU)
 - M.2_2: **Empty** (no lane sharing)
@@ -202,20 +203,18 @@ inside the power budget.
 
 ### Primary GPU
 
-**NVIDIA GeForce RTX 5060 Ti 16GB**
+**Intel Arc B580 12GB (Xe2-HPG Battlemage)**
 
-- **Model**: GB206 (rev a1) (Device ID: 10de:2d04)
-- **Vendor**: MSI Ventus 2X (Subsystem ID: 1462:5351)
-- **PCIe**: 5.0 x16 @ **full x16 speed** (256 GB/s) - **VRAM**: 16GB GDDR7
-- **Power**: 150-180W (default 180W); service caps to 150W power limit + 210-2700MHz clock ceiling.
-  The 150W cap is the active limiter under load. Values validated with real in-game benchmarking:
-  ~2610MHz @ ~142W @ 74°C at 99% utilization (the prior 2000MHz lock left ~58W of budget and clock
-  headroom unused at only 63°C)
-- **Driver**: NVIDIA Open Kernel Module 595.71.05
-- **Features**:
-  - SR-IOV capable (1 VF supported)
-  - VF BAR sizes: 256KB, 256MB, 32MB
-  - HDMI/DisplayPort audio (HDA 10de:22eb)
+- **Architecture**: Xe2-HPG "Battlemage", 12GB GDDR6
+- **PCIe**: 4.0 x8 card in the Gen5 x16 slot (negotiates at the card's full x8 width)
+- **Resizable BAR**: required by the `xe` driver, enabled in BIOS
+- **Video encode/decode**: AV1, HEVC and AVC hardware encode + decode via VA-API
+  (`intel-media-driver`, `iHD`) and oneVPL (`vpl-gpu-rt`); used by `wf-recorder`, Chromium and
+  browser video playback
+- **Compute**: oneAPI / Level Zero via `intel-compute-runtime`
+- **Driver**: upstream in-tree `xe` kernel driver (no out-of-tree binary driver)
+- **Power**: 190W reference board TDP; no custom clock/power ceiling service (the NVIDIA
+  `nvidia-lock-clocks` unit was removed with the card)
 
 ### Video Outputs
 
@@ -316,15 +315,15 @@ sensors nvme-pci-0800  # WD Black SN850X
 
 ### Key Settings
 
-| Setting                 | Value                 | Notes                               |
-| ----------------------- | --------------------- | ----------------------------------- |
-| **PCIe Link Mode**      | Auto                  | GPU at Gen 5 x16, M.2_1 at Gen 5 x4 |
-| **IOMMU**               | Enabled (Passthrough) | For virtualization                  |
-| **PCIe ASPM**           | Disabled              | Better latency                      |
-| **AMD PSP/fTPM**        | Enabled               | TPM 2.0 via firmware                |
-| **Resizable BAR**       | Enabled               | For GPU performance                 |
-| **Smart Access Memory** | Enabled               | AMD SAM                             |
-| **SR-IOV**              | Enabled               | GPU virtualization support          |
+| Setting                 | Value                 | Notes                                |
+| ----------------------- | --------------------- | ------------------------------------ |
+| **PCIe Link Mode**      | Auto                  | GPU at Gen4 x8 (card), M.2_1 Gen5 x4 |
+| **IOMMU**               | Enabled (Passthrough) | For virtualization                   |
+| **PCIe ASPM**           | Disabled              | Better latency                       |
+| **AMD PSP/fTPM**        | Enabled               | TPM 2.0 via firmware                 |
+| **Resizable BAR**       | Enabled               | Required by Intel Arc (`xe`)         |
+| **Smart Access Memory** | Enabled               | AMD SAM                              |
+| **SR-IOV**              | Enabled               | N/A for Arc B580; legacy BIOS value  |
 
 ### Boot Configuration
 
@@ -340,8 +339,8 @@ sensors nvme-pci-0800  # WD Black SN850X
 ```text
 00:00.0 Host bridge: AMD Raphael/Granite Ridge Root Complex
 00:01.1 PCIe Root Port [GPU] x16 @ PCIe 5.0
-    `-01:00.0 NVIDIA RTX 5060 Ti (full x16 bandwidth)
-       `-01:00.1 NVIDIA HDA Audio
+    `-01:00.0 Intel Arc B580 (negotiates x8 @ PCIe 4.0 - card width)
+       `-01:00.1 Intel Arc HDA Audio
 
 00:01.2 PCIe Root Port [M.2_1]
     `-02:00.0 Crucial T705 NVMe (x4 @ PCIe 5.0)
@@ -376,10 +375,7 @@ sensors nvme-pci-0800  # WD Black SN850X
 boot.kernelModules = [
   "kvm-amd"           # CPU virtualization
   "nct6775"           # Motherboard sensors  Required
-  "nvidia"            # GPU driver
-  "nvidia_modeset"
-  "nvidia_uvm"
-  "nvidia_drm"
+  "xe"                # Intel Arc GPU driver (in-tree; also loaded in initrd)
 ];
 
 boot.extraModulePackages = [
@@ -391,7 +387,7 @@ boot.extraModulePackages = [
 
 - **nct6775** module is essential for fan monitoring and control
 - Module must be loaded before ACPI WMI (motherboard-specific)
-- GPU uses open-source NVIDIA kernel module (595.71.05)
+- GPU uses the upstream in-tree `xe` driver (`i915` does not bind Battlemage)
 
 ---
 
@@ -415,9 +411,9 @@ boot.extraModulePackages = [
 
 ### GPU
 
-- **Driver**: Open kernel module (better performance)
-- **ModeSetting**: Enabled (`nvidia-drm.modeset=1`)
-- **Framebuffer**: Native (`nvidia-drm.fbdev=1`)
+- **Driver**: upstream `xe` kernel driver (in-tree, zero binary-driver maintenance)
+- **ModeSetting**: built into `xe` (DRM modesetting always on)
+- **Video acceleration**: VA-API via `iHD` (`LIBVA_DRIVER_NAME=iHD`), oneVPL via `vpl-gpu-rt`
 
 ---
 
@@ -433,17 +429,17 @@ boot.extraModulePackages = [
 
 **Result:**
 
-- GPU runs at **full x16 speed** (256 GB/s bandwidth)
+- GPU runs at **its full x8 width** (PCIe 4.0, card maximum)
 - Both NVMe drives at full speed
 - No PCIe lane conflicts
 
 ### What NOT to Do
 
-**Don't populate M.2_2 slot** unless you're willing to sacrifice GPU performance:
+**M.2_2 shares PCIe lanes with the GPU slot** (PCIEX16_1):
 
-- M.2_2 shares PCIe lanes with GPU slot (PCIEX16_1)
-- When M.2_2 is populated -> GPU drops from x16 to x8 (50% bandwidth loss)
-- Use M.2_3 or M.2_4 instead (chipset-fed, no GPU impact)
+- When M.2_2 is populated -> the slot bifurcates to x8/x8
+- The Arc B580 is an x8 card, so it keeps its full link width either way
+- Prefer M.2_3 or M.2_4 for expansion anyway (chipset-fed, zero slot games)
 
 ---
 
@@ -470,7 +466,7 @@ boot.kernelParams = [
 
 ### Storage
 
-- **M.2_2**: Available ( avoid - causes GPU x8 mode)
+- **M.2_2**: Available (splits GPU slot x8/x8; harmless for the x8 B580)
 - **M.2_3**: Available (chipset, PCIe 4.0 x4) - **Use this for expansion**
 - **SATA**: 8 ports available (unused)
 
@@ -486,10 +482,10 @@ boot.kernelParams = [
 ### Check GPU PCIe Link Width
 
 ```bash
-# Should show: 16
+# Should show: 8 (B580 is an x8 card - that is its full width)
 cat /sys/bus/pci/devices/0000:01:00.0/current_link_width
 
-# Should show: 16
+# Should show: 16 (slot capability)
 cat /sys/bus/pci/devices/0000:01:00.0/max_link_width
 ```
 
@@ -519,13 +515,13 @@ watch -n 1 sensors
 
 - [ASUS ROG STRIX X670E-F Product Page](https://rog.asus.com/motherboards/rog-strix/rog-strix-x670e-f-gaming-wifi-model/)
 - [AMD Ryzen 9 9950X3D Specifications](https://www.amd.com/en/products/processors/desktops/ryzen/9000-series/amd-ryzen-9-9950x3d.html)
-- [NVIDIA RTX 50 Series Specifications](https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/#specs)
+- [Intel Arc B580 Specifications](https://www.intel.com/content/www/us/en/products/sku/239790/intel-arc-b580-graphics-card/specifications.html)
 - [NixOS Hardware Configuration](https://wiki.nixos.org/wiki/Hardware/Asus)
 
 ---
 
-_Generated from system introspection on 2026-02-11_ _Last hardware change: Moved WD Black SN850X
-from M.2_2 to M.2_4 for full GPU x16 bandwidth_
+_Generated from system introspection on 2026-02-11_ _Last hardware change (2026-11-07): swapped the
+RTX 5060 Ti for an Intel Arc B580 (in-tree `xe` driver, AV1/HEVC/AVC hardware encode)_
 
 ---
 
@@ -534,15 +530,15 @@ from M.2_2 to M.2_4 for full GPU x16 bandwidth_
 This project uses the [NixOS/nixos-hardware](https://github.com/NixOS/nixos-hardware) repository for
 hardware-specific configuration modules. Each host imports the modules relevant to its platform.
 
-### ninja (Desktop: AMD Ryzen 9 9950X3D + NVIDIA RTX 5060 Ti)
+### ninja (Desktop: AMD Ryzen 9 9950X3D + Intel Arc B580)
 
 Located in `hosts/ninja/configuration.nix`:
 
-| Module                       | Purpose                                   | Why Needed                                                                                                                                                              |
-| ---------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `common-cpu-amd-pstate`      | AMD P-State driver configuration          | Enables `amd_pstate=active` for modern AMD CPUs (Zen 2+). Provides better performance/power than acpi-cpufreq. Required for 9950X3D.                                    |
-| `common-gpu-nvidia-nonprime` | NVIDIA desktop (non-Prime/offload) config | Configures NVIDIA as primary GPU with modesetting, DRM, and framebuffer. No Prime offload complexity since no iGPU.                                                     |
-| `common-pc-ssd`              | SSD/NVMe optimizations                    | Enables TRIM via `fstrim.timer`, sets `nvme_core.default_ps_max_latency_us=0` for lowest latency. Benefits both Crucial T705 (PCIe 5.0) and WD Black SN850X (PCIe 4.0). |
+| Module                  | Purpose                          | Why Needed                                                                                                                                                              |
+| ----------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `common-cpu-amd-pstate` | AMD P-State driver configuration | Enables `amd_pstate=active` for modern AMD CPUs (Zen 2+). Provides better performance/power than acpi-cpufreq. Required for 9950X3D.                                    |
+| `common-gpu-intel`      | Intel GPU (Arc discrete) config  | Declares `hardware.intelgpu`: in-tree `xe` driver loaded in the initrd, `intel-media-driver` (iHD) VA-API, `intel-compute-runtime` + `vpl-gpu-rt` acceleration stack.   |
+| `common-pc-ssd`         | SSD/NVMe optimizations           | Enables TRIM via `fstrim.timer`, sets `nvme_core.default_ps_max_latency_us=0` for lowest latency. Benefits both Crucial T705 (PCIe 5.0) and WD Black SN850X (PCIe 4.0). |
 
 ### windy (Laptop: Intel i9-11980HK + NVIDIA RTX 3080 Mobile Prime Offload)
 
@@ -589,6 +585,7 @@ When adding a new host (see [Adding a New Host](adding-a-host.md)):
    - NVIDIA desktop (no iGPU) → `common-gpu-nvidia-nonprime`
    - NVIDIA laptop with Prime offload → `common-gpu-nvidia`
    - AMD GPU → `common-gpu-amd` (if available)
+   - Intel Arc discrete (Xe2) → `common-gpu-intel` with `hardware.intelgpu.driver = "xe"`
    - Intel iGPU only → no GPU module needed
 4. **Form factor**: Laptop → `common-pc-laptop`, Desktop → skip
 5. **Storage**: NVMe/SSD → `common-pc-ssd` (almost always)
@@ -605,5 +602,5 @@ The `nixos-hardware.auto` module attempts to auto-detect hardware and apply matc
 
 ---
 
-_Generated from system introspection on 2026-02-11_ _Last hardware change: Moved WD Black SN850X
-from M.2_2 to M.2_4 for full GPU x16 bandwidth_
+_Generated from system introspection on 2026-02-11_ _Last hardware change (2026-11-07): swapped the
+RTX 5060 Ti for an Intel Arc B580 (in-tree `xe` driver, AV1/HEVC/AVC hardware encode)_

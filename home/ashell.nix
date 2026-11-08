@@ -360,8 +360,8 @@
         # reference pinned the card out of runtime D3 for the whole session:
         # runtime_suspended_time stayed at 0 while it burned ~12.5W idling in P8,
         # over half the machine's draw. Hiding the NVIDIA drivers from this
-        # process is enough; the bar has no use for discrete graphics. Only on
-        # hybrid hosts - ninja is NVIDIA-only and would have no renderer left.
+        # process is enough; the bar has no use for discrete graphics. Scoped to
+        # hybrid hosts - windy is the NVIDIA one; ninja is Intel Arc only.
         export VK_LOADER_DRIVERS_DISABLE="nvidia_icd.json"
         export __EGL_VENDOR_LIBRARY_FILENAMES="/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json"
         export __GLX_VENDOR_LIBRARY_NAME="mesa"

@@ -73,7 +73,8 @@ in both cases: `runtime_suspended_time` stuck at `0` while the card burned rough
    `renderD129` open for the life of the process. That single reference is enough to pin the card
    out of runtime D3. The session wrapper now exports `VK_LOADER_DRIVERS_DISABLE`,
    `__EGL_VENDOR_LIBRARY_FILENAMES` and `__GLX_VENDOR_LIBRARY_NAME` for that process only. Applied
-   on hybrid hosts only: ninja is NVIDIA-only and would be left with no renderer.
+   on hybrid hosts only: windy is the hybrid NVIDIA machine; ninja is Intel Arc only and has no
+   NVIDIA stack to hide.
 
 Result: idle draw dropped from 20-23 W to 14-18 W.
 

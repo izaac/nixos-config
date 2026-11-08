@@ -41,7 +41,13 @@
     plugins = [
       {
         name = "fzf-tab";
-        src = pkgs.zsh-fzf-tab + "/share/fzf-tab";
+        # Ship a copy without the compiled C `modules` directory so the plugin
+        # works on pure-zsh setups and does not pull a broken prebuilt module.
+        src = pkgs.runCommand "zsh-fzf-tab-nomodule" {} ''
+          cp -r ${pkgs.zsh-fzf-tab}/share/fzf-tab $out
+          chmod -R u+w $out
+          rm -rf $out/modules
+        '';
       }
     ];
 
@@ -57,6 +63,12 @@
       fi
       if [[ "''${TMUX-}" == "skip" ]]; then
         unset TMUX
+      fi
+
+      # Container shells inherit no host profile, so atuin can be missing from
+      # PATH. Fall back to the nix store binary when it exists.
+      if ! command -v atuin >/dev/null 2>&1 && [ -x "${pkgs.atuin}/bin/atuin" ]; then
+        export PATH="''$PATH:${pkgs.atuin}/bin"
       fi
     '';
   };

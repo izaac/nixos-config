@@ -46,7 +46,7 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
     };
   };
 
-  # Script to automate NVIDIA driver linking in Ubuntu containers
+  # Container init-hook helper scripts and the declarative distrobox.ini.
   xdg.configFile = {
     # Sudo wrapper for rootless containers — runs commands as root via podman exec.
     # Placed in distrobox/bin which is first in PATH, ahead of host sudo.
@@ -94,23 +94,48 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
         printf '#!/bin/sh\nexec distrobox-host-exec xdg-open "$@"\n' | sudo tee /usr/local/bin/xdg-open >/dev/null
         sudo chmod +x /usr/local/bin/xdg-open
       fi
+      if [ ! -f /usr/local/bin/opencode ]; then
+        printf '#!/bin/sh\nexec distrobox-host-exec opencode "$@"\n' | sudo tee /usr/local/bin/opencode >/dev/null
+        sudo chmod +x /usr/local/bin/opencode
+      fi
     '';
 
-    "distrobox/nvidia-setup.sh".text = ''
+    # Wire up CLI tools that are either renamed by the distro (batcat/fdfind on
+    # Debian/Ubuntu) or only available on the host Nix store (starship, atuin).
+    # Idempotent: every link is guarded, safe to re-run on every container start.
+    "distrobox/cli-tools-setup.sh".text = ''
       #!/bin/sh
-      # 1. Enable 32-bit architecture and multiverse repos
-      sudo dpkg --add-architecture i386
-      sudo sed -i 's/Components: main restricted/Components: main restricted universe multiverse/g' /etc/apt/sources.list.d/ubuntu.sources
-      sudo apt update
+      [ -x /usr/bin/batcat ] && [ ! -e /usr/local/bin/bat ] && sudo ln -sf /usr/bin/batcat /usr/local/bin/bat
+      [ -x /usr/bin/fdfind ] && [ ! -e /usr/local/bin/fd ] && sudo ln -sf /usr/bin/fdfind /usr/local/bin/fd
 
-      # 2. Link Host NVIDIA Drivers (Vulkan/OpenGL)
-      sudo mkdir -p /usr/share/vulkan/icd.d
-      printf '{"file_format_version" : "1.0.0","ICD": {"library_path": "/run/host/run/opengl-driver/lib/libGLX_nvidia.so.0","api_version" : "1.3.260"}}' | sudo tee /usr/share/vulkan/icd.d/nvidia_icd.json > /dev/null
+      # Always link starship and atuin from host nix store to match host shell config
+      # (an older distro package in /usr/bin must never shadow the host version)
+      for s in /nix/store/*-starship-*/bin/starship; do
+        if [ -x "$s" ]; then
+          sudo ln -sf "$s" /usr/local/bin/starship
+          break
+        fi
+      done
 
-      # 3. Configure Linker
-      echo '/run/host/run/opengl-driver/lib' | sudo tee /etc/ld.so.conf.d/nvidia.conf > /dev/null
-      echo '/run/host/run/opengl-driver-32/lib' | sudo tee -a /etc/ld.so.conf.d/nvidia.conf > /dev/null
-      sudo ldconfig
+      for a in /nix/store/*-atuin-*/bin/atuin; do
+        if [ -x "$a" ]; then
+          sudo ln -sf "$a" /usr/local/bin/atuin
+          break
+        fi
+      done
+
+      # Bash drop-in so atuin's Ctrl-R binding is active in bash logins too.
+      # zsh picks it up from the host zshrc; bash needs this profile.d hook.
+      # The interactive guard must come first: /etc/profile.d is sourced by
+      # non-interactive shells as well (distrobox enter ... -- cmd, ssh, scp),
+      # where `atuin init bash` emits "line editing not enabled" warnings.
+      if ! grep -qF 'case $- in *i*)' /etc/profile.d/atuin.sh 2>/dev/null; then
+        printf '%s\n' \
+          'case $- in *i*) ;; *) return 0;; esac' \
+          'if command -v atuin >/dev/null 2>&1; then eval "$(atuin init bash)"; fi' \
+          | sudo tee /etc/profile.d/atuin.sh >/dev/null
+      fi
+      exit 0
     '';
 
     # Declarative Distrobox Configuration
@@ -119,30 +144,27 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       [archy]
       image=archlinux:latest
       pull=true
-      additional_packages="git vim neovim ripgrep lsd fastfetch wl-clipboard nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
+      additional_packages="git vim neovim ripgrep lsd fastfetch wl-clipboard fzf zoxide eza bat fd jq direnv starship btop nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
       init=false
-      nvidia=true
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
       shell=/bin/bash
-      # === Ubuntu Gaming Container (The "Golden Recipe" for NixOS + NVIDIA) ===
-      # This container uses ~/.config/distrobox/nvidia-setup.sh to automatically
-      # link host NVIDIA drivers and configure 32-bit support for Steam.
+      # === Ubuntu Gaming Container (Steam / Proton sandbox) ===
+      # Mesa + Vulkan come from the host GL stack through distrobox; no
+      # driver-linking hook needed on Intel Arc (in-tree xe driver + iHD).
       [ubu]
       image=ubuntu:24.04
       pull=true
-      additional_packages="neovim git curl wget vim wl-clipboard mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools libnvidia-egl-wayland1"
+      additional_packages="neovim git curl wget vim zsh wl-clipboard fzf zoxide eza bat ripgrep fd-find jq direnv btop mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools"
       init=false
-      nvidia=true
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && (sh ${config.home.homeDirectory}/.config/distrobox/nvidia-setup.sh || true) && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
       shell=/bin/bash
 
       [debi]
       image=debian:latest
       pull=true
-      additional_packages="git curl wget neovim ripgrep lsd fastfetch wl-clipboard"
+      additional_packages="git curl wget neovim zsh ripgrep lsd fastfetch wl-clipboard fzf zoxide eza bat fd-find jq direnv starship btop"
       init=false
-      nvidia=true
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
       shell=/bin/bash
 
       # === Alpine OpenRC Sandbox ===
@@ -152,11 +174,11 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       [alpy]
       image=alpine:latest
       pull=true
-      additional_packages="openrc openrc-init bash shadow util-linux git vim curl wget fastfetch eudev"
+      additional_packages="openrc openrc-init bash shadow util-linux git vim curl wget fastfetch eudev fzf zoxide ripgrep fd bat jq"
       init=false
       nvidia=false
       shell=/bin/bash
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
 
       # === openSUSE Leap 16.1 ===
       [suse]
@@ -164,12 +186,11 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       pull=true
       # neovim is installed from the official release tarball into /usr/local
       # (see pre_init_hooks) to avoid clashing with the slower zypper package.
-      additional_packages="git curl wget ripgrep fastfetch terminfo wl-clipboard libpulse0 pulseaudio-utils alsa-plugins-pulse"
+      additional_packages="git curl wget zsh ripgrep fastfetch terminfo wl-clipboard libpulse0 pulseaudio-utils alsa-plugins-pulse fzf zoxide eza bat fd jq direnv starship btop"
       init=false
-      nvidia=true
       shell=/bin/bash
-      pre_init_hooks="zypper ref && zypper -n install -y bash-completion bc bzip2 curl diffutils findutils glibc-locale glibc-locale-base gnupg hostname iputils keyutils less lsof shadow tar terminfo wl-clipboard || true; test -f /usr/local/bin/nvim || (curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz | tar -xz -C /usr/local --strip-components=1) || true"
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh"
+      pre_init_hooks="zypper ref && zypper -n install -y bash-completion bc bzip2 curl diffutils findutils glibc-locale glibc-locale-base gnupg hostname iputils keyutils less lsof shadow tar terminfo wl-clipboard fzf zoxide eza bat fd jq direnv starship btop || true; test -f /usr/local/bin/nvim || (curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz | tar -xz -C /usr/local --strip-components=1) || true"
+      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
     '';
   };
 
@@ -214,9 +235,9 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
     db-up = "distrobox assemble create --file ${config.home.homeDirectory}/.config/distrobox/distrobox.ini";
     db-rm = "distrobox assemble rm --file ${config.home.homeDirectory}/.config/distrobox/distrobox.ini";
     db-arch = "distrobox enter archy -- zsh";
-    db-ubu = "distrobox enter ubu -- bash";
-    db-debian = "distrobox enter debi -- bash";
+    db-ubu = "distrobox enter ubu -- zsh";
+    db-debian = "distrobox enter debi -- zsh";
     db-alpine = "distrobox enter alpy -- sh";
-    db-suse = "distrobox enter suse -- bash";
+    db-suse = "distrobox enter suse -- zsh";
   };
 }

@@ -7,7 +7,6 @@
 
   # Capability detection: derived from actual system config so new hosts
   # inherit the right layout automatically. No hostname hardcoding.
-  hasNvidia = osConfig.hardware.nvidia.modesetting.enable or false;
   isLaptop = isDarwin || (osConfig.services.tlp.enable or false);
   hasDataDisk = (osConfig.fileSystems or {}) ? "/mnt/data";
   hasBios = !isDarwin;
@@ -56,17 +55,6 @@
     { "type": "board",   "key": "{$2}├ 󱔼  Board     " },
     { "type": "cpu",     "key": "{$3}├   CPU       " },
     { "type": "gpu",     "key": "{$4}├ 󰾲  GPU       " },
-    ${
-      if hasNvidia
-      then ''
-        {
-          "type": "command",
-          "key":  "{$4}├   NVIDIA    ",
-          "text": "cat /sys/module/nvidia/version 2>/dev/null || echo n/a"
-        },
-      ''
-      else ""
-    }
     { "type": "display", "key": "{$5}├ 󰍹  Display   " },
     { "type": "sound",   "key": "{$6}├   Sound     " },
     ${

@@ -16,7 +16,7 @@ in {
         "--enable-zero-copy"
         "--enable-gpu-rasterization"
         "--canvas-oop-rasterization"
-        "--enable-features=VaapiOnNvidiaGPUs,VaapiIgnoreDriverChecks,VaapiVideoDecoder,UseMultiPlaneFormatForHardwareVideo,AcceleratedVideoEncoder"
+        "--enable-features=VaapiIgnoreDriverChecks,VaapiVideoDecoder,UseMultiPlaneFormatForHardwareVideo,AcceleratedVideoEncoder"
         # Native Wayland
         "--ozone-platform=wayland"
         "--enable-wayland-ime"

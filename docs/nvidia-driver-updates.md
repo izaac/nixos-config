@@ -1,9 +1,13 @@
 # Updating Custom NVIDIA Drivers in NixOS
 
-> **Current state:** `windy` tracks `nvidiaPackages.stable` (open kernel modules), while `ninja`
-> uses the `mkDriver` override pinned to **`615.78.08`** (New Feature Branch) to include Blackwell
-> fixes for the RTX 5060 Ti. The `mkDriver` override below documents how this pin is maintained and
-> bumped when nixpkgs lags upstream.
+> [!IMPORTANT] **ninja moved to an Intel Arc B580 (2026-11).** Its GPU now runs on the upstream
+> in-tree `xe` driver (`hosts/ninja/intel.nix`) with zero out-of-tree binary driver maintenance.
+> This document applies to **windy** (`hosts/windy/nvidia.nix`) only; the `mkDriver` recipe below is
+> kept as the reference for pinning a driver when nixpkgs lags.
+
+**Current state:** `windy` tracks `nvidiaPackages.stable` (open kernel modules). The `mkDriver`
+override below documents how a hand-pinned driver - formerly `615.78.08` on ninja's RTX 5060 Ti,
+retired with the Arc swap - is maintained and bumped when nixpkgs lags upstream.
 
 This guide explains how to pin an NVIDIA driver version using the `mkDriver` override when the
 nixpkgs channel lags a release you need.
@@ -25,7 +29,7 @@ _Note: Ensure that the version you select has matching tags in the `nvidia-setti
 ## 2. Locating the Configuration
 
 The custom driver configuration is located in the NVIDIA specific module for the host (e.g.,
-`hosts/ninja/nvidia.nix`). Look for the `package` definition under `hardware.nvidia`:
+`hosts/windy/nvidia.nix`). Look for the `package` definition under `hardware.nvidia`:
 
 ```nix
 hardware.nvidia = {
@@ -67,7 +71,7 @@ hashes.
 3. **Rebuild the System:** Run your normal rebuild command.
 
    ```bash
-   sudo nixos-rebuild switch --flake .#ninja
+   sudo nixos-rebuild switch --flake .#windy
    ```
 
 4. **Copy the Hashes:** The build will fail with a "hash mismatch" error for the first package it
@@ -130,7 +134,7 @@ the unpacked contents._
 Once you have filled in the `version` and all 5 hashes, run your rebuild command:
 
 ```bash
-sudo nixos-rebuild switch --flake .#ninja
+sudo nixos-rebuild switch --flake .#windy
 ```
 
 If the screen goes black or you experience issues, you can always reboot and select the previous

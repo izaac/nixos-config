@@ -15,8 +15,8 @@
 #   - CONFIG_SCHED_CLASS_EXT is already enabled by nixpkgs (kernels >= 6.12),
 #     so scx_lavd keeps working with no extra config.
 #   - NTSYNC built as a module for Wine/Proton parity with the CachyOS kernel.
-#   - hardware.nvidia.package follows boot.kernelPackages, so the NVIDIA open
-#     module rebuilds against this kernel automatically.
+#   - The GPU stack is the in-tree `xe` driver, so it follows boot.kernelPackages
+#     automatically - no out-of-tree module to rebuild.
 #
 # Desktop-responsiveness / gaming additions (all pure-nixpkgs, no patches):
 #   - LRU_GEN + LRU_GEN_ENABLED: Multi-Gen LRU, enabled by default. Better page

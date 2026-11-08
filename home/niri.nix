@@ -87,7 +87,7 @@ in {
     grim # Screenshot tool (Wayland)
     slurp # Region picker (screen recorder)
     swappy # Screenshot editor with blur/pixelate for masking IPs
-    wf-recorder # Screen recorder (Wayland; wl-screenrec needs VA-API XR24 not supported on NVIDIA)
+    wf-recorder # Screen recorder (Wayland; Intel Arc B580 does VA-API hardware encode/decode via iHD)
     libnotify # notify-send for screen-record feedback
   ];
 
@@ -105,12 +105,13 @@ in {
       inherit (config.home.sessionVariables) BROWSER TERMINAL;
     };
 
-    # On windy (Intel + NVIDIA hybrid) force niri to composite on the Intel
-    # iGPU, which already drives the internal panel (card1/renderD128). Without
-    # this niri picks the NVIDIA dGPU and keeps the RTX 3080 powered on around
-    # the clock, which runs hot and spins the fans up constantly. Compositing
-    # on Intel lets the dGPU runtime-suspend (PRIME offload still routes games
-    # to it on demand). ninja is NVIDIA-only, so it must keep niri's default.
+    # On windy (Intel iGPU + NVIDIA dGPU hybrid) force niri to composite on the
+    # Intel iGPU, which already drives the internal panel (card1/renderD128).
+    # Without this niri picks the NVIDIA dGPU and keeps the RTX 3080 powered on
+    # around the clock, which runs hot and spins the fans up constantly.
+    # Compositing on Intel lets the dGPU runtime-suspend (PRIME offload still
+    # routes games to it on demand). ninja is a single-GPU Intel Arc B580 host,
+    # so it keeps niri's default device selection.
     debug = lib.mkIf (!isNinja) {
       render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
     };

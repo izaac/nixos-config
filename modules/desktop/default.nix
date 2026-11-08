@@ -8,6 +8,7 @@
   cfg = config.mySystem.desktop;
 in {
   imports = [
+    ./intel.nix
     ./nvidia.nix
     inputs.niri-flake.nixosModules.niri
   ];

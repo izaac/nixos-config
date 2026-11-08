@@ -101,8 +101,8 @@ lsblk
 nixos-install --flake github:izaac/nixos-config#ninja --no-root-password
 ```
 
-This pulls the full `ninja` configuration from GitHub including NVIDIA drivers, the niri desktop,
-all packages, and Home Manager config. Set the user password when prompted.
+This pulls the full `ninja` configuration from GitHub including the Intel Arc (Xe) GPU stack, the
+niri desktop, all packages, and Home Manager config. Set the user password when prompted.
 
 ## 5. Post-Installation
 
@@ -162,8 +162,9 @@ The VM will:
 2. Run the full disko destroy → format → mount sequence.
 3. Boot into the resulting NixOS system.
 
-> **Note**: NVIDIA drivers are force-disabled in the VM via `virtualisation.vmVariant` in
-> `configuration.nix`, so the VM uses software rendering. This is expected.
+> **Note**: The VM gets a neutral GPU stack via `virtualisation.vmVariant` in `configuration.nix`
+> (`modesetting` driver, empty `hardware.graphics.extraPackages`), so the VM uses software
+> rendering. This is expected.
 
 ### What to Verify
 

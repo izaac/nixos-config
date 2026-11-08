@@ -108,14 +108,6 @@ road-test:
 validate-sudo:
         @bash scripts/validate-sudo.sh
 
-# Query and summarize NVIDIA driver versions across channels and upstream
-nvidia-check *args:
-        @scripts/nvidia-check.sh {{args}}
-
-# Fixture-based unit tests for nvidia-check parsers (offline)
-nvidia-test:
-        @bash scripts/tests/nvidia-check-test.sh
-
 # Ensure the Linux builder VM is running on macOS (idempotent guard)
 ensure-builder:
         @if [ "$(uname)" = "Darwin" ] && [ -f /Library/LaunchDaemons/org.nixos.linux-builder.plist ]; then \
