@@ -82,6 +82,13 @@ in {
     # Default Applications (File Associations)
     mimeApps = {
       enable = true;
+      associations.removed = {
+        "application/x-shellscript" = ["kitty-open.desktop"];
+        "application/x-sh" = ["kitty-open.desktop"];
+        "text/x-shellscript" = ["kitty-open.desktop"];
+        "text/plain" = ["kitty-open.desktop"];
+        "inode/directory" = ["kitty-open.desktop"];
+      };
       defaultApplications = {
         "text/html" = ["firefox.desktop"];
         "x-scheme-handler/http" = ["firefox.desktop"];
@@ -93,6 +100,9 @@ in {
         "text/plain" = ["nvim.desktop"];
         "text/markdown" = ["nvim.desktop"];
         "text/x-log" = ["nvim.desktop"];
+        "application/x-shellscript" = ["nvim.desktop"];
+        "application/x-sh" = ["nvim.desktop"];
+        "text/x-shellscript" = ["nvim.desktop"];
 
         # Archives (file-roller)
         "application/zip" = ["org.gnome.FileRoller.desktop"];
@@ -127,6 +137,7 @@ in {
         "audio/ogg" = ["io.bassi.Amberol.desktop"];
         "audio/x-vorbis+ogg" = ["io.bassi.Amberol.desktop"];
         "audio/mp4" = ["io.bassi.Amberol.desktop"];
+        "audio/x-m4a" = ["io.bassi.Amberol.desktop"];
         "audio/x-flac" = ["io.bassi.Amberol.desktop"];
         "audio/x-mp3" = ["io.bassi.Amberol.desktop"];
 
