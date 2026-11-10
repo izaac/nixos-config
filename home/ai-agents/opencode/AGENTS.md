@@ -12,10 +12,11 @@
   - `evidence-vision` (gemini-3.8-flash-low via google/antigravity, Google AI Pro subscription
     quota, refill ~weekly): reads images and screenshots; when the Antigravity weekly bucket is
     drained, the parent respawns this seat on the OpenRouter vision model.
-  - `reviewer` (gpt-6-luna via OpenCode Go, `xhigh` reasoning variant): first-pass check strictly
-    gated on authored artifacts (plans, code diffs, fixtures) or disputed claims before parent
-    reviews them. Text-only: it cannot see images and its shell access is restricted to read-only
-    git inspection (`git status`, `git diff`, `git log`, `git show`) alongside `read`/`glob`/`grep`.
+  - `reviewer` (kimi-k3.1-pro via OpenCode Go): first-pass check strictly gated on authored
+    artifacts (plans, code diffs, fixtures) or disputed claims before parent reviews them.
+    Text-only: it cannot see images and its shell access is restricted to read-only git inspection
+    (`git status`, `git diff`, `git log`, `git show`, `git blame`, etc.) alongside
+    `read`/`glob`/`grep`.
   - `reader` (beam-free via OpenCode Go, zero cost): bulk distillation only. Send it volume (test
     output, logs, inventories, long docs) and collect capped terse cards for the parent context.
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
@@ -26,7 +27,9 @@
     verdict is expensive. (b) Large code change foul-check: one bounded referee pass that runs ONLY
     after the first-pass `reviewer` has reviewed the diff and the principal has formed its own final
     reasoning (see the foul-check ordering under Subagent review). Independent error pattern is the
-    point, not more effort. Pin form: `"model": "opencode-go/minimax-m3"` as one plain string.
+    point, not more effort. Pin form: `"model": "opencode-go/minimax-m3"` as one plain string. Shell
+    access is restricted to read-only git inspection (`git status`, `git diff`, `git log`,
+    `git show`, `git blame`, etc.) alongside `read`/`glob`/`grep`.
   - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to deepseek-v4-pro via
     OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
     hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
@@ -78,7 +81,7 @@
 - Large code change foul-check (referee check): a large change means 3+ files modified, roughly 100+
   lines changed, or an architectural touchpoint. The order is fixed and strictly enforced:
   1. The worker executes the change.
-  2. First-pass `reviewer` (`opencode-go/gpt-6-luna#xhigh`) reviews the authored diff.
+  2. First-pass `reviewer` (`opencode-go/kimi-k3.1-pro`) reviews the authored diff.
   3. The principal receives the `reviewer` review and forms its own final reasoning: what to accept,
      reject, or adjust.
   4. ONLY AT THAT POINT, with the `reviewer` findings and the principal's final reasoning both in
@@ -89,7 +92,9 @@
 
   What it looks for: broken invariants, security or stealth regressions, cross-file contract
   mismatches, or missed edge cases the fast first-pass reviewer would not catch. Same read-only
-  rules: it never edits and never redoes the task. Foul-check output is lines of
+  rules: it never edits and never redoes the task. Both reviewer and arbiter can run read-only git
+  commands (`git diff`, `git log`, `git status`, `git show`, `git blame`, etc.) alongside
+  `read`/`glob`/`grep`. Foul-check output is lines of
   `FOUL severity high|medium, file:line, what breaks, smallest fix`, or `CLEAN` plus the riskiest
   spots checked.
 

@@ -96,15 +96,15 @@
       "model": "opencode-go/deepseek-v4.1-flash",
     },
 
-    // First-pass reviewer: GPT-6 Luna via OpenCode Go, xhigh reasoning variant.
+    // First-pass reviewer: Kimi K3.1 Pro via OpenCode Go.
     // Independent model family from DeepSeek workers and Gemini primary.
-    // Pin form for opencode.jsonc "agents": "model" is a plain string and the
+    // Pin form for opencode.jsonc "agents": "model" is a plain string and any
     // variant rides inside it as a "#variant" suffix. The schema entry for
     // agents ({Config.AgentEncoded}) allows exactly two shapes: that string, or a
     // closed object {providerID, model, variant}. A bare sibling "variant" key is
     // NOT allowed there (additionalProperties: false) and silently breaks the pin.
     "reviewer": {
-      "model": "opencode-go/gpt-6-luna#xhigh",
+      "model": "opencode-go/kimi-k3.1-pro",
     },
 
     // Single cross-family arbiter and referee seat. Same-model reviewers share
@@ -114,7 +114,7 @@
     // Foul-check ordering: worker -> reviewer -> principal's final reasoning ->
     // arbiter (single pass), never before the reviewer, never twice.
     "arbiter": {
-      "description": "High-stakes arbiter and referee with two triggers. (1) Disputed or high-stakes claims: a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. (2) Large code change foul-check: after a multi-file or architectural change (3+ files touched or roughly 100+ changed lines), exactly ONE bounded referee pass, run only after the first-pass reviewer has reviewed the diff and the principal has formed its own final reasoning. Input is the diff plus the reviewer findings plus the principal's final reasoning; look only for major fouls the fast reviewer may have missed (broken invariants, security or stealth regressions, cross-file contract mismatches, missed edge cases). Never before the reviewer, never twice, never redo the task, never edit.",
+      "description": "High-stakes arbiter and referee with two triggers. (1) Disputed or high-stakes claims: a first-pass reviewer verdict is contested, evidence conflicts, or a wrong verdict is costly. (2) Large code change foul-check: after a multi-file or architectural change (3+ files touched or roughly 100+ changed lines), exactly ONE bounded referee pass, run only after the first-pass reviewer has reviewed the diff and the principal has formed its own final reasoning. Input is the diff plus the reviewer findings plus the principal's final reasoning; look only for major fouls the fast reviewer may have missed (broken invariants, security or stealth regressions, cross-file contract mismatches, missed edge cases). Never before the reviewer, never twice, never redo the task, never edit. Can run read-only git commands (git diff, git log, git status, git show, git blame, etc.) to inspect repository state.",
       "mode": "subagent",
       "model": "opencode-go/minimax-m3",
       "permissions": [
@@ -126,6 +126,19 @@
         { "action": "shell", "resource": "git diff *", "effect": "allow" },
         { "action": "shell", "resource": "git log *", "effect": "allow" },
         { "action": "shell", "resource": "git show *", "effect": "allow" },
+        { "action": "shell", "resource": "git blame *", "effect": "allow" },
+        { "action": "shell", "resource": "git branch *", "effect": "allow" },
+        { "action": "shell", "resource": "git rev-parse *", "effect": "allow" },
+        { "action": "shell", "resource": "git describe *", "effect": "allow" },
+        { "action": "shell", "resource": "git ls-files *", "effect": "allow" },
+        { "action": "shell", "resource": "git merge-base *", "effect": "allow" },
+        { "action": "shell", "resource": "git cat-file *", "effect": "allow" },
+        { "action": "shell", "resource": "git shortlog *", "effect": "allow" },
+        { "action": "shell", "resource": "git tag *", "effect": "allow" },
+        { "action": "shell", "resource": "git grep *", "effect": "allow" },
+        { "action": "shell", "resource": "git rev-list *", "effect": "allow" },
+        { "action": "shell", "resource": "git check-ignore *", "effect": "allow" },
+        { "action": "external_directory", "resource": "**", "effect": "allow" },
       ],
       "system": "You are the high-stakes arbiter and referee. You are called for exactly two jobs.\n\nJOB 1, disputed or high-stakes claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. Input: the specific contested claims, each with the claimed result, its evidence, and the file paths involved. Method: re-check each claim yourself with read/glob/grep and read-only git commands (git status, git diff, git log, git show) against the named files; never reason from the summaries alone. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n\nJOB 2, large code change foul-check: you are called last and exactly once. The worker already made a large or multi-file change (3+ files touched, roughly 100+ changed lines, or an architectural touchpoint), the first-pass reviewer already reported on the diff, and the principal already formed its own final reasoning: you receive all three. Run one quick bounded referee pass, hard cap 5 tool calls, over the diff, the reviewer findings, and the principal's reasoning, looking only for major fouls the fast first-pass reviewer would miss: broken invariants, security or stealth regressions (leaked secrets, new tracing near credential paths, widened permissions), cross-file contract mismatches (a signature, schema, or config key changed on one side only), and clearly missed edge cases. Output one line per foul: FOUL severity high|medium, file:line, what breaks, smallest fix. If nothing major is wrong, output CLEAN plus the two or three riskiest spots you checked. Do not enumerate style nits, do not redesign, do not audit the whole repo.\n\nAlways: you run on a different model family than the subagent workers (MiniMax, not OpenAI or DeepSeek), so your value is an independent error pattern, not more effort. If a claim or foul involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names. Never redo the whole task, never edit files, no filler.",
     },
