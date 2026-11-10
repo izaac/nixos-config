@@ -9,7 +9,9 @@
 # host that does not run Podman: the user socket would point at nothing and the
 # `docker` shim in DOCKER_HOST would dangle. Follow the system-level switch
 # (mySystem.core.virtualization) rather than naming hosts here.
-lib.mkIf (osConfig.virtualisation.podman.enable or false) {
+lib.mkIf (osConfig.virtualisation.podman.enable or false) (let
+  initHooks = "sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh";
+in {
   home = {
     packages = [pkgs.distrobox];
 
@@ -48,95 +50,22 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
 
   # Container init-hook helper scripts and the declarative distrobox.ini.
   xdg.configFile = {
-    # Sudo wrapper for rootless containers — runs commands as root via podman exec.
-    # Placed in distrobox/bin which is first in PATH, ahead of host sudo.
-    "distrobox/sudo-fix.sh".text = ''
-      #!/bin/sh
-      SUDO_BIN="${config.home.homeDirectory}/.local/share/distrobox/bin/sudo"
-      mkdir -p "$(dirname "$SUDO_BIN")"
-      cat > "$SUDO_BIN" <<'WRAPPER'
-      #!/bin/sh
-      # Use whichever container runtime distrobox picked (podman or docker).
-      RUNTIME="''${DBX_CONTAINER_MANAGER:-}"
-      if [ -z "$RUNTIME" ]; then
-        if command -v podman >/dev/null 2>&1; then
-          RUNTIME=podman
-        elif command -v docker >/dev/null 2>&1; then
-          RUNTIME=docker
-        else
-          echo "sudo-fix: no podman or docker on host" >&2
-          exit 1
-        fi
-      fi
-      exec distrobox-host-exec "$RUNTIME" exec -it -u root "$CONTAINER_ID" "$@"
-      WRAPPER
-      chmod +x "$SUDO_BIN"
-    '';
-
-    # Mirror the host timezone into the container at init time. Host /etc is
-    # mounted read-only at /run/host, so only the container side is rewritten.
-    "distrobox/tz-sync.sh".text = ''
-      #!/bin/sh
-      Z=$(readlink /run/host/etc/localtime 2>/dev/null | sed 's#.*/zoneinfo/##')
-      [ -z "$Z" ] && [ -f /run/host/etc/timezone ] && Z=$(cat /run/host/etc/timezone)
-      if [ -n "$Z" ] && [ -f "/usr/share/zoneinfo/$Z" ]; then
-        sudo ln -sf "/usr/share/zoneinfo/$Z" /etc/localtime
-        echo "$Z" | sudo tee /etc/timezone >/dev/null 2>&1 || true
-      fi
-      exit 0
-    '';
-
-    # Bridge container-side xdg-open to the host so containerised apps can open
-    # links and files in the host session. The guard makes re-runs a no-op.
-    "distrobox/xdg-open-bridge.sh".text = ''
-      #!/bin/sh
-      if [ ! -f /usr/local/bin/xdg-open ]; then
-        printf '#!/bin/sh\nexec distrobox-host-exec xdg-open "$@"\n' | sudo tee /usr/local/bin/xdg-open >/dev/null
-        sudo chmod +x /usr/local/bin/xdg-open
-      fi
-      if [ ! -f /usr/local/bin/opencode ]; then
-        printf '#!/bin/sh\nexec distrobox-host-exec opencode "$@"\n' | sudo tee /usr/local/bin/opencode >/dev/null
-        sudo chmod +x /usr/local/bin/opencode
-      fi
-    '';
-
-    # Wire up CLI tools that are either renamed by the distro (batcat/fdfind on
-    # Debian/Ubuntu) or only available on the host Nix store (starship, atuin).
-    # Idempotent: every link is guarded, safe to re-run on every container start.
-    "distrobox/cli-tools-setup.sh".text = ''
-      #!/bin/sh
-      [ -x /usr/bin/batcat ] && [ ! -e /usr/local/bin/bat ] && sudo ln -sf /usr/bin/batcat /usr/local/bin/bat
-      [ -x /usr/bin/fdfind ] && [ ! -e /usr/local/bin/fd ] && sudo ln -sf /usr/bin/fdfind /usr/local/bin/fd
-
-      # Always link starship and atuin from host nix store to match host shell config
-      # (an older distro package in /usr/bin must never shadow the host version)
-      for s in /nix/store/*-starship-*/bin/starship; do
-        if [ -x "$s" ]; then
-          sudo ln -sf "$s" /usr/local/bin/starship
-          break
-        fi
-      done
-
-      for a in /nix/store/*-atuin-*/bin/atuin; do
-        if [ -x "$a" ]; then
-          sudo ln -sf "$a" /usr/local/bin/atuin
-          break
-        fi
-      done
-
-      # Bash drop-in so atuin's Ctrl-R binding is active in bash logins too.
-      # zsh picks it up from the host zshrc; bash needs this profile.d hook.
-      # The interactive guard must come first: /etc/profile.d is sourced by
-      # non-interactive shells as well (distrobox enter ... -- cmd, ssh, scp),
-      # where `atuin init bash` emits "line editing not enabled" warnings.
-      if ! grep -qF 'case $- in *i*)' /etc/profile.d/atuin.sh 2>/dev/null; then
-        printf '%s\n' \
-          'case $- in *i*) ;; *) return 0;; esac' \
-          'if command -v atuin >/dev/null 2>&1; then eval "$(atuin init bash)"; fi' \
-          | sudo tee /etc/profile.d/atuin.sh >/dev/null
-      fi
-      exit 0
-    '';
+    "distrobox/sudo-fix.sh" = {
+      source = ./distrobox/sudo-fix.sh;
+      executable = true;
+    };
+    "distrobox/tz-sync.sh" = {
+      source = ./distrobox/tz-sync.sh;
+      executable = true;
+    };
+    "distrobox/xdg-open-bridge.sh" = {
+      source = ./distrobox/xdg-open-bridge.sh;
+      executable = true;
+    };
+    "distrobox/cli-tools-setup.sh" = {
+      source = ./distrobox/cli-tools-setup.sh;
+      executable = true;
+    };
 
     # Declarative Distrobox Configuration
     # Run 'distrobox assemble create --file ~/.config/distrobox/distrobox.ini' to build these.
@@ -146,8 +75,9 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       pull=true
       additional_packages="git vim neovim ripgrep lsd fastfetch wl-clipboard fzf zoxide eza bat fd jq direnv starship btop nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
       init=false
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
+      init_hooks="${initHooks}"
       shell=/bin/bash
+
       # === Ubuntu Gaming Container (Steam / Proton sandbox) ===
       # Mesa + Vulkan come from the host GL stack through distrobox; no
       # driver-linking hook needed on Intel Arc (in-tree xe driver + iHD).
@@ -156,7 +86,7 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       pull=true
       additional_packages="neovim git curl wget vim zsh wl-clipboard fzf zoxide eza bat ripgrep fd-find jq direnv btop mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools"
       init=false
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
+      init_hooks="${initHooks}"
       shell=/bin/bash
 
       [debi]
@@ -164,7 +94,7 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       pull=true
       additional_packages="git curl wget neovim zsh ripgrep lsd fastfetch wl-clipboard fzf zoxide eza bat fd-find jq direnv starship btop"
       init=false
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
+      init_hooks="${initHooks}"
       shell=/bin/bash
 
       # === Alpine OpenRC Sandbox ===
@@ -178,7 +108,7 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       init=false
       nvidia=false
       shell=/bin/bash
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
+      init_hooks="${initHooks}"
 
       # === openSUSE Leap 16.1 ===
       [suse]
@@ -190,7 +120,16 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
       init=false
       shell=/bin/bash
       pre_init_hooks="zypper ref && zypper -n install -y bash-completion bc bzip2 curl diffutils findutils glibc-locale glibc-locale-base gnupg hostname iputils keyutils less lsof shadow tar terminfo wl-clipboard fzf zoxide eza bat fd jq direnv starship btop || true; test -f /usr/local/bin/nvim || (curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz | tar -xz -C /usr/local --strip-components=1) || true"
-      init_hooks="sh ${config.home.homeDirectory}/.config/distrobox/sudo-fix.sh && sh ${config.home.homeDirectory}/.config/distrobox/tz-sync.sh && sh ${config.home.homeDirectory}/.config/distrobox/xdg-open-bridge.sh && sh ${config.home.homeDirectory}/.config/distrobox/cli-tools-setup.sh"
+      init_hooks="${initHooks}"
+
+      # === Slackware Distrobox ===
+      # Clean CLI base with pulseaudio, slackpkg, and full host integration
+      [slack]
+      image=ghcr.io/izaac/slackware-distrobox:latest
+      pull=true
+      init=false
+      shell=/bin/bash
+      init_hooks="${initHooks}"
     '';
   };
 
@@ -239,5 +178,6 @@ lib.mkIf (osConfig.virtualisation.podman.enable or false) {
     db-debian = "distrobox enter debi -- zsh";
     db-alpine = "distrobox enter alpy -- sh";
     db-suse = "distrobox enter suse -- zsh";
+    db-slack = "distrobox enter slack -- zsh";
   };
-}
+})

@@ -92,6 +92,7 @@ in {
   ];
 
   programs.fuzzel.enable = true;
+  programs.fuzzel.settings.main.icon-theme = "Papirus-Dark";
 
   programs.niri.settings = {
     prefer-no-csd = true;
