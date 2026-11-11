@@ -62,7 +62,7 @@ plugins and LSP wiring, and the matching server has to be on `$PATH` (see
 | `lang.typescript` | JS / TS  | `vtsls`    | wrapper `extraPackages` in `home/lazyvim.nix` |
 | `lang.python`     | Python   | `pyright`  | wrapper `extraPackages` in `home/lazyvim.nix` |
 | `lang.toml`       | TOML     | `taplo`    | [`home/dev.nix`](../home/dev.nix)             |
-| `lang.markdown`   | Markdown | `marksman` | wrapper `extraPackages` in `home/lazyvim.nix` |
+| `lang.markdown`   | Markdown | `marksman` | Homebrew, on `$PATH` (`brew install marksman`)  |
 
 Because Mason is off, every linter and formatter an extra spawns also has to be present, not just
 the LSP. The extras pull in more than the language server, so the wrapper bundles the rest through

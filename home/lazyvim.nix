@@ -48,11 +48,11 @@
       pyright
       ruff
 
-      # Markdown extra (lang.markdown): marksman is the LSP, markdownlint-cli2
-      # the linter, prettier and markdown-toc the formatters. markdownlint-cli2
+      # Markdown extra (lang.markdown): marksman is the LSP, installed with
+      # Homebrew (prebuilt, avoids building the .NET SDK). markdownlint-cli2 the
+      # linter, prettier and markdown-toc the formatters. markdownlint-cli2
       # and prettier match the versions the repo's own treefmt and pre-commit
       # hooks use.
-      marksman
       markdownlint-cli2
       prettier
       markdown-toc
