@@ -1,4 +1,4 @@
-# Shared baseline for the interactive hosts (ninja, windy). Everything is
+# Shared baseline for the interactive workstation host (ninja). Everything is
 # mkDefault so hosts override freely. The canoe ISOs do NOT import this.
 {lib, ...}: {
   imports = [

@@ -5,8 +5,6 @@
   osConfig ? {},
   ...
 }: let
-  isNinja = (osConfig.networking.hostName or "") == "ninja";
-
   # ashell's network/VPN panels are NetworkManager-only, so they show nothing on
   # a networkd host. The retry loop behind them is fixed in the overlay patch.
   hasNetworkManager = osConfig.networking.networkmanager.enable or false;
@@ -118,15 +116,11 @@
         volume_step = 5;
         indicators =
           ["IdleInhibitor" "PowerProfile" "Audio" "Microphone" "Bluetooth"]
-          ++ lib.optionals hasNetworkManager ["Network" "Vpn"]
-          ++ lib.optionals (!isNinja) ["Battery" "Brightness"];
+          ++ lib.optionals hasNetworkManager ["Network" "Vpn"];
       }
       // lib.optionalAttrs hasNetworkManager {
         wifi_more_cmd = "nm-connection-editor";
         vpn_more_cmd = "nm-connection-editor";
-      }
-      // lib.optionalAttrs (!isNinja) {
-        battery_format = "IconAndPercentage";
       };
 
     # Defaults to false upstream, which silently kills every volume and
@@ -338,69 +332,55 @@
     name = "ashell-session";
     runtimeInputs = [pkgs.awww pkgs.ashell pkgs.coreutils pkgs.util-linux pkgs.libnotify setWallpaper];
     text = ''
-            # Liveness is tied to this compositor instance. NIRI_SOCKET carries the
-            # niri PID, whereas WAYLAND_DISPLAY is reused verbatim by the next
-            # session, so a stale wrapper would otherwise mistake a fresh socket for
-            # its own and keep a dead session's bar alive.
-            niri_alive() {
-              [ -n "''${NIRI_SOCKET:-}" ] && [ -S "$NIRI_SOCKET" ]
-            }
+      # Liveness is tied to this compositor instance. NIRI_SOCKET carries the
+      # niri PID, whereas WAYLAND_DISPLAY is reused verbatim by the next
+      # session, so a stale wrapper would otherwise mistake a fresh socket for
+      # its own and keep a dead session's bar alive.
+      niri_alive() {
+        [ -n "''${NIRI_SOCKET:-}" ] && [ -S "$NIRI_SOCKET" ]
+      }
 
-            # Linger is on and KillUserProcesses is off, so a previous session's
-            # wrapper can still be shutting down. Wait briefly for it to release
-            # rather than declining and leaving the session with no bar.
-            exec 9>"$XDG_RUNTIME_DIR/ashell-session.lock"
-            flock -w 10 9 || exit 0
+      # Linger is on and KillUserProcesses is off, so a previous session's
+      # wrapper can still be shutting down. Wait briefly for it to release
+      # rather than declining and leaving the session with no bar.
+      exec 9>"$XDG_RUNTIME_DIR/ashell-session.lock"
+      flock -w 10 9 || exit 0
 
-      ${lib.optionalString (!isNinja) ''
-        # Keep the bar off the discrete GPU. ashell draws through iced/wgpu,
-        # whose Vulkan and EGL backends enumerate every adapter at startup and
-        # then hold /dev/nvidia0, /dev/nvidiactl, /dev/nvidia-modeset and the
-        # dGPU render node open for the life of the process. That single
-        # reference pinned the card out of runtime D3 for the whole session:
-        # runtime_suspended_time stayed at 0 while it burned ~12.5W idling in P8,
-        # over half the machine's draw. Hiding the NVIDIA drivers from this
-        # process is enough; the bar has no use for discrete graphics. Scoped to
-        # hybrid hosts - windy is the NVIDIA one; ninja is Intel Arc only.
-        export VK_LOADER_DRIVERS_DISABLE="nvidia_icd.json"
-        export __EGL_VENDOR_LIBRARY_FILENAMES="/run/opengl-driver/share/glvnd/egl_vendor.d/50_mesa.json"
-        export __GLX_VENDOR_LIBRARY_NAME="mesa"
-      ''}
-            # awww-daemon is a Wayland client, so it dies with the compositor and has
-            # to be started per session, then re-sent the wallpaper.
-            start_wallpaper() {
-              if ! awww query >/dev/null 2>&1; then
-                awww-daemon &
-                for _ in $(seq 1 50); do
-                  awww query >/dev/null 2>&1 && break
-                  sleep 0.1
-                done
-              fi
-              set-wallpaper restore || true
-            }
+      # awww-daemon is a Wayland client, so it dies with the compositor and has
+      # to be started per session, then re-sent the wallpaper.
+      start_wallpaper() {
+        if ! awww query >/dev/null 2>&1; then
+          awww-daemon &
+          for _ in $(seq 1 50); do
+            awww query >/dev/null 2>&1 && break
+            sleep 0.1
+          done
+        fi
+        set-wallpaper restore || true
+      }
 
-            start_wallpaper
+      start_wallpaper
 
-            # Supervise ashell so a crash does not leave the session without a bar.
-            # A dead compositor means the session ended, so stop rather than respawn;
-            # repeated instant failures give up instead of spinning.
-            fails=0
-            while niri_alive; do
-              started=$SECONDS
-              ashell || true
-              niri_alive || break
-              if [ $((SECONDS - started)) -ge 30 ]; then
-                fails=0
-              else
-                fails=$((fails + 1))
-              fi
-              if [ "$fails" -ge 5 ]; then
-                notify-send -u critical "ashell" "Crashed 5 times, giving up" || true
-                exit 1
-              fi
-              sleep 2
-              start_wallpaper
-            done
+      # Supervise ashell so a crash does not leave the session without a bar.
+      # A dead compositor means the session ended, so stop rather than respawn;
+      # repeated instant failures give up instead of spinning.
+      fails=0
+      while niri_alive; do
+        started=$SECONDS
+        ashell || true
+        niri_alive || break
+        if [ $((SECONDS - started)) -ge 30 ]; then
+          fails=0
+        else
+          fails=$((fails + 1))
+        fi
+        if [ "$fails" -ge 5 ]; then
+          notify-send -u critical "ashell" "Crashed 5 times, giving up" || true
+          exit 1
+        fi
+        sleep 2
+        start_wallpaper
+      done
     '';
   };
 in {
@@ -468,7 +448,7 @@ in {
   };
 
   # Shell-specific wiring. home/niri.nix keeps only what is shell-agnostic, so
-  # ninja and windy can run different shells off the same compositor config.
+  # the shell can change without touching the compositor config.
   programs.niri.settings = {
     # Starts awww, seeds the config, then supervises ashell for the session.
     spawn-at-startup = [

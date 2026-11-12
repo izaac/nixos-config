@@ -7,7 +7,7 @@ Read [AGENTS.md](AGENTS.md) for Monko identity, Caveman protocol, and agent boun
 ## Project Context
 
 - [Project Overview](README.md)
-- [Hardware: ninja](docs/hardware.md) | [Hardware: windy](docs/windy.md)
+- [Hardware: ninja](docs/hardware.md)
 - [Local Workflows & Commands](docs/just-commands.md)
 
 ## Gemini-Specific Rules

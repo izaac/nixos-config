@@ -17,7 +17,6 @@
           format = "on [$hostname]($style) ";
           style = "bold dimmed white";
           aliases = {
-            "windy" = "󰌢 windy";
             "ninja" = "󰟀 ninja";
           };
         };

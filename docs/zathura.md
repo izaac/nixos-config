@@ -1,6 +1,6 @@
 # Zathura PDF Viewer
 
-> **Hosts**: Linux (`ninja`, `windy`) **Defined in**: [`home/zathura.nix`](../home/zathura.nix),
+> **Host**: Linux (`ninja`) **Defined in**: [`home/zathura.nix`](../home/zathura.nix),
 > `programs.zathura`
 
 [Zathura](https://pwmt.org/projects/zathura/) is the minimal, keyboard-driven document viewer on

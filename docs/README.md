@@ -4,10 +4,8 @@
 
 - [Adding a New Host](adding-a-host.md)
 - [Hardware Configuration (ninja)](hardware.md)
-- [Host Notes (windy)](windy.md)
 - [Hardware Configuration (plex)](plex.md)
 - [Host Configuration (Mac)](mac.md)
-- [NVIDIA Driver Updates](nvidia-driver-updates.md)
 - [nixpkgs-unstable Usage Reference](nixpkgs-unstable.md)
 - [Security & Hardening](security.md)
 - [Secret Management](secrets.md)
@@ -19,11 +17,11 @@
 The system uses modular host role profiles (`modules/profiles/`):
 
 - **Workstation** (`modules/profiles/workstation.nix`): Full desktop stack, dev tooling, audio,
-  gaming, and sops secrets (`ninja`, `windy`).
+  gaming, and sops secrets (`ninja`).
 - **Server** (`modules/profiles/server.nix`): Minimal headless server footprint, tailscale subnet
   router, no GUI packages (`plex`).
 - **Laptop** (`modules/profiles/laptop.nix`): Shared power management, TLP, thermald, battery
-  thresholds, and backlight controls (`windy`).
+  thresholds, and backlight controls (no host currently uses it).
 
 Adding a new host requires only a `hosts/<name>/` directory with a `system.nix` file. See
 [Adding a New Host](adding-a-host.md) for the full guide.

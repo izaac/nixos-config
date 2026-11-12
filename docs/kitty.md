@@ -1,6 +1,6 @@
 # Kitty Terminal
 
-> **Hosts**: all (`ninja`, `windy` on Linux and `Mac` on Apple Silicon laptop) **Defined in**:
+> **Hosts**: all (`ninja` on Linux and `Mac` on Apple Silicon laptop) **Defined in**:
 >
 > - Linux: [`home/kitty.nix`](../home/kitty.nix), `programs.kitty`, themed by Stylix
 > - Mac: [`home/darwin/kitty.nix`](../home/darwin/kitty.nix), raw `kitty.conf`, **no Stylix**
@@ -97,7 +97,7 @@ The PageUp/PageDown tab binds are kept for an external keyboard, but the day-to-
 
 ## How to apply
 
-### Linux (`ninja` / `windy`)
+### Linux (`ninja`)
 
 ```bash
 just build      # nh os switch .

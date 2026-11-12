@@ -24,8 +24,8 @@ overrides every other style preference.
 
 ## Project Links
 
-- [Overview](README.md) | [ninja](docs/hardware.md) | [windy](docs/windy.md) |
-  [Commands](docs/just-commands.md) | [CLI Tools](docs/cli-tools.md)
+- [Overview](README.md) | [ninja](docs/hardware.md) | [Commands](docs/just-commands.md) |
+  [CLI Tools](docs/cli-tools.md)
 
 ## Agent Boundaries
 

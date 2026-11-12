@@ -1,7 +1,7 @@
 # mpv Media Player
 
-> **Hosts**: Linux (`ninja`, `windy`) **Defined in**: [`home/mpv.nix`](../home/mpv.nix),
-> `programs.mpv` **Imported in**: [`home/desktop.nix`](../home/desktop.nix)
+> **Host**: Linux (`ninja`) **Defined in**: [`home/mpv.nix`](../home/mpv.nix), `programs.mpv`
+> **Imported in**: [`home/desktop.nix`](../home/desktop.nix)
 
 [mpv](https://mpv.io/) is the primary media player across all Linux desktop environments. It is
 managed declaratively via Home Manager, complete with GPU acceleration, custom scripts for UI/MPRIS,

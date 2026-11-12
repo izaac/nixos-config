@@ -21,11 +21,11 @@ persists to disk. It only lives in `/run/secrets/` (tmpfs) at runtime.
         ┌───────────────────────────────────────────────────────────┐
         │   secrets/common.yaml                                     │
         │   - sshHost, geminiProject, cloudCodeProject              │
-        │   - encrypted to: user_{ninja,mac,windy}, host_{ninja,windy}│
+        │   - encrypted to: user_{ninja,mac}, host_{ninja}          │
         └───────────────────────────────────────────────────────────┘
         ┌───────────────────────────────────────────────────────────┐
         │   secrets/ninja.yaml   (per-host slot, create on demand)  │
-        │   secrets/windy.yaml   (per-host slot, create on demand)  │
+        │   secrets/plex.yaml    (per-host slot, create on demand)  │
         └───────────────────────────────────────────────────────────┘
 
                     Decryption requires a PRIVATE key matching
@@ -59,9 +59,7 @@ persists to disk. It only lives in `/run/secrets/` (tmpfs) at runtime.
 | ------------- | ---------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------- |
 | `&user_ninja` | Age key derived from ninja user SSH key              | `~/.config/sops/age/keys.txt`                              | Editing secrets from ninja             |
 | `&user_mac`   | Age key derived from Mac user SSH key                | `~/.config/sops/age/keys.txt` (Linux path) + macOS symlink | Editing secrets from Mac               |
-| `&user_windy` | Age key derived from windy user SSH key              | `~/.config/sops/age/keys.txt`                              | Editing secrets from windy             |
 | `&host_ninja` | Age key derived from ninja `/etc/ssh/ssh_host_*` key | ninja host                                                 | Boot-time decryption via `sshKeyPaths` |
-| `&host_windy` | Age key derived from windy `/etc/ssh/ssh_host_*` key | windy host                                                 | Boot-time decryption via `sshKeyPaths` |
 
 **Property to preserve:** every secrets file MUST list at least one editor recipient (e.g.
 `*user_mac`) so a human can always rekey. Without that you'd need a host to be online to recover,
@@ -76,7 +74,6 @@ which defeats the point.
 | `.sops.yaml`            | Master config: recipient aliases + `path_regex` → recipient rules |
 | `secrets/common.yaml`   | Shared secrets, readable by every host                            |
 | `secrets/ninja.yaml`    | (Optional) ninja-only secrets, create when needed                 |
-| `secrets/windy.yaml`    | (Optional) windy-only secrets, create when needed                 |
 | `modules/core/sops.nix` | sops-nix integration; declares which secrets to expose at runtime |
 
 The encrypted files commit as gibberish; only the YAML structure leaks. The cleartext only ever
@@ -255,12 +252,12 @@ sops -d secrets/common.yaml | head -3
 details). Host-specific data goes in `secrets/<host>.yaml` so that compromising one host doesn't
 expose another host's secrets.
 
-The `.sops.yaml` rules are **pre-wired** for `secrets/ninja.yaml` and `secrets/windy.yaml`. You
-don't need to edit `.sops.yaml` to start using them. Just `sops secrets/ninja.yaml` and the matching
-rule picks up automatically.
+The `.sops.yaml` rules are **pre-wired** for `secrets/ninja.yaml` and `secrets/plex.yaml`. You don't
+need to edit `.sops.yaml` to start using them. Just `sops secrets/ninja.yaml` and the matching rule
+picks up automatically.
 
-Today both per-host rules list the same recipients (ninja + windy share a host SSH key). When windy
-gets its own host key, split `&host_shared` into `&host_ninja` and `&host_windy` and narrow the
+Today both per-host rules list the same recipients (ninja and plex share the ninja host key). When
+plex gets its own host key, split the rule into `&host_ninja` and `&host_plex` and narrow the
 per-host rules accordingly.
 
 ---
@@ -330,7 +327,6 @@ Run from a machine that **currently decrypts** (has old key):
 ```bash
 sops updatekeys secrets/common.yaml
 sops updatekeys secrets/ninja.yaml   # if exists
-sops updatekeys secrets/windy.yaml   # if exists
 ```
 
 Commit and push. Verify both old and new keys can decrypt:
@@ -347,7 +343,7 @@ Rebuild each host so the new `/etc/ssh/ssh_host_ed25519_key` is in place:
 # On ninja:
 just build
 
-# On windy:
+# On plex:
 just build
 
 # On Mac:
@@ -377,7 +373,6 @@ creation_rules:
 ```bash
 sops updatekeys secrets/common.yaml
 sops updatekeys secrets/ninja.yaml
-sops updatekeys secrets/windy.yaml
 ```
 
 Commit. The old private keys can now be revoked/destroyed.

@@ -1,4 +1,4 @@
-# Shared baseline for laptop hosts (e.g. windy).
+# Shared baseline for laptop hosts.
 # Sets battery, thermal, and power-saving defaults using lib.mkDefault.
 {
   pkgs,

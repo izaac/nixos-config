@@ -110,7 +110,7 @@
     # Local Linux build VM (via Apple Virtualization). Lets this arm64 Mac
     # build Linux closures without a remote builder; it registers itself in
     # nix.buildMachines automatically. binfmt adds QEMU user-mode emulation so
-    # it can also build x86_64-linux (for ninja / windy) — correct but slow,
+    # it can also build x86_64-linux (for ninja / plex) — correct but slow,
     # and the VM disk grows with x86_64 store paths as they are built.
     linux-builder = {
       enable = true;

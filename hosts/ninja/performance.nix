@@ -48,7 +48,7 @@
 
     # Disable USB autosuspend to eliminate tiny wake-up delays for mice and
     # keyboards. Desktop-only: it holds every USB device at full power, so
-    # windy leaves the kernel default in place.
+    # laptops leave the kernel default in place.
     kernelParams = ["usbcore.autosuspend=-1"];
 
     kernel.sysctl = {

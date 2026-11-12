@@ -1,8 +1,8 @@
 Use a 1% brightness step instead of 5%.
 
 ashell hardcodes the step at 5% of max with no configuration knob; upstream has
-no `brightness_step` setting. On windy's panel max is 528, so a 5% step is 26
-raw units and the usable low end is a single press wide: sitting at 26, one
+no `brightness_step` setting. On a laptop panel whose max is 528, a 5% step is
+26 raw units and the usable low end is a single press wide: sitting at 26, one
 press down lands on zero. 1% gives 100 steps across the range and enough
 resolution to actually settle on a comfortable level at night.
 

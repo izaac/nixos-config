@@ -1,10 +1,10 @@
 # Niri Compositor
 
-> **Hosts**: Linux (`ninja`, `windy`) **Defined in**: [`home/niri.nix`](../home/niri.nix),
+> **Host**: Linux (`ninja`) **Defined in**: [`home/niri.nix`](../home/niri.nix),
 > `programs.niri.settings`
 
-[Niri](https://github.com/YaLTeR/niri) is the scrollable-tiling Wayland compositor on both Linux
-hosts, wired in through [niri-flake](https://github.com/sodiboo/niri-flake). It owns the outermost
+[Niri](https://github.com/YaLTeR/niri) is the scrollable-tiling Wayland compositor on the Linux
+host, wired in through [niri-flake](https://github.com/sodiboo/niri-flake). It owns the outermost
 layer of the desktop: monitors, workspaces, windows and global hotkeys. The terminal stack
 ([Kitty](kitty.md) with [tmux](tmux.md) inside it) lives one level down, launched by niri and never
 competing for the same keys. See
@@ -19,12 +19,11 @@ the terminal layers below, which lead with `Ctrl+Shift` or the `Ctrl+a` tmux pre
 that talks to the shell (launcher, lock, session menu, clipboard, media and brightness keys) is
 defined by the shell module itself:
 
-| Host              | Shell module                                                                  | Shell                                          |
-| ----------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
-| `ninja` / `windy` | [`home/ashell.nix`](../home/ashell.nix) + [`home/lock.nix`](../home/lock.nix) | [ashell](https://github.com/MalpenZibo/ashell) |
+| Host    | Shell module                                                                  | Shell                                          |
+| ------- | ----------------------------------------------------------------------------- | ---------------------------------------------- |
+| `ninja` | [`home/ashell.nix`](../home/ashell.nix) + [`home/lock.nix`](../home/lock.nix) | [ashell](https://github.com/MalpenZibo/ashell) |
 
-Both hosts run the same bindings; the tables below document them. `windy` adds the battery and
-brightness indicators, which `ninja` has no hardware for.
+The tables below document the bindings on that host.
 
 ---
 
@@ -152,8 +151,7 @@ stay on the static Catppuccin Mocha palette.
 ### Network indicators
 
 ashell's network and VPN support talks only to NetworkManager. `ninja` runs systemd-networkd with
-`networking.networkmanager.enable` forced off, so those indicators are omitted there; `windy` runs
-NetworkManager and keeps the full network and VPN panels.
+`networking.networkmanager.enable` forced off, so those indicators are omitted there.
 
 The service behind them cannot be disabled from the config, and upstream retries a failed backend
 connection every five seconds for the whole session with no backoff and no give-up. On a host with

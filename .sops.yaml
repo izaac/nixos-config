@@ -3,11 +3,9 @@ keys:
   # machine's user SSH key via `ssh-to-age < ~/.ssh/id_ed25519.pub`.
   - &user_ninja age16ac3y79srzrcjapnqr08ddfqtjxuncz94qs3k7j62r8lyfr88yzsl2u6el
   - &user_mac age1c2tvqnc3gu3vhgvyfa8yqhl5jts2mpmzf442cqmpqesacdpr69sq9dzdqd
-  - &user_windy age1k5dhzrdxgnys43szerh9mhylhugfyca97p2edwc9w6mah077yd6qxmtkp3
   # Host keys — for boot-time decryption via sops-nix `sshKeyPaths`. Derived
   # from /etc/ssh/ssh_host_ed25519_key.pub.
   - &host_ninja age1cjc00x0g5mhejndsh3ljz09ukkl38kutd692aatd3qw0jrmxx3sq4tk5av
-  - &host_windy age14j9qj86wahqesn6pv0nxl5wxkkcxxaz53w3h5qstu8rxqe5swu9q748avw
 creation_rules:
   # Common secrets — readable by every host and every editor.
   - path_regex: secrets/common\.yaml$
@@ -15,29 +13,19 @@ creation_rules:
       - age:
           - *user_ninja
           - *user_mac
-          - *user_windy
           - *host_ninja
-          - *host_windy
   # Per-host slots — pre-wired so adding host-specific secrets is a one-step
-  # `sops secrets/<host>.yaml` away. Same recipients today; tighten when
-  # windy gets its own host key.
+  # `sops secrets/<host>.yaml` away. Same recipients today; tighten when each
+  # host gets its own host key.
   - path_regex: secrets/ninja\.yaml$
     key_groups:
       - age:
           - *user_ninja
           - *user_mac
           - *host_ninja
-  - path_regex: secrets/windy\.yaml$
-    key_groups:
-      - age:
-          - *user_ninja
-          - *user_mac
-          - *user_windy
-          - *host_windy
   - path_regex: secrets/plex\.yaml$
     key_groups:
       - age:
           - *user_ninja
           - *user_mac
           - *host_ninja
-          - *host_windy

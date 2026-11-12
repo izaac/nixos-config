@@ -5,9 +5,6 @@
   osConfig ? {},
   ...
 }: let
-  # ninja-only pieces (49" monitor layout, render device) are gated on
-  # the hostname so the laptop does not inherit them.
-  isNinja = (osConfig.networking.hostName or "") == "ninja";
   # Upstream 0.8.3 from nixpkgs. The local popup-focus patch is gone; see
   # docs/niri.md for what that costs.
   xwaylandSatellite = pkgs.xwayland-satellite;
@@ -53,25 +50,13 @@
     name = "power-menu";
     runtimeInputs = with pkgs; [fuzzel coreutils systemd niri];
     text = ''
-      entries="Lock\nLogout${
-        if !isNinja
-        then "\\nSuspend"
-        else ""
-      }\nReboot\nShutdown"
+      entries="Lock\nLogout\nReboot\nShutdown"
 
-      selected=$(printf '%b\n' "$entries" | fuzzel --dmenu --prompt "Power: " --lines ${
-        if isNinja
-        then "4"
-        else "5"
-      } --width 18)
+      selected=$(printf '%b\n' "$entries" | fuzzel --dmenu --prompt "Power: " --lines 4 \
+        --width 18)
       case "$selected" in
         Lock) lock-now ;;
         Logout) niri msg action quit --skip-confirmation ;;
-        ${
-        if !isNinja
-        then "Suspend) systemctl suspend ;;"
-        else ""
-      }
         Reboot) systemctl reboot ;;
         Shutdown) systemctl poweroff ;;
       esac
@@ -106,24 +91,11 @@ in {
       inherit (config.home.sessionVariables) BROWSER TERMINAL;
     };
 
-    # On windy (Intel iGPU + NVIDIA dGPU hybrid) force niri to composite on the
-    # Intel iGPU, which already drives the internal panel (card1/renderD128).
-    # Without this niri picks the NVIDIA dGPU and keeps the RTX 3080 powered on
-    # around the clock, which runs hot and spins the fans up constantly.
-    # Compositing on Intel lets the dGPU runtime-suspend (PRIME offload still
-    # routes games to it on demand). ninja is a single-GPU Intel Arc B580 host,
-    # so it keeps niri's default device selection.
-    debug = lib.mkIf (!isNinja) {
-      render-drm-device = "/dev/dri/by-path/pci-0000:00:02.0-render";
-    };
-
     # Screenshots land in a single dated folder instead of niri's default
     # scatter pattern. Path is expanded by niri itself; ~ → $HOME.
     screenshot-path = "~/Pictures/Screenshots/Screenshot %Y-%m-%d %H-%M-%S.png";
 
-    # ninja's monitor layout only — windy keeps niri's automatic output
-    # handling for whatever is plugged into its ports.
-    outputs = lib.optionalAttrs isNinja {
+    outputs = {
       # LG UltraGear 49" — pin to native 144Hz mode at origin.
       "DP-1" = {
         mode = {

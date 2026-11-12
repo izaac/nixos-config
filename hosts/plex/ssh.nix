@@ -1,5 +1,5 @@
 {userConfig, ...}: {
-  # Key-only sshd, matching windy. core/system.nix defaults openssh off
+  # Key-only sshd, matching ninja. core/system.nix defaults openssh off
   # (mkDefault), so a plain enable here wins without mkForce.
   services.openssh = {
     enable = true;

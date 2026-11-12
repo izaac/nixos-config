@@ -23,7 +23,7 @@ in {
       age.keyFile = "${home}/.config/sops/age/keys.txt";
       # Host SSH key — sops-nix derives the matching age private key at boot,
       # so decryption no longer depends on the user age file existing.
-      # Matches the &host_shared recipient in .sops.yaml.
+      # Matches the host recipients in .sops.yaml (&host_ninja).
       age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
 
       secrets = {

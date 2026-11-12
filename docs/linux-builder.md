@@ -26,7 +26,7 @@ Nix closures** without a remote build server. Nix automatically offloads any Lin
 **Use it for building/testing Linux Nix packages from the Mac:**
 
 - Iterating on a NixOS module or a package from the `nix-packages` repo.
-- Building a closure for the Linux hosts (`ninja`, `windy`, both `x86_64-linux`).
+- Building a closure for the Linux hosts (`ninja`, `plex`, both `x86_64-linux`).
 - Cross-checking that a change evaluates and builds on Linux before pushing.
 
 **Do NOT use it for:**

@@ -1,6 +1,6 @@
 # LazyVim (Neovim)
 
-> **Hosts**: all (`ninja`, `windy` on Linux, `Mac` on Apple Silicon) **Defined in**:
+> **Hosts**: all (`ninja` on Linux, `Mac` on Apple Silicon) **Defined in**:
 > [`home/lazyvim.nix`](../home/lazyvim.nix), `programs.neovim`
 
 [LazyVim](https://www.lazyvim.org/) is the Neovim setup on every host. It runs inside
@@ -55,14 +55,14 @@ Language support is declared in `home/lazyvim.nix` as LazyVim
 plugins and LSP wiring, and the matching server has to be on `$PATH` (see
 [Adding a language](#adding-a-language)).
 
-| Extra             | Language | Server     | Provided by                                   |
-| ----------------- | -------- | ---------- | --------------------------------------------- |
-| `lang.nix`        | Nix      | `nixd`     | [`home/dev.nix`](../home/dev.nix)             |
-| `lang.go`         | Go       | `gopls`    | [`home/dev.nix`](../home/dev.nix)             |
-| `lang.typescript` | JS / TS  | `vtsls`    | wrapper `extraPackages` in `home/lazyvim.nix` |
-| `lang.python`     | Python   | `pyright`  | wrapper `extraPackages` in `home/lazyvim.nix` |
-| `lang.toml`       | TOML     | `taplo`    | [`home/dev.nix`](../home/dev.nix)             |
-| `lang.markdown`   | Markdown | `marksman` | Homebrew, on `$PATH` (`brew install marksman`)  |
+| Extra             | Language | Server     | Provided by                                    |
+| ----------------- | -------- | ---------- | ---------------------------------------------- |
+| `lang.nix`        | Nix      | `nixd`     | [`home/dev.nix`](../home/dev.nix)              |
+| `lang.go`         | Go       | `gopls`    | [`home/dev.nix`](../home/dev.nix)              |
+| `lang.typescript` | JS / TS  | `vtsls`    | wrapper `extraPackages` in `home/lazyvim.nix`  |
+| `lang.python`     | Python   | `pyright`  | wrapper `extraPackages` in `home/lazyvim.nix`  |
+| `lang.toml`       | TOML     | `taplo`    | [`home/dev.nix`](../home/dev.nix)              |
+| `lang.markdown`   | Markdown | `marksman` | Homebrew, on `$PATH` (`brew install marksman`) |
 
 Because Mason is off, every linter and formatter an extra spawns also has to be present, not just
 the LSP. The extras pull in more than the language server, so the wrapper bundles the rest through
@@ -215,7 +215,7 @@ installed but the LSP silent, and Mason will not fill the gap.
 
 ## How to apply
 
-### Linux (`ninja` / `windy`)
+### Linux (`ninja`)
 
 ```bash
 just build      # nh os switch .

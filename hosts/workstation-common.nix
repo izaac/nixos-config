@@ -1,4 +1,5 @@
-# Shared host config for ninja/ and windy. Import in each host's configuration.nix.
+# Shared host config for the ninja workstation. Import in the host's
+# configuration.nix.
 {lib, ...}: {
   imports = [
     ../modules/core

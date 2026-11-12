@@ -120,14 +120,14 @@ unstable comes up with `/run/podman/podman.sock` present.
 
 ## Overlay Application
 
-| Overlay                | Applied In                  | Hosts             | Source                                       |
-| ---------------------- | --------------------------- | ----------------- | -------------------------------------------- |
-| ashell-unstable.nix    | modules/desktop/default.nix | ninja, windy      | `nixpkgs-ashell` (pinned rev)                |
-| krunkit-unstable.nix   | lib/mkDarwin.nix            | Mac               | `nixpkgs-unstable` (floating)                |
-| opencode.nix           | lib/common-nixpkgs.nix      | ninja, windy, Mac | `nix-packages` (fallback `nixpkgs-unstable`) |
-| smug-unstable.nix      | lib/common-nixpkgs.nix      | all hosts         | `nixpkgs-unstable` (floating)                |
-| stash-unstable.nix     | modules/desktop/default.nix | ninja, windy      | `nixpkgs-unstable` (floating)                |
-| tailscale-unstable.nix | lib/common-nixpkgs.nix      | all hosts         | `nixpkgs-unstable` (floating)                |
+| Overlay                | Applied In                  | Hosts      | Source                                       |
+| ---------------------- | --------------------------- | ---------- | -------------------------------------------- |
+| ashell-unstable.nix    | modules/desktop/default.nix | ninja      | `nixpkgs-ashell` (pinned rev)                |
+| krunkit-unstable.nix   | lib/mkDarwin.nix            | Mac        | `nixpkgs-unstable` (floating)                |
+| opencode.nix           | lib/common-nixpkgs.nix      | ninja, Mac | `nix-packages` (fallback `nixpkgs-unstable`) |
+| smug-unstable.nix      | lib/common-nixpkgs.nix      | all hosts  | `nixpkgs-unstable` (floating)                |
+| stash-unstable.nix     | modules/desktop/default.nix | ninja      | `nixpkgs-unstable` (floating)                |
+| tailscale-unstable.nix | lib/common-nixpkgs.nix      | all hosts  | `nixpkgs-unstable` (floating)                |
 
 ---
 

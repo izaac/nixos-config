@@ -2,20 +2,12 @@
   config,
   pkgs,
   lib,
-  osConfig ? {},
   ...
 }: let
-  isNinja = (osConfig.networking.hostName or "") == "ninja";
-
-  # Lock at 6 minutes. Screen power-off (screenOffTimeout) is disabled on ninja
-  # because DPMS power-off cycles the DisplayPort connector on NVIDIA, which
-  # triggers a known niri and vblank deadlock upon display wake.
+  # Lock at 6 minutes. No screen power-off: DPMS power-off cycles the
+  # DisplayPort connector, which triggers a known niri and vblank deadlock upon
+  # display wake.
   lockTimeout = 360;
-  screenOffTimeout = 660;
-
-  # The system runs niri-unstable; pkgs.niri is stable and would risk an IPC
-  # mismatch against the live compositor.
-  niri = osConfig.programs.niri.package or pkgs.niri;
 
   # Written by set-wallpaper in home/ashell.nix. Read at runtime rather than
   # baked in, so the lock screen tracks whatever wallpaper is current.
@@ -88,19 +80,11 @@ in {
       before-sleep = lib.getExe lockNow;
       lock = lib.getExe lockNow;
     };
-    timeouts =
-      [
-        {
-          timeout = lockTimeout;
-          command = lib.getExe lockNow;
-        }
-      ]
-      ++ lib.optionals (!isNinja) [
-        {
-          timeout = screenOffTimeout;
-          command = "${lib.getExe niri} msg action power-off-monitors";
-          resumeCommand = "${lib.getExe niri} msg action power-on-monitors";
-        }
-      ];
+    timeouts = [
+      {
+        timeout = lockTimeout;
+        command = lib.getExe lockNow;
+      }
+    ];
   };
 }

@@ -7,9 +7,8 @@ NixOS configuration.
 
 Workstation hosts use encrypted root volumes for data-at-rest protection:
 
-- **Linux Workstations** (`ninja`, `windy`): initrd-unlocked LUKS devices
+- **Linux Workstation** (`ninja`): initrd-unlocked LUKS device
   - `hosts/ninja/hardware.nix`: `boot.initrd.luks.devices."luks-782b8c84-..."`
-  - `hosts/windy/hardware.nix`: `boot.initrd.luks.devices."luks-16413ece-..."`
 - **Mac**: macOS FileVault whole-disk encryption.
 - **plex**: Unencrypted ext4 root via disko (headless server; media payload protected client-side
   via encrypted rclone remote `ul-crypt`).
@@ -33,7 +32,7 @@ Secrets are encrypted in-repo (`secrets/common.yaml`) and decrypted at activatio
 (`services.openssh.enable = lib.mkDefault false`); each host opts in and hardens it in its own
 `ssh.nix`:
 
-- `hosts/ninja/ssh.nix` / `hosts/windy/ssh.nix` / `hosts/plex/ssh.nix`:
+- `hosts/ninja/ssh.nix` / `hosts/plex/ssh.nix`:
   - `services.openssh.enable = true`
   - `PasswordAuthentication = false`
   - `KbdInteractiveAuthentication = false`
@@ -60,8 +59,7 @@ only block unattended jobs without adding a barrier.
 
 ## Firewall and Network Exposure
 
-Host firewall policy on ninja is enabled in `hosts/ninja/network.nix` (windy enables
-`networking.firewall.enable = true` in its own `network.nix`):
+Host firewall policy on ninja is enabled in `hosts/ninja/network.nix`:
 
 - `networking.firewall.enable = true`
 - Explicit TCP port `22` (SSH)

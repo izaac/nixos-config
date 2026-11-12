@@ -1,6 +1,6 @@
 # tmux
 
-> **Hosts**: all (`ninja`, `windy` on Linux, `Mac` on Apple Silicon) **Defined in**:
+> **Hosts**: all (`ninja` on Linux, `Mac` on Apple Silicon) **Defined in**:
 > [`home/tmux.nix`](../home/tmux.nix), `programs.tmux`, themed by Stylix
 
 [tmux](https://github.com/tmux/tmux) is the terminal multiplexer on every host. It runs inside
@@ -229,7 +229,7 @@ your work running and the next login picks it back up.
 
 ## How to apply
 
-### Linux (`ninja` / `windy`)
+### Linux (`ninja`)
 
 ```bash
 just build      # nh os switch .

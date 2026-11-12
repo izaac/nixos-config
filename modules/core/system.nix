@@ -73,7 +73,7 @@ in {
       openssh.enable = lib.mkDefault false;
 
       fstrim.enable = true;
-      # Power management is handled by TLP (windy) or scx_lavd (ninja);
+      # Power management is handled by TLP (laptop profile) or scx_lavd (ninja);
       # mkForce off because some desktop modules pull in this daemon by default.
       power-profiles-daemon.enable = lib.mkForce false;
 

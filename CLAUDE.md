@@ -21,6 +21,5 @@ See @AGENTS.md for Monko identity, Caveman protocol, and agent boundaries.
 ## Deep Docs (load only when needed)
 
 - @docs/hardware.md
-- @docs/windy.md
 - @docs/agent-token-shield.md
 - @docs/agent-troubleshooting.md

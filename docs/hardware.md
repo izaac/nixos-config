@@ -7,7 +7,6 @@
 ## Documentation Links
 
 - [Security & Hardening](security.md)
-- [NVIDIA Driver Updates (windy)](nvidia-driver-updates.md)
 - [Software Overview](../README.md)
 
 ---
@@ -540,17 +539,6 @@ Located in `hosts/ninja/configuration.nix`:
 | `common-cpu-amd-pstate` | AMD P-State driver configuration | Enables `amd_pstate=active` for modern AMD CPUs (Zen 2+). Provides better performance/power than acpi-cpufreq. Required for 9950X3D.                                    |
 | `common-gpu-intel`      | Intel GPU (Arc discrete) config  | Declares `hardware.intelgpu`: in-tree `xe` driver loaded in the initrd, `intel-media-driver` (iHD) VA-API, `intel-compute-runtime` + `vpl-gpu-rt` acceleration stack.   |
 | `common-pc-ssd`         | SSD/NVMe optimizations           | Enables TRIM via `fstrim.timer`, sets `nvme_core.default_ps_max_latency_us=0` for lowest latency. Benefits both Crucial T705 (PCIe 5.0) and WD Black SN850X (PCIe 4.0). |
-
-### windy (Laptop: Intel i9-11980HK + NVIDIA RTX 3080 Mobile Prime Offload)
-
-Located in `hosts/windy/configuration.nix`:
-
-| Module              | Purpose                              | Why Needed                                                                                                                                |
-| ------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `common-cpu-intel`  | Intel CPU power/performance defaults | Sets `intel_pstate=active`, enables HWP, configures thermald defaults. Required for 11th gen Intel mobile.                                |
-| `common-gpu-nvidia` | NVIDIA Prime offload (laptop) config | Configures Prime render offload: iGPU drives display, dGPU used on-demand via `__NV_PRIME_RENDER_OFFLOAD=1`. Sets `nvidia-drm.modeset=1`. |
-| `common-pc-laptop`  | Laptop-specific power/ACPI defaults  | Enables laptop-mode tools, configures lid switch, battery thresholds, ACPI battery module, fn keys.                                       |
-| `common-pc-ssd`     | SSD/NVMe optimizations               | Same as ninja: TRIM timer, NVMe latency tuning. Benefits laptop NVMe drive.                                                               |
 
 ### plex (Headless Server: Intel N100 Mini PC)
 

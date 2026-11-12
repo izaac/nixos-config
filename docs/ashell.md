@@ -1,12 +1,10 @@
 # ashell Desktop Shell
 
-> **Host**: `ninja` and `windy` **Defined in**: [`home/ashell.nix`](../home/ashell.nix) **Niri
-> integration**: [`home/niri.nix`](../home/niri.nix) (shared binds), ashell.nix (shell-specific
-> binds)
+> **Host**: `ninja` **Defined in**: [`home/ashell.nix`](../home/ashell.nix) **Niri integration**:
+> [`home/niri.nix`](../home/niri.nix) (shared binds), ashell.nix (shell-specific binds)
 
-[ashell](https://github.com/MalpenZibo/ashell) is the status bar and desktop shell on every Linux
-host. `windy` additionally gets the battery and brightness indicators, which `ninja` has no hardware
-for.
+[ashell](https://github.com/MalpenZibo/ashell) is the status bar and desktop shell on the Linux
+host.
 
 ## Bar Layout
 

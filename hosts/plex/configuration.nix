@@ -160,7 +160,7 @@ in {
     '';
   };
 
-  # Passwordless sudo matching ninja and windy
+  # Passwordless sudo matching ninja
   security.sudo-rs.wheelNeedsPassword = false;
 
   # Lock the local password. Access is ssh key only and sudo is passwordless,
@@ -263,7 +263,7 @@ in {
     advertiseExitNode = true;
     routingInterface = "enp1s0";
     # Local LAN Pi-hole (192.168.0.96) handles DNS via DHCP, so keep
-    # MagicDNS off to match the ninja/windy default.
+    # MagicDNS off to match the ninja default.
     acceptDns = false;
   };
 
