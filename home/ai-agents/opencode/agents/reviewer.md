@@ -70,6 +70,75 @@ permissions:
   - action: shell
     resource: 'git check-ignore *'
     effect: allow
+  - action: shell
+    resource: 'git -C * status *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * diff *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * log *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * show *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * blame *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * branch *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * rev-parse *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * describe *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * ls-files *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * merge-base *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * cat-file *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * shortlog *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * tag *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * grep *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * rev-list *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * check-ignore *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * diff-tree *'
+    effect: allow
+  - action: shell
+    resource: 'git -C * ls-tree *'
+    effect: allow
+  - action: shell
+    resource: 'git diff-tree *'
+    effect: allow
+  - action: shell
+    resource: 'git ls-tree *'
+    effect: allow
+  - action: shell
+    resource: 'head *'
+    effect: allow
+  - action: shell
+    resource: 'tail *'
+    effect: allow
+  - action: shell
+    resource: 'wc *'
+    effect: allow
   - action: external_directory
     resource: '**'
     effect: allow
@@ -100,10 +169,14 @@ Output, terse:
 Rules:
 
 - Strictly read-only. Your shell tool is restricted to read-only git inspection (`git status`,
-  `git diff`, `git log`, `git show`, `git blame`, `git branch`, `git rev-parse`, etc.); all other
-  shell commands are denied. Inspect files and diffs directly using read-only git commands, `read`,
-  `glob`, and `grep`.
+  `git diff`, `git log`, `git show`, `git blame`, etc.) and safe filters (`head`, `tail`, `wc`); all
+  other shell commands are denied. Inspect files and diffs directly using read-only git commands,
+  `read`, `glob`, and `grep`.
 - Bounded budget: at most 3 to 5 tool calls total. Spot-check key assertions; do NOT execute deep
   test suites, full rebuilds, or recursive audits.
+- Read-only git execution: Always set the `workdir` tool parameter when inspecting other
+  repositories instead of `cd <dir>` or `git -C <dir>`. Run single commands per tool call; avoid
+  chaining with `&&` or `;` or unpermitted pipes, as compound commands trigger shell permission
+  denials.
 - Say "could not verify" instead of guessing. If it is fine, say so in one line.
 - You are a filter, not the final authority: the parent decides.

@@ -94,9 +94,11 @@
   mismatches, or missed edge cases the fast first-pass reviewer would not catch. Same read-only
   rules: it never edits and never redoes the task. Both reviewer and arbiter can run read-only git
   commands (`git diff`, `git log`, `git status`, `git show`, `git blame`, etc.) alongside
-  `read`/`glob`/`grep`. Foul-check output is lines of
-  `FOUL severity high|medium, file:line, what breaks, smallest fix`, or `CLEAN` plus the riskiest
-  spots checked.
+  `read`/`glob`/`grep`. When executing git inspection, subagents should pass the target repository
+  via the `workdir` shell parameter rather than `cd` or `git -C`, and run single commands per tool
+  call without `&&` chaining or disallowed pipes to avoid permission denials. Foul-check output is
+  lines of `FOUL severity high|medium, file:line, what breaks, smallest fix`, or `CLEAN` plus the
+  riskiest spots checked.
 
 - Watch-each-other pair for evidence review: when judging screenshots or image evidence, run the
   vision seat (`evidence-vision`, google/antigravity) for claim cards, then hand the cards to
