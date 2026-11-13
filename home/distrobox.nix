@@ -70,46 +70,6 @@ in {
     # Declarative Distrobox Configuration
     # Run 'distrobox assemble create --file ~/.config/distrobox/distrobox.ini' to build these.
     "distrobox/distrobox.ini".text = ''
-      [archy]
-      image=archlinux:latest
-      pull=true
-      additional_packages="git vim neovim ripgrep lsd fastfetch wl-clipboard fzf zoxide eza bat fd jq direnv starship btop nss alsa-lib atk cups libdrm libxcomposite libxdamage libxext libxfixes libxkbcommon libxrandr mesa pango cairo gtk3"
-      init=false
-      init_hooks="${initHooks}"
-      shell=/bin/bash
-
-      # === Ubuntu Gaming Container (Steam / Proton sandbox) ===
-      # Mesa + Vulkan come from the host GL stack through distrobox; no
-      # driver-linking hook needed on Intel Arc (in-tree xe driver + iHD).
-      [ubu]
-      image=ubuntu:24.04
-      pull=true
-      additional_packages="neovim git curl wget vim zsh wl-clipboard fzf zoxide eza bat ripgrep fd-find jq direnv btop mesa-utils libvulkan1 libgl1-mesa-dri libglx-mesa0 libegl-mesa0 pulseaudio-utils x11-utils vulkan-tools"
-      init=false
-      init_hooks="${initHooks}"
-      shell=/bin/bash
-
-      [debi]
-      image=debian:latest
-      pull=true
-      additional_packages="git curl wget neovim zsh ripgrep lsd fastfetch wl-clipboard fzf zoxide eza bat fd-find jq direnv starship btop"
-      init=false
-      init_hooks="${initHooks}"
-      shell=/bin/bash
-
-      # === Alpine OpenRC Sandbox ===
-      # For testing OpenRC service management (rc-service, rc-update, openrc-run scripts).
-      # NVIDIA disabled: musl libc binaries don't pair with glibc host driver.
-      # OpenRC won't run as PID 1 in distrobox — start it manually with `openrc default`.
-      [alpy]
-      image=alpine:latest
-      pull=true
-      additional_packages="openrc openrc-init bash shadow util-linux git vim curl wget fastfetch eudev fzf zoxide ripgrep fd bat jq"
-      init=false
-      nvidia=false
-      shell=/bin/bash
-      init_hooks="${initHooks}"
-
       # === openSUSE Leap 16.1 ===
       [suse]
       image=registry.opensuse.org/opensuse/leap:16.1
@@ -173,10 +133,6 @@ in {
   home.shellAliases = {
     db-up = "distrobox assemble create --file ${config.home.homeDirectory}/.config/distrobox/distrobox.ini";
     db-rm = "distrobox assemble rm --file ${config.home.homeDirectory}/.config/distrobox/distrobox.ini";
-    db-arch = "distrobox enter archy -- zsh";
-    db-ubu = "distrobox enter ubu -- zsh";
-    db-debian = "distrobox enter debi -- zsh";
-    db-alpine = "distrobox enter alpy -- sh";
     db-suse = "distrobox enter suse -- zsh";
     db-slack = "distrobox enter slack -- zsh";
   };
