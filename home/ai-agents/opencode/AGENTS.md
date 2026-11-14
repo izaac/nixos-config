@@ -9,9 +9,9 @@
     edits from clear patterns
   - `free-assistant` (beam-free via OpenCode Go, zero cost): quick Q&A, summaries, rewording,
     formatting; stable pin since beam-free replaced the random openrouter/free router for this seat
-  - `evidence-vision` (gemini-3.8-flash-low via google/antigravity, Google AI Pro subscription
-    quota, refill ~weekly): reads images and screenshots; when the Antigravity weekly bucket is
-    drained, the parent respawns this seat on the OpenRouter vision model.
+  - `evidence-vision` (opencode-go/claude-haiku-5-5, 0.10 input, text/image/PDF): reads images and
+    screenshots. Antigravity OAuth is removed; every external seat is now OpenCode Go, local Bedrock
+    agents aside.
   - `reviewer` (kimi-k3.1-pro via OpenCode Go): first-pass check strictly gated on authored
     artifacts (plans, code diffs, fixtures) or disputed claims before parent reviews them.
     Text-only: it cannot see images and its shell access is restricted to read-only git inspection
@@ -22,7 +22,7 @@
     Never give it a skeptical task; it passed a head-to-head on facts but missed a verified
     docs-vs-code contradiction
   - `arbiter` (opencode-go/minimax-m3, MiniMax-M3 via OpenCode Go, independent family beside the
-    DeepSeek workers, GPT reviewer, and gemini primary): the single arbiter seat, two triggers. (a)
+    DeepSeek/Qwen workers and the Kimi reviewer): the single arbiter seat, two triggers. (a)
     Disputed or high-stakes claims: a reviewer verdict is contested, evidence conflicts, or a wrong
     verdict is expensive. (b) Large code change foul-check: one bounded referee pass that runs ONLY
     after the first-pass `reviewer` has reviewed the diff and the principal has formed its own final
@@ -30,7 +30,7 @@
     point, not more effort. Pin form: `"model": "opencode-go/minimax-m3"` as one plain string. Shell
     access is restricted to read-only git inspection (`git status`, `git diff`, `git log`,
     `git show`, `git blame`, etc.) alongside `read`/`glob`/`grep`.
-  - `architect` (claude-sonnet-5-5-high via google/antigravity, fallback to deepseek-v4-pro via
+  - `architect` (opencode-go/gemini-4-argon, fallback to kimi-k3.1-pro then deepseek-v4-pro, all via
     OpenCode Go): principal architect for deep reasoning, root-cause diagnosis, and obscure bug
     hunting. Escalated strictly by the primary agent when workers and primary are stuck. Has full
     permissions to debug freely (shell, webfetch, edit).
@@ -101,8 +101,8 @@
   riskiest spots checked.
 
 - Watch-each-other pair for evidence review: when judging screenshots or image evidence, run the
-  vision seat (`evidence-vision`, google/antigravity) for claim cards, then hand the cards to
-  `reviewer` for source/consistency objections, then send only the contested cards back to
+  vision seat (`evidence-vision`, opencode-go/claude-haiku-5-5) for claim cards, then hand the cards
+  to `reviewer` for source/consistency objections, then send only the contested cards back to
   `evidence-vision` for a rebuttal round. Parent arbitrates and owns the final verdict; human eyes
   stay the tiebreaker for anything still contested.
 - Text-only agents never interpret screenshots directly: they either receive pre-split visual work,
@@ -126,8 +126,8 @@
   1. The parent reviews the STUCK CARD. If the issue is a simple boundary or path error, the parent
      redirects the worker directly without spending frontier tokens.
   2. If the primary's hypothesis also fails, or the root cause is obscure, the primary escalates to
-     the `architect` seat (Claude Sonnet 5.5 on Antigravity, fallback to DeepSeek V4 Pro on OpenCode
-     Go).
+     the `architect` seat (Gemini 4 Argon via OpenCode Go, then Kimi K3.1 Pro, then DeepSeek V4
+     Pro).
 - `architect` produces a dense ARCHITECTURAL SOLUTION CARD (<=25 lines) diagnosing root causes and
   providing concrete actions for the worker to execute.
 - Role clarity:

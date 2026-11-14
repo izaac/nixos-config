@@ -8,26 +8,19 @@
     "./plugin/delegation-protocol",
     // Rejects shell commands that trace while referencing credential paths.
     "./plugin/no-trace-guard",
-    // Google Antigravity OAuth: AI Pro/Ultra subscription quota via Google's
-    // Antigravity platform (successor to the deprecated Gemini CLI OAuth).
-    "opencode-antigravity-auth@2.1.1",
     {
       "package": "./plugin/model-fallback",
       "options": {
         "attemptsBeforeFallback": 3,
         "retryDelayMs": 1000,
         "fallbacks": [
-          // Hop 1: gemini dark -> glm Go seat (Chief: gemini primary, Go seats as fallbacks).
-          { "from": "google/antigravity-gemini-3.8-flash-high", "to": "opencode-go/glm-5.3-flash" },
-          // Hop 2: glm dark -> deepseek Go seat (deepseek is the floor; the visited-skip rule stays armed for future rungs).
-          { "from": "opencode-go/glm-5.3-flash", "to": "opencode-go/deepseek-v4.1-flash" },
-          // Hop 3: deepseek dark -> qwen Go seat.
+          // Primary chain, Go seats only, cheapest first: deepseek -> qwen -> glm -> minimax.
           { "from": "opencode-go/deepseek-v4.1-flash", "to": "opencode-go/qwen3.8-flash" },
-          // Architect fallback: Claude Sonnet 5.5 (Antigravity quota) -> DeepSeek V4 Pro (OpenCode Go seat).
-          {
-            "from": "google/antigravity-claude-sonnet-5-5-high",
-            "to": "opencode-go/deepseek-v4-pro",
-          },
+          { "from": "opencode-go/qwen3.8-flash", "to": "opencode-go/glm-5.3-flash" },
+          { "from": "opencode-go/glm-5.3-flash", "to": "opencode-go/minimax-m3" },
+          // Reviewer and architect last-resort seats.
+          { "from": "opencode-go/kimi-k3.1-pro", "to": "opencode-go/deepseek-v4-pro" },
+          { "from": "opencode-go/gemini-4-argon", "to": "opencode-go/kimi-k3.1-pro" },
         ],
       },
     },
@@ -54,23 +47,20 @@
     },
   ],
 
-  // Default primary model: Antigravity gemini-3.8-flash-high (Google AI Pro subscription quota; Go seats serve as fallbacks)
-  "model": "google/antigravity-gemini-3.8-flash-high",
+  // Default primary model: OpenCode Go DeepSeek V4.1 Flash (cheapest cache reads in the
+  // Go catalog; orchestration lives here, execution is delegated to subagents)
+  "model": "opencode-go/deepseek-v4.1-flash",
 
-  // Provider allow-list: savings-first. Deny everything, then allow the
-  // OpenCode Go subscription seats, the free OpenRouter tier, and Google via
-  // Antigravity OAuth. The last matching statement wins (policies guide,
-  // Order), so deny-all goes first.
+  // Provider allow-list: savings-first. Deny everything, then allow the OpenCode
+  // Go seats and local project/ancestor provider definitions. Antigravity,
+  // OpenRouter, and Copilot are deliberately absent: every external seat is
+  // pinned to OpenCode Go, while the local-bedrock agents stay on local-*.
+  // The last matching statement wins (policies guide, Order), so deny-all goes first.
   "policies": [
     { "action": "provider.use", "resource": "*", "effect": "deny" },
     { "action": "provider.use", "resource": "opencode-go", "effect": "allow" },
-    { "action": "provider.use", "resource": "openrouter", "effect": "allow" },
-    // Google via Antigravity OAuth (subscription quota, not API billing).
-    { "action": "provider.use", "resource": "google", "effect": "allow" },
     // Allow local project/ancestor provider definitions prefixed with local-*
     { "action": "provider.use", "resource": "local-*", "effect": "allow" },
-    // GitHub Copilot OAuth
-    { "action": "provider.use", "resource": "github-copilot", "effect": "allow" },
   ],
 
   "permissions": [
@@ -80,9 +70,9 @@
 
   "agents": {
     // Native V2 replacement for the legacy "small_model": the hidden title
-    // agent generates session names, free-tier OpenRouter is plenty.
+    // agent generates session names, the zero-cost Go seat is plenty.
     "title": {
-      "model": "openrouter/openrouter/free",
+      "model": "opencode-go/beam-free",
     },
 
     // Read-only search: OpenCode Go DeepSeek V4.1 Flash. Cheapest cache
@@ -163,7 +153,7 @@
         { "action": "shell", "resource": "wc *", "effect": "allow" },
         { "action": "external_directory", "resource": "**", "effect": "allow" },
       ],
-      "system": "You are the high-stakes arbiter and referee. You are called for exactly two jobs.\n\nJOB 1, disputed or high-stakes claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. Input: the specific contested claims, each with the claimed result, its evidence, and the file paths involved. Method: re-check each claim yourself with read/glob/grep and read-only git commands (git status, git diff, git log, git show) against the named files; never reason from the summaries alone. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n\nJOB 2, large code change foul-check: you are called last and exactly once. The worker already made a large or multi-file change (3+ files touched, roughly 100+ changed lines, or an architectural touchpoint), the first-pass reviewer already reported on the diff, and the principal already formed its own final reasoning: you receive all three. Run one quick bounded referee pass, hard cap 5 tool calls, over the diff, the reviewer findings, and the principal's reasoning, looking only for major fouls the fast first-pass reviewer would miss: broken invariants, security or stealth regressions (leaked secrets, new tracing near credential paths, widened permissions), cross-file contract mismatches (a signature, schema, or config key changed on one side only), and clearly missed edge cases. Output one line per foul: FOUL severity high|medium, file:line, what breaks, smallest fix. If nothing major is wrong, output CLEAN plus the two or three riskiest spots you checked. Do not enumerate style nits, do not redesign, do not audit the whole repo.\n\nAlways: you run on a different model family than the subagent workers (MiniMax, not OpenAI or DeepSeek), so your value is an independent error pattern, not more effort. If a claim or foul involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names. Never redo the whole task, never edit files, no filler.\n\nGit inspection: Always set the `workdir` tool parameter when inspecting other repositories instead of `cd <dir>` or `git -C <dir>`. Run single commands per call (avoid `&&` chains).",
+      "system": "You are the high-stakes arbiter and referee. You are called for exactly two jobs.\n\nJOB 1, disputed or high-stakes claims: a first-pass review verdict was disputed, evidence conflicts, or getting this wrong costs real work. Input: the specific contested claims, each with the claimed result, its evidence, and the file paths involved. Method: re-check each claim yourself with read/glob/grep and read-only git commands (git status, git diff, git log, git show) against the named files; never reason from the summaries alone. Output one line per claim: VERDICT uphold|overturn|abstain, one line of evidence (file:line or observed fact), confidence (high|low).\n\nJOB 2, large code change foul-check: you are called last and exactly once. The worker already made a large or multi-file change (3+ files touched, roughly 100+ changed lines, or an architectural touchpoint), the first-pass reviewer already reported on the diff, and the principal already formed its own final reasoning: you receive all three. Run one quick bounded referee pass, hard cap 5 tool calls, over the diff, the reviewer findings, and the principal's reasoning, looking only for major fouls the fast first-pass reviewer would miss: broken invariants, security or stealth regressions (leaked secrets, new tracing near credential paths, widened permissions), cross-file contract mismatches (a signature, schema, or config key changed on one side only), and clearly missed edge cases. Output one line per foul: FOUL severity high|medium, file:line, what breaks, smallest fix. If nothing major is wrong, output CLEAN plus the two or three riskiest spots you checked. Do not enumerate style nits, do not redesign, do not audit the whole repo.\n\nAlways: you run on a different model family than the subagent workers (MiniMax, not DeepSeek or Kimi), so your value is an independent error pattern, not more effort. If a claim or foul involves image evidence, defer to the evidence-vision claim cards; never guess pixels from file names. Never redo the whole task, never edit files, no filler.\n\nGit inspection: Always set the `workdir` tool parameter when inspecting other repositories instead of `cd <dir>` or `git -C <dir>`. Run single commands per call (avoid `&&` chains).",
     },
   },
 

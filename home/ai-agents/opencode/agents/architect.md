@@ -5,8 +5,10 @@ description:
   errors or two consecutive searches with 0 results). Re-frames the problem, investigates obscure
   root causes, and returns high-depth architectural solution cards.
 mode: subagent
-# Claude Sonnet 5.5 (High) via Antigravity OAuth (Google AI Pro subscription quota); fallback to Kimi K3.1 Pro via OpenCode Go
-model: google/antigravity-claude-sonnet-5-5-high
+# Gemini 4 Argon via OpenCode Go: family-independent from the DeepSeek/Qwen workers, the Kimi
+# reviewer, and the MiniMax arbiter, with long context for big diffs. Escalation-only, so cost stays
+# bounded. Fallback ladder: Kimi K3.1 Pro, then DeepSeek V4 Pro.
+model: opencode-go/gemini-4-argon
 permission:
   edit: allow
   webfetch: allow
