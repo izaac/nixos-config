@@ -90,13 +90,50 @@ in {
       init=false
       shell=/bin/bash
       init_hooks="${initHooks}"
+
+      # === Chimera Linux ===
+      # musl + apk + dinit + BSD userland. Chimera publishes no OCI image, so
+      # this tag is built from the official rootfs by ~/repos/chimera-distrobox.
+      # apk 3.x has no `install` verb (it is `apk add`), and `apk update` needs
+      # root, hence the pre-init refresh and the sudo-backed hooks.
+      [chimera]
+      image=ghcr.io/izaac/chimera-distrobox:latest
+      pull=true
+      init=false
+      shell=/bin/zsh
+      # podman's default seccomp profile kills Firefox's content processes on
+      # musl ("Exiting due to channel error", blank window, profile looks
+      # unloaded even though it is the right one). Seccomp unconfined fixes it,
+      # and distrobox already runs with --ipc host, so shm-size cannot be set.
+      additional_flags="--security-opt seccomp=unconfined"
+      additional_packages="git curl wget2 zsh ripgrep fzf jq btop starship zoxide bat fd eza fastfetch less"
+      pre_init_hooks="apk update || true"
+      init_hooks="${initHooks}"
     '';
+  };
+
+  # Launcher for the container Firefox. It gets its own profile: sharing the
+  # host profile makes each install rewrite compatibility.ini and the browser
+  # resets state on every switch. --no-remote stops the launch being handed to
+  # an already running instance (which would ignore -profile silently).
+  xdg.desktopEntries.chimera-firefox = {
+    name = "Firefox (chimera)";
+    genericName = "Web Browser";
+    comment = "Firefox from the Chimera distrobox, separate profile";
+    exec = "distrobox enter chimera -- firefox --no-remote -profile ${config.home.homeDirectory}/.mozilla/firefox-chimera";
+    icon = "firefox";
+    categories = ["Network" "WebBrowser"];
+    terminal = false;
+    startupNotify = true;
   };
 
   # Host directories & systemd user services for Podman/Distrobox
   systemd.user = {
     tmpfiles.rules = [
       "d %h/.local/share/distrobox/bin 0755 - - - -"
+      # Container Firefox profile lives outside ${config.home.homeDirectory}/.mozilla/firefox
+      # so it never collides with the host profile bookkeeping.
+      "d %h/.mozilla/firefox-chimera 0700 - - -"
     ];
 
     # Rootless Podman API socket (Docker-compatible) for docker-compose /
@@ -135,5 +172,6 @@ in {
     db-rm = "distrobox assemble rm --file ${config.home.homeDirectory}/.config/distrobox/distrobox.ini";
     db-suse = "distrobox enter suse -- zsh";
     db-slack = "distrobox enter slack -- zsh";
+    db-chimera = "distrobox enter chimera";
   };
 })

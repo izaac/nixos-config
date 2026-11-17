@@ -30,9 +30,10 @@ done
 # The interactive guard must come first: /etc/profile.d is sourced by
 # non-interactive shells as well (distrobox enter ... -- cmd, ssh, scp),
 # where `atuin init bash` emits "line editing not enabled" warnings.
-if ! grep -qF 'case $- in *i*)' /etc/profile.d/atuin.sh 2>/dev/null; then
+if ! grep -qF '[ -n "$BASH_VERSION" ]' /etc/profile.d/atuin.sh 2>/dev/null; then
   # shellcheck disable=SC2016 # single quotes are intentional: written literally to profile.d
   printf '%s\n' \
+    '[ -n "$BASH_VERSION" ] || return 0' \
     'case $- in *i*) ;; *) return 0;; esac' \
     'if command -v atuin >/dev/null 2>&1; then eval "$(atuin init bash)"; fi' \
     | sudo tee /etc/profile.d/atuin.sh >/dev/null

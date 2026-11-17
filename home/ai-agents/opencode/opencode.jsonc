@@ -61,6 +61,9 @@
     { "action": "provider.use", "resource": "opencode-go", "effect": "allow" },
     // Allow local project/ancestor provider definitions prefixed with local-*
     { "action": "provider.use", "resource": "local-*", "effect": "allow" },
+    // TEMP-OPENROUTER: re-enabled on request for a trial. Remove this line to go
+    // back to the savings-first allow-list above.
+    { "action": "provider.use", "resource": "openrouter", "effect": "allow" },
   ],
 
   "permissions": [

@@ -70,6 +70,15 @@
       if ! command -v atuin >/dev/null 2>&1 && [ -x "${pkgs.atuin}/bin/atuin" ]; then
         export PATH="''$PATH:${pkgs.atuin}/bin"
       fi
+
+      # Inside distrobox containers, bypass the interactive sudo wrapper below.
+      # That wrapper forwards TERMINFO as an argv assignment, which glibc sudo
+      # accepts but the OpenBSD sudo shipped by Chimera rejects outright
+      # ("sudo: TERMINFO=...: command not found"). Alias expansion runs before
+      # function lookup, so this wins however late the wrapper is defined.
+      if [[ -n "''${container-}" ]]; then
+        alias sudo='command sudo'
+      fi
     '';
   };
 }
