@@ -47,8 +47,8 @@ in {
         recoverTemp = 80;
       };
     };
-    # Tailnet routing (LAN subnet + exit node) lives on plex, which is
-    # always on. This workstation is a plain tailnet client.
+    # Tailnet LAN routing lives on plex, which is always on. This
+    # workstation is a plain tailnet client.
   };
 
   # System packages: audio, monitor, boot utils, uutils coreutils.

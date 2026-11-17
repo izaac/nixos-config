@@ -257,10 +257,10 @@ in {
   # Headless server overrides
   mySystem.core.tailscale = {
     enable = true;
-    # Always-on wired box, so it carries the tailnet's routing duty:
-    # both the LAN subnet route and the exit node.
+    # Always-on wired box, so it carries the tailnet's LAN subnet route.
+    # Exit-node duty sits on gl-mt3000, so this host does not offer itself.
     advertiseRoutes = [siteConfig.subnet];
-    advertiseExitNode = true;
+    advertiseExitNode = false;
     routingInterface = "enp1s0";
     # Local LAN Pi-hole (192.168.0.96) handles DNS via DHCP, so keep
     # MagicDNS off to match the ninja default.

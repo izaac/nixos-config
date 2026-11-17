@@ -124,14 +124,15 @@ WiFi is intentionally unused: `networking.wireless.enable = false` means no supp
 configures it, and `boot.blacklistedKernelModules = ["rtw88_8822ce"]` unbinds the Realtek card so no
 `wlp2s0` link appears.
 
-Tailscale runs here, and this host carries the tailnet's routing duties (`mySystem.core.tailscale`):
-it advertises the LAN subnet and offers itself as an exit node. Both moved here from ninja because
-this box is always on, where a workstation is not. Both also need one-time approval in the Tailscale
-admin console before other devices can use them.
+Tailscale runs here, and this host carries the tailnet's LAN routing duty
+(`mySystem.core.tailscale`): it advertises the LAN subnet so tailnet devices can reach
+`192.168.0.0/24`. Exit-node duty sits on `gl-mt3000` instead, where a router is a better fit. The
+subnet route still needs one-time approval in the Tailscale admin console before other devices can
+use it.
 
 Because it forwards traffic, the module gives this host `useRoutingFeatures = "server"` (IP
-forwarding), loose reverse-path filtering, and UDP GRO offload on `enp1s0`. It is also the one host
-with `acceptDns = true`, so MagicDNS resolves tailnet names here; the workstations keep LAN DNS.
+forwarding), loose reverse-path filtering, and UDP GRO offload on `enp1s0`. It keeps
+`acceptDns = false`, so MagicDNS stays off here and the LAN Pi-hole handles DNS.
 
 ---
 
@@ -141,7 +142,7 @@ with `acceptDns = true`, so MagicDNS resolves tailnet names here; the workstatio
 | ------------------- | ------- | -------------------------------------------- |
 | `plex`              | active  | Media server, runs as `izaac`, firewall open |
 | `rclone-ul-crypt`   | active  | Mounts `ul-crypt:` at `/srv/media` on boot   |
-| `tailscaled`        | active  | Remote access, subnet router, exit node      |
+| `tailscaled`        | active  | Remote access, subnet router                 |
 | `tailscale-udp-gro` | active  | UDP GRO offload on `enp1s0` for forwarding   |
 | openssh             | enabled | LAN + tailnet admin access                   |
 
