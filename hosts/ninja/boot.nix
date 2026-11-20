@@ -39,10 +39,11 @@
 
     kernelParams = [
       "boot.shell_on_fail"
-      "pci=realloc,pcie_bus_perf"
+      "pci=realloc,pcie_bus_perf,hpbussize=0x10,hpmmiosize=128M,hpmmioprefsize=1G"
       "pcie_aspm=force"
       "pcie_aspm.policy=performance"
-      "iommu=pt"
+      # IOMMU stays in DMA-translation mode (no iommu=pt) so Thunderbolt devices
+      # get DMA-isolated domains; the card runs at security level No Security.
       "pcie_ports=native"
       "amd_pstate=active"
       # Silence split-lock dmesg spam from Steam/Wine games. The mitigation

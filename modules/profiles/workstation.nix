@@ -52,6 +52,9 @@
 
   hardware.enableAllFirmware = lib.mkDefault true;
 
+  # Thunderbolt device authorization (userspace daemon for the boltd service).
+  services.hardware.bolt.enable = lib.mkDefault true;
+
   # No WWAN hardware in either machine.
   systemd.services.ModemManager.enable = lib.mkDefault false;
 }

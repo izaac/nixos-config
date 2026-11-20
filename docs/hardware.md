@@ -1,6 +1,6 @@
 # Hardware Configuration - ninja
 
-> **Last Updated**: 2026-11-07 **System**: ASUS ROG STRIX X670E-F GAMING WIFI **OS**: NixOS 26.05
+> **Last Updated**: 2026-11-19 **System**: ASUS ROG STRIX X670E-F GAMING WIFI **OS**: NixOS 26.05
 
 ---
 
@@ -27,11 +27,11 @@
 
 ### Physical Slots
 
-| Slot          | Type     | Speed    | Device         | Bandwidth                |
-| ------------- | -------- | -------- | -------------- | ------------------------ |
-| **PCIEX16_1** | x16      | PCIe 5.0 | Intel Arc B580 | x8 @ PCIe 4.0 (card max) |
-| **PCIEX16_2** | x16 (x4) | PCIe 4.0 | Empty          | -                        |
-| **PCIEX1**    | x1       | PCIe 3.0 | Empty          | -                        |
+| Slot          | Type     | Speed    | Device          | Bandwidth                |
+| ------------- | -------- | -------- | --------------- | ------------------------ |
+| **PCIEX16_1** | x16      | PCIe 5.0 | Intel Arc B580  | x8 @ PCIe 4.0 (card max) |
+| **PCIEX16_2** | x16 (x4) | PCIe 4.0 | ThunderboltEX 4 | x4 @ PCIe 3.0 (card max) |
+| **PCIEX1**    | x1       | PCIe 3.0 | Empty           | -                        |
 
 ### PCIe Lane Allocation
 
@@ -45,6 +45,7 @@
 
 - M.2_3 and M.2_4 (PCIe 4.0 x4 each)
 - USB controllers, SATA controllers, Ethernet
+- ThunderboltEX 4 card in PCIEX16_2 (PCIe 3.0 x4)
 
 ---
 
@@ -315,15 +316,22 @@ sensors nvme-pci-0800  # WD Black SN850X
 
 ### Key Settings
 
-| Setting                 | Value                 | Notes                                |
-| ----------------------- | --------------------- | ------------------------------------ |
-| **PCIe Link Mode**      | Auto                  | GPU at Gen4 x8 (card), M.2_1 Gen5 x4 |
-| **IOMMU**               | Enabled (Passthrough) | For virtualization                   |
-| **PCIe ASPM**           | Disabled              | Better latency                       |
-| **AMD PSP/fTPM**        | Enabled               | TPM 2.0 via firmware                 |
-| **Resizable BAR**       | Enabled               | Required by Intel Arc (`xe`)         |
-| **Smart Access Memory** | Enabled               | AMD SAM                              |
-| **SR-IOV**              | Enabled               | N/A for Arc B580; legacy BIOS value  |
+| Setting                                               | Value                     | Notes                                               |
+| ----------------------------------------------------- | ------------------------- | --------------------------------------------------- |
+| **PCIe Link Mode**                                    | Auto                      | GPU at Gen4 x8 (card), M.2_1 Gen5 x4                |
+| **IOMMU**                                             | Enabled (DMA translation) | No `iommu=pt`; DMA translation stays on             |
+| **PCIe ASPM**                                         | Disabled                  | Better latency                                      |
+| **AMD PSP/fTPM**                                      | Enabled                   | TPM 2.0 via firmware                                |
+| **Resizable BAR**                                     | Enabled                   | Required by Intel Arc (`xe`)                        |
+| **Smart Access Memory**                               | Enabled                   | AMD SAM                                             |
+| **SR-IOV**                                            | Enabled                   | N/A for Arc B580; legacy BIOS value                 |
+| **Discrete Thunderbolt/USB4 (Intel JHL8540) Support** | Enabled                   | Advanced > AMD PBS > Thunderbolt/USB4 configuration |
+| **Discrete Thunderbolt/USB4 Security Level**          | No Security               | Devices auto-authorize on plug; bolt is passive     |
+| **Discrete Thunderbolt/USB4 MMIO Resource**           | Full Size                 | Leave at the default full reservation               |
+
+BIOS changes in the AMD PBS Thunderbolt/USB4 menu only take effect after a COLD boot (PSU switched
+off for 30 seconds). Warm reboots keep the card's previous firmware state, and the security level
+silently stays at its old value.
 
 ### Boot Configuration
 
@@ -338,32 +346,93 @@ sensors nvme-pci-0800  # WD Black SN850X
 
 ```text
 00:00.0 Host bridge: AMD Raphael/Granite Ridge Root Complex
-00:01.1 PCIe Root Port [GPU] x16 @ PCIe 5.0
-    `-01:00.0 Intel Arc B580 (negotiates x8 @ PCIe 4.0 - card width)
-       `-01:00.1 Intel Arc HDA Audio
+00:01.1 PCIe Root Port [GPU] (x16 @ PCIe 5.0)
+    `-01:00.0 Intel PCIe Switch [8086:e2ff]
+       |-02:01.0 -> 03:00.0 Intel Arc B580 (x8 @ PCIe 4.0 - card width)
+       `-02:02.0 -> 04:00.0 Intel Arc HDA Audio [8086:e2f7]
 
-00:01.2 PCIe Root Port [M.2_1]
-    `-02:00.0 Crucial T705 NVMe (x4 @ PCIe 5.0)
+00:01.2 PCIe Root Port [M.2_1] (x4 @ PCIe 5.0)
+    `-05:00.0 Crucial T705 NVMe [c0a9:542b] (x4 @ PCIe 5.0)
 
-00:02.1 PCIe Root Port [Chipset]
-    `-03:00.0 AMD 600 Series PCIe Switch
-       `-04:08.0 PCIe Switch
-          `-06:00.0 PCIe Switch
-             `-07:05.0 PCIe Switch
-                `-09:00.0 Intel I225-V Ethernet
-       |-07:0c.0 -> 0d:00.0 USB 3.2 Controller
-       |-07:0d.0 -> 0e:00.0 SATA Controller (4 ports)
-       |-04:0c.0 -> 0f:00.0 USB 3.2 Controller
-       `-04:0d.0 -> 10:00.0 SATA Controller (4 ports)
+00:02.1 PCIe Root Port [Chipset] (x4 @ PCIe 4.0)
+    `-06:00.0 AMD 600 Series PCIe Switch Upstream Port [1022:43f4]
+       |-07:00.0 Downstream Port [PCIEX16_2 - ThunderboltEX 4] (x4 @ PCIe 3.0)
+       |  `-08:00.0 Intel Maple Ridge TB4 Bridge [8086:1136]
+       |     |-09:00.0 Intel Maple Ridge TB4 Bridge [8086:1136]
+       |     |  `-0a:00.0 Intel Thunderbolt 4 NHI [8086:1137] (thunderbolt driver)
+       |     |-09:01.0 TB tunnel port (bus 0b-35, idle)
+       |     |-09:02.0 -> 36:00.0 Intel Thunderbolt 4 USB Controller [8086:1138] (xHCI)
+       |     `-09:03.0 TB tunnel port (bus 37-61, idle)
+       |-07:08.0 Downstream Port [SN850X path]
+       |  `-62:00.0 AMD 600 Series PCIe Switch Upstream Port [1022:43f4]
+       |     |-63:00.0 -> 64:00.0 WD Black SN850X NVMe [15b7:5030] (x4 @ PCIe 4.0)
+       |     |-63:04.0 -> 65:00.0 MediaTek MT7922 Wi-Fi 6E [14c3:0616]
+       |     |-63:05.0 -> 66:00.0 Intel I225-V Ethernet [8086:15f3]
+       |     |-63:06.0, 63:07.0, 63:08.0 empty downstream ports
+       |     |-63:0c.0 -> 6a:00.0 AMD 600 Series USB 3.2 Controller [1022:43f7]
+       |     `-63:0d.0 -> 6b:00.0 AMD 600 Series SATA Controller [1022:43f6]
+       |-07:0c.0 -> 6c:00.0 AMD 600 Series USB 3.2 Controller [1022:43f7]
+       `-07:0d.0 -> 6d:00.0 AMD 600 Series SATA Controller [1022:43f6]
 
-00:02.2 PCIe Root Port [Chipset - M.2_4]
-    `-08:00.0 WD Black SN850X NVMe (x4 @ PCIe 4.0)
-00:08.1 PCIe Root Port [CPU USB/PSP]
-    `-11:00.x Internal devices (PSP, USB 3.1 x2, CCP)
+00:08.1 PCIe Root Port [CPU internal]
+    `-6e:00.0 Raphael PCIe Dummy Function [1022:14de]
+       internal siblings: 6e:00.2 PSP/CCP, 6e:00.3 + 6e:00.4 USB 3.1 xHCI
 
 00:08.3 PCIe Root Port [CPU USB]
-    `-12:00.0 USB 2.0 xHCI Controller
+    `-6f:00.0 Raphael USB 2.0 xHCI [1022:15b8]
 ```
+
+---
+
+## Thunderbolt (ASUS ThunderboltEX 4)
+
+### Card
+
+- ASUS ThunderboltEX 4, Intel Maple Ridge (JHL8540), subsystem `1043:87f6`, NVM 36.0
+- Two Thunderbolt 4 ports, seated in the chipset x4 slot (PCIEX16_2 path)
+- Enumerates as bridge `08:00.0`, NHI `0a:00.0`, and USB controller `36:00.0`
+
+### Kernel State
+
+- `domain0/security` reads `none`, so devices auto-authorize on plug
+- The connection manager is the card's own ICM firmware, not the kernel: `deauthorization` reads `0`
+  and no `usb4_port*` nodes exist, because the platform `_OSC` never grants ACPI native USB4 control
+- `bolt.service` (enabled in `modules/profiles/workstation.nix`) is a passive observer under No
+  Security: it lists devices but does not gate them
+
+### IOMMU
+
+- `domain0/iommu_dma_protection` reads `0`. The value is informational only: the firmware DSDT lacks
+  `ExternalFacingPort`, and nothing gates PCIe tunneling on it
+- `iommu=pt` was removed from `hosts/ninja/boot.nix` for that reason
+
+### Kernel Parameters
+
+```text
+pci=realloc,pcie_bus_perf,hpbussize=0x10,hpmmiosize=128M,hpmmioprefsize=1G
+```
+
+That reserves 128 MiB non-prefetchable and 1 GiB prefetchable bridge window per tunnel port, so
+multi-bridge docks and eGPUs can enumerate.
+
+### BIOS Note: USB4 (ASMedia)
+
+The USB4 (ASMedia) toggle in the same AMD PBS menu is an AGESA leftover for boards with a soldered
+ASM4242. This board has no such controller. Keep the JHL8540 option selected, never the ASMedia one.
+
+### Performance Ceiling
+
+- PCIe tunneling rides at PCIe 3.0 x4 (about 2.5 to 2.9 GB/s real)
+- Best uses: NVMe enclosure, 10 GbE NIC, capture devices
+- eGPU works but loses 20 to 40 percent versus a native slot
+- USB 3.2 (10 Gbps per port through the card's own xHCI) and DisplayPort tunneling are unaffected by
+  any of the above
+
+### Troubleshooting
+
+If `cat /sys/bus/thunderbolt/devices/domain0/security` ever reads `nopcie`, the cause is a stale
+card state after a warm reboot that followed a BIOS change. Power fully off for 30 seconds and boot
+again. Do not chase kernel parameters, bolt, or NVM updates for that symptom.
 
 ---
 
