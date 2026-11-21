@@ -60,6 +60,20 @@
       # keeps pasted bash-oriented commands from dying mid-line.
       setopt NULL_GLOB
 
+      # Word navigation. xterm-256color terminfo ships no kLFT5/kRIT5, and zsh
+      # leaves Ctrl+Left/Right unbound as a result, so the ESC[1 prefix gets
+      # swallowed and the remainder arrives as literal ";5D". Bind both keymaps
+      # explicitly rather than relying on "main", which follows VISUAL here and
+      # can therefore be viins or emacs depending on the environment.
+      bindkey -M emacs "^[[1;5D" backward-word
+      bindkey -M emacs "^[[1;5C" forward-word
+      bindkey -M emacs "^[[1;3D" backward-word
+      bindkey -M emacs "^[[1;3C" forward-word
+      bindkey -M viins "^[[1;5D" backward-word
+      bindkey -M viins "^[[1;5C" forward-word
+      bindkey -M viins "^[[1;3D" backward-word
+      bindkey -M viins "^[[1;3C" forward-word
+
       ${builtins.readFile ./gpg-tty.sh}
 
       # SSH → persistent tmux session

@@ -36,6 +36,7 @@ Adding a new host requires only a `hosts/<name>/` directory with a `system.nix` 
 - [Kitty Terminal](kitty.md)
 - [tmux (terminal multiplexer)](tmux.md)
 - [Kitty + tmux integration](kitty-tmux.md)
+- [zsh keymaps and keybindings](zsh.md)
 - [LazyVim (Neovim)](lazyvim.md)
 - [mpv Media Player](mpv.md)
 - [Zathura PDF Viewer](zathura.md)
