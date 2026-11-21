@@ -6,6 +6,10 @@ keys:
   # Host keys — for boot-time decryption via sops-nix `sshKeyPaths`. Derived
   # from /etc/ssh/ssh_host_ed25519_key.pub.
   - &host_ninja age1cjc00x0g5mhejndsh3ljz09ukkl38kutd692aatd3qw0jrmxx3sq4tk5av
+  # YubiKey GPG master key (OpenPGP applet, breakout/panic card).
+  # Break-glass recipient: any one of the age recipients OR this key can
+  # decrypt, because all of them sit in the same key_groups entry.
+  - &yubikey 12D77955660CBE15071B7DB73183124333AB684C
 creation_rules:
   # Common secrets — readable by every host and every editor.
   - path_regex: secrets/common\.yaml$
@@ -14,6 +18,8 @@ creation_rules:
           - *user_ninja
           - *user_mac
           - *host_ninja
+        pgp:
+          - *yubikey
   # Per-host slots — pre-wired so adding host-specific secrets is a one-step
   # `sops secrets/<host>.yaml` away. Same recipients today; tighten when each
   # host gets its own host key.
@@ -23,9 +29,13 @@ creation_rules:
           - *user_ninja
           - *user_mac
           - *host_ninja
+        pgp:
+          - *yubikey
   - path_regex: secrets/plex\.yaml$
     key_groups:
       - age:
           - *user_ninja
           - *user_mac
           - *host_ninja
+        pgp:
+          - *yubikey

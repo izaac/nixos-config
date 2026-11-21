@@ -162,6 +162,12 @@ in {
       package = pkgs.gnupg;
       mutableKeys = true;
       mutableTrust = true;
+      # Let PC/SC (pcscd) own the YubiKey CCID interface. GnuPG's builtin
+      # libusb driver and pcscd otherwise fight over the reader and scdaemon
+      # reports "No such device".
+      scdaemonSettings = {
+        disable-ccid = true;
+      };
     };
 
     # --- GITHUB CLI ---
