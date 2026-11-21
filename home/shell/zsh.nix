@@ -55,6 +55,11 @@
       # Autocd
       setopt autocd
 
+      # Unmatched globs must not abort the whole command line. zsh errors out
+      # where bash leaves the pattern literal; NULL_GLOB drops it instead, which
+      # keeps pasted bash-oriented commands from dying mid-line.
+      setopt NULL_GLOB
+
       ${builtins.readFile ./gpg-tty.sh}
 
       # SSH → persistent tmux session
