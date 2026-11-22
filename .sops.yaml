@@ -39,3 +39,14 @@ creation_rules:
           - *host_ninja
         pgp:
           - *yubikey
+  # Shared-drive credentials: the ulozto account plus the ul-crypt keys.
+  # Consumed by snail, which has no NixOS module, so it is decrypted on a
+  # host that holds a key and piped over SSH.
+  - path_regex: secrets/rclone\.yaml$
+    key_groups:
+      - age:
+          - *user_ninja
+          - *user_mac
+          - *host_ninja
+        pgp:
+          - *yubikey

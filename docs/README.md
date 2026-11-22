@@ -50,6 +50,8 @@ Adding a new host requires only a `hosts/<name>/` directory with a `system.nix` 
 - [mpv Media Player](mpv.md)
 - [Zathura PDF Viewer](zathura.md)
 - [Transmission VPN](transmission-vpn.md)
+- [Shared Drive on snail (rclone)](snail-rclone.md)
+- [snail Desktop Session (SDDM, Plasma, Flatpak)](snail-desktop.md)
 
 ## Agent Instructions
 
