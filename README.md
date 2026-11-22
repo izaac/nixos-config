@@ -55,6 +55,7 @@ flake input. Use **`nix-init`** to bootstrap new package definitions.
 
 - [Hardware (ninja)](docs/hardware.md) | [Hardware (plex)](docs/plex.md)
 - [Security & Hardening](docs/security.md) | [Secrets](docs/secrets.md)
+- [YubiKey & GPG](docs/yubikey/README.md)
 - [Disaster Recovery & Disko](docs/disko-rebuild.md)
 - [CLI Tools](docs/cli-tools.md) | [Just Commands](docs/just-commands.md)
 - [Niri Keybindings & UX](docs/niri.md) | [ashell Shell](docs/ashell.md)

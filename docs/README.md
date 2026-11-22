@@ -12,6 +12,15 @@
 - [GitHub SSH Host Key Pinning](known-hosts.md)
 - [System Recovery with Disko (ninja)](disko-rebuild.md)
 
+## YubiKey
+
+- [YubiKey & OpenPGP Overview](yubikey/README.md)
+- [OpenPGP Applet Anatomy](yubikey/gpg-applet.md)
+- [Host Configuration (ninja, Mac, snail)](yubikey/hosts.md)
+- [Git Commit & Tag Signing](yubikey/git-signing.md)
+- [SOPS Break-Glass Decryption](yubikey/sops-break-glass.md)
+- [Backup, Paperkey & Master Key Strip](yubikey/backup-recovery.md)
+
 ## Architecture & Profiles
 
 The system uses modular host role profiles (`modules/profiles/`):
