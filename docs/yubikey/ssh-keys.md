@@ -98,6 +98,34 @@ Provider paths differ: Debian `opensc-pkcs11.so`, Fedora `opensc-pkcs11.so` unde
 macOS `/Library/OpenSC/lib/opensc-pkcs11.so`. Needs OpenSC 0.23 or newer for current YubiKey
 firmware.
 
+## As Built (2026-11-22)
+
+Generated on `ninja` with the resident variant:
+
+```text
+file         ~/.ssh/id_ed25519_sk      468 bytes, handle only
+fingerprint  SHA256:C7HcBCb/Gh0D75fgVohBTXLGkjrpWxX295Gl98vDAJs
+type         sk-ssh-ed25519@openssh.com
+application  ssh:izaac
+credential   resident, storage went from 100 free to 99
+agent        ssh-add -K loads it from the card
+wire         home/ssh.nix, host block "github", IdentityFile only that key
+```
+
+Gotchas learned in the process:
+
+- **Resident creation asks for the FIDO2 PIN**, not the OpenPGP user or admin PIN. It is a third,
+  separate secret, set with `ykman fido access change-pin`. A wrong entry costs one of its 8
+  attempts, so do not guess; a blocked FIDO2 PIN is only cleared by a reset, which also drops U2F
+  registrations.
+- Creating the key does not need `-O verify-required`; adding it later means a PIN for every
+  authentication.
+- `gh ssh-key add` needs the `admin:public_key` scope, so adding the key is easier in the web UI.
+- Verify the key with `ssh-keygen -lf`, not `-L`. `-L` is for certificates and reports "not a
+  certificate" for a plain sk key.
+- The `.pub` file is safe to share and can live on the offline drive; the handle file likewise,
+  since it contains no secret, only the credential reference and application string.
+
 ## Migrating to Another Token
 
 Nothing in this design is tied to YubiKey hardware except the on-card secrets, which are meant to be

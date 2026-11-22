@@ -12,7 +12,7 @@ with `ul-mount` and `ul-umount` wrappers.
 
 ## Documentation Links
 
-- [Secret Management](../secrets.md)
+- [Secret Management](secrets.md)
 - [YubiKey Break-Glass](yubikey/README.md)
 - [Documentation Index](../README.md)
 

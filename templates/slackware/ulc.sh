@@ -165,9 +165,9 @@ refresh() {
   dir="${1:-}"
   mountpoint -q "$MOUNT" || return 0
   rclone rc --rc-addr "$RC_ADDR" --rc-no-auth \
-    vfs/refresh dir="$dir" recursive=true >/dev/null 2>&1 &&
-    echo "refreshed: ${dir:-/}" ||
-    echo "note: mount is up but the refresh socket did not answer" >&2
+    vfs/refresh dir="$dir" recursive=true >/dev/null 2>&1 \
+    && echo "refreshed: ${dir:-/}" \
+    || echo "note: mount is up but the refresh socket did not answer" >&2
 }
 
 split_args() {
@@ -185,15 +185,18 @@ transfer() {
   split_args "$@"
 
   top="${dest%%/*}"
-  if ! rclone lsf --dirs-only --log-level ERROR "$REMOTE" |
-    grep -qxF "$top/"; then
+  if ! rclone lsf --dirs-only --log-level ERROR "$REMOTE" \
+    | grep -qxF "$top/"; then
     echo "'$top' does not exist on the remote. Existing folders:" >&2
     rclone lsf --dirs-only --log-level ERROR "$REMOTE" | sed 's|/$||; s/^/  /' >&2
     printf "create '%s'? [y/N] " "$top" >&2
     read -r reply
     case "$reply" in
       [yY]*) ;;
-      *) echo "aborted" >&2; exit 1 ;;
+      *)
+        echo "aborted" >&2
+        exit 1
+        ;;
     esac
   fi
 
@@ -202,7 +205,10 @@ transfer() {
     s="$1"
     shift
     remaining=$((remaining - 1))
-    [ -e "$s" ] || { echo "no such file or directory: $s" >&2; exit 66; }
+    [ -e "$s" ] || {
+      echo "no such file or directory: $s" >&2
+      exit 66
+    }
     target="$REMOTE$dest"
     if [ -d "$s" ] && [ -z "${ULC_NO_APPEND_BASENAME:-}" ]; then
       target="$target/$(basename "$s")"
@@ -217,8 +223,14 @@ cmd="${1:-}"
 [ $# -gt 0 ] && shift
 
 case "$cmd" in
-  up) need_rclone; transfer move "$@" ;;
-  cp) need_rclone; transfer copy "$@" ;;
+  up)
+    need_rclone
+    transfer move "$@"
+    ;;
+  cp)
+    need_rclone
+    transfer copy "$@"
+    ;;
   get)
     need_rclone
     split_args "$@"
@@ -227,27 +239,45 @@ case "$cmd" in
       s="$1"
       shift
       remaining=$((remaining - 1))
-      rclone lsf --log-level ERROR "$REMOTE$s" >/dev/null 2>&1 ||
-        { echo "not on the remote: $s" >&2; exit 66; }
+      rclone lsf --log-level ERROR "$REMOTE$s" >/dev/null 2>&1 \
+        || {
+          echo "not on the remote: $s" >&2
+          exit 66
+        }
       rclone copy "$REMOTE$s" "$dest" --progress --check-first \
         --transfers "$TRANSFERS" ${UL_BWLIMIT:+--bwlimit "$UL_BWLIMIT"}
     done
     ;;
-  ls) need_rclone; rclone lsf --format "sp" --separator "  " "$REMOTE${1:-}" ;;
+  ls)
+    need_rclone
+    rclone lsf --format "sp" --separator "  " "$REMOTE${1:-}"
+    ;;
   find)
     need_rclone
-    [ $# -ge 1 ] || { echo "need a pattern" >&2; exit 64; }
+    [ $# -ge 1 ] || {
+      echo "need a pattern" >&2
+      exit 64
+    }
     rclone lsf -R --files-only --log-level ERROR "$REMOTE" | grep -i -- "$1"
     ;;
-  du) need_rclone; rclone size --log-level ERROR "$REMOTE${1:-}" ;;
+  du)
+    need_rclone
+    rclone size --log-level ERROR "$REMOTE${1:-}"
+    ;;
   rm)
     need_rclone
-    [ $# -ge 1 ] || { echo "need a path" >&2; exit 64; }
+    [ $# -ge 1 ] || {
+      echo "need a path" >&2
+      exit 64
+    }
     rclone deletefile "$REMOTE$1" && refresh "${1%%/*}"
     ;;
   mkdir)
     need_rclone
-    [ $# -ge 1 ] || { echo "need a path" >&2; exit 64; }
+    [ $# -ge 1 ] || {
+      echo "need a path" >&2
+      exit 64
+    }
     rclone mkdir "$REMOTE$1" && refresh "${1%%/*}"
     ;;
 
@@ -286,8 +316,8 @@ case "$cmd" in
       pid="$(cat "$PIDFILE")"
       # Only kill it if it is still our rclone mount. A stale pidfile plus PID
       # reuse would otherwise take out an unrelated process.
-      if [ -r "/proc/$pid/cmdline" ] &&
-        tr '\0' ' ' <"/proc/$pid/cmdline" | grep -q "rclone mount .*$MOUNT"; then
+      if [ -r "/proc/$pid/cmdline" ] \
+        && tr '\0' ' ' <"/proc/$pid/cmdline" | grep -q "rclone mount .*$MOUNT"; then
         kill "$pid" 2>/dev/null || true
       fi
       rm -f "$PIDFILE"
@@ -339,5 +369,9 @@ case "$cmd" in
   refresh) refresh "${1:-}" ;;
 
   "" | -h | --help | help) usage ;;
-  *) echo "unknown command: $cmd" >&2; usage >&2; exit 64 ;;
+  *)
+    echo "unknown command: $cmd" >&2
+    usage >&2
+    exit 64
+    ;;
 esac
