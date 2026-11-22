@@ -10,6 +10,7 @@
 - [OpenPGP Applet Anatomy](gpg-applet.md)
 - [Host Configuration (ninja, Mac, snail)](hosts.md)
 - [Git Commit & Tag Signing](git-signing.md)
+- [SSH Keys on Hardware](ssh-keys.md)
 - [SOPS Break-Glass Decryption](sops-break-glass.md)
 - [Backup, Paperkey & Master Key Strip](backup-recovery.md)
 - [Secrets Overview](../secrets.md)
@@ -36,21 +37,21 @@ The architecture satisfies four operational goals:
    subkey in addition to the host and user `age` keys. If all workstations are lost, the YubiKey
    plus a `git clone` of this repository recovers every secret.
 4. **Offline master identity**: The primary certification key (`escESCA`) is backed up to paper
-   (`paperkey`) and encrypted file storage, and is scheduled to be stripped from the live keyring on
-   `ninja` once the offline USB medium is in hand.
+   (`paperkey`) and to the offline keypad drive. The live copy was stripped from `ninja` on
+   2026-11-21, so the keyring holds only card stubs.
 
 ---
 
 ## Threat Model
 
-| Asset                                  | Where It Lives                                                              | Protected By                                        | Impact If Compromised                                                                                                                      |
-| :------------------------------------- | :-------------------------------------------------------------------------- | :-------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Primary Key (`33AB684C`)**           | Offline backup (`~/gpg-master.asc` pending strip, plus `paperkey` printout) | Passphrase + physical safe                          | Attacker can mint or revoke subkeys, add UIDs, or forge identity certifications. Cannot decrypt SOPS secrets wrapped to subkey `44262BC0`. |
-| **Signing Subkey (`563EE61E`)**        | YubiKey Slot 1 (Signature)                                                  | User PIN (6+ digits) + touch (`cached` 15s)         | None unless physical card and User PIN are both stolen. Used for Git commits and tags.                                                     |
-| **Encryption Subkey (`44262BC0`)**     | YubiKey Slot 2 (Encryption)                                                 | User PIN (6+ digits) + touch (`on` every operation) | Decrypts `secrets/common.yaml` and any PGP-encrypted payload. Requires physical card, User PIN, and one physical touch per decryption.     |
-| **Authentication Subkey (`591778E2`)** | YubiKey Slot 3 (Authentication)                                             | User PIN (6+ digits) + touch (`cached` 15s)         | SSH / GPG authentication where configured. Requires physical card, User PIN, and touch.                                                    |
-| **PAM U2F Credential**                 | YubiKey FIDO2/U2F applet (`~/.config/Yubico/u2f_keys`)                      | Physical touch (`control=sufficient`, no PIN)       | Local console/greeter login (`greetd`, `login`) and `sudo` on `ninja` when physically plugged in.                                          |
-| **Host & User `age` Keys**             | `/etc/ssh/ssh_host_ed25519_key`, `~/.config/sops/age/keys.txt`              | LUKS / FileVault + filesystem permissions (`0600`)  | Decrypts SOPS secrets without touch. Rotated via `.sops.yaml` and `sops updatekeys` if a machine is lost.                                  |
+| Asset                                  | Where It Lives                                                                | Protected By                                        | Impact If Compromised                                                                                                                      |
+| :------------------------------------- | :---------------------------------------------------------------------------- | :-------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Primary Key (`33AB684C`)**           | Offline keypad drive plus `paperkey` printout; local copy shredded 2026-11-21 | Passphrase + physical safe                          | Attacker can mint or revoke subkeys, add UIDs, or forge identity certifications. Cannot decrypt SOPS secrets wrapped to subkey `44262BC0`. |
+| **Signing Subkey (`563EE61E`)**        | YubiKey Slot 1 (Signature)                                                    | User PIN (6+ digits) + touch (`cached` 15s)         | None unless physical card and User PIN are both stolen. Used for Git commits and tags.                                                     |
+| **Encryption Subkey (`44262BC0`)**     | YubiKey Slot 2 (Encryption)                                                   | User PIN (6+ digits) + touch (`on` every operation) | Decrypts `secrets/common.yaml` and any PGP-encrypted payload. Requires physical card, User PIN, and one physical touch per decryption.     |
+| **Authentication Subkey (`591778E2`)** | YubiKey Slot 3 (Authentication)                                               | User PIN (6+ digits) + touch (`cached` 15s)         | SSH / GPG authentication where configured. Requires physical card, User PIN, and touch.                                                    |
+| **PAM U2F Credential**                 | YubiKey FIDO2/U2F applet (`~/.config/Yubico/u2f_keys`)                        | Physical touch (`control=sufficient`, no PIN)       | Local console/greeter login (`greetd`, `login`) and `sudo` on `ninja` when physically plugged in.                                          |
+| **Host & User `age` Keys**             | `/etc/ssh/ssh_host_ed25519_key`, `~/.config/sops/age/keys.txt`                | LUKS / FileVault + filesystem permissions (`0600`)  | Decrypts SOPS secrets without touch. Rotated via `.sops.yaml` and `sops updatekeys` if a machine is lost.                                  |
 
 ---
 
@@ -143,17 +144,17 @@ The architecture satisfies four operational goals:
 
 ## Implementation Status (2026-11-21)
 
-| Task                                                                          | Status      | Notes                                                                                 |
-| :---------------------------------------------------------------------------- | :---------- | :------------------------------------------------------------------------------------ |
-| Mint RSA-4096 `[S]`, `[E]`, `[A]` subkeys (expiry `2028-11-20`)               | **Done**    | Created `2026-11-21` under primary `33AB684C`                                         |
-| Move subkeys to YubiKey 5.7.1 (`27683426`) via `keytocard`                    | **Done**    | Slots 1, 2, 3 populated and verified                                                  |
-| Configure PINs, Reset Code, retries (`10/10/10`), and touch policies          | **Done**    | `sig=cached`, `dec=on`, `aut=cached`                                                  |
-| Fix `ninja` CCID contention (`disable-ccid = true` in `home/dev.nix`)         | **Done**    | Committed in `285f746`                                                                |
-| Add YubiKey to `.sops.yaml` and re-encrypt `secrets/common.yaml`              | **Done**    | Wrapped to subkey `D1034A1D44262BC0` (commit `285f746`)                               |
-| Configure Slackware host `snail` (`pcscd` + Polkit rule + `pinentry-tty`)     | **Done**    | Tested over SSH with `gpg --card-status` and test sign                                |
-| Publish updated public key (with subkeys) to GitHub and `keys.openpgp.org`    | **Done**    | UID email verification completed                                                      |
-| Print 2-page `paperkey` backup and verify round-trip restore                  | **Done**    | 89 lines printed and tested in a scratch `GNUPGHOME`                                  |
-| Export `~/gpg-master.asc` and `~/gpg-revoke.asc` (`chmod 600`)                | **Done**    | Currently on `ninja` home directory                                                   |
-| Refresh stale key on `keyserver.ubuntu.com`                                   | **Pending** | Still serves old subkey-less copy; resend command in [git-signing.md](git-signing.md) |
-| Copy `~/gpg-master.asc`, `~/gpg-revoke.asc`, `pub.asc` to offline flash drive | **Pending** | Awaiting dedicated offline USB storage medium                                         |
-| Strip live primary secret key (`gpg --delete-secret-keys`) from `ninja`       | **Pending** | Gated on offline flash drive backup completion                                        |
+| Task                                                                          | Status   | Notes                                                                          |
+| :---------------------------------------------------------------------------- | :------- | :----------------------------------------------------------------------------- |
+| Mint RSA-4096 `[S]`, `[E]`, `[A]` subkeys (expiry `2028-11-20`)               | **Done** | Created `2026-11-21` under primary `33AB684C`                                  |
+| Move subkeys to YubiKey 5.7.1 (`27683426`) via `keytocard`                    | **Done** | Slots 1, 2, 3 populated and verified                                           |
+| Configure PINs, Reset Code, retries (`10/10/10`), and touch policies          | **Done** | `sig=cached`, `dec=on`, `aut=cached`                                           |
+| Fix `ninja` CCID contention (`disable-ccid = true` in `home/dev.nix`)         | **Done** | Committed in `285f746`                                                         |
+| Add YubiKey to `.sops.yaml` and re-encrypt `secrets/common.yaml`              | **Done** | Wrapped to subkey `D1034A1D44262BC0` (commit `285f746`)                        |
+| Configure Slackware host `snail` (`pcscd` + Polkit rule + `pinentry-tty`)     | **Done** | Tested over SSH with `gpg --card-status` and test sign                         |
+| Publish updated public key (with subkeys) to GitHub and `keys.openpgp.org`    | **Done** | UID email verification completed                                               |
+| Print 2-page `paperkey` backup and verify round-trip restore                  | **Done** | 89 lines printed and tested in a scratch `GNUPGHOME`                           |
+| Export `~/gpg-master.asc` and `~/gpg-revoke.asc` (`chmod 600`)                | **Done** | Currently on `ninja` home directory                                            |
+| Refresh stale key on `keyserver.ubuntu.com`                                   | **Done** | Now serves all three subkeys                                                   |
+| Copy `~/gpg-master.asc`, `~/gpg-revoke.asc`, `pub.asc` to offline flash drive | **Done** | Stored on the keypad drive                                                     |
+| Strip live primary secret key (`gpg --delete-secret-keys`) from `ninja`       | **Done** | 2026-11-21, verified: `sec#` plus three `ssb>` stubs, SIGN_OK, sops decrypt OK |

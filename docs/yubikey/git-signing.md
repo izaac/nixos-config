@@ -213,6 +213,56 @@ gpg --batch --keyserver hkps://keyserver.ubuntu.com --search-keys 12D77955660CBE
 
 ---
 
+## Assigned Machine: Five Minute Setup
+
+The scenario: a machine that is not yours, the repo is public, the card is in your pocket. Clone,
+import, configure, sign.
+
+```bash
+# 1. tooling (skip if already present)
+#    Debian/Ubuntu: sudo apt install gnupg pcscd pcsc-tools
+#    Fedora:        sudo dnf install gnupg2 pcsc-lite pcsc-lite-ccid
+#    macOS:         brew install --cask gpg-suite-no-mail
+
+# 2. public key, never the secret
+gpg --keyserver hkps://keys.openpgp.org --recv-keys 12D77955660CBE15071B7DB73183124333AB684C
+gpg --list-keys 12D77955660CBE15071B7DB73183124333AB684C | grep -c '^sub'    # must be 3
+
+# 3. card
+gpg --card-status      # Reader plus Signature, Encryption, Authentication fingerprints
+
+# 4. pinentry for this session type, then the shell hint gpg needs
+export GPG_TTY=$(tty)
+
+# 5. git identity
+git config --global user.name "Izaac Zavaleta"
+git config --global user.email izaac@linux.com
+git config --global user.signingkey 0x3183124333AB684C
+git config --global commit.gpgsign true
+
+# 6. prove it
+echo t | gpg --clearsign -u 0x3183124333AB684C > /dev/null && echo SIGN_OK
+```
+
+Then clone, edit, `git commit`, enter the user PIN, touch when it blinks.
+
+### Symptom to Cause
+
+| Symptom                                          | Cause                                                                 | Fix                                                                            |
+| :----------------------------------------------- | :-------------------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| `No secret key` with the card inserted           | Public key not imported                                               | `gpg --recv-keys 12D77955660CBE15071B7DB73183124333AB684C`                     |
+| `No such device` / `No smart card readers found` | No smartcard daemon, or GnuPG's internal CCID driver fighting `pcscd` | Start `pcscd`; on Linux add `disable-ccid` to `~/.gnupg/scdaemon.conf`         |
+| `No pinentry`, or the command hangs silently     | No terminal pinentry configured, or no `GPG_TTY`                      | Install `pinentry-tty`/`pinentry-curses`, `export GPG_TTY=$(tty)`              |
+| `Bad PIN`                                        | Admin PIN typed at a signing prompt, or a genuinely wrong user PIN    | Signing and decryption want the 6+ digit user PIN, never the 8 digit admin PIN |
+| `signing failed: Timeout`                        | PIN accepted, touch never arrived                                     | Re-run and touch as soon as it blinks                                          |
+
+### Two Limits the Card Does Not Lift
+
+- **Push rights.** Cloning a public repo needs no credentials, but pushing needs an SSH key or a
+  token on that machine. The card proves who signed the commit, not who may write to the remote.
+- **Install rights.** On a locked-down machine without GnuPG or pcscd, you can clone and edit but
+  not sign. Nothing about the card changes that; ask for the tooling or work unsigned with a note.
+
 ## Machines Without the YubiKey
 
 Never copy `~/.gnupg` or export software secret keys onto headless servers (`plex`), remote VMs, or

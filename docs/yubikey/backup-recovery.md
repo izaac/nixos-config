@@ -19,8 +19,8 @@
 
 | Artifact                | Location (Current)                                         | Permissions   | Contents                                                                                              | Passphrase Protected?                                                                        |
 | :---------------------- | :--------------------------------------------------------- | :------------ | :---------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------- |
-| **`~/gpg-master.asc`**  | `ninja` home directory (pending move to offline USB)       | `0600`        | Armored **primary secret key only** (`--export-secret-keys 12D77955660CBE15071B7DB73183124333AB684C`) | **Yes** (master key passphrase)                                                              |
-| **`~/gpg-revoke.asc`**  | `ninja` home directory (pending move to offline USB)       | `0600`        | Armored revocation certificate for primary key `33AB684C`                                             | No (pre-signed revocation packet; keep secret)                                               |
+| **`gpg-master.asc`**    | Offline keypad drive (local copy shredded 2026-11-21)      | `0600`        | Armored **primary secret key only** (`--export-secret-keys 12D77955660CBE15071B7DB73183124333AB684C`) | **Yes** (master key passphrase)                                                              |
+| **`gpg-revoke.asc`**    | Offline keypad drive (local copy shredded 2026-11-21)      | `0600`        | Armored revocation certificate for primary key `33AB684C`                                             | No (pre-signed revocation packet; keep secret)                                               |
 | **`pub.asc`**           | Public keyservers (`keys.openpgp.org`), GitHub, local copy | `0644`        | Public primary key + UIDs + all three public subkey binding certificates (`[S]`, `[E]`, `[A]`)        | No (public data, required by `paperkey` restore)                                             |
 | **`paperkey` Printout** | Physical paper (2 pages, 89 lines)                         | Physical safe | Hex + CRC24 dump of the secret MPIs of primary key `33AB684C`                                         | **Yes** (S2K salt, cipher, and encrypted MPIs preserved directly from the secret key packet) |
 
@@ -127,7 +127,7 @@ sudo umount /mnt/backup
 
 The checksums must match pairwise. Then run the restore gate below against the copy on the drive,
 not against the copy in `/home`. Only after that prints `RESTORE_OK` is the strip in
-[Pending Action](#pending-action-stripping-the-primary-secret-key-from-ninja) allowed.
+[Primary Strip](#primary-strip-performed-2026-11-21) allowed.
 
 ### Verified Restore Procedure from Paperkey
 
@@ -207,15 +207,28 @@ batteries that self-discharge.
 | **Master passphrase**                         | in your head or password manager                | unlocks the primary in `gpg-master.asc` and on the paper           | Fatal together with the paper: an unopenable backup is not a backup.                                  |
 | **age keys** (`user_*`, `host_*`)             | files on each machine, never on the card        | the actual sops boot-time decryption                               | If every machine and the card are gone, the sops ciphertext is unrecoverable regardless of the paper. |
 
-## Pending Action: Stripping the Primary Secret Key from `ninja`
+## Primary Strip: Performed 2026-11-21
 
-> **STATUS: NOT DONE (PENDING OFFLINE FLASH DRIVE).** Do **not** execute the delete command below
-> until `~/gpg-master.asc`, `~/gpg-revoke.asc`, and `pub.asc` have been copied to the offline flash
-> drive and verified readable.
+> **STATUS: DONE.** `ninja` holds no primary secret key any more. The offline copy lives on the
+> keypad drive, the verified `paperkey` printout is the fallback, and the local `~/gpg-master.asc`
+> and `~/gpg-revoke.asc` were shredded after the strip was verified.
+
+Verification performed at the time:
+
+```text
+gpg --card-status      Signature, Encryption, Authentication keys present
+gpg -K                 sec# 3183124333AB684C, ssb> on all three subkeys
+clearsign test         SIGN_OK
+sops decrypt           sshHost value returned
+private-keys-v1.d      primary keygrip absent, three subkeys are shadowed-private-key stubs
+```
+
+The procedure below is kept as the record of what was executed and as the reference for repeating it
+after any future primary restore.
 
 ### Why Strip the Primary Key?
 
-Right now, `gpg --list-secret-keys` on `ninja` shows:
+Before the strip, `gpg --list-secret-keys` on `ninja` showed:
 
 - `sec   rsa4096/3183124333AB684C` (the live primary secret key file exists inside
   `~/.gnupg/private-keys-v1.d/<KEYGRIP>.key`, protected only by its passphrase).
@@ -431,6 +444,53 @@ gpg --card-status
 
 Update the inventory tables in [README.md](README.md) and the calendar above with the new key ids
 and expiry dates, then re-run the drive copy so the backups match reality.
+
+### Migrating the Whole Identity to a New Token
+
+The scenario: a Nitrokey, a second YubiKey, or a replacement card. Roughly 30 to 45 minutes. The
+primary fingerprint does not change, so nothing in `.sops.yaml`, keyservers, GitHub, or other
+people's keyrings needs a new identity, only a refreshed publication.
+
+Prerequisites: verified offline backup (paper or drive), both tokens at hand, admin PIN ready on the
+new token, a quiet half hour.
+
+1. **Prepare the new token.** Set its admin PIN (8 digits), user PIN (6+), reset code, and raise
+   retries to 10 with the vendor tool (`ykman openpgp access set-retries 10 10 10`, or
+   `gpg --card-edit` on a standard OpenPGP card). Changing these later is another ceremony.
+2. **Restore the primary.** `gpg --import /path/to/gpg-master.asc` from the offline medium.
+3. **Mint fresh subkeys.** You cannot copy the old card's keys out, by design:
+   `gpg --quick-add-key <fpr> rsa4096 sign 2y`, then `encr`, then `auth`.
+4. **Move them to the new token**, one slot per subkey, checking the listing order as described
+   above: signing to slot 1, encryption to slot 2, authentication to slot 3, `save` at the end.
+5. **Re-encrypt sops before retiring the old card.** Run the hardened re-encryption recipe in
+   [sops-break-glass.md](sops-break-glass.md) and confirm the PKESK keyid is the new encryption
+   subkey. Skipping this leaves `secrets/common.yaml` readable only by the old card and the offline
+   backup.
+6. **Revoke the old subkeys.** `gpg --edit-key`, select each old subkey, `revkey`, `save`. Revoke
+   rather than delete so signatures the old card already made still verify.
+7. **Republish.** `gpg --armor --export <fpr>` to `keys.openpgp.org`, `keyserver.ubuntu.com`, and
+   GitHub. Verifiers need the new subkeys.
+8. **Re-register the non-GPG uses.** U2F/PAM (`pamu2fcfg > ~/.config/Yubico/u2f_keys`, both tokens
+   may coexist during the transition), and any `ed25519-sk` SSH credential, which is disposable and
+   simply gets regenerated on the new token.
+9. **Verify on each host.** `gpg --card-status`, one `git commit -S`, one
+   `SOPS_AGE_KEY_FILE=/dev/null sops -d secrets/common.yaml`.
+10. **Strip again.** `gpg --delete-secret-keys <fpr>`, `gpg --card-status`, then confirm `sec#` plus
+    three stubs. Shred the restored export.
+11. **Update the record.** Inventory table, status table, expiry calendar, and the drive copy of the
+    backup if the primary metadata changed (new subkeys are not in the old export).
+
+What can go wrong, and the cost:
+
+| Mistake                                       | Consequence                                                                      |
+| :-------------------------------------------- | :------------------------------------------------------------------------------- |
+| Skipping step 5                               | sops file stays wrapped to the retired card; only the offline backup can read it |
+| Deleting instead of revoking old subkeys      | old signatures on commits and tags stop verifying                                |
+| Forgetting step 7                             | commits show unverified, and remote hosts cannot encrypt to you                  |
+| Running `ykman openpgp reset` on either token | destructive; the only recovery is the offline primary plus re-minting            |
+
+Keeping the old token as a spare is fine for U2F, but once its subkeys are revoked it can no longer
+sign or decrypt, which is the property that makes the migration trustworthy.
 
 ## Troubleshooting Reference (Real Failure Modes)
 

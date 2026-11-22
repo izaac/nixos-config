@@ -20,6 +20,7 @@
 - [Git Commit & Tag Signing](yubikey/git-signing.md)
 - [SOPS Break-Glass Decryption](yubikey/sops-break-glass.md)
 - [Backup, Paperkey & Master Key Strip](yubikey/backup-recovery.md)
+- [SSH Keys on Hardware](yubikey/ssh-keys.md)
 
 ## Architecture & Profiles
 
