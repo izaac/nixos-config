@@ -54,7 +54,8 @@
           TransmitQueues = 8;
           ReceiveQueues = 8;
 
-          # Disable Energy Efficient Ethernet (EEE) to prevent igc/I225-V hangs
+          # Keep the I225 firmware out of its wake state. EEE itself is switched
+          # off by hosts/ninja/udev-igc-fix.nix, not by this option.
           WakeOnLan = "off";
         };
       };
@@ -72,18 +73,17 @@
         dhcpV6Config.UseDNS = false;
         ipv6AcceptRAConfig.UseDNS = false;
 
-        # Disable Energy Efficient Ethernet (EEE) to prevent NIC sleep state locks
-        # See Intel I225-V/igc known issues
+        # Networkd has no EEE setting; hosts/ninja/udev-igc-fix.nix turns EEE
+        # off with ethtool at link creation. See Intel I225-V/igc known issues.
         networkConfig = {
           IPv6PrivacyExtensions = "kernel";
           MulticastDNS = false;
           LLMNR = false;
         };
 
-        # Additional settings specific to the physical link layer
-        # EEE (Energy Efficient Ethernet) can cause the I225 controller to hang under load
-        # after a few hours and requires a physical or bus reset to recover.
-        # Setting 'WakeOnLan=off' also helps prevent firmware sleep bugs.
+        # Additional settings specific to the physical link layer.
+        # WakeOnLan=off keeps the I225 firmware out of its sleep state; EEE is
+        # switched off separately by hosts/ninja/udev-igc-fix.nix.
         linkConfig = {
           RequiredForOnline = "routable";
         };
@@ -122,6 +122,11 @@
     settings.Resolve = {
       DNSSEC = "no";
       Cache = "no-negative";
+      # Fail closed. systemd ships compiled-in fallbacks (1.1.1.1, 8.8.8.8,
+      # 9.9.9.9) used when no link DNS remains. On this host that would resolve
+      # names around Pi-hole and silently drop the blocklists, so empty it:
+      # without eno1 DNS, resolution fails instead of bypassing.
+      FallbackDNS = [];
     };
   };
 }
