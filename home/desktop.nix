@@ -43,7 +43,19 @@ in {
 
     # General Software
     fragments # GTK Torrent Client (Rust)
-    clapper # Modern GTK4 Video Player (Rust)
+    # Clapper's wrapper only ships gst-plugins-{base,good,bad,ugly}, so the
+    # plugin path has no H.264 High Profile decoder: libav (software) and
+    # gstreamer-vaapi (hardware) are missing and Clapper reports missing codecs.
+    # gst-plugins-rs adds gtk4paintablesink, Clapper's zero-copy GL path.
+    (clapper.overrideAttrs (prev: {
+      buildInputs =
+        prev.buildInputs
+        ++ [
+          gst_all_1.gst-libav
+          gst_all_1.gst-vaapi
+          gst_all_1.gst-plugins-rs
+        ];
+    })) # Modern GTK4 Video Player (Rust)
     snapshot # GTK Camera App (Rust)
     inputs.nix-packages.packages.${system}.sparrow
     ffmpeg-full
