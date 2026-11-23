@@ -640,11 +640,13 @@ When adding a new host (see [Adding a New Host](adding-a-host.md)):
 1. Create `hosts/<name>/system.nix` with the system type string
 2. **Identify CPU vendor**: AMD → `common-cpu-amd-pstate`, Intel → `common-cpu-intel`
 3. **Identify GPU setup**:
-   - NVIDIA desktop (no iGPU) → `common-gpu-nvidia-nonprime`
-   - NVIDIA laptop with Prime offload → `common-gpu-nvidia`
    - AMD GPU → `common-gpu-amd` (if available)
    - Intel Arc discrete (Xe2) → `common-gpu-intel` with `hardware.intelgpu.driver = "xe"`
    - Intel iGPU only → no GPU module needed
+
+   No host currently uses NVIDIA. The upstream `common-gpu-nvidia*` modules stay available through
+   `nixos-hardware` if that ever changes.
+
 4. **Form factor**: Laptop → `common-pc-laptop`, Desktop → skip
 5. **Storage**: NVMe/SSD → `common-pc-ssd` (almost always)
 

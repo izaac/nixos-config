@@ -7,7 +7,7 @@ Read [AGENTS.md](../AGENTS.md) for Monko identity, Caveman protocol, and agent b
 ## Project Overview
 
 - NixOS configuration flake for multi-host (desktop/laptop).
-- Focus: Gaming performance (NVIDIA), security hardening (sops-nix), and COSMIC DE.
+- Focus: Gaming performance (Intel Arc), security hardening (sops-nix), and the Niri desktop.
 - Stack: Nix, Bash, Rust (Brush shell), Catppuccin.
 
 ## Copilot Specifics

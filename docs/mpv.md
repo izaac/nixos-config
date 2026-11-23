@@ -11,8 +11,7 @@ and dedicated Vim-style keybindings.
 
 ## Hardware & Performance Configuration
 
-mpv is tuned for zero-latency, high-quality video playback on modern Vulkan and NVIDIA/Intel
-hardware.
+mpv is tuned for zero-latency, high-quality video playback on modern Vulkan and Intel Arc hardware.
 
 | Setting               | Value                        | Description                                        |
 | --------------------- | ---------------------------- | -------------------------------------------------- |

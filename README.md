@@ -23,7 +23,7 @@ repo consumed as a flake input.
 - **Terminal:** Kitty + tmux
 - **Editor:** LazyVim (Neovim distribution)
 - **Security:** dbus-broker, sops-nix + age, YubiKey (U2F), pinned binary caches
-- **Gaming:** Steam (NVIDIA Optimized), Lutris, Bottles, GameMode, sched-ext
+- **Gaming:** Steam, Lutris, Bottles, GameMode, sched-ext
 - **Kernel (ninja):** nixpkgs `linux_latest` built with `-march=native` (X86_NATIVE_CPU) + 1000Hz,
   see `hosts/ninja/kernel.nix`
 
@@ -35,7 +35,7 @@ lib/               # mkSystem helper, user config
 hosts/             # Per-host configuration.nix + hardware
 modules/           # Reusable NixOS modules (mySystem.* options)
   core/            # Audio, codecs, nix-ld, performance, sops, maintenance
-  desktop/         # Niri compositor, tuigreet greeter, NVIDIA glue
+  desktop/         # Niri compositor, tuigreet greeter, Intel Arc GPU baseline
   gaming/          # Steam, GameMode, sched-ext (SCX)
 home/              # Home Manager modules (per-app .nix files)
   niri.nix         # Compositor config, power-menu, keybinds
