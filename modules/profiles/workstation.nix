@@ -13,6 +13,7 @@
       audio.enable = lib.mkDefault true;
       bluetooth.enable = lib.mkDefault true;
       codecs.enable = lib.mkDefault true;
+      adb.enable = lib.mkDefault true;
       printing = {
         enable = lib.mkDefault true;
         networkPrinter.enable = lib.mkDefault true;

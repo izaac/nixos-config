@@ -5,6 +5,7 @@
     ./audio.nix
     ./nix-ld.nix
     ./codecs.nix
+    ./adb.nix
     ./printing.nix
     ./bluetooth.nix
     ./virtualization.nix
