@@ -7,7 +7,6 @@
 }: let
   system = pkgs.stdenv.hostPlatform.system;
   isWorkstation = (osConfig.mySystem.desktop.enable or false) || pkgs.stdenv.isDarwin;
-  hasNvidia = builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or []);
   hasBluetooth = osConfig.mySystem.core.bluetooth.enable or false;
 in {
   home.packages = with pkgs;
@@ -124,9 +123,6 @@ in {
     ]
     ++ lib.optionals (pkgs.stdenv.isLinux && hasBluetooth) [
       bluetuith
-    ]
-    ++ lib.optionals (pkgs.stdenv.isLinux && hasNvidia) [
-      nvtopPackages.nvidia
     ]
     ++ lib.optionals pkgs.stdenv.isDarwin [
       # GNU userland for Linux-parity in interactive shell.

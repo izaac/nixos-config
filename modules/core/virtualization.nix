@@ -36,8 +36,6 @@ in {
       path = ["/run/wrappers" "/run/current-system/sw"];
     };
 
-    hardware.nvidia-container-toolkit.enable = lib.elem "nvidia" config.services.xserver.videoDrivers;
-
     # 2. Delegate all cgroup controllers to user sessions (containers, Gamescope, etc.)
     systemd.services."user@".serviceConfig.Delegate = "cpuset cpu io memory pids";
 

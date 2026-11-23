@@ -1,5 +1,5 @@
 {
-  description = "Izaac NVIDIA NixOS and Darwin Configuration";
+  description = "Izaac NixOS and Darwin Configuration";
 
   # No nixConfig block: accept-flake-config is off (see modules/core/system.nix),
   # so flake-provided settings would be ignored with a warning anyway. The

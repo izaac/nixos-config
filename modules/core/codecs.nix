@@ -28,7 +28,7 @@ in {
     # Browser Acceleration Hints
     # MOZ_DISABLE_RDD_SANDBOX was previously set here to force Firefox HW
     # decode, but it weakens the media sandbox for every user. Brave/Chromium
-    # are the primary browsers and get VA-API via nvidia-vaapi-driver, so the
+    # are the primary browsers and get VA-API from Mesa on the Arc GPU, so the
     # sandbox stays intact.
   };
 }

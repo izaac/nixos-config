@@ -6,14 +6,7 @@
 }: let
   cfg = config.mySystem.gaming;
   hasTuning = cfg.cpuBoostFreq != 0 && cfg.cpuBaseFreq != 0;
-  hasGpuTuning = cfg.gpuBoostClock != 0 && cfg.gpuBaseClock != 0;
-  hasNvidia = lib.elem "nvidia" config.services.xserver.videoDrivers;
-  nvidiaSmi = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi";
   notify = "${pkgs.libnotify}/bin/notify-send";
-
-  # Scripts only reference nvidia-smi when GPU tuning is configured
-  gpuBoostCmd = lib.optionalString (hasNvidia && hasGpuTuning) "${nvidiaSmi} -lgc 210,${toString cfg.gpuBoostClock}";
-  gpuBaseCmd = lib.optionalString (hasNvidia && hasGpuTuning) "${nvidiaSmi} -lgc 210,${toString cfg.gpuBaseClock}";
 
   thermal-guard = pkgs.writeShellScript "thermal-guard" ''
     # Thermal watchdog: throttle at ${toString cfg.thermalGuard.throttleTemp}°C, recover at ${toString cfg.thermalGuard.recoverTemp}°C
@@ -47,7 +40,6 @@
         echo ${toString cfg.cpuBaseFreq} > "$f" 2>/dev/null
       done
     ''}
-        ${lib.optionalString (hasNvidia && hasGpuTuning) "${gpuBaseCmd} 2>/dev/null"}
         sudo -u "#$CALLER_UID" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$CALLER_UID/bus" \
           ${notify} -u critical -t 5000 "Thermal Guard" "''${temp%???}°C — clocks reduced"
         THROTTLED=1
@@ -61,7 +53,6 @@
         echo ${toString cfg.cpuBoostFreq} > "$f" 2>/dev/null
       done
     ''}
-        ${lib.optionalString (hasNvidia && hasGpuTuning) "${gpuBoostCmd} 2>/dev/null"}
         sudo -u "#$CALLER_UID" DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$CALLER_UID/bus" \
           ${notify} -t 5000 "Thermal Guard" "''${temp%???}°C — clocks restored"
         THROTTLED=0
@@ -81,7 +72,6 @@
         echo ${toString cfg.cpuBoostFreq} > "$f" 2>/dev/null
       done
     ''}
-    ${lib.optionalString (hasNvidia && hasGpuTuning) gpuBoostCmd}
   '';
 
   gamemode-end = pkgs.writeShellScript "gamemode-end" ''
@@ -93,17 +83,10 @@
         echo ${toString cfg.cpuBaseFreq} > "$f" 2>/dev/null
       done
     ''}
-    ${lib.optionalString (hasNvidia && hasGpuTuning) gpuBaseCmd}
   '';
 
-  boostDesc =
-    (lib.optionalString hasTuning "${toString (cfg.cpuBoostFreq / 1000)}MHz")
-    + (lib.optionalString (hasTuning && hasGpuTuning) " + ")
-    + (lib.optionalString hasGpuTuning "${toString cfg.gpuBoostClock}MHz GPU");
-  baseDesc =
-    (lib.optionalString hasTuning "${toString (cfg.cpuBaseFreq / 1000)}MHz")
-    + (lib.optionalString (hasTuning && hasGpuTuning) " + ")
-    + (lib.optionalString hasGpuTuning "${toString cfg.gpuBaseClock}MHz GPU");
+  boostDesc = lib.optionalString hasTuning "${toString (cfg.cpuBoostFreq / 1000)}MHz";
+  baseDesc = lib.optionalString hasTuning "${toString (cfg.cpuBaseFreq / 1000)}MHz";
 in {
   options.mySystem.gaming = {
     enable = lib.mkEnableOption "Gaming optimizations and tools";
@@ -118,18 +101,6 @@ in {
       type = lib.types.int;
       default = 0;
       description = "Base CPU frequency in KHz when GameMode is inactive (0 = no override)";
-    };
-
-    gpuBoostClock = lib.mkOption {
-      type = lib.types.int;
-      default = 0;
-      description = "Max GPU clock in MHz when GameMode is active (0 = no override, NVIDIA only)";
-    };
-
-    gpuBaseClock = lib.mkOption {
-      type = lib.types.int;
-      default = 0;
-      description = "Base GPU clock in MHz when GameMode is inactive (0 = no override, NVIDIA only)";
     };
 
     thermalGuard = {
@@ -152,7 +123,7 @@ in {
       };
     };
 
-    sunshine.enable = lib.mkEnableOption "Sunshine GameStream host (CUDA/NVENC build, open firewall)";
+    sunshine.enable = lib.mkEnableOption "Sunshine GameStream host (hardware encoder build, open firewall)";
   };
 
   config = lib.mkIf cfg.enable {
@@ -192,7 +163,7 @@ in {
             softrealtime = "auto";
             renice = 5;
           };
-          custom = lib.mkIf (hasTuning || hasGpuTuning) {
+          custom = lib.mkIf hasTuning {
             # `{ ... & }` keeps the background launch from terminating the
             # && list (a bare `cmd & && next` is a bash syntax error).
             start = "${pkgs.bash}/bin/bash -c 'sudo ${gamemode-start}${lib.optionalString cfg.thermalGuard.enable " && { sudo ${thermal-guard} & }"} && ${notify} \"GameMode\" \"Performance: ${boostDesc}\"'";
@@ -202,7 +173,7 @@ in {
       };
     };
 
-    security.sudo-rs.extraRules = lib.mkIf (hasTuning || hasGpuTuning) [
+    security.sudo-rs.extraRules = lib.mkIf hasTuning [
       {
         groups = ["gamemode"];
         commands =
@@ -246,42 +217,36 @@ in {
         openrgb
       ];
 
-      # Sunshine: GameStream host. The 5070 Ti's NVENC does the encoding and a
-      # LAN thin client displays the stream. Web UI for pairing lives at
+      # Sunshine: GameStream host. The host GPU encodes and a LAN thin client
+      # displays the stream. Web UI for pairing lives at
       # https://<host>:47990 on first run. capSysAdmin lets sunshine inject
-      # keyboard/mouse events.
-      # Override the package with cudaSupport so NVENC is compiled in;
-      # without this sunshine falls back to libx264 (CPU encoding).
+      # keyboard/mouse events. Upstream's bundled ffmpeg covers VA-API and QSV,
+      # which is the Arc encoder; the cudaSupport override was NVENC-only and is
+      # gone with the NVIDIA hardware.
       sunshine = lib.mkIf cfg.sunshine.enable {
         enable = true;
         autoStart = true;
         openFirewall = true;
         capSysAdmin = true;
-        package = pkgs.sunshine.override {cudaSupport = true;};
       };
     };
 
-    # CUDA + DRM enumeration walks every /sys/bus/pci/.../drm entry; the
-    # default user-service nofile cap (1024) trips this on first
-    # NVENC init and the encoder dies with "Too many open files",
+    # Hardware encoding + DRM enumeration walks every /sys/bus/pci/.../drm
+    # entry; the default user-service nofile cap (1024) trips this on first
+    # encoder init and the encoder dies with "Too many open files",
     # which clients surface as "connection terminated".
     systemd.user.services.sunshine = lib.mkIf cfg.sunshine.enable {
       serviceConfig.LimitNOFILE = 65536;
     };
 
-    environment.sessionVariables =
-      {
-        PROTON_ENABLE_NTSYNC = "1";
-        WINE_FSYNC = "1";
-        VKD3D_CONFIG = "no_upload_hvv";
-        __GL_SHADER_DISK_CACHE_SKIP_CLEANUP = "1";
-        __GL_SHADER_DISK_CACHE_SIZE = "10737418240";
-        STEAM_EXTRA_ARGS = "-no-cef-sandbox";
-        STEAM_DISABLE_PH_CLIPPED_VIDEO = "1";
-      }
-      // lib.optionalAttrs hasNvidia {
-        PROTON_ENABLE_NGX_UPDATER = "1";
-        DISABLE_RT_CHECK = "1";
-      };
+    environment.sessionVariables = {
+      PROTON_ENABLE_NTSYNC = "1";
+      WINE_FSYNC = "1";
+      VKD3D_CONFIG = "no_upload_hvv";
+      __GL_SHADER_DISK_CACHE_SKIP_CLEANUP = "1";
+      __GL_SHADER_DISK_CACHE_SIZE = "10737418240";
+      STEAM_EXTRA_ARGS = "-no-cef-sandbox";
+      STEAM_DISABLE_PH_CLIPPED_VIDEO = "1";
+    };
   };
 }

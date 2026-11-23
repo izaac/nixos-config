@@ -3,7 +3,7 @@
 # Replaces linuxPackages_cachyos (Chaotic-Nyx) with a pure-nixpkgs kernel —
 # removes the chaotic flake input entirely (supply-chain reduction). The
 # custom config means no Hydra cache hit: the kernel always compiles locally
-# (~20-35 min on this machine; the NVIDIA open module adds a few minutes).
+# (~20-35 min on this machine).
 #
 #   - X86_NATIVE_CPU (upstream since 6.16): -march=native, which resolves to
 #     znver5 on this machine (better than the old mArch = "ZEN4").
