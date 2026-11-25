@@ -9,7 +9,10 @@
       # --- VIDEO ---
       profile = "gpu-hq";
       gpu-api = "vulkan";
-      hwdec = "auto-safe";
+      # Explicit VA-API: on the Arc B580 this decodes in hardware through
+      # intel-media-driver (iHD). auto-safe worked but also probed CUDA/NVDEC
+      # paths and logged "Cannot load libcuda.so.1" on every start.
+      hwdec = "vaapi";
       vo = "gpu-next";
 
       # --- AUDIO ---
