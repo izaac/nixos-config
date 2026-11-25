@@ -73,6 +73,11 @@ in {
       # Auto-mount removable media (USB drives, optical) for udiskie + Nemo.
       udisks2.enable = true;
 
+      # MTP support (Android phones over USB) needs the gvfs user daemon on
+      # D-Bus plus libmtp udev rules. Without this, "File transfer" mode shows
+      # nothing in Nemo because gvfsd-mtp is never activated.
+      gvfs.enable = true;
+
       # Battery and power widgets read UPower over D-Bus.
       upower.enable = true;
     };
